@@ -9,15 +9,21 @@ from agent.graph.state import AgentState
 
 SYSTEM_PROMPT = SystemMessage(
     content=(
-        "You are a precise coding agent. Use tools when needed, answer only "
-        "from observed tool results, and stop when the task is complete."
+        "You are a precise coding agent. Execute the user's task exactly as "
+        "stated, no more and no less. Use tools when needed. Your final answer "
+        "must be grounded only in tool results visible in this session. If a "
+        "tool fails, state the failure instead of inventing success. When the "
+        "task is complete, stop immediately."
     )
 )
 
 
 def plan_node(state: AgentState) -> dict:
-    """Record the task as the initial plan."""
-    return {"plan": state["task"]}
+    """Record the task and seed the conversation."""
+    return {
+        "plan": state["task"],
+        "messages": [SYSTEM_PROMPT, HumanMessage(content=state["task"])],
+    }
 
 
 def retrieve_node(state: AgentState) -> dict:
@@ -29,6 +35,5 @@ async def act_node(state: AgentState) -> dict:
     """Bind tools to the model and ask it for the next action."""
     model = os.environ.get("AGENT_MODEL", "llama-3.1-8b-instant")
     llm = ChatGroq(model=model).bind_tools(state["tools"])
-    messages = [SYSTEM_PROMPT, HumanMessage(content=state["task"])]
-    response = await llm.ainvoke(messages)
+    response = await llm.ainvoke(state["messages"])
     return {"messages": [response]}
