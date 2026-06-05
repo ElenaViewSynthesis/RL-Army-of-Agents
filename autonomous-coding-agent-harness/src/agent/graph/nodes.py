@@ -1,11 +1,13 @@
 """Graph nodes for the first vertical slice."""
 
 import os
+from typing import Any
 
-from langchain_core.messages import HumanMessage, SystemMessage
+from langchain_core.messages import AIMessage, HumanMessage, RemoveMessage, SystemMessage
 from langchain_groq import ChatGroq
 
 from agent.graph.state import AgentState
+from agent.retrieval.retriever import DEFAULT_K, K_WIDEN_STEP, ToolRetriever
 
 SYSTEM_PROMPT = SystemMessage(
     content=(
@@ -26,14 +28,48 @@ def plan_node(state: AgentState) -> dict:
     }
 
 
-def retrieve_node(state: AgentState) -> dict:
-    """Slice 1 retrieval: expose all discovered tools."""
-    return {"available_tool_names": [tool.name for tool in state["tools"]]}
+def _goal(state: AgentState) -> str:
+    return f"{state.get('plan', '')} {state['task']}".strip()
 
 
-async def act_node(state: AgentState) -> dict:
-    """Bind tools to the model and ask it for the next action."""
+def make_retrieve_node(retriever: ToolRetriever):
+    """Create a retrieval node closed over the current registry."""
+
+    def retrieve_node(state: AgentState) -> dict:
+        k = state.get("retrieval_k", DEFAULT_K)
+        names = retriever.retrieve(_goal(state), k)
+        return {"available_tool_names": names}
+
+    return retrieve_node
+
+
+def widen_node(state: AgentState) -> dict:
+    """Widen retrieval after an out-of-subset tool request."""
+    remove_messages = []
+    if state["messages"]:
+        last = state["messages"][-1]
+        if isinstance(last, AIMessage) and last.tool_calls and last.id:
+            remove_messages.append(RemoveMessage(id=last.id))
+
+    return {
+        "retrieval_k": state.get("retrieval_k", DEFAULT_K) + K_WIDEN_STEP,
+        "retrieval_miss_count": state.get("retrieval_miss_count", 0) + 1,
+        "messages": remove_messages,
+    }
+
+
+def make_act_node(tools: list[Any]):
+    """Create an act node that binds only the retrieved tool subset."""
     model = os.environ.get("AGENT_MODEL", "llama-3.1-8b-instant")
-    llm = ChatGroq(model=model).bind_tools(state["tools"])
-    response = await llm.ainvoke(state["messages"])
-    return {"messages": [response]}
+    llm = ChatGroq(model=model)
+    tool_by_name = {tool.name: tool for tool in tools}
+
+    async def act_node(state: AgentState) -> dict:
+        available = state.get("available_tool_names", [])
+        subset = [tool_by_name[name] for name in available if name in tool_by_name]
+        if not subset:
+            subset = tools
+        response = await llm.bind_tools(subset).ainvoke(state["messages"])
+        return {"messages": [response]}
+
+    return act_node

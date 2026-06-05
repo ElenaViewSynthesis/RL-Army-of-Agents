@@ -1,0 +1,27 @@
+"""Small labeled retrieval set for the current fs + git registry."""
+
+PAIRS = [
+    ("read the README file", "read_file"),
+    ("show me lines 10 through 20 of SPEC", "read_file_range"),
+    ("write updated contents to a file", "write_file"),
+    ("list everything in the source directory", "list_dir"),
+    ("find python files under src", "search_files"),
+    ("search file contents for a symbol", "grep"),
+    ("get metadata for pyproject.toml", "file_stat"),
+    ("create a nested output directory", "make_dir"),
+    ("rename a file", "move"),
+    ("delete a generated file", "delete"),
+    ("copy a fixture file", "copy"),
+    ("show git working tree status", "git_status"),
+    ("display unstaged changes", "git_diff"),
+    ("show recent commits", "git_log"),
+    ("find who last changed a line", "git_blame"),
+    ("create a new branch", "git_branch_create"),
+    ("list local branches", "git_branch_list"),
+    ("switch to another branch", "git_checkout"),
+    ("commit all current edits", "git_commit"),
+    ("stash local changes", "git_stash"),
+    ("show the latest commit patch", "git_show_commit"),
+    ("list changed files", "git_list_changed_files"),
+    ("create a release tag", "git_tag"),
+]

@@ -1,0 +1,54 @@
+"""Build a retrieval registry from discovered LangChain tools."""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+from typing import Any
+
+
+@dataclass(frozen=True)
+class ToolRegistryEntry:
+    namespace: str
+    name: str
+    description: str
+    input_schema: dict[str, Any]
+
+
+def _namespace_for(tool_name: str) -> str:
+    if tool_name.startswith("git_"):
+        return "git"
+    return "fs"
+
+
+def _input_schema(tool: Any) -> dict[str, Any]:
+    schema = getattr(tool, "args_schema", None)
+    if schema is not None and hasattr(schema, "model_json_schema"):
+        return schema.model_json_schema()
+    args = getattr(tool, "args", None)
+    return args if isinstance(args, dict) else {}
+
+
+def build_registry(tools: list[Any]) -> list[ToolRegistryEntry]:
+    """Return stable registry entries for discovered tools."""
+    entries = []
+    for tool in tools:
+        name = getattr(tool, "name", "")
+        entries.append(
+            ToolRegistryEntry(
+                namespace=_namespace_for(name),
+                name=name,
+                description=getattr(tool, "description", "") or "",
+                input_schema=_input_schema(tool),
+            )
+        )
+    return entries
+
+
+def entry_text(entry: ToolRegistryEntry) -> str:
+    """Text used for retrieval embedding."""
+    return (
+        f"namespace: {entry.namespace}\n"
+        f"name: {entry.name}\n"
+        f"description: {entry.description}\n"
+        f"input_schema: {entry.input_schema}"
+    )

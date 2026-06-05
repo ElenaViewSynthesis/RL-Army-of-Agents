@@ -9,6 +9,13 @@ from langchain_core.messages import AIMessage, HumanMessage, SystemMessage, Tool
 
 from agent.graph.graph import build_graph
 from agent.mcp_client.client import get_mcp_tools
+from agent.retrieval import (
+    Embedder,
+    InMemoryVectorStore,
+    ToolRetriever,
+    build_registry,
+    entry_text,
+)
 
 load_dotenv()
 
@@ -39,13 +46,20 @@ def _print_trace(messages: list) -> None:
 async def run(task: str) -> str:
     """Run the minimal agent against a plain-English task."""
     tools = await get_mcp_tools()
-    graph = build_graph(tools)
+    entries = build_registry(tools)
+    embedder = Embedder()
+    store = InMemoryVectorStore()
+    store.upsert(entries, embedder.embed_batch([entry_text(entry) for entry in entries]))
+    retriever = ToolRetriever(store, embedder)
+    graph = build_graph(tools, retriever)
     result = await graph.ainvoke(
         {
             "task": task,
             "plan": "",
             "tools": tools,
             "available_tool_names": [],
+            "retrieval_k": 8,
+            "retrieval_miss_count": 0,
             "messages": [],
         }
     )

@@ -5,3 +5,6 @@ langchain-mcp-adapters>=0.1
 mcp>=1.0
 pydantic>=2.0
 python-dotenv>=1.0
+sentence-transformers>=2.7
+psycopg[binary]>=3.1
+pgvector>=0.3

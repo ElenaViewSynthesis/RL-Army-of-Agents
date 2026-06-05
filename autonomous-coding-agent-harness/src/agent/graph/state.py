@@ -11,4 +11,6 @@ class AgentState(TypedDict):
     plan: str
     tools: list[Any]
     available_tool_names: list[str]
+    retrieval_k: int
+    retrieval_miss_count: int
     messages: Annotated[list[BaseMessage], add_messages]
