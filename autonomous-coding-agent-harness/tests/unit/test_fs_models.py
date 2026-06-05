@@ -1,6 +1,14 @@
 from pydantic import ValidationError
 
-from agent.models.tool_io import ReadFileInput, ReadFileOutput
+from agent.models.fs import (
+    CopyInput,
+    GrepInput,
+    ListDirOutput,
+    ReadFileInput,
+    ReadFileOutput,
+    ReadFileRangeInput,
+    WriteFileOutput,
+)
 
 
 def test_read_file_input_accepts_path() -> None:
@@ -46,3 +54,43 @@ def test_read_file_output_rejects_negative_size() -> None:
         return
 
     raise AssertionError("negative size should fail validation")
+
+
+def test_read_file_range_requires_positive_lines() -> None:
+    try:
+        ReadFileRangeInput(path="SPEC.md", start_line=0, end_line=1)
+    except ValidationError:
+        return
+
+    raise AssertionError("line numbers should be 1-indexed")
+
+
+def test_write_file_output_shape() -> None:
+    output = WriteFileOutput(path="notes.md", bytes_written=12)
+
+    assert output.success is True
+    assert output.bytes_written == 12
+
+
+def test_list_dir_output_counts_entries() -> None:
+    output = ListDirOutput(path=".", entries=[], count=0)
+
+    assert output.entries == []
+    assert output.count == 0
+
+
+def test_grep_input_defaults() -> None:
+    model = GrepInput(pattern="Agent")
+
+    assert model.root == "."
+    assert model.file_glob == "*"
+    assert model.case_sensitive is True
+
+
+def test_copy_input_requires_source_and_destination() -> None:
+    try:
+        CopyInput(src="", dst="out.txt")
+    except ValidationError:
+        return
+
+    raise AssertionError("empty source should fail validation")

@@ -1,20 +1,5 @@
-"""Typed models for the first filesystem tool."""
+"""Backward-compatible exports for the first filesystem tool models."""
 
-from pydantic import BaseModel, Field
+from agent.models.fs import ReadFileInput, ReadFileOutput
 
-
-class ReadFileInput(BaseModel):
-    """Input for reading a UTF-8 text file."""
-
-    path: str = Field(min_length=1)
-    encoding: str = "utf-8"
-
-
-class ReadFileOutput(BaseModel):
-    """Structured result returned by read_file."""
-
-    path: str
-    content: str
-    size_bytes: int = Field(ge=0)
-    success: bool = True
-    error: str | None = None
+__all__ = ["ReadFileInput", "ReadFileOutput"]
