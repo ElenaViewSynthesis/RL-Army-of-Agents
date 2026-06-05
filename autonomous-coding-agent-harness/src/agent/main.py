@@ -8,7 +8,9 @@ from pathlib import Path
 from dotenv import load_dotenv
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage, ToolMessage
 
+from agent.errors import RateLimitExceeded, RequestTooLarge, RetryExhausted
 from agent.graph.graph import build_graph
+from agent.logging_config import configure_logging, get_logger
 from agent.mcp_client.client import get_mcp_tools_with_namespaces
 from agent.retrieval import (
     Embedder,
@@ -20,6 +22,8 @@ from agent.retrieval import (
 from agent.subagent import SubagentRunner, make_spawn_subagent_tool
 
 load_dotenv()
+configure_logging()
+_log = get_logger(__name__)
 
 _PROJECT_ROOT = Path(__file__).resolve().parents[2]
 _FIXTURE_REPO = _PROJECT_ROOT / "fixture_repo"
@@ -64,30 +68,40 @@ def _print_trace(messages: list) -> None:
 
 async def run(task: str) -> str:
     """Run the minimal agent against a plain-English task."""
-    tools, tools_by_namespace = await get_mcp_tools_with_namespaces()
-    runner = SubagentRunner(tools_by_namespace)
-    tools = [*tools, make_spawn_subagent_tool(runner)]
-    entries = build_registry(tools)
-    embedder = Embedder()
-    store = InMemoryVectorStore()
-    store.upsert(entries, embedder.embed_batch([entry_text(entry) for entry in entries]))
-    retriever = ToolRetriever(store, embedder)
-    graph = build_graph(tools, retriever)
-    result = await graph.ainvoke(
-        {
-            "task": task,
-            "plan": "",
-            "tools": tools,
-            "available_tool_names": [],
-            "retrieval_k": 8,
-            "retrieval_miss_count": 0,
-            "progress_ledger": "",
-            "token_estimate": 0,
-            "compaction_count": 0,
-            "ledger_message_id": None,
-            "messages": [],
-        }
-    )
+    try:
+        tools, tools_by_namespace = await get_mcp_tools_with_namespaces()
+        runner = SubagentRunner(tools_by_namespace)
+        tools = [*tools, make_spawn_subagent_tool(runner)]
+        entries = build_registry(tools)
+        embedder = Embedder()
+        store = InMemoryVectorStore()
+        store.upsert(entries, embedder.embed_batch([entry_text(entry) for entry in entries]))
+        retriever = ToolRetriever(store, embedder)
+        graph = build_graph(tools, retriever)
+        result = await graph.ainvoke(
+            {
+                "task": task,
+                "plan": "",
+                "tools": tools,
+                "available_tool_names": [],
+                "retrieval_k": 8,
+                "retrieval_miss_count": 0,
+                "progress_ledger": "",
+                "token_estimate": 0,
+                "compaction_count": 0,
+                "ledger_message_id": None,
+                "messages": [],
+            }
+        )
+    except RateLimitExceeded as exc:
+        _log.error("rate limit exceeded", extra={"args_preview": str(exc)})
+        return "(rate limit exceeded)"
+    except RequestTooLarge as exc:
+        _log.error("request too large", extra={"args_preview": str(exc)})
+        return "(request too large)"
+    except RetryExhausted as exc:
+        _log.error("retry exhausted", extra={"args_preview": str(exc)})
+        return f"(retry exhausted: {exc.last_error})"
 
     _print_trace(result["messages"])
     for message in reversed(result["messages"]):

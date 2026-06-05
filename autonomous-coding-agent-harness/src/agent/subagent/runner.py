@@ -9,6 +9,7 @@ from typing import Any
 from langchain_core.messages import HumanMessage, SystemMessage, ToolMessage
 from langchain_groq import ChatGroq
 
+from agent.resilience import apply_limiter, with_retry
 from agent.subagent.contract import (
     Finding,
     NamespaceScope,
@@ -146,7 +147,8 @@ class SubagentRunner:
             if steps >= task.budget.max_steps or tokens_used >= task.budget.max_tokens:
                 raise SubagentBudgetExceeded(steps, tokens_used, task.budget)
 
-            response = await bound.ainvoke(messages)
+            await apply_limiter()
+            response = await with_retry(lambda: bound.ainvoke(messages))
             steps += 1
             tokens_used += (response.usage_metadata or {}).get("total_tokens", 0)
             messages.append(response)
@@ -166,7 +168,7 @@ class SubagentRunner:
                 tool = tool_map.get(call["name"])
                 if tool is None:
                     raise ToolScopeViolation(call["name"], list(tool_map))
-                raw = await tool.arun(call["args"])
+                raw = await with_retry(lambda tool=tool, call=call: tool.arun(call["args"]))
                 parsed = _parse_tool_result(raw)
                 tool_results.append((call["name"], parsed))
                 messages.append(ToolMessage(content=str(raw), tool_call_id=call["id"]))

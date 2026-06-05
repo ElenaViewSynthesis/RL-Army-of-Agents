@@ -7,7 +7,11 @@ from langchain_core.messages import AIMessage, HumanMessage, RemoveMessage, Syst
 from langchain_groq import ChatGroq
 
 from agent.graph.state import AgentState
+from agent.logging_config import get_logger
 from agent.retrieval.retriever import DEFAULT_K, K_WIDEN_STEP, ToolRetriever
+from agent.resilience import apply_limiter, with_retry
+
+_log = get_logger(__name__)
 
 SYSTEM_PROMPT = SystemMessage(
     content=(
@@ -38,6 +42,10 @@ def make_retrieve_node(retriever: ToolRetriever):
     def retrieve_node(state: AgentState) -> dict:
         k = state.get("retrieval_k", DEFAULT_K)
         names = retriever.retrieve(_goal(state), k)
+        _log.info(
+            "retrieved tool subset",
+            extra={"tools": names},
+        )
         return {"available_tool_names": names}
 
     return retrieve_node
@@ -69,7 +77,9 @@ def make_act_node(tools: list[Any]):
         subset = [tool_by_name[name] for name in available if name in tool_by_name]
         if not subset:
             subset = tools
-        response = await llm.bind_tools(subset).ainvoke(state["messages"])
+        await apply_limiter()
+        bound = llm.bind_tools(subset)
+        response = await with_retry(lambda: bound.ainvoke(state["messages"]))
         return {"messages": [response]}
 
     return act_node

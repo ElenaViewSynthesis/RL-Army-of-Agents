@@ -30,12 +30,15 @@ Implemented so far:
 - Isolated test-triage subagent with scoped tools and typed return values
 - Long-horizon context tracking and deterministic compaction
 - Fixture repository for long-horizon coding tasks
+- Typed runtime errors
+- Exponential backoff retry
+- Token-bucket rate limiting
+- Structured JSON logging
 - Retrieval recall eval scaffold
 - Unit tests for model contracts, registry building, and retrieval logic
 
 Planned next:
 
-- Add typed errors, retries, rate limiting, and structured logging
 - Replace or extend local retrieval with sentence-transformers and pgvector
 - Add Docker, full documentation, and e2e eval artifacts
 
@@ -245,6 +248,11 @@ python -m agent.main
 | `GROQ_API_KEY` | Required for live model calls. |
 | `CONTEXT_COMPACT_THRESHOLD` | Estimated token threshold before compaction. |
 | `CONTEXT_KEEP_PAIRS` | Number of recent tool-call pairs to preserve verbatim. |
+| `RETRY_MAX_ATTEMPTS` | Max attempts for retryable model/MCP failures. |
+| `RETRY_BASE_DELAY` | Base exponential-backoff delay in seconds. |
+| `RETRY_MAX_DELAY` | Maximum retry delay in seconds. |
+| `RATE_LIMIT_RPM` | Global outbound call rate limit per minute. |
+| `RATE_LIMIT_BURST` | Token-bucket burst size for outbound calls. |
 
 ## Testing
 
@@ -255,6 +263,7 @@ Current tests cover:
 - AST, test, dependency, and CI pydantic contracts
 - Subagent contracts and scoped-tool enforcement
 - Context estimation and deterministic compaction
+- Retry classification and token-bucket rate limiting
 - Tool registry construction
 - Local retrieval behavior
 

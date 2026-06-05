@@ -6,6 +6,8 @@ from pathlib import Path
 
 from langchain_mcp_adapters.client import MultiServerMCPClient
 
+from agent.resilience import with_retry
+
 _SERVERS_DIR = Path(__file__).resolve().parents[1] / "servers"
 _FS_SERVER = _SERVERS_DIR / "fs_server.py"
 _GIT_SERVER = _SERVERS_DIR / "git_server.py"
@@ -51,13 +53,13 @@ _CONNECTIONS = {
 async def get_mcp_tools() -> list:
     """Discover all MCP tool namespaces over stdio."""
     client = MultiServerMCPClient(copy.deepcopy(_CONNECTIONS))
-    return await client.get_tools()
+    return await with_retry(lambda: client.get_tools())
 
 
 async def get_mcp_tools_with_namespaces() -> tuple[list, dict[str, list]]:
     """Discover all tools and return them grouped by namespace."""
     client = MultiServerMCPClient(copy.deepcopy(_CONNECTIONS))
-    tools = await client.get_tools()
+    tools = await with_retry(lambda: client.get_tools())
     by_namespace = {namespace: [] for namespace in _CONNECTIONS}
     for tool in tools:
         name = getattr(tool, "name", "")
