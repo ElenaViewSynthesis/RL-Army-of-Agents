@@ -17,6 +17,49 @@ class ToolRegistryEntry:
 def _namespace_for(tool_name: str) -> str:
     if tool_name.startswith("git_"):
         return "git"
+    if tool_name in {
+        "parse_module",
+        "list_symbols",
+        "find_definition",
+        "find_references",
+        "list_imports",
+        "compute_complexity",
+        "detect_dead_code",
+        "extract_function_signature",
+        "find_unused_imports",
+    }:
+        return "ast"
+    if tool_name in {
+        "discover_tests",
+        "run_test_file",
+        "run_test_node",
+        "run_suite",
+        "coverage_report",
+        "coverage_diff",
+        "last_failures",
+        "rerun_failed",
+    }:
+        return "test"
+    if tool_name in {
+        "list_dependencies",
+        "check_outdated",
+        "resolve_import",
+        "find_unused_deps",
+        "dependency_graph",
+        "vulnerability_scan",
+        "add_dependency",
+    }:
+        return "deps"
+    if tool_name in {
+        "run_linter",
+        "run_formatter",
+        "run_type_check",
+        "build_check",
+        "pre_commit_run",
+        "run_security_scan",
+        "summarize_quality",
+    }:
+        return "ci"
     return "fs"
 
 

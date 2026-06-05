@@ -21,6 +21,19 @@ def test_build_registry_defaults_to_fs_namespace() -> None:
     assert entries[0].namespace == "fs"
 
 
+def test_build_registry_infers_additional_namespaces() -> None:
+    entries = build_registry(
+        [
+            FakeTool("parse_module"),
+            FakeTool("run_suite"),
+            FakeTool("list_dependencies"),
+            FakeTool("run_linter"),
+        ]
+    )
+
+    assert [entry.namespace for entry in entries] == ["ast", "test", "deps", "ci"]
+
+
 def test_entry_text_contains_tool_identity() -> None:
     entry = build_registry([FakeTool("read_file", "read a file")])[0]
 

@@ -18,7 +18,11 @@ Implemented so far:
 - MCP tool discovery over stdio
 - Filesystem MCP namespace with 11 tools
 - Git MCP namespace with 12 tools
-- Typed pydantic input/output models for `fs` and `git`
+- AST analysis MCP namespace with 9 tools
+- Test runner MCP namespace with 8 tools
+- Dependency MCP namespace with 7 tools
+- CI and quality MCP namespace with 7 tools
+- Typed pydantic input/output models for all six namespaces
 - Semantic tool retrieval layer
 - Deterministic local text embeddings for retrieval tests
 - In-memory vector store abstraction
@@ -97,6 +101,57 @@ Git tools:
 - `git_list_changed_files`
 - `git_tag`
 
+### `ast`
+
+Static-analysis tools:
+
+- `parse_module`
+- `list_symbols`
+- `find_definition`
+- `find_references`
+- `list_imports`
+- `compute_complexity`
+- `detect_dead_code`
+- `extract_function_signature`
+- `find_unused_imports`
+
+### `test`
+
+Test-runner tools:
+
+- `discover_tests`
+- `run_test_file`
+- `run_test_node`
+- `run_suite`
+- `coverage_report`
+- `coverage_diff`
+- `last_failures`
+- `rerun_failed`
+
+### `deps`
+
+Dependency tools:
+
+- `list_dependencies`
+- `check_outdated`
+- `resolve_import`
+- `find_unused_deps`
+- `dependency_graph`
+- `vulnerability_scan`
+- `add_dependency`
+
+### `ci`
+
+CI and quality tools:
+
+- `run_linter`
+- `run_formatter`
+- `run_type_check`
+- `build_check`
+- `pre_commit_run`
+- `run_security_scan`
+- `summarize_quality`
+
 ## Retrieval Layer
 
 The agent now builds a registry from discovered MCP tools and retrieves a
@@ -157,6 +212,7 @@ Current tests cover:
 
 - Filesystem pydantic contracts
 - Git pydantic contracts
+- AST, test, dependency, and CI pydantic contracts
 - Tool registry construction
 - Local retrieval behavior
 
