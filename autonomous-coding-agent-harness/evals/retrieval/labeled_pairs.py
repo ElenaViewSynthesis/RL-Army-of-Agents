@@ -55,4 +55,5 @@ PAIRS = [
     ("run pre commit hooks", "pre_commit_run"),
     ("run a security scan", "run_security_scan"),
     ("summarize code quality checks", "summarize_quality"),
+    ("spawn a test triage agent for failing tests", "spawn_subagent"),
 ]

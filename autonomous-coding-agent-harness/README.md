@@ -27,13 +27,12 @@ Implemented so far:
 - Deterministic local text embeddings for retrieval tests
 - In-memory vector store abstraction
 - Retrieval-miss widening path in the graph
+- Isolated test-triage subagent with scoped tools and typed return values
 - Retrieval recall eval scaffold
 - Unit tests for model contracts, registry building, and retrieval logic
 
 Planned next:
 
-- Add `ast`, `test`, `deps`, and `ci` MCP namespaces
-- Add isolated subagent execution
 - Add long-horizon context compaction
 - Add typed errors, retries, rate limiting, and structured logging
 - Replace or extend local retrieval with sentence-transformers and pgvector
@@ -43,27 +42,28 @@ Planned next:
 
 ```text
 autonomous-coding-agent-harness/
-├── README.md
-├── SPEC.md
-├── CODEX.md
-├── CLAUDE.md
-├── .env.example
-├── .gitignore
-├── Makefile
-├── pyproject.toml
-├── requirements.txt
-├── evals/
-│   └── retrieval/
-├── src/
-│   └── agent/
-│       ├── graph/
-│       ├── mcp_client/
-│       ├── models/
-│       ├── retrieval/
-│       ├── servers/
-│       └── main.py
-└── tests/
-    └── unit/
+|-- README.md
+|-- SPEC.md
+|-- CODEX.md
+|-- CLAUDE.md
+|-- .env.example
+|-- .gitignore
+|-- Makefile
+|-- pyproject.toml
+|-- requirements.txt
+|-- evals/
+|   `-- retrieval/
+|-- src/
+|   `-- agent/
+|       |-- graph/
+|       |-- mcp_client/
+|       |-- models/
+|       |-- retrieval/
+|       |-- servers/
+|       |-- subagent/
+|       `-- main.py
+`-- tests/
+    `-- unit/
 ```
 
 ## Implemented Tool Namespaces
@@ -172,6 +172,21 @@ milestone can run without a database or model download. Dependencies for
 `sentence-transformers`, `psycopg`, and `pgvector` are already declared for the
 later production vector-store implementation.
 
+## Subagent
+
+The parent agent now exposes `spawn_subagent` as a tool. The first subagent is
+a focused test-triage worker:
+
+- It receives a fresh task brief rather than the parent transcript.
+- It is scoped by `NamespaceScope`; by default it can use the `test` namespace
+  plus `fs.read_file`.
+- It has a separate `SubagentBudget`.
+- It returns a typed `SubagentResult` containing findings, artifacts, token
+  usage, step count, summary, and optional error text.
+
+This gives the harness a real isolated helper loop while keeping the initial
+subagent purpose narrow and testable.
+
 ## Setup
 
 From this project folder:
@@ -213,6 +228,7 @@ Current tests cover:
 - Filesystem pydantic contracts
 - Git pydantic contracts
 - AST, test, dependency, and CI pydantic contracts
+- Subagent contracts and scoped-tool enforcement
 - Tool registry construction
 - Local retrieval behavior
 

@@ -28,10 +28,11 @@ def test_build_registry_infers_additional_namespaces() -> None:
             FakeTool("run_suite"),
             FakeTool("list_dependencies"),
             FakeTool("run_linter"),
+            FakeTool("spawn_subagent"),
         ]
     )
 
-    assert [entry.namespace for entry in entries] == ["ast", "test", "deps", "ci"]
+    assert [entry.namespace for entry in entries] == ["ast", "test", "deps", "ci", "subagent"]
 
 
 def test_entry_text_contains_tool_identity() -> None:

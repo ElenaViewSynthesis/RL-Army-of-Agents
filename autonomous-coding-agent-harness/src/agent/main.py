@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage, ToolMessage
 
 from agent.graph.graph import build_graph
-from agent.mcp_client.client import get_mcp_tools
+from agent.mcp_client.client import get_mcp_tools_with_namespaces
 from agent.retrieval import (
     Embedder,
     InMemoryVectorStore,
@@ -16,6 +16,7 @@ from agent.retrieval import (
     build_registry,
     entry_text,
 )
+from agent.subagent import SubagentRunner, make_spawn_subagent_tool
 
 load_dotenv()
 
@@ -45,7 +46,9 @@ def _print_trace(messages: list) -> None:
 
 async def run(task: str) -> str:
     """Run the minimal agent against a plain-English task."""
-    tools = await get_mcp_tools()
+    tools, tools_by_namespace = await get_mcp_tools_with_namespaces()
+    runner = SubagentRunner(tools_by_namespace)
+    tools = [*tools, make_spawn_subagent_tool(runner)]
     entries = build_registry(tools)
     embedder = Embedder()
     store = InMemoryVectorStore()

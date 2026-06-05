@@ -60,6 +60,8 @@ def _namespace_for(tool_name: str) -> str:
         "summarize_quality",
     }:
         return "ci"
+    if tool_name == "spawn_subagent":
+        return "subagent"
     return "fs"
 
 
