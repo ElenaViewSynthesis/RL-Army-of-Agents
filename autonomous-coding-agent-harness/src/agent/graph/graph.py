@@ -5,6 +5,7 @@ from langchain_core.messages import AIMessage
 from langgraph.graph import END, START, StateGraph
 from langgraph.prebuilt import ToolNode
 
+from agent.graph.context_manager import manage_context_node
 from agent.graph.nodes import make_act_node, make_retrieve_node, plan_node, widen_node
 from agent.graph.state import AgentState
 from agent.retrieval.retriever import ToolRetriever
@@ -31,6 +32,7 @@ def build_graph(tools: list, retriever: ToolRetriever):
     graph.add_node("widen", widen_node)
     graph.add_node("act", make_act_node(tools))
     graph.add_node("tools", ToolNode(tools))
+    graph.add_node("manage_context", manage_context_node)
 
     graph.add_edge(START, "plan")
     graph.add_edge("plan", "retrieve")
@@ -41,5 +43,6 @@ def build_graph(tools: list, retriever: ToolRetriever):
         {"tools": "tools", "miss": "widen", "end": END},
     )
     graph.add_edge("widen", "retrieve")
-    graph.add_edge("tools", "act")
+    graph.add_edge("tools", "manage_context")
+    graph.add_edge("manage_context", "act")
     return graph.compile()

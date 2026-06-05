@@ -28,12 +28,13 @@ Implemented so far:
 - In-memory vector store abstraction
 - Retrieval-miss widening path in the graph
 - Isolated test-triage subagent with scoped tools and typed return values
+- Long-horizon context tracking and deterministic compaction
+- Fixture repository for long-horizon coding tasks
 - Retrieval recall eval scaffold
 - Unit tests for model contracts, registry building, and retrieval logic
 
 Planned next:
 
-- Add long-horizon context compaction
 - Add typed errors, retries, rate limiting, and structured logging
 - Replace or extend local retrieval with sentence-transformers and pgvector
 - Add Docker, full documentation, and e2e eval artifacts
@@ -53,6 +54,7 @@ autonomous-coding-agent-harness/
 |-- requirements.txt
 |-- evals/
 |   `-- retrieval/
+|-- fixture_repo/
 |-- src/
 |   `-- agent/
 |       |-- graph/
@@ -187,6 +189,27 @@ a focused test-triage worker:
 This gives the harness a real isolated helper loop while keeping the initial
 subagent purpose narrow and testable.
 
+## Long-Horizon Context Management
+
+The graph now includes a `manage_context` node after tool execution. It keeps a
+running token estimate and compacts older completed tool-call pairs into a
+deterministic progress ledger once the context crosses
+`CONTEXT_COMPACT_THRESHOLD`.
+
+The plan lives in graph state rather than only in chat messages, so compaction
+can remove verbose tool outputs without erasing the task. The current
+compaction strategy is deterministic and testable; it does not make another
+LLM call.
+
+Run the long-horizon task template with:
+
+```bash
+python -m agent.main long_horizon
+```
+
+That task targets the small `fixture_repo/` package and is intended for live
+agent demonstrations once dependencies and API credentials are configured.
+
 ## Setup
 
 From this project folder:
@@ -220,6 +243,8 @@ python -m agent.main
 | --- | --- |
 | `AGENT_MODEL` | Groq model name. Defaults to `llama-3.1-8b-instant`. |
 | `GROQ_API_KEY` | Required for live model calls. |
+| `CONTEXT_COMPACT_THRESHOLD` | Estimated token threshold before compaction. |
+| `CONTEXT_KEEP_PAIRS` | Number of recent tool-call pairs to preserve verbatim. |
 
 ## Testing
 
@@ -229,6 +254,7 @@ Current tests cover:
 - Git pydantic contracts
 - AST, test, dependency, and CI pydantic contracts
 - Subagent contracts and scoped-tool enforcement
+- Context estimation and deterministic compaction
 - Tool registry construction
 - Local retrieval behavior
 

@@ -13,4 +13,8 @@ class AgentState(TypedDict):
     available_tool_names: list[str]
     retrieval_k: int
     retrieval_miss_count: int
+    progress_ledger: str
+    token_estimate: int
+    compaction_count: int
+    ledger_message_id: str | None
     messages: Annotated[list[BaseMessage], add_messages]
