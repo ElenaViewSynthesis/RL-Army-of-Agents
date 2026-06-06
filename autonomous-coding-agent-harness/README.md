@@ -26,6 +26,7 @@ Implemented so far:
 - Semantic tool retrieval layer
 - Deterministic local text embeddings for retrieval tests
 - In-memory vector store abstraction
+- PostgreSQL pgvector retrieval store when `DATABASE_URL` is configured
 - Retrieval-miss widening path in the graph
 - Isolated test-triage subagent with scoped tools and typed return values
 - Long-horizon context tracking and deterministic compaction
@@ -40,7 +41,6 @@ Implemented so far:
 
 Planned next:
 
-- Replace or extend local retrieval with sentence-transformers and pgvector
 - Add final architecture memo and e2e eval artifacts
 
 ## Project Layout
@@ -171,14 +171,15 @@ Current retrieval implementation:
 - `ToolRegistryEntry` captures namespace, name, description, and input schema.
 - `Embedder` creates deterministic local hash embeddings.
 - `InMemoryVectorStore` stores local vectors for top-k search.
+- `PgVectorStore` persists vectors in PostgreSQL with the pgvector extension.
 - `ToolRetriever` returns top-k tool names and always includes core tools.
 - The graph widens retrieval if the model requests a tool outside the current
   subset.
 
-The local embedding/vector-store path is intentionally lightweight so the
-milestone can run without a database or model download. Dependencies for
-`sentence-transformers`, `psycopg`, and `pgvector` are already declared for the
-later production vector-store implementation.
+The local embedding/vector-store path remains the default so the milestone can
+run without a database or model download. When `DATABASE_URL` is configured,
+the agent initializes the pgvector schema, upserts tool embeddings, and uses
+PostgreSQL vector search for retrieval.
 
 ## Subagent
 
@@ -274,6 +275,7 @@ local `.env` file based on `.env.example`.
 | --- | --- |
 | `AGENT_MODEL` | Groq model name. Defaults to `llama-3.1-8b-instant`. |
 | `GROQ_API_KEY` | Required for live model calls. |
+| `DATABASE_URL` | Optional PostgreSQL DSN for pgvector retrieval storage. |
 | `CONTEXT_COMPACT_THRESHOLD` | Estimated token threshold before compaction. |
 | `CONTEXT_KEEP_PAIRS` | Number of recent tool-call pairs to preserve verbatim. |
 | `RETRY_MAX_ATTEMPTS` | Max attempts for retryable model/MCP failures. |

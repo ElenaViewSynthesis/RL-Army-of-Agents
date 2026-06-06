@@ -2,6 +2,7 @@
 
 import asyncio
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -15,6 +16,7 @@ from agent.mcp_client.client import get_mcp_tools_with_namespaces
 from agent.retrieval import (
     Embedder,
     InMemoryVectorStore,
+    PgVectorStore,
     ToolRetriever,
     build_registry,
     entry_text,
@@ -41,6 +43,24 @@ Working in the repository at {repo}:
 8. If tests fail twice, spawn a test-triage subagent to identify failures.
 9. Fix any failures and report the final test result.
 """
+
+
+def _build_store(entries, embedder: Embedder):
+    """Build the configured retrieval store."""
+    texts = [entry_text(entry) for entry in entries]
+    embeddings = embedder.embed_batch(texts)
+    database_url = os.environ.get("DATABASE_URL")
+    if database_url:
+        store = PgVectorStore(database_url)
+        store.init_schema()
+        store.upsert(entries, embeddings)
+        _log.info("using pgvector retrieval store")
+        return store
+
+    store = InMemoryVectorStore()
+    store.upsert(entries, embeddings)
+    _log.info("using in-memory retrieval store")
+    return store
 
 
 def _print_trace(messages: list) -> None:
@@ -74,8 +94,7 @@ async def run(task: str) -> str:
         tools = [*tools, make_spawn_subagent_tool(runner)]
         entries = build_registry(tools)
         embedder = Embedder()
-        store = InMemoryVectorStore()
-        store.upsert(entries, embedder.embed_batch([entry_text(entry) for entry in entries]))
+        store = _build_store(entries, embedder)
         retriever = ToolRetriever(store, embedder)
         graph = build_graph(tools, retriever)
         result = await graph.ainvoke(
