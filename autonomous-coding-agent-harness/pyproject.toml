@@ -40,3 +40,6 @@ packages = ["src/agent"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]
+markers = [
+    "integration: tests that require installed runtime dependencies or external services",
+]

@@ -1,4 +1,4 @@
-.PHONY: install test eval run run-long docker-build docker-run docker-run-long
+.PHONY: install test test-integration eval eval-e2e run run-long docker-build docker-run docker-run-long
 
 install:
 	pip install -e ".[dev]"
@@ -6,8 +6,14 @@ install:
 test:
 	pytest tests/unit/ -v
 
+test-integration:
+	pytest tests/integration/ -v -m integration
+
 eval:
 	python -m evals.retrieval.eval_recall
+
+eval-e2e:
+	python -m evals.e2e.eval_fixture_task
 
 run:
 	python -m agent.main

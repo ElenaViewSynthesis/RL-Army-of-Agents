@@ -36,12 +36,15 @@ Implemented so far:
 - Token-bucket rate limiting
 - Structured JSON logging
 - Docker deployment support
+- Integration test scaffolds
+- E2E fixture eval scaffold
 - Retrieval recall eval scaffold
 - Unit tests for model contracts, registry building, and retrieval logic
 
 Planned next:
 
 - Add final architecture memo and e2e eval artifacts
+- Add final architecture memo
 
 ## Project Layout
 
@@ -59,6 +62,7 @@ autonomous-coding-agent-harness/
 |-- Dockerfile
 |-- .dockerignore
 |-- evals/
+|   |-- e2e/
 |   `-- retrieval/
 |-- fixture_repo/
 |-- src/
@@ -71,6 +75,7 @@ autonomous-coding-agent-harness/
 |       |-- subagent/
 |       `-- main.py
 `-- tests/
+    |-- integration/
     `-- unit/
 ```
 
@@ -232,7 +237,9 @@ Set `GROQ_API_KEY` in `.env` before running the live agent.
 
 ```bash
 make test
+make test-integration
 make eval
+make eval-e2e
 make run
 make run-long
 ```
@@ -241,7 +248,9 @@ Equivalent direct commands:
 
 ```bash
 pytest tests/unit/ -v
+pytest tests/integration/ -v -m integration
 python -m evals.retrieval.eval_recall
+python -m evals.e2e.eval_fixture_task
 python -m agent.main
 python -m agent.main long_horizon
 ```
@@ -296,6 +305,8 @@ Current tests cover:
 - Retry classification and token-bucket rate limiting
 - Tool registry construction
 - Local retrieval behavior
+- Integration scaffolds for MCP discovery, subagent tool registration, and long-horizon fixture configuration
+- E2E fixture test metric emission
 
 The tests are designed to run without live model calls. The live agent path
 requires dependencies plus a valid Groq API key.
