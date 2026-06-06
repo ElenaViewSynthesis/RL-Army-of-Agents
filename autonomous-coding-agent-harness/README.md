@@ -34,13 +34,14 @@ Implemented so far:
 - Exponential backoff retry
 - Token-bucket rate limiting
 - Structured JSON logging
+- Docker deployment support
 - Retrieval recall eval scaffold
 - Unit tests for model contracts, registry building, and retrieval logic
 
 Planned next:
 
 - Replace or extend local retrieval with sentence-transformers and pgvector
-- Add Docker, full documentation, and e2e eval artifacts
+- Add final architecture memo and e2e eval artifacts
 
 ## Project Layout
 
@@ -55,6 +56,8 @@ autonomous-coding-agent-harness/
 |-- Makefile
 |-- pyproject.toml
 |-- requirements.txt
+|-- Dockerfile
+|-- .dockerignore
 |-- evals/
 |   `-- retrieval/
 |-- fixture_repo/
@@ -230,6 +233,7 @@ Set `GROQ_API_KEY` in `.env` before running the live agent.
 make test
 make eval
 make run
+make run-long
 ```
 
 Equivalent direct commands:
@@ -238,7 +242,31 @@ Equivalent direct commands:
 pytest tests/unit/ -v
 python -m evals.retrieval.eval_recall
 python -m agent.main
+python -m agent.main long_horizon
 ```
+
+## Docker
+
+Build the image from this project folder:
+
+```bash
+make docker-build
+```
+
+Run the smoke task:
+
+```bash
+make docker-run
+```
+
+Run the long-horizon task template:
+
+```bash
+make docker-run-long
+```
+
+The container expects the same environment variables as local execution. Use a
+local `.env` file based on `.env.example`.
 
 ## Environment Variables
 
