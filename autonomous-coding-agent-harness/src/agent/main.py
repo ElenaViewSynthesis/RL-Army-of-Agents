@@ -14,6 +14,7 @@ from agent.logging_config import configure_logging, get_logger
 from agent.mcp_client.client import get_mcp_tools_with_namespaces
 from agent.retrieval import (
     Embedder,
+    EmbeddingService,
     TransformerEmbedder,
     InMemoryVectorStore,
     PgVectorStore,
@@ -30,7 +31,7 @@ _log = get_logger(__name__)
 _PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 
-def _build_store(entries, embedder: Embedder):
+def _build_store(entries, embedder: EmbeddingService):
     """Build the configured retrieval store."""
     texts = [entry_text(entry) for entry in entries]
     embeddings = embedder.embed_batch(texts)

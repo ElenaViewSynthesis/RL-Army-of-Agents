@@ -3,12 +3,11 @@
 from __future__ import annotations
 
 import json
-import os
 from typing import Any
 
 from langchain_core.messages import HumanMessage, SystemMessage, ToolMessage
-from langchain_groq import ChatGroq
 
+from agent.chat_model import make_chat_model
 from agent.resilience import apply_limiter, with_retry
 from agent.subagent.contract import (
     Finding,
@@ -135,7 +134,7 @@ class SubagentRunner:
         """Execute the subagent and return a typed result."""
         scoped_tools = self._scope_tools(task.allowed_scopes)
         tool_map = {tool.name: tool for tool in scoped_tools}
-        llm = ChatGroq(model=os.environ.get("AGENT_MODEL", "llama-3.1-8b-instant"))
+        llm = make_chat_model()
         bound = llm.bind_tools(scoped_tools)
 
         messages = [_SYSTEM, HumanMessage(content=task.brief)]

@@ -7,7 +7,7 @@ import math
 import uuid
 from typing import Any
 
-from agent.retrieval.embedder import Embedder, Vector
+from agent.retrieval.embedder import EmbeddingService, Vector
 from agent.retrieval.registry import ToolRegistryEntry, entry_text
 
 DEFAULT_PGVECTOR_TABLE = "tool_registry_vectors"
@@ -57,7 +57,7 @@ class PgVectorStore:
     def __init__(
         self,
         dsn: str,
-        embedding_service: Embedder,
+        embedding_service: EmbeddingService,
         *,
         table_name: str = DEFAULT_PGVECTOR_TABLE,
         vector_size: int | None = None,

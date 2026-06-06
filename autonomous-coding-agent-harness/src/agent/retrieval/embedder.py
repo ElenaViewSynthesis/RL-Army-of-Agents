@@ -11,6 +11,7 @@ import hashlib
 import math
 import os
 import re
+from typing import Protocol
 
 try:
     from langchain_core.embeddings import Embeddings
@@ -22,6 +23,20 @@ except ImportError:
 Vector = list[float]
 
 _TOKEN_RE = re.compile(r"[a-zA-Z_][a-zA-Z0-9_]*")
+
+
+class EmbeddingService(Protocol):
+    """Embedding contract shared by local and LangChain-backed retrieval."""
+
+    dimensions: int
+
+    def embed(self, text: str) -> Vector: ...
+
+    def embed_batch(self, texts: list[str]) -> list[Vector]: ...
+
+    def embed_documents(self, texts: list[str]) -> list[Vector]: ...
+
+    def embed_query(self, text: str) -> Vector: ...
 
 
 class Embedder(Embeddings):

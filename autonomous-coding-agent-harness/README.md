@@ -15,7 +15,8 @@ Implemented so far:
 - Architecture memo in `MEMO.md`
 - Codex workflow guide in `CODEX.md`
 - Minimal LangGraph-style agent spine
-- Groq-backed model call path through `langchain-groq`
+- Gemini-backed model call path through `langchain-google-genai`, with Groq as
+  a secondary provider
 - MCP tool discovery over stdio
 - Filesystem MCP namespace with 11 tools
 - Git MCP namespace with 12 tools
@@ -226,7 +227,8 @@ pip install -e ".[dev]"
 cp .env.example .env
 ```
 
-Set `GROQ_API_KEY` in `.env` before running the live agent.
+Set `GOOGLE_API_KEY` in `.env` before running the live agent. To use Groq
+instead, set `AGENT_MODEL_PROVIDER=groq` and `GROQ_API_KEY`.
 
 ## Commands
 
@@ -267,8 +269,12 @@ local `.env` file based on `.env.example`.
 
 | Variable | Description |
 | --- | --- |
-| `AGENT_MODEL` | Groq model name. Defaults to `llama-3.1-8b-instant`. |
-| `GROQ_API_KEY` | Required for live model calls. |
+| `AGENT_MODEL_PROVIDER` | Chat model provider. Defaults to `google_genai`; set to `groq` for the secondary Groq path. |
+| `GOOGLE_GENAI_MODEL` | Gemini model name. Defaults to `gemini-3.5-flash`. |
+| `GOOGLE_API_KEY` | Required for the default Gemini live model path. |
+| `GROQ_AGENT_MODEL` | Groq model name for the secondary provider. Defaults to `llama-3.1-8b-instant`. |
+| `GROQ_API_KEY` | Required when using `AGENT_MODEL_PROVIDER=groq`; also used as a fallback if Google credentials are absent. |
+| `AGENT_MODEL` | Optional legacy model override used after provider-specific model variables. |
 | `DATABASE_URL` | Optional PostgreSQL DSN for LangChain PGVectorStore retrieval. Plain `postgresql://` and `postgres://` URLs are normalized to `postgresql+asyncpg://`. |
 | `CONTEXT_COMPACT_THRESHOLD` | Estimated token threshold before compaction. |
 | `CONTEXT_KEEP_PAIRS` | Number of recent tool-call pairs to preserve verbatim. |
@@ -293,7 +299,8 @@ Current tests cover:
 - Integration scaffolds for MCP discovery and subagent tool registration
 
 The tests are designed to run without live model calls. The live agent path
-requires dependencies plus a valid Groq API key.
+requires dependencies plus a valid Google API key by default, or a Groq API key
+when using the secondary provider.
 
 ## Development Notes
 

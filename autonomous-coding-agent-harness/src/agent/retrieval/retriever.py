@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from agent.retrieval.embedder import Embedder
+from agent.retrieval.embedder import EmbeddingService
 from agent.retrieval.store import InMemoryVectorStore
 
 ALWAYS_INCLUDE = frozenset({"read_file", "write_file", "git_status"})
@@ -13,7 +13,7 @@ K_WIDEN_STEP = 4
 class ToolRetriever:
     """Retrieve relevant tool names for a goal."""
 
-    def __init__(self, store: InMemoryVectorStore, embedder: Embedder) -> None:
+    def __init__(self, store: InMemoryVectorStore, embedder: EmbeddingService) -> None:
         self._store = store
         self._embedder = embedder
 

@@ -1,6 +1,7 @@
 # Runtime orchestration and model integration
 langgraph>=0.2
 langchain-core>=0.3
+langchain-google-genai>=4.0
 langchain-groq>=0.2
 langchain-mcp-adapters>=0.1
 langchain-postgres>=0.0.14

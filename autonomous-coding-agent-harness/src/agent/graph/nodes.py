@@ -1,11 +1,10 @@
 """Graph nodes for the first vertical slice."""
 
-import os
 from typing import Any
 
 from langchain_core.messages import AIMessage, HumanMessage, RemoveMessage, SystemMessage
-from langchain_groq import ChatGroq
 
+from agent.chat_model import make_chat_model
 from agent.graph.state import AgentState
 from agent.logging_config import get_logger
 from agent.retrieval.retriever import DEFAULT_K, K_WIDEN_STEP, ToolRetriever
@@ -68,8 +67,7 @@ def widen_node(state: AgentState) -> dict:
 
 def make_act_node(tools: list[Any]):
     """Create an act node that binds only the retrieved tool subset."""
-    model = os.environ.get("AGENT_MODEL", "llama-3.1-8b-instant")
-    llm = ChatGroq(model=model)
+    llm = make_chat_model()
     tool_by_name = {tool.name: tool for tool in tools}
 
     async def act_node(state: AgentState) -> dict:

@@ -135,7 +135,8 @@ make docker-build
 make docker-run
 ```
 
-Live agent runs require `GROQ_API_KEY`. pgvector retrieval requires
-`DATABASE_URL` pointing at PostgreSQL with the pgvector extension available;
-plain PostgreSQL URLs are normalized to the asyncpg driver required by
-LangChain's `PGEngine`.
+Live agent runs use Gemini by default and require `GOOGLE_API_KEY`. Groq remains
+available as a secondary provider with `AGENT_MODEL_PROVIDER=groq` and
+`GROQ_API_KEY`. pgvector retrieval requires `DATABASE_URL` pointing at
+PostgreSQL with the pgvector extension available; plain PostgreSQL URLs are
+normalized to the asyncpg driver required by LangChain's `PGEngine`.
