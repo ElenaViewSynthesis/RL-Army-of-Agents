@@ -14,6 +14,7 @@ from agent.logging_config import configure_logging, get_logger
 from agent.mcp_client.client import get_mcp_tools_with_namespaces
 from agent.retrieval import (
     Embedder,
+    TransformerEmbedder,
     InMemoryVectorStore,
     PgVectorStore,
     ToolRetriever,
@@ -77,7 +78,17 @@ async def run(task: str) -> str:
         runner = SubagentRunner(tools_by_namespace)
         tools = [*tools, make_spawn_subagent_tool(runner)]
         entries = build_registry(tools)
-        embedder = Embedder()
+        # Prefer the real sentence-transformers embedder when a real
+        # pgvector-backed database is configured for live retrieval. Keep the
+        # hash-based `Embedder` for fast unit tests and local runs.
+        database_url = os.environ.get("DATABASE_URL")
+        if database_url:
+            try:
+                embedder = TransformerEmbedder()
+            except Exception:
+                embedder = Embedder()
+        else:
+            embedder = Embedder()
         store = _build_store(entries, embedder)
         retriever = ToolRetriever(store, embedder)
         graph = build_graph(tools, retriever)

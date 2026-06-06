@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import hashlib
 import math
+import os
 import re
 
 try:
@@ -50,4 +51,58 @@ class Embedder(Embeddings):
 
     def embed_query(self, text: str) -> Vector:
         """LangChain Embeddings interface for single-query retrieval."""
+        return self.embed(text)
+
+
+try:
+    from sentence_transformers import SentenceTransformer
+except Exception:  # pragma: no cover - optional dependency
+    SentenceTransformer = None  # type: ignore[assignment]
+
+
+class TransformerEmbedder(Embeddings):
+    """Real sentence-transformers embedder for live retrieval.
+
+    This class uses `sentence-transformers` to produce dense vectors. It is
+    intended for use in production or live evaluation where the real semantic
+    embeddings are required. The lightweight `Embedder` (hash-based) remains
+    available for fast unit tests.
+    """
+
+    def __init__(self, model_name: str | None = None) -> None:
+        if SentenceTransformer is None:
+            raise RuntimeError(
+                "sentence-transformers is not installed; install sentence-transformers"
+            )
+        self._model_name = model_name or os.environ.get(
+            "SENTENCE_TRANSFORMER_MODEL",
+            "all-MiniLM-L6-v2",
+        )
+        self._model = SentenceTransformer(self._model_name)
+        try:
+            self.dimensions = int(self._model.get_sentence_embedding_dimension())
+        except Exception:
+            # Fallback: infer from a sample encoding
+            sample = self._model.encode("_", convert_to_numpy=True)
+            self.dimensions = int(len(sample))
+
+    def _normalize(self, vec: list[float] | "numpy.ndarray") -> Vector:
+        v = list(vec)
+        norm = math.sqrt(sum(float(x) * float(x) for x in v))
+        if norm == 0:
+            return [float(x) for x in v]
+        return [float(x) / norm for x in v]
+
+    def embed(self, text: str) -> Vector:
+        arr = self._model.encode(text, convert_to_numpy=True)
+        return self._normalize(arr)
+
+    def embed_batch(self, texts: list[str]) -> list[Vector]:
+        arrs = self._model.encode(texts, convert_to_numpy=True)
+        return [self._normalize(arr) for arr in arrs]
+
+    def embed_documents(self, texts: list[str]) -> list[Vector]:
+        return self.embed_batch(texts)
+
+    def embed_query(self, text: str) -> Vector:
         return self.embed(text)
