@@ -42,9 +42,11 @@ current goal, and widens retrieval if the model asks for a tool outside the
 subset.
 
 The default local path uses deterministic hash embeddings and an in-memory
-store for repeatable development. When `DATABASE_URL` is set, the agent
-initializes PostgreSQL pgvector storage and uses vector search over persisted
-tool embeddings.
+store for repeatable development. When `DATABASE_URL` is set, the agent uses
+LangChain's `langchain-postgres` path: `PGEngine` creates the connection pool,
+`init_vectorstore_table` initializes the table, `PGVectorStore.create_sync`
+opens the store, `add_texts` upserts registry text, and
+`similarity_search_by_vector` retrieves persisted tool embeddings.
 
 ## Subagent Design
 
@@ -87,7 +89,8 @@ Deferred work includes:
 
 - Replacing the deterministic hash embedder with sentence-transformer
   embeddings in the live path.
-- Running and recording pgvector recall metrics against a real database.
+- Running and recording LangChain PGVectorStore recall metrics against a real
+  database.
 - Adding a fully live long-horizon integration test that invokes the model and
   commits changes.
 - Adding active LangSmith or OpenTelemetry spans around graph nodes.
@@ -135,4 +138,6 @@ make docker-run
 ```
 
 Live agent runs require `GROQ_API_KEY`. pgvector retrieval requires
-`DATABASE_URL` pointing at PostgreSQL with the pgvector extension available.
+`DATABASE_URL` pointing at PostgreSQL with the pgvector extension available;
+plain PostgreSQL URLs are normalized to the asyncpg driver required by
+LangChain's `PGEngine`.

@@ -51,7 +51,7 @@ def _build_store(entries, embedder: Embedder):
     embeddings = embedder.embed_batch(texts)
     database_url = os.environ.get("DATABASE_URL")
     if database_url:
-        store = PgVectorStore(database_url)
+        store = PgVectorStore(database_url, embedder)
         store.init_schema()
         store.upsert(entries, embeddings)
         _log.info("using pgvector retrieval store")

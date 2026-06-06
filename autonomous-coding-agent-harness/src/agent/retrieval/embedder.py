@@ -11,12 +11,19 @@ import hashlib
 import math
 import re
 
+try:
+    from langchain_core.embeddings import Embeddings
+except ImportError:
+    class Embeddings:  # type: ignore[no-redef]
+        """Fallback base for local retrieval tests without LangChain installed."""
+
+
 Vector = list[float]
 
 _TOKEN_RE = re.compile(r"[a-zA-Z_][a-zA-Z0-9_]*")
 
 
-class Embedder:
+class Embedder(Embeddings):
     """Hash text tokens into a normalized fixed-size vector."""
 
     def __init__(self, dimensions: int = 128) -> None:
@@ -36,3 +43,11 @@ class Embedder:
 
     def embed_batch(self, texts: list[str]) -> list[Vector]:
         return [self.embed(text) for text in texts]
+
+    def embed_documents(self, texts: list[str]) -> list[Vector]:
+        """LangChain Embeddings interface for document batches."""
+        return self.embed_batch(texts)
+
+    def embed_query(self, text: str) -> Vector:
+        """LangChain Embeddings interface for single-query retrieval."""
+        return self.embed(text)
