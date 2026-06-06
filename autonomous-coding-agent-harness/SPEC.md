@@ -62,7 +62,6 @@ autonomous-coding-agent-harness/
 ├── evals/
 │   ├── retrieval/
 │   └── e2e/
-├── fixture_repo/
 ├── tests/
 │   ├── unit/
 │   └── integration/
@@ -143,7 +142,7 @@ Production hardening should include:
 5. Add retrieval registry and recall eval.
 6. Add remaining tool namespaces.
 7. Add isolated subagent.
-8. Add context compaction and a long-horizon fixture.
+8. Add context compaction and long-horizon eval hooks.
 9. Add resilience, logging, Docker, and final documentation.
 
 ## 11. Initial Done Definition

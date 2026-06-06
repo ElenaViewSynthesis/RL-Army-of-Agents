@@ -31,14 +31,12 @@ Implemented so far:
 - Retrieval-miss widening path in the graph
 - Isolated test-triage subagent with scoped tools and typed return values
 - Long-horizon context tracking and deterministic compaction
-- Fixture repository for long-horizon coding tasks
 - Typed runtime errors
 - Exponential backoff retry
 - Token-bucket rate limiting
 - Structured JSON logging
 - Docker deployment support
 - Integration test scaffolds
-- E2E fixture eval scaffold
 - Retrieval recall eval scaffold
 - Unit tests for model contracts, registry building, and retrieval logic
 
@@ -65,7 +63,6 @@ autonomous-coding-agent-harness/
 |-- evals/
 |   |-- e2e/
 |   `-- retrieval/
-|-- fixture_repo/
 |-- src/
 |   `-- agent/
 |       |-- graph/
@@ -216,14 +213,9 @@ can remove verbose tool outputs without erasing the task. The current
 compaction strategy is deterministic and testable; it does not make another
 LLM call.
 
-Run the long-horizon task template with:
-
-```bash
-python -m agent.main long_horizon
-```
-
-That task targets the small `fixture_repo/` package and is intended for live
-agent demonstrations once dependencies and API credentials are configured.
+The context manager remains available inside the graph for long-running agent
+sessions. This project no longer bundles a sample target repository; live
+long-horizon tasks should point the agent at an external target repository.
 
 ## Setup
 
@@ -242,9 +234,7 @@ Set `GROQ_API_KEY` in `.env` before running the live agent.
 make test
 make test-integration
 make eval
-make eval-e2e
 make run
-make run-long
 ```
 
 Equivalent direct commands:
@@ -253,9 +243,7 @@ Equivalent direct commands:
 pytest tests/unit/ -v
 pytest tests/integration/ -v -m integration
 python -m evals.retrieval.eval_recall
-python -m evals.e2e.eval_fixture_task
 python -m agent.main
-python -m agent.main long_horizon
 ```
 
 ## Docker
@@ -270,12 +258,6 @@ Run the smoke task:
 
 ```bash
 make docker-run
-```
-
-Run the long-horizon task template:
-
-```bash
-make docker-run-long
 ```
 
 The container expects the same environment variables as local execution. Use a
@@ -308,8 +290,7 @@ Current tests cover:
 - Retry classification and token-bucket rate limiting
 - Tool registry construction
 - Local retrieval behavior
-- Integration scaffolds for MCP discovery, subagent tool registration, and long-horizon fixture configuration
-- E2E fixture test metric emission
+- Integration scaffolds for MCP discovery and subagent tool registration
 
 The tests are designed to run without live model calls. The live agent path
 requires dependencies plus a valid Groq API key.

@@ -80,7 +80,6 @@ Implemented scaffolding includes:
 - Unit tests
 - Integration-test scaffolds
 - Retrieval recall eval
-- E2E fixture eval
 - Dockerfile and Docker-oriented Makefile targets
 
 ## What Was Deferred
@@ -121,7 +120,6 @@ Local checks:
 ```bash
 make test
 make eval
-make eval-e2e
 ```
 
 Integration checks:

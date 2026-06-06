@@ -12,7 +12,6 @@ RUN apt-get update \
 COPY pyproject.toml requirements.txt README.md ./
 COPY src ./src
 COPY evals ./evals
-COPY fixture_repo ./fixture_repo
 COPY SPEC.md CODEX.md CLAUDE.md ./
 
 RUN pip install --no-cache-dir --upgrade pip \

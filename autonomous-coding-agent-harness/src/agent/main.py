@@ -3,7 +3,6 @@
 import asyncio
 import json
 import os
-import sys
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -28,21 +27,6 @@ configure_logging()
 _log = get_logger(__name__)
 
 _PROJECT_ROOT = Path(__file__).resolve().parents[2]
-_FIXTURE_REPO = _PROJECT_ROOT / "fixture_repo"
-
-_LONG_HORIZON_TASK = """\
-Working in the repository at {repo}:
-
-1. Check git status and list Python files.
-2. Read calculator.py and app.py.
-3. Find references to the divide function.
-4. Add input validation to divide so division by zero and non-numeric inputs raise ValueError.
-5. Update app.py to catch ValueError from divide and return None.
-6. Run the test suite.
-7. Add or update tests for the new validation behavior.
-8. If tests fail twice, spawn a test-triage subagent to identify failures.
-9. Fix any failures and report the final test result.
-"""
 
 
 def _build_store(entries, embedder: Embedder):
@@ -130,13 +114,8 @@ async def run(task: str) -> str:
 
 
 def main() -> None:
-    if len(sys.argv) > 1 and sys.argv[1] == "long_horizon":
-        if not _FIXTURE_REPO.exists():
-            raise FileNotFoundError(f"fixture repo not found: {_FIXTURE_REPO}")
-        task = _LONG_HORIZON_TASK.format(repo=_FIXTURE_REPO)
-    else:
-        spec_path = _PROJECT_ROOT / "SPEC.md"
-        task = f"Read the file {spec_path} and tell me its title."
+    spec_path = _PROJECT_ROOT / "SPEC.md"
+    task = f"Read the file {spec_path} and tell me its title."
     answer = asyncio.run(run(task))
     print(answer)
 
