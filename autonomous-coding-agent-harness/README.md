@@ -12,6 +12,7 @@ This folder is one independent project inside the larger repository.
 Implemented so far:
 
 - Architecture and build contract in `SPEC.md`
+- Architecture memo in `MEMO.md`
 - Codex workflow guide in `CODEX.md`
 - Minimal LangGraph-style agent spine
 - Groq-backed model call path through `langchain-groq`
@@ -43,8 +44,7 @@ Implemented so far:
 
 Planned next:
 
-- Add final architecture memo and e2e eval artifacts
-- Add final architecture memo
+- Run and publish live pgvector and long-horizon metrics
 
 ## Project Layout
 
@@ -52,6 +52,7 @@ Planned next:
 autonomous-coding-agent-harness/
 |-- README.md
 |-- SPEC.md
+|-- MEMO.md
 |-- CODEX.md
 |-- CLAUDE.md
 |-- .env.example
