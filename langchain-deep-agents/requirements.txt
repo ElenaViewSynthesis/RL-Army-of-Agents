@@ -5,3 +5,6 @@ langgraph
 pydantic
 pydantic-settings
 python-dotenv
+langchain-tavily>=0.2.18
+fastapi
+uvicorn[standard]

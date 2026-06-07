@@ -1,6 +1,7 @@
 """Orchestration service that initializes MCP tools, subagents and the main agent."""
 from __future__ import annotations
 
+import inspect
 import logging
 from typing import Any, List
 
@@ -19,11 +20,21 @@ class AgentOrchestrator:
 
     async def initialize(self) -> None:
         """Initialize MCP tools, subagents and the main orchestration agent."""
-        # Load MCP tools
+        # Create and start MCP client, then load tools
         try:
-            from app.mcp.client_factory import load_mcp_tools
+            from app.mcp.client_factory import create_mcp_client
 
-            self.mcp_tools = await load_mcp_tools(self.settings)
+            self.mcp_client = await create_mcp_client(self.settings)
+            get_tools = getattr(self.mcp_client, "get_tools", None)
+            if get_tools is None:
+                self.logger.warning("MCP client has no get_tools method; continuing with empty tools")
+                self.mcp_tools = []
+            else:
+                res = get_tools()
+                if inspect.isawaitable(res):
+                    self.mcp_tools = await res
+                else:
+                    self.mcp_tools = res
         except Exception as exc:
             self.logger.exception("Failed to load MCP tools: %s", exc)
             self.mcp_tools = []
@@ -58,6 +69,16 @@ class AgentOrchestrator:
         from app.agents.main_agent import build_main_agent
 
         self.main_agent = build_main_agent(self.settings.main_model, tools)
+
+    async def shutdown(self) -> None:
+        """Gracefully shutdown MCP client and any other resources."""
+        try:
+            from app.mcp.client_factory import close_mcp_client
+
+            if getattr(self, "mcp_client", None) is not None:
+                await close_mcp_client(self.mcp_client)
+        except Exception as exc:
+            self.logger.exception("Error while shutting down MCP client: %s", exc)
 
     async def run(self, user_query: str) -> str:
         """Run the main agent with the provided `user_query` and return its final message."""
