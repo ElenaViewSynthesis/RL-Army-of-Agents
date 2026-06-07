@@ -1,0 +1,30 @@
+[project]
+name = "langchain-deepagents-mcp-mvp"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+    "langchain",
+    "langchain-mcp-adapters",
+    "deepagents",
+    "langgraph",
+    "pydantic",
+    "pydantic-settings",
+    "python-dotenv",
+    "langchain-tavily>=0.2.18",
+    "fastapi",
+    "uvicorn[standard]",
+    "langchain-neo4j>=0.9.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pytest-asyncio",
+    "ruff",
+]
+
+[tool.ruff]
+line-length = 88
+
+[tool.pytest.ini_options]
+pythonpath = ["."]

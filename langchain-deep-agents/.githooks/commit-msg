@@ -1,0 +1,34 @@
+#!/bin/sh
+# Commit-msg hook: normalize commit messages by removing a leading 'ToDo' prefix.
+# This helps ensure future commits do not use the legacy "ToDo:" acronym.
+
+MSG_FILE="$1"
+if [ -z "$MSG_FILE" ] || [ ! -f "$MSG_FILE" ]; then
+  exit 0
+fi
+
+# Prefer Python for robust, case-insensitive replacement
+if command -v python3 >/dev/null 2>&1; then
+  python3 - <<'PY' "$MSG_FILE"
+import re, sys
+path = sys.argv[1]
+text = open(path, 'r', encoding='utf-8').read()
+# Remove a leading 'todo' (case-insensitive) followed by optional punctuation/whitespace
+text = re.sub(r'^\s*(?i:todo)[:\-\s]*', '', text, count=1)
+open(path, 'w', encoding='utf-8').write(text)
+PY
+  exit $?
+elif command -v python >/dev/null 2>&1; then
+  python - <<'PY' "$MSG_FILE"
+import re, sys
+path = sys.argv[1]
+text = open(path, 'r', encoding='utf-8').read()
+text = re.sub(r'^\s*(?i:todo)[:\-\s]*', '', text, count=1)
+open(path, 'w', encoding='utf-8').write(text)
+PY
+  exit $?
+else
+  # Fallback using sed (POSIX-ish)
+  sed -E 's/^[[:space:]]*[Tt][Oo][Dd][Oo][: \-]*//' "$MSG_FILE" > "$MSG_FILE".tmp && mv "$MSG_FILE".tmp "$MSG_FILE"
+  exit $?
+fi

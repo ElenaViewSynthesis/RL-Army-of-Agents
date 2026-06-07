@@ -1,0 +1,11 @@
+langchain
+langchain-mcp-adapters
+deepagents
+langgraph
+pydantic
+pydantic-settings
+python-dotenv
+langchain-tavily>=0.2.18
+langchain-neo4j>=0.9.0
+fastapi
+uvicorn[standard]
