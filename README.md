@@ -4,7 +4,7 @@ Minimal, production-shaped MVP demonstrating a multi-agent architecture using La
 
 ## Overview
 
-This repository shows how to compose a main orchestration agent with specialized subagents and MCP-hosted tools (GitHub, filesystem, PostgreSQL). It uses clean architecture principles: separation of concerns, DI for settings, adapter pattern for MCP clients, and a service layer for orchestration.
+This repository shows how to compose a main orchestration agent with specialized subagents, Tavily web research skills, and MCP-hosted tools (GitHub, filesystem, PostgreSQL). It uses clean architecture principles: separation of concerns, DI for settings, adapter pattern for MCP clients, and a service layer for orchestration.
 
 **Architecture**
 
@@ -21,6 +21,8 @@ flowchart TD
     RT --> RA[Research Agent]
     CT --> CA[Codebase Agent]
     DT --> DA[Database Agent]
+
+    RA --> TAV[Tavily Extract/Crawl/Map]
 
     M --> MCP[MCP Tool Layer]
 
