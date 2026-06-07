@@ -15,8 +15,8 @@ Implemented so far:
 - Architecture memo in `MEMO.md`
 - Codex workflow guide in `CODEX.md`
 - Minimal LangGraph-style agent spine
-- Gemini-backed model call path through `langchain-google-genai`, with Groq as
-  a secondary provider
+- Primary Gemini model instance through `langchain-google-genai`
+  (`google_genai:gemini-3.5-flash`), with Groq as a secondary provider
 - MCP tool discovery over stdio
 - Filesystem MCP namespace with 11 tools
 - Git MCP namespace with 12 tools
@@ -30,7 +30,8 @@ Implemented so far:
 - In-memory vector store abstraction
 - LangChain PostgreSQL pgvector retrieval store when `DATABASE_URL` is configured
 - Retrieval-miss widening path in the graph
-- Isolated test-triage subagent with scoped tools and typed return values
+- Isolated test-triage subagent exposed as `spawn_subagent`, implemented with
+  LangChain `create_agent`, scoped tools, validation, and typed return values
 - Long-horizon context tracking and deterministic compaction
 - Typed runtime errors
 - Exponential backoff retry
@@ -190,11 +191,16 @@ and uses PostgreSQL vector search for retrieval.
 ## Subagent
 
 The parent agent now exposes `spawn_subagent` as a tool. The first subagent is
-a focused test-triage worker:
+a focused test-triage worker implemented as a LangChain `create_agent`:
 
 - It receives a fresh task brief rather than the parent transcript.
+- It is wrapped with LangChain's `@tool` decorator as `spawn_subagent`, so the
+  parent agent can call it like any other tool.
 - It is scoped by `NamespaceScope`; by default it can use the `test` namespace
   plus `fs.read_file`.
+- It validates scoped tools before execution: unknown namespaces and unknown
+  tool names are rejected, and returned tool-call traces are checked against the
+  allowed scoped tool set.
 - It has a separate `SubagentBudget`.
 - It returns a typed `SubagentResult` containing findings, artifacts, token
   usage, step count, summary, and optional error text.
@@ -227,8 +233,9 @@ pip install -e ".[dev]"
 cp .env.example .env
 ```
 
-Set `GOOGLE_API_KEY` in `.env` before running the live agent. To use Groq
-instead, set `AGENT_MODEL_PROVIDER=groq` and `GROQ_API_KEY`.
+The primary live model is `google_genai:gemini-3.5-flash`. Set
+`GOOGLE_API_KEY` in `.env` before running the live agent. To use Groq instead,
+set `AGENT_MODEL_PROVIDER=groq` and `GROQ_API_KEY`.
 
 ## Commands
 
@@ -256,14 +263,23 @@ Build the image from this project folder:
 make docker-build
 ```
 
-Run the smoke task:
+Run the smoke task with environment variables from `.env`:
 
 ```bash
 make docker-run
 ```
 
+Equivalent direct Docker commands:
+
+```bash
+docker build -t autonomous-coding-agent-harness .
+docker run --rm --env-file .env autonomous-coding-agent-harness
+```
+
 The container expects the same environment variables as local execution. Use a
-local `.env` file based on `.env.example`.
+local `.env` file based on `.env.example`; for the primary model path it should
+include `GOOGLE_API_KEY` and, unless you want the default,
+`GOOGLE_GENAI_MODEL`.
 
 ## Environment Variables
 

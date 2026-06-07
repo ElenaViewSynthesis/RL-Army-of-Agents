@@ -5,6 +5,7 @@ from types import SimpleNamespace
 from agent.chat_model import (
     DEFAULT_GEMINI_MODEL,
     DEFAULT_GROQ_MODEL,
+    get_chat_model_identifier,
     make_chat_model,
 )
 
@@ -43,6 +44,7 @@ def test_default_chat_model_uses_gemini(monkeypatch) -> None:
 
     assert isinstance(model, FakeGemini)
     assert model.model == DEFAULT_GEMINI_MODEL
+    assert get_chat_model_identifier() == f"google_genai:{DEFAULT_GEMINI_MODEL}"
 
 
 def test_groq_provider_uses_secondary_model(monkeypatch) -> None:
@@ -55,6 +57,7 @@ def test_groq_provider_uses_secondary_model(monkeypatch) -> None:
 
     assert isinstance(model, FakeGroq)
     assert model.model == DEFAULT_GROQ_MODEL
+    assert get_chat_model_identifier() == f"groq:{DEFAULT_GROQ_MODEL}"
 
 
 def test_groq_fallback_when_google_key_missing(monkeypatch) -> None:
@@ -68,3 +71,4 @@ def test_groq_fallback_when_google_key_missing(monkeypatch) -> None:
 
     assert isinstance(model, FakeGroq)
     assert model.model == DEFAULT_GROQ_MODEL
+    assert get_chat_model_identifier() == f"groq:{DEFAULT_GROQ_MODEL}"

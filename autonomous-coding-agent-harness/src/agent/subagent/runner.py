@@ -5,9 +5,9 @@ from __future__ import annotations
 import json
 from typing import Any
 
-from langchain_core.messages import HumanMessage, SystemMessage, ToolMessage
+from langchain_core.messages import SystemMessage
 
-from agent.chat_model import make_chat_model
+from agent.chat_model import get_chat_model_identifier
 from agent.resilience import apply_limiter, with_retry
 from agent.subagent.contract import (
     Finding,
@@ -106,6 +106,90 @@ def _extract_artifacts(tool_results: list[tuple[str, dict]]) -> dict[str, str]:
     return artifacts
 
 
+def _create_langchain_agent(model: str, tools: list):
+    """Build a LangChain agent for isolated subagent work."""
+    try:
+        from langchain.agents import create_agent
+    except ImportError as exc:
+        raise RuntimeError(
+            "Subagent execution requires langchain. Install it with "
+            "`uv pip install langchain` or run `uv sync`."
+        ) from exc
+
+    return create_agent(model=model, tools=tools, system_prompt=_SYSTEM.content)
+
+
+def _content(message: Any) -> Any:
+    if isinstance(message, dict):
+        return message.get("content", "")
+    return getattr(message, "content", "")
+
+
+def _usage_tokens(message: Any) -> int:
+    usage = getattr(message, "usage_metadata", None)
+    if not isinstance(usage, dict):
+        return 0
+    return int(usage.get("total_tokens", 0) or 0)
+
+
+def _tool_calls(message: Any) -> list[dict]:
+    calls = getattr(message, "tool_calls", None)
+    return calls if isinstance(calls, list) else []
+
+
+def _tool_call_id(message: Any) -> str:
+    return str(getattr(message, "tool_call_id", "") or "")
+
+
+def _tool_message_name(message: Any, call_name_by_id: dict[str, str]) -> str:
+    name = getattr(message, "name", None)
+    if name:
+        return str(name)
+    return call_name_by_id.get(_tool_call_id(message), "")
+
+
+def _is_tool_message(message: Any) -> bool:
+    return message.__class__.__name__ == "ToolMessage" or bool(_tool_call_id(message))
+
+
+def _is_ai_message(message: Any) -> bool:
+    return message.__class__.__name__ == "AIMessage" or bool(_tool_calls(message))
+
+
+def _analyze_agent_messages(
+    messages: list[Any],
+    allowed_tool_names: set[str],
+) -> tuple[list[tuple[str, dict]], int, int, str]:
+    call_name_by_id: dict[str, str] = {}
+    tool_results: list[tuple[str, dict]] = []
+    tokens_used = 0
+    steps_taken = 0
+    summary = ""
+
+    for message in messages:
+        tokens_used += _usage_tokens(message)
+        if _is_ai_message(message):
+            steps_taken += 1
+            for call in _tool_calls(message):
+                name = str(call.get("name", ""))
+                if name and name not in allowed_tool_names:
+                    raise ToolScopeViolation(name, sorted(allowed_tool_names))
+                call_id = call.get("id")
+                if call_id and name:
+                    call_name_by_id[str(call_id)] = name
+
+        if _is_tool_message(message):
+            name = _tool_message_name(message, call_name_by_id)
+            if name:
+                tool_results.append((name, _parse_tool_result(_content(message))))
+
+        content = _content(message)
+        if isinstance(content, str) and content:
+            summary = content
+
+    return tool_results, tokens_used, steps_taken, summary
+
+
 class SubagentRunner:
     """Run a scoped, isolated subagent."""
 
@@ -134,40 +218,31 @@ class SubagentRunner:
         """Execute the subagent and return a typed result."""
         scoped_tools = self._scope_tools(task.allowed_scopes)
         tool_map = {tool.name: tool for tool in scoped_tools}
-        llm = make_chat_model()
-        bound = llm.bind_tools(scoped_tools)
+        agent = _create_langchain_agent(
+            model=get_chat_model_identifier(),
+            tools=scoped_tools,
+        )
 
-        messages = [_SYSTEM, HumanMessage(content=task.brief)]
-        steps = 0
-        tokens_used = 0
-        tool_results: list[tuple[str, dict]] = []
+        await apply_limiter()
+        result = await with_retry(
+            lambda: agent.ainvoke(
+                {"messages": [{"role": "user", "content": task.brief}]},
+                config={"recursion_limit": max(task.budget.max_steps * 2 + 1, 2)},
+            )
+        )
+        messages = result.get("messages", []) if isinstance(result, dict) else []
+        tool_results, tokens_used, steps_taken, summary = _analyze_agent_messages(
+            messages,
+            set(tool_map),
+        )
+        if steps_taken > task.budget.max_steps or tokens_used > task.budget.max_tokens:
+            raise SubagentBudgetExceeded(steps_taken, tokens_used, task.budget)
 
-        while True:
-            if steps >= task.budget.max_steps or tokens_used >= task.budget.max_tokens:
-                raise SubagentBudgetExceeded(steps, tokens_used, task.budget)
-
-            await apply_limiter()
-            response = await with_retry(lambda: bound.ainvoke(messages))
-            steps += 1
-            tokens_used += (response.usage_metadata or {}).get("total_tokens", 0)
-            messages.append(response)
-
-            if not response.tool_calls:
-                summary = response.content if isinstance(response.content, str) else ""
-                return SubagentResult(
-                    status="completed",
-                    findings=_extract_findings(tool_results),
-                    artifacts=_extract_artifacts(tool_results),
-                    tokens_used=tokens_used,
-                    steps_taken=steps,
-                    summary=summary,
-                )
-
-            for call in response.tool_calls:
-                tool = tool_map.get(call["name"])
-                if tool is None:
-                    raise ToolScopeViolation(call["name"], list(tool_map))
-                raw = await with_retry(lambda tool=tool, call=call: tool.arun(call["args"]))
-                parsed = _parse_tool_result(raw)
-                tool_results.append((call["name"], parsed))
-                messages.append(ToolMessage(content=str(raw), tool_call_id=call["id"]))
+        return SubagentResult(
+            status="completed",
+            findings=_extract_findings(tool_results),
+            artifacts=_extract_artifacts(tool_results),
+            tokens_used=tokens_used,
+            steps_taken=steps_taken,
+            summary=summary,
+        )

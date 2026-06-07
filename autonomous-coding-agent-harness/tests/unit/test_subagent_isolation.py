@@ -1,5 +1,9 @@
+import asyncio
+
+from langchain_core.messages import AIMessage
 from pydantic import ValidationError
 
+import agent.subagent.runner as runner_module
 from agent.subagent.contract import NamespaceScope, SubagentBudget, SubagentTask
 from agent.subagent.runner import SubagentRunner
 
@@ -75,3 +79,63 @@ def test_scope_tools_rejects_unknown_tool() -> None:
         return
 
     raise AssertionError("unknown scoped tool should fail")
+
+
+def test_run_uses_create_agent_with_scoped_tools(monkeypatch) -> None:
+    created = {}
+
+    class FakeAgent:
+        async def ainvoke(self, payload, config=None):
+            created["payload"] = payload
+            created["config"] = config
+            return {
+                "messages": [
+                    AIMessage(
+                        content="triage complete",
+                        usage_metadata={
+                            "input_tokens": 5,
+                            "output_tokens": 12,
+                            "total_tokens": 17,
+                        },
+                    )
+                ]
+            }
+
+    def fake_create_agent(model, tools):
+        created["model"] = model
+        created["tools"] = tools
+        return FakeAgent()
+
+    monkeypatch.setattr(
+        runner_module,
+        "get_chat_model_identifier",
+        lambda: "google_genai:gemini-3.5-flash",
+    )
+    monkeypatch.setattr(runner_module, "_create_langchain_agent", fake_create_agent)
+
+    runner = SubagentRunner(
+        {
+            "test": [FakeTool("run_suite")],
+            "fs": [FakeTool("read_file"), FakeTool("write_file")],
+        }
+    )
+    task = SubagentTask(
+        brief="triage tests",
+        allowed_scopes=[
+            NamespaceScope(namespace="test"),
+            NamespaceScope(namespace="fs", tools=["read_file"]),
+        ],
+    )
+
+    result = asyncio.run(runner.run(task))
+
+    assert created["model"] == "google_genai:gemini-3.5-flash"
+    assert [tool.name for tool in created["tools"]] == ["run_suite", "read_file"]
+    assert created["payload"] == {
+        "messages": [{"role": "user", "content": "triage tests"}]
+    }
+    assert created["config"]["recursion_limit"] == 17
+    assert result.status == "completed"
+    assert result.summary == "triage complete"
+    assert result.tokens_used == 17
+    assert result.steps_taken == 1

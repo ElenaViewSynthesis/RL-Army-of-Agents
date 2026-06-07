@@ -2,11 +2,15 @@
 
 from __future__ import annotations
 
-from langchain_core.tools import StructuredTool
+from typing import TYPE_CHECKING
+
 from pydantic import BaseModel, Field
 
 from agent.subagent.contract import NamespaceScope, SubagentBudget, SubagentResult, SubagentTask
 from agent.subagent.runner import SubagentRunner
+
+if TYPE_CHECKING:
+    from langchain_core.tools import StructuredTool
 
 
 class SpawnSubagentInput(BaseModel):
@@ -25,7 +29,22 @@ class SpawnSubagentInput(BaseModel):
 
 def make_spawn_subagent_tool(runner: SubagentRunner) -> StructuredTool:
     """Create the `spawn_subagent` LangChain tool."""
+    try:
+        from langchain.tools import tool
+    except ImportError as exc:
+        raise RuntimeError(
+            "Subagent tool wrapping requires langchain. Install it with "
+            "`uv pip install langchain` or run `uv sync`."
+        ) from exc
 
+    @tool(
+        "spawn_subagent",
+        description=(
+            "Launch an isolated test-triage subagent with fresh context, "
+            "scoped tools, its own budget, and a structured result."
+        ),
+        args_schema=SpawnSubagentInput,
+    )
     async def spawn_subagent(
         brief: str,
         allowed_scopes: list[NamespaceScope] | None = None,
@@ -54,12 +73,4 @@ def make_spawn_subagent_tool(runner: SubagentRunner) -> StructuredTool:
             )
         return result.model_dump()
 
-    return StructuredTool.from_function(
-        coroutine=spawn_subagent,
-        name="spawn_subagent",
-        description=(
-            "Launch an isolated test-triage subagent with fresh context, "
-            "scoped tools, its own budget, and a structured result."
-        ),
-        args_schema=SpawnSubagentInput,
-    )
+    return spawn_subagent

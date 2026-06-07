@@ -80,3 +80,31 @@ def make_chat_model() -> Any:
         DEFAULT_GEMINI_MODEL,
     )
     return _make_google_model(model)
+
+
+def get_chat_model_identifier() -> str:
+    """Return the provider-qualified model string for LangChain agents."""
+    provider = os.environ.get("AGENT_MODEL_PROVIDER", DEFAULT_MODEL_PROVIDER).lower()
+
+    if provider in _GROQ_PROVIDERS:
+        model = os.environ.get("GROQ_AGENT_MODEL") or os.environ.get(
+            "AGENT_MODEL",
+            DEFAULT_GROQ_MODEL,
+        )
+        return f"groq:{model}"
+
+    if provider not in _GOOGLE_PROVIDERS:
+        raise ValueError(
+            "unsupported AGENT_MODEL_PROVIDER="
+            f"{provider!r}; expected google_genai or groq"
+        )
+
+    if not _google_configured() and _groq_configured():
+        model = os.environ.get("GROQ_AGENT_MODEL", DEFAULT_GROQ_MODEL)
+        return f"groq:{model}"
+
+    model = os.environ.get("GOOGLE_GENAI_MODEL") or os.environ.get(
+        "AGENT_MODEL",
+        DEFAULT_GEMINI_MODEL,
+    )
+    return f"google_genai:{model}"

@@ -50,10 +50,10 @@ opens the store, `add_texts` upserts registry text, and
 
 ## Subagent Design
 
-The project includes a real isolated test-triage subagent. It receives a fresh
-task brief instead of the parent transcript, sees only tools allowed by
-`NamespaceScope`, has its own `SubagentBudget`, and returns a typed
-`SubagentResult`.
+The project includes a real isolated test-triage subagent implemented with
+LangChain `create_agent`. It receives a fresh task brief instead of the parent
+transcript, sees only tools allowed by `NamespaceScope`, has its own
+`SubagentBudget`, and returns a typed `SubagentResult`.
 
 The default scope is intentionally narrow: the `test` namespace plus
 `fs.read_file`. This allows failure diagnosis without write or git access.
