@@ -11,4 +11,5 @@ def test_settings_load(tmp_path, monkeypatch):
     assert s.github_personal_access_token == "ghp_test"
     assert s.database_url.startswith("postgresql://")
     assert s.main_model == "google_genai:gemini-3.5-flash"
+    assert s.web_graph_model == "google_genai:gemini-3.5-flash"
     assert s.code_model == "google_genai:gemini-3.5-flash"

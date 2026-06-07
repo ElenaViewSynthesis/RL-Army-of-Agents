@@ -8,10 +8,11 @@ def test_build_tavily_tools_skips_missing_key():
     assert tools == []
 
 
-def test_build_tavily_tools_creates_extract_crawl_and_map():
+def test_build_tavily_tools_creates_search_extract_crawl_and_map():
     tools = build_tavily_tools(Settings(tavily_api_key="tvly-test"))
 
     assert [tool.name for tool in tools] == [
+        "tavily_search",
         "tavily_extract",
         "tavily_crawl",
         "tavily_map",

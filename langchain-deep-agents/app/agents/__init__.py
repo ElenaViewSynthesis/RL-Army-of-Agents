@@ -2,6 +2,7 @@
 
 __all__ = [
     "build_research_agent",
+    "build_web_graph_agent",
     "build_code_agent",
     "build_db_agent",
     "build_main_agent",

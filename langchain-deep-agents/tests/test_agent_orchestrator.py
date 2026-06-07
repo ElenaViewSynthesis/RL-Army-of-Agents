@@ -22,6 +22,10 @@ async def test_initialize_adds_tavily_tools_to_research_agent(monkeypatch):
         captured["research_tools"] = tools
         return "research-agent"
 
+    def build_web_graph_agent(model, tools):
+        captured["web_graph_tools"] = tools
+        return "web-graph-agent"
+
     def build_code_agent(model, tools):
         captured["code_tools"] = tools
         return "code-agent"
@@ -37,12 +41,17 @@ async def test_initialize_adds_tavily_tools_to_research_agent(monkeypatch):
     monkeypatch.setattr("app.mcp.client_factory.create_mcp_client", create_mcp_client)
     monkeypatch.setattr("app.tools.tavily_tools.build_tavily_tools", build_tavily_tools)
     monkeypatch.setattr("app.agents.research_agent.build_research_agent", build_research_agent)
+    monkeypatch.setattr("app.agents.web_graph_agent.build_web_graph_agent", build_web_graph_agent)
     monkeypatch.setattr("app.agents.code_agent.build_code_agent", build_code_agent)
     monkeypatch.setattr("app.agents.db_agent.build_db_agent", build_db_agent)
     monkeypatch.setattr("app.agents.main_agent.build_main_agent", build_main_agent)
     monkeypatch.setattr(
         "app.tools.subagent_tools.build_research_tool",
         lambda agent: "research-tool",
+    )
+    monkeypatch.setattr(
+        "app.tools.subagent_tools.build_web_graph_tool",
+        lambda agent: "web-graph-tool",
     )
     monkeypatch.setattr(
         "app.tools.subagent_tools.build_codebase_tool",
@@ -58,6 +67,13 @@ async def test_initialize_adds_tavily_tools_to_research_agent(monkeypatch):
 
     assert orchestrator.tavily_tools == ["tavily-tool"]
     assert captured["research_tools"] == ["mcp-tool", "tavily-tool"]
+    assert captured["web_graph_tools"] == ["tavily-tool"]
     assert captured["code_tools"] == ["mcp-tool"]
     assert captured["db_tools"] == ["mcp-tool"]
-    assert captured["main_tools"] == ["mcp-tool", "research-tool", "code-tool", "db-tool"]
+    assert captured["main_tools"] == [
+        "mcp-tool",
+        "research-tool",
+        "web-graph-tool",
+        "code-tool",
+        "db-tool",
+    ]

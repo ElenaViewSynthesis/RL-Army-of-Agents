@@ -14,6 +14,8 @@ def build_main_agent(model: str, tools: List[Any]):
         "- use filesystem tools to inspect local files\n"
         "- use PostgreSQL tools to inspect database metadata\n"
         "- delegate research to the research subagent\n"
+        "- delegate web knowledge graph ingestion to the web graph subagent\n"
+        "- query the Neo4j web knowledge graph when graph query tools are available\n"
         "- delegate codebase analysis to the codebase subagent\n"
         "- delegate database analysis to the database subagent\n\n"
         "Follow this workflow:\n"

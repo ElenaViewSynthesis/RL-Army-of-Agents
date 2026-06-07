@@ -13,18 +13,19 @@ _PLACEHOLDER_KEYS = {"", "your-api-key", "changeme", "change-me"}
 
 
 def build_tavily_tools(settings: Settings) -> list[Any]:
-    """Build Tavily extract, crawl, and map tools when configured."""
+    """Build Tavily search, extract, crawl, and map tools when configured."""
     api_key = (settings.tavily_api_key or "").strip()
     if api_key.lower() in _PLACEHOLDER_KEYS:
         logger.info("TAVILY_API_KEY is not configured; skipping Tavily tools")
         return []
 
     try:
-        from langchain_tavily import TavilyCrawl, TavilyExtract, TavilyMap
+        from langchain_tavily import TavilyCrawl, TavilyExtract, TavilyMap, TavilySearch
         from langchain_tavily._utilities import (
             TavilyCrawlAPIWrapper,
             TavilyExtractAPIWrapper,
             TavilyMapAPIWrapper,
+            TavilySearchAPIWrapper,
         )
     except Exception as exc:  # pragma: no cover
         logger.warning("langchain-tavily is not available; skipping Tavily tools: %s", exc)
@@ -32,6 +33,9 @@ def build_tavily_tools(settings: Settings) -> list[Any]:
 
     try:
         return [
+            TavilySearch(
+                api_wrapper=TavilySearchAPIWrapper(tavily_api_key=api_key),
+            ),
             TavilyExtract(
                 apiwrapper=TavilyExtractAPIWrapper(tavily_api_key=api_key),
             ),

@@ -14,7 +14,10 @@ class AgentOrchestrator:
         self.logger = logging.getLogger(__name__)
         self.mcp_tools: List[Any] = []
         self.tavily_tools: List[Any] = []
+        self.graph_storage_tools: List[Any] = []
+        self.graph_query_tools: List[Any] = []
         self.research_agent = None
+        self.web_graph_agent = None
         self.code_agent = None
         self.db_agent = None
         self.main_agent = None
@@ -48,24 +51,49 @@ class AgentOrchestrator:
             self.logger.exception("Failed to load Tavily tools: %s", exc)
             self.tavily_tools = []
 
+        try:
+            from app.tools.neo4j_graph_tools import (
+                build_neo4j_query_tools,
+                build_neo4j_storage_tools,
+            )
+
+            self.graph_storage_tools = build_neo4j_storage_tools(self.settings)
+            self.graph_query_tools = build_neo4j_query_tools(self.settings)
+        except Exception as exc:
+            self.logger.exception("Failed to load Neo4j graph tools: %s", exc)
+            self.graph_storage_tools = []
+            self.graph_query_tools = []
+
         # Build subagents
         from app.agents.research_agent import build_research_agent
+        from app.agents.web_graph_agent import build_web_graph_agent
         from app.agents.code_agent import build_code_agent
         from app.agents.db_agent import build_db_agent
 
         research_tools = [*self.mcp_tools, *self.tavily_tools]
+        web_graph_tools = [
+            *self.tavily_tools,
+            *self.graph_storage_tools,
+            *self.graph_query_tools,
+        ]
         self.research_agent = build_research_agent(self.settings.research_model, research_tools)
+        self.web_graph_agent = build_web_graph_agent(
+            self.settings.web_graph_model,
+            web_graph_tools,
+        )
         self.code_agent = build_code_agent(self.settings.code_model, self.mcp_tools)
         self.db_agent = build_db_agent(self.settings.db_model, self.mcp_tools)
 
         # Wrap subagents as tools
         from app.tools.subagent_tools import (
             build_research_tool,
+            build_web_graph_tool,
             build_codebase_tool,
             build_database_tool,
         )
 
         research_tool = build_research_tool(self.research_agent)
+        web_graph_tool = build_web_graph_tool(self.web_graph_agent)
         code_tool = build_codebase_tool(self.code_agent)
         db_tool = build_database_tool(self.db_agent)
 
@@ -73,7 +101,9 @@ class AgentOrchestrator:
         tools: List[Any] = []
         if self.mcp_tools:
             tools.extend(self.mcp_tools)
-        tools.extend([research_tool, code_tool, db_tool])
+        if self.graph_query_tools:
+            tools.extend(self.graph_query_tools)
+        tools.extend([research_tool, web_graph_tool, code_tool, db_tool])
 
         # Build the main agent
         from app.agents.main_agent import build_main_agent

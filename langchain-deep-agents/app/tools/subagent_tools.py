@@ -107,6 +107,41 @@ def build_codebase_tool(code_agent: Any):
     return _tool
 
 
+def build_web_graph_tool(web_graph_agent: Any):
+    _decorator = _safe_tool_decorator(
+        "ingest_web_knowledge_graph",
+        "Search the web, extract pages, convert findings into graph entities, and store them in Neo4j",
+    )
+
+    @_decorator
+    def _tool(query: str) -> str:
+        try:
+            if hasattr(web_graph_agent, "ainvoke"):
+                try:
+                    loop = asyncio.get_running_loop()
+                except RuntimeError:
+                    loop = None
+
+                if loop and loop.is_running():
+                    if hasattr(web_graph_agent, "invoke"):
+                        result = web_graph_agent.invoke({"messages": [{"role": "user", "content": query}]})
+                    else:
+                        return "Subagent requires async execution environment"
+                else:
+                    result = asyncio.run(web_graph_agent.ainvoke({"messages": [{"role": "user", "content": query}]}))
+            elif hasattr(web_graph_agent, "invoke"):
+                result = web_graph_agent.invoke({"messages": [{"role": "user", "content": query}]})
+            else:
+                result = {"messages": [{"role": "assistant", "content": "no subagent available"}]}
+        except Exception as exc:
+            logging.getLogger(__name__).exception("web graph tool invocation failed: %s", exc)
+            result = {"messages": [{"role": "assistant", "content": f"error: {exc}"}]}
+
+        return extract_final_message(result)
+
+    return _tool
+
+
 def build_database_tool(db_agent: Any):
     _decorator = _safe_tool_decorator(
         "inspect_database", "Inspect database metadata and return findings"
