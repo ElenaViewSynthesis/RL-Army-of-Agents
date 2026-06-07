@@ -13,6 +13,7 @@ class AgentOrchestrator:
         self.settings = settings
         self.logger = logging.getLogger(__name__)
         self.mcp_tools: List[Any] = []
+        self.tavily_tools: List[Any] = []
         self.research_agent = None
         self.code_agent = None
         self.db_agent = None
@@ -39,12 +40,21 @@ class AgentOrchestrator:
             self.logger.exception("Failed to load MCP tools: %s", exc)
             self.mcp_tools = []
 
+        try:
+            from app.tools.tavily_tools import build_tavily_tools
+
+            self.tavily_tools = build_tavily_tools(self.settings)
+        except Exception as exc:
+            self.logger.exception("Failed to load Tavily tools: %s", exc)
+            self.tavily_tools = []
+
         # Build subagents
         from app.agents.research_agent import build_research_agent
         from app.agents.code_agent import build_code_agent
         from app.agents.db_agent import build_db_agent
 
-        self.research_agent = build_research_agent(self.settings.research_model, self.mcp_tools)
+        research_tools = [*self.mcp_tools, *self.tavily_tools]
+        self.research_agent = build_research_agent(self.settings.research_model, research_tools)
         self.code_agent = build_code_agent(self.settings.code_model, self.mcp_tools)
         self.db_agent = build_db_agent(self.settings.db_model, self.mcp_tools)
 

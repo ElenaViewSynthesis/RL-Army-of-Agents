@@ -12,6 +12,8 @@ import logging
 def build_research_agent(model: str, tools: List[Any]):
     system_message = (
         "You are a research subagent. Your job is to gather and summarise technical context.\n"
+        "Use TavilyExtract for cleaned page content, TavilyCrawl for bounded site crawls, "
+        "and TavilyMap for discovering site URL structure when those tools are available.\n"
         "You do not modify files, repositories, or databases.\n"
         "Return concise findings with assumptions clearly marked."
     )
