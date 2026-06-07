@@ -1,0 +1,7 @@
+langchain
+langchain-mcp-adapters
+deepagents
+langgraph
+pydantic
+pydantic-settings
+python-dotenv
