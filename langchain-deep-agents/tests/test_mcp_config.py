@@ -12,7 +12,11 @@ def test_build_mcp_server_configs_success(tmp_path):
     assert "postgres" in configs
 
 
-def test_build_mcp_server_configs_missing():
-    s = Settings()
+def test_build_mcp_server_configs_missing(monkeypatch):
+    monkeypatch.delenv("REPO_PATH", raising=False)
+    monkeypatch.delenv("GITHUB_PERSONAL_ACCESS_TOKEN", raising=False)
+    monkeypatch.delenv("DATABASE_URL", raising=False)
+
+    s = Settings(_env_file=None)
     with pytest.raises(ValueError):
         build_mcp_server_configs(s)
