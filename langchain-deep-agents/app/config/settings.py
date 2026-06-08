@@ -18,6 +18,7 @@ class Settings(BaseSettings):
     neo4j_username: str | None = None
     neo4j_password: str | None = None
     neo4j_database: str | None = None
+    neo4j_query_api_url: str | None = None
     database_url: str | None = None
     repo_path: str | None = None
 

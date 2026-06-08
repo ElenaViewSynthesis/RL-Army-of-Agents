@@ -14,6 +14,7 @@ dependencies = [
     "fastapi",
     "uvicorn[standard]",
     "langchain-neo4j>=0.9.0",
+    "tavily-python>=0.7.25",
 ]
 
 [project.optional-dependencies]

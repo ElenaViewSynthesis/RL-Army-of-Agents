@@ -50,6 +50,22 @@ source .venv/Scripts/activate  # Windows: .venv\Scripts\activate
 pip install -e ".[dev]"
 ```
 
+### Neo4j connection
+
+Set the Neo4j connection values in `.env`:
+
+```bash
+NEO4J_URI=neo4j+s://your-instance-id.databases.neo4j.io
+NEO4J_USERNAME=neo4j
+NEO4J_PASSWORD=your-password
+NEO4J_DATABASE=neo4j
+```
+
+Use `bolt://localhost:7687` for a local Neo4j instance. You can also create a
+remote connection to an instance running on an external server or in Neo4j Aura
+by setting `NEO4J_URI` to the remote URI, such as
+`neo4j+s://your-instance-id.databases.neo4j.io`.
+
 ## Run
 
 Run a one-off inspection:
