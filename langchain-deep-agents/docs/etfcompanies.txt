@@ -1,0 +1,136 @@
+ETF company URL extraction steps
+
+Source URL:
+https://etfdb.com/compare/market-cap/
+
+Goal:
+Retrieve URLs from the table in the extracted page content and store them separately
+in a list for later Tavily Extract, graph ingestion, or source tracing.
+
+Steps:
+
+1. Extract the page content from the source URL with Tavily Extract.
+
+2. Parse the extracted HTML or page text and locate the ETF company table.
+   Prefer structured HTML parsing when available. If Tavily returns cleaned text
+   only, identify table rows by repeated company/name/link patterns.
+
+3. For each table row, find the company link.
+   Keep only links that point to company or issuer pages. Ignore pagination,
+   navigation, ads, social links, and unrelated compare/filter URLs.
+
+4. Normalize every link into an absolute URL.
+   If a table link is relative, join it with the ETFDB base URL:
+   https://etfdb.com
+
+5. Deduplicate URLs while preserving the original table order.
+
+6. Store the cleaned URLs separately in a list named etf_company_urls.
+
+Largest ETFs: Top 100 ETFs By Assets
+The following table lists the top 100 largest exchange-traded funds, ranked by assets under management (AUM). The AUM of an ETF is calculated by multiplying shares outstanding by the market price per share. An ETF’s assets will fluctuate based on both changes in the value of the underlying securities and the creation of new shares or redemption of existing shares. It is worth noting that there may be a difference between an ETF’s market capitalization and the net asset value (NAV) of its underlying securities. The difference results in either a discount or a premium in the trading price of the ETF.
+
+Symbol
+Name
+AUM
+Avg Daily Share Volume (3mo)
+VOO	Vanguard S&P 500 ETF	$1,003,510,000.00	8,762,368
+IVV	iShares Core S&P 500 ETF	$851,402,000.00	8,100,509
+SPY	State Street SPDR S&P 500 ETF	$786,553,000.00	67,128,516
+VTI	Vanguard Total Stock Market ETF	$661,247,000.00	4,319,158
+QQQ	Invesco QQQ Trust Series I	$495,519,000.00	50,899,555
+VEA	Vanguard FTSE Developed Markets ETF	$231,012,000.00	14,523,029
+VUG	Vanguard Growth ETF	$230,150,000.00	8,334,692
+IEFA	iShares Core MSCI EAFE ETF	$184,960,000.00	12,903,533
+VTV	Vanguard Value ETF	$180,296,000.00	3,573,129
+IEMG	iShares Core MSCI Emerging Markets ETF	$165,959,000.00	14,984,369
+BND	Vanguard Total Bond Market ETF	$156,994,000.00	8,484,989
+VXUS	Vanguard Total International Stock ETF	$154,420,000.00	7,089,911
+VGT	Vanguard Information Technology ETF	$151,045,000.00	4,535,937
+SPYM	State Street SPDR Portfolio S&P 500 ETF	$148,853,000.00	14,773,458
+GLD	SPDR Gold Shares	$146,435,000.00	9,250,795
+AGG	iShares Core U.S. Aggregate Bond ETF	$136,319,000.00	9,692,521
+IWF	iShares Russell 1000 Growth ETF	$130,926,000.00	8,355,589
+XLK	State Street Technology Select Sector SPDR ETF	$127,942,000.00	13,817,192
+VWO	Vanguard FTSE Emerging Markets ETF	$123,143,000.00	9,782,080
+IJH	iShares Core S&P Mid-Cap ETF	$120,191,000.00	11,519,505
+VIG	Vanguard Dividend Appreciation ETF	$108,903,000.00	1,199,874
+VO	Vanguard Mid-Cap ETF	$103,888,000.00	2,840,431
+IJR	iShares Core S&P Small-Cap ETF	$103,505,000.00	5,247,968
+QQQM	Invesco NASDAQ 100 ETF	$98,518,600.00	3,902,597
+SCHD	Schwab US Dividend Equity ETF	$95,098,700.00	22,507,568
+ITOT	iShares Core S&P Total U.S. Stock Market ETF	$93,480,900.00	4,152,886
+SGOV	iShares 0-3 Month Treasury Bond ETF	$93,223,900.00	20,081,670
+RSP	Invesco S&P 500® Equal Weight ETF	$89,574,300.00	11,764,974
+BNDX	Vanguard Total International Bond ETF	$81,588,300.00	5,137,957
+IWM	iShares Russell 2000 ETF	$79,494,800.00	35,823,145
+VYM	Vanguard High Dividend Yield Index ETF	$79,414,800.00	1,359,508
+VB	Vanguard Small Cap ETF	$78,627,800.00	715,286
+EFA	iShares MSCI EAFE ETF	$76,834,800.00	18,940,029
+VT	Vanguard Total World Stock ETF	$75,972,900.00	4,012,371
+IVW	iShares S&P 500 Growth ETF	$75,896,800.00	3,777,838
+IWD	iShares Russell 1000 Value ETF	$75,742,300.00	2,840,286
+SMH	VanEck Semiconductor ETF	$72,862,700.00	9,640,940
+SCHX	Schwab U.S. Large-Cap ETF	$72,405,000.00	19,578,162
+IAU	iShares Gold Trust	$68,234,100.00	8,872,962
+VEU	Vanguard FTSE All-World ex-US Index Fund	$67,046,400.00	3,285,691
+SCHF	Schwab International Equity ETF	$66,430,200.00	10,558,339
+VCIT	Vanguard Intermediate-Term Corporate Bond ETF	$66,415,500.00	12,071,388
+SCHG	Schwab U.S. Large-Cap Growth ETF	$60,368,900.00	16,041,023
+IXUS	iShares Core MSCI Total International Stock ETF	$58,803,000.00	2,373,157
+IWR	iShares Russell Midcap ETF	$55,184,100.00	2,840,568
+SPYG	State Street SPDR Portfolio S&P 500 Growth ETF	$53,685,800.00	4,302,374
+VV	Vanguard Large Cap ETF	$52,941,600.00	431,571
+IBIT	iShares Bitcoin Trust ETF	$50,816,600.00	46,790,410
+IWB	iShares Russell 1000 ETF	$48,692,500.00	1,355,989
+XLF	State Street Financial Select Sector SPDR ETF	$47,658,100.00	43,023,711
+IVE	iShares S&P 500 Value ETF	$47,601,800.00	1,226,983
+IEF	iShares 7-10 Year Treasury Bond ETF	$47,048,800.00	9,475,557
+DFAC	Dimensional U.S. Core Equity 2 ETF	$46,872,700.00	2,617,620
+BIL	State Street SPDR Bloomberg 1-3 Month T-Bill ETF	$46,663,400.00	11,613,891
+QUAL	iShares MSCI USA Quality Factor ETF	$45,976,000.00	2,058,797
+VONG	Vanguard Russell 1000 Growth ETF	$45,510,500.00	2,310,519
+BSV	Vanguard Short-Term Bond ETF	$45,210,000.00	2,512,689
+MUB	iShares National Muni Bond ETF	$45,191,700.00	3,771,549
+VTEB	Vanguard Tax-Exempt Bond ETF	$44,827,500.00	7,539,394
+JEPI	JPMorgan Equity Premium Income Fund	$44,158,300.00	5,802,611
+DIA	State Street SPDR Dow Jones Industrial Average ETF Trust	$43,935,400.00	5,655,652
+VCSH	Vanguard Short-Term Corporate Bond ETF	$43,897,300.00	5,193,622
+SCHB	Schwab U.S. Broad Market ETF	$43,208,800.00	10,407,433
+GOVT	iShares U.S. Treasury Bond ETF	$42,510,500.00	12,602,614
+IUSB	iShares Core Total USD Bond Market ETF	$41,520,900.00	5,789,132
+SOXX	iShares Semiconductor ETF	$41,348,500.00	7,732,725
+VGIT	Vanguard Intermediate-Term Treasury ETF	$41,052,500.00	3,312,097
+TLT	iShares 20+ Year Treasury Bond ETF	$40,945,000.00	31,060,699
+SPDW	State Street SPDR Portfolio Developed World ex-US ETF	$40,851,000.00	4,853,139
+DGRO	iShares Core Dividend Growth ETF	$40,536,400.00	2,067,146
+TQQQ	ProShares UltraPro QQQ	$40,277,800.00	89,067,180
+XLE	State Street Energy Select Sector SPDR ETF	$40,067,700.00	49,043,742
+JEPQ	JPMorgan NASDAQ Equity Premium Income ETF	$39,948,100.00	7,037,658
+JPST	JPMorgan Ultra-Short Income ETF	$38,725,100.00	6,920,198
+MBB	iShares MBS ETF	$38,491,200.00	2,439,535
+XLV	State Street Health Care Select Sector SPDR ETF	$37,561,900.00	11,552,440
+DYNF	iShares U.S. Equity Factor Rotation Active ETF	$36,898,800.00	4,457,972
+VNQ	Vanguard Real Estate ETF	$36,701,600.00	3,508,648
+SLV	iShares Silver Trust	$35,940,400.00	30,148,445
+VBR	Vanguard Small Cap Value ETF	$35,574,200.00	309,591
+CGDV	Capital Group Dividend Value ETF	$35,345,800.00	3,894,431
+SPYV	State Street SPDR Portfolio S&P 500 Value ETF	$35,083,500.00	3,390,195
+MGK	Vanguard Mega Cap Growth ETF	$34,583,400.00	1,947,599
+ACWI	iShares MSCI ACWI ETF	$32,936,600.00	4,560,149
+IUSG	iShares Core S&P U.S. Growth ETF	$32,485,400.00	870,540
+EEM	iShares MSCI Emerging Markets ETF	$31,221,500.00	35,240,820
+SOXL	Direxion Daily Semiconductor Bull 3X ETF	$30,552,300.00	76,649,695
+XLI	State Street Industrial Select Sector SPDR ETF	$30,445,400.00	10,844,672
+IDEV	iShares Core MSCI International Developed Markets ETF	$30,387,500.00	1,611,558
+VXF	Vanguard Extended Market ETF	$30,216,800.00	430,923
+GLDM	SPDR Gold Minishares Trust	$30,159,400.00	5,190,463
+VGK	Vanguard FTSE Europe ETF	$29,769,000.00	4,053,614
+LQD	iShares iBoxx $ Investment Grade Corporate Bond ETF	$29,460,100.00	36,223,785
+VGSH	Vanguard Short-Term Treasury ETF	$29,394,900.00	3,919,511
+BIV	Vanguard Intermediate-Term Bond ETF	$28,746,300.00	2,003,922
+JAAA	Janus Henderson AAA CLO ETF	$27,796,700.00	5,516,619
+MTUM	iShares MSCI USA Momentum Factor ETF	$27,576,900.00	1,055,065
+AVUV	Avantis U.S. Small Cap Value ETF	$27,545,200.00	1,181,168
+USHY	iShares Broad USD High Yield Corporate Bond ETF	$27,009,900.00	16,563,254
+MDY	State Street SPDR S&P MIDCAP 400 ETF Trust	$26,804,700.00	959,068
