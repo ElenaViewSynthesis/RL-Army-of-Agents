@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>London Coworking Event Finder</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="hero" aria-labelledby="page-title">
+        <div>
+          <p class="eyebrow">London event-ready coworking</p>
+          <h1 id="page-title">Find a coworking space to host your next event.</h1>
+        </div>
+        <div class="hero-actions">
+          <a class="secondary-link" href="https://www.google.com/maps/search/coworking+spaces/@51.5047424,-0.131072,14z?entry=ttu&g_ep=EgoyMDI2MDYwMS4wIKXMDSoASAFQAw%3D%3D" target="_blank" rel="noreferrer">Open Maps results</a>
+          <button id="locationButton" class="secondary-button" type="button">Use my location</button>
+        </div>
+      </section>
+
+      <section class="controls" aria-label="Filters">
+        <label>
+          <span>Search</span>
+          <input id="searchInput" type="search" placeholder="Space, area, panel, workshop">
+        </label>
+
+        <label>
+          <span>Area</span>
+          <select id="areaSelect">
+            <option value="all">All London</option>
+            <option value="central">Central</option>
+            <option value="east">East</option>
+            <option value="west">West</option>
+          </select>
+        </label>
+
+        <label>
+          <span>People</span>
+          <span class="capacity-control">
+            <input id="peopleInput" type="number" min="1" max="250" placeholder="Any">
+            <button id="peopleButton" type="button">Set</button>
+          </span>
+        </label>
+      </section>
+
+      <div class="status-row">
+        <p id="resultCount">Loading spaces...</p>
+        <p id="capacityNote">Event size: Any</p>
+        <p id="distanceMode">Sorted from central London</p>
+      </div>
+
+      <section id="spaceList" class="space-list" aria-live="polite"></section>
+
+      <footer>
+        <span>Venue details change. Verify capacity, pricing, and availability with each operator.</span>
+        <a href="https://work.life/coworking/london/">Work.Life</a>
+        <a href="https://www.huckletree.com/">Huckletree</a>
+        <a href="https://thetrampery.com/spaces/">The Trampery</a>
+        <a href="https://secondhome.io/">Second Home</a>
+        <a href="https://www.runwayea.st/event-spaces-location/bloomsbury">Runway East</a>
+        <a href="https://api.production.sohohousedigital.com/sitecore/-/media/pdfs/soho-works/sw_meeting-room-brochure_2026.pdf">Soho Works</a>
+        <a href="https://www.workargyll.com/properties/pall-mall/">Argyll</a>
+        <a href="https://www.theclubhouseoffices.com/locations">Clubhouse</a>
+        <a href="https://convene.com/locations/london/sancroft-st-pauls/">Convene</a>
+      </footer>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
