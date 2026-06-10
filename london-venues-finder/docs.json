@@ -1,0 +1,16 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "London Coworking Event Finder",
+  "colors": {
+    "primary": "#0f766e"
+  },
+  "navigation": {
+    "groups": [
+      {
+        "group": "Home",
+        "pages": ["index"]
+      }
+    ]
+  }
+}

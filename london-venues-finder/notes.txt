@@ -1,0 +1,11 @@
+Feature brief: minimal London coworking event finder.
+
+Core user need:
+Show nearby coworking spaces in London that can host events, panels, workshops, socials, or client sessions.
+
+Software features:
+- Search coworking spaces by name, area, or event type.
+- Filter by London area and expected guest count.
+- Sort by distance from central London, with optional browser location sorting.
+- Show event fit, transport context, official venue links, and map links.
+- Keep the interface minimal: one toolbar, one result count, and venue cards.
