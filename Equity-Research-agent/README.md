@@ -39,6 +39,10 @@ You need two API keys:
 - `ANTHROPIC_API_KEY` — from [console.anthropic.com](https://console.anthropic.com)
 - `FMP_API_KEY` — from [financialmodelingprep.com](https://financialmodelingprep.com/developer/docs) (free tier: 250 req/day)
 
+### About the FMP API
+
+Financial Modeling Prep (FMP) is built for commercial use, serving developers, analysts, quants, fintech startups, investment banks and more. Access real-time and historical stock prices, company financials, market news, stock analysis tools and more. With over 100 endpoints, all the financial and stock market data you need is in one place.
+
 **3. Load environment**
 ```bash
 # On macOS/Linux
