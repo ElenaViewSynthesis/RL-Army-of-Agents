@@ -1,0 +1,4 @@
+node_modules/
+.env
+*.md.bak
+*-research-*.md
