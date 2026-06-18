@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd "C:/Users/proxi/Documents/codex3/RL-Army-of-Agents/Equity-Research-agent"
+cd "$(dirname "$0")"
 
 set -a
 source .env

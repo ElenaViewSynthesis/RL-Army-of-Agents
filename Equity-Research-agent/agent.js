@@ -11,8 +11,7 @@ import { writeFileSync } from 'fs';
 // const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 const client = new OpenRouter({ apiKey: process.env.OPENROUTER_API_KEY });
 const FMP_KEY = process.env.FMP_API_KEY;
-const V3 = 'https://financialmodelingprep.com/api/v3';
-const V4 = 'https://financialmodelingprep.com/api/v4';
+const STABLE = 'https://financialmodelingprep.com/stable';
 
 async function fmpGet(url, params = {}) {
   const qs = new URLSearchParams({ ...params, apikey: FMP_KEY }).toString();
@@ -196,31 +195,31 @@ async function executeTool(name, input) {
 
   switch (name) {
     case 'get_company_profile':
-      return fmpGet(`${V3}/profile/${sym}`);
+      return fmpGet(`${STABLE}/profile`, { symbol: sym });
     case 'get_stock_quote':
-      return fmpGet(`${V3}/quote/${sym}`);
+      return fmpGet(`${STABLE}/quote`, { symbol: sym });
     case 'get_income_statement':
-      return fmpGet(`${V3}/income-statement/${sym}`, { limit: 4, period });
+      return fmpGet(`${STABLE}/income-statement`, { symbol: sym, limit: 4, period });
     case 'get_balance_sheet':
-      return fmpGet(`${V3}/balance-sheet-statement/${sym}`, { limit: 4, period });
+      return fmpGet(`${STABLE}/balance-sheet-statement`, { symbol: sym, limit: 4, period });
     case 'get_cash_flow':
-      return fmpGet(`${V3}/cash-flow-statement/${sym}`, { limit: 4, period });
+      return fmpGet(`${STABLE}/cash-flow-statement`, { symbol: sym, limit: 4, period });
     case 'get_key_metrics':
-      return fmpGet(`${V3}/key-metrics-ttm/${sym}`);
+      return fmpGet(`${STABLE}/key-metrics-ttm`, { symbol: sym });
     case 'get_financial_ratios':
-      return fmpGet(`${V3}/ratios-ttm/${sym}`);
+      return fmpGet(`${STABLE}/ratios-ttm`, { symbol: sym });
     case 'get_dcf_valuation':
-      return fmpGet(`${V3}/discounted-cash-flow/${sym}`);
+      return fmpGet(`${STABLE}/discounted-cash-flow`, { symbol: sym });
     case 'get_analyst_ratings':
-      return fmpGet(`${V3}/grade/${sym}`, { limit: 10 });
+      return fmpGet(`${STABLE}/grades`, { symbol: sym, limit: 10 });
     case 'get_price_target':
-      return fmpGet(`${V4}/price-target-consensus`, { symbol: sym });
+      return fmpGet(`${STABLE}/price-target-consensus`, { symbol: sym });
     case 'get_insider_trades':
-      return fmpGet(`${V4}/insider-trading`, { symbol: sym, limit: 20 });
+      return [{ note: 'Insider trading data requires FMP paid plan — not available on current subscription.' }];
     case 'get_recent_news':
-      return fmpGet(`${V3}/stock_news`, { tickers: sym, limit: 10 });
+      return [{ note: 'Stock news requires FMP paid plan — not available on current subscription.' }];
     case 'get_peers':
-      return fmpGet(`${V4}/stock_peers`, { symbol: sym });
+      return fmpGet(`${STABLE}/stock-peers`, { symbol: sym });
     default:
       throw new Error(`Unknown tool: ${name}`);
   }
@@ -353,7 +352,7 @@ async function runResearch(ticker, shouldSave) {
     });
 
     const message = response.choices[0].message;
-    const finishReason = response.choices[0].finish_reason;
+    const finishReason = response.choices[0].finishReason;
     messages.push(message);
 
     if (finishReason === 'stop' || finishReason === 'end_turn') {
@@ -363,7 +362,7 @@ async function runResearch(ticker, shouldSave) {
     }
 
     if (finishReason === 'tool_calls') {
-      const toolCalls = message.tool_calls || [];
+      const toolCalls = message.toolCalls || [];
       console.error(`[Step ${iteration}] Fetching data via ${toolCalls.length} tool(s):`);
       toolCalls.forEach((tc) => console.error(`  → ${tc.function.name}(${tc.function.arguments})`));
 
@@ -374,10 +373,10 @@ async function runResearch(ticker, shouldSave) {
             const result = await executeTool(tc.function.name, input);
             const content = JSON.stringify(result);
             console.error(`  ✓ ${tc.function.name} — ${content.length} chars`);
-            return { role: 'tool', tool_call_id: tc.id, content };
+            return { role: 'tool', toolCallId: tc.id, content };
           } catch (err) {
             console.error(`  ✗ ${tc.function.name} — ${err.message}`);
-            return { role: 'tool', tool_call_id: tc.id, content: `Error retrieving data: ${err.message}` };
+            return { role: 'tool', toolCallId: tc.id, content: `Error retrieving data: ${err.message}` };
           }
         })
       );
