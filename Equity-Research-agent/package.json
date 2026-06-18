@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@anthropic-ai/bedrock-sdk": "^0.30.2",
-    "@anthropic-ai/sdk": "^0.52.0"
+    "@anthropic-ai/sdk": "^0.52.0",
+    "@openrouter/sdk": "^0.3.16"
   }
 }

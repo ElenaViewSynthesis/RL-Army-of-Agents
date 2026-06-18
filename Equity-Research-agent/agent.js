@@ -1,11 +1,15 @@
-import AnthropicBedrock from '@anthropic-ai/bedrock-sdk';
+// import AnthropicBedrock from '@anthropic-ai/bedrock-sdk';
+// import Anthropic from '@anthropic-ai/sdk';
+import { OpenRouter } from '@openrouter/sdk';
 import { writeFileSync } from 'fs';
 
-const client = new AnthropicBedrock({
-  awsAccessKey: process.env.AWS_ACCESS_KEY_ID,
-  awsSecretKey: process.env.AWS_SECRET_ACCESS_KEY,
-  awsRegion: process.env.AWS_REGION || 'us-east-1',
-});
+// const client = new AnthropicBedrock({
+//   awsAccessKey: process.env.AWS_ACCESS_KEY_ID,
+//   awsSecretKey: process.env.AWS_SECRET_ACCESS_KEY,
+//   awsRegion: process.env.AWS_REGION || 'us-east-1',
+// });
+// const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+const client = new OpenRouter({ apiKey: process.env.OPENROUTER_API_KEY });
 const FMP_KEY = process.env.FMP_API_KEY;
 const V3 = 'https://financialmodelingprep.com/api/v3';
 const V4 = 'https://financialmodelingprep.com/api/v4';
@@ -20,129 +24,168 @@ async function fmpGet(url, params = {}) {
 
 const TOOLS = [
   {
-    name: 'get_company_profile',
-    description: 'Get company profile: sector, industry, description, CEO, employees, headquarters, website, and market cap',
-    input_schema: {
-      type: 'object',
-      properties: { symbol: { type: 'string', description: 'Stock ticker symbol e.g. AAPL' } },
-      required: ['symbol'],
-    },
-  },
-  {
-    name: 'get_stock_quote',
-    description: 'Get real-time stock quote: current price, day range, 52-week range, volume, market cap, PE ratio',
-    input_schema: {
-      type: 'object',
-      properties: { symbol: { type: 'string' } },
-      required: ['symbol'],
-    },
-  },
-  {
-    name: 'get_income_statement',
-    description: 'Get income statements (last 4 periods): revenue, gross profit, operating income, EBITDA, net income, EPS',
-    input_schema: {
-      type: 'object',
-      properties: {
-        symbol: { type: 'string' },
-        period: { type: 'string', enum: ['annual', 'quarter'], description: 'annual or quarter, defaults to annual' },
+    type: 'function',
+    function: {
+      name: 'get_company_profile',
+      description: 'Get company profile: sector, industry, description, CEO, employees, headquarters, website, and market cap',
+      parameters: {
+        type: 'object',
+        properties: { symbol: { type: 'string', description: 'Stock ticker symbol e.g. AAPL' } },
+        required: ['symbol'],
       },
-      required: ['symbol'],
     },
   },
   {
-    name: 'get_balance_sheet',
-    description: 'Get balance sheets (last 4 periods): cash, total assets, total debt, shareholders equity, working capital',
-    input_schema: {
-      type: 'object',
-      properties: {
-        symbol: { type: 'string' },
-        period: { type: 'string', enum: ['annual', 'quarter'] },
+    type: 'function',
+    function: {
+      name: 'get_stock_quote',
+      description: 'Get real-time stock quote: current price, day range, 52-week range, volume, market cap, PE ratio',
+      parameters: {
+        type: 'object',
+        properties: { symbol: { type: 'string' } },
+        required: ['symbol'],
       },
-      required: ['symbol'],
     },
   },
   {
-    name: 'get_cash_flow',
-    description: 'Get cash flow statements (last 4 periods): operating cash flow, capex, free cash flow, dividends, buybacks',
-    input_schema: {
-      type: 'object',
-      properties: {
-        symbol: { type: 'string' },
-        period: { type: 'string', enum: ['annual', 'quarter'] },
+    type: 'function',
+    function: {
+      name: 'get_income_statement',
+      description: 'Get income statements (last 4 periods): revenue, gross profit, operating income, EBITDA, net income, EPS',
+      parameters: {
+        type: 'object',
+        properties: {
+          symbol: { type: 'string' },
+          period: { type: 'string', enum: ['annual', 'quarter'], description: 'annual or quarter, defaults to annual' },
+        },
+        required: ['symbol'],
       },
-      required: ['symbol'],
     },
   },
   {
-    name: 'get_key_metrics',
-    description: 'Get TTM key financial metrics: PE, PB, PS, EV/EBITDA, ROE, ROA, ROIC, debt/equity, FCF yield, dividend yield',
-    input_schema: {
-      type: 'object',
-      properties: { symbol: { type: 'string' } },
-      required: ['symbol'],
+    type: 'function',
+    function: {
+      name: 'get_balance_sheet',
+      description: 'Get balance sheets (last 4 periods): cash, total assets, total debt, shareholders equity, working capital',
+      parameters: {
+        type: 'object',
+        properties: {
+          symbol: { type: 'string' },
+          period: { type: 'string', enum: ['annual', 'quarter'] },
+        },
+        required: ['symbol'],
+      },
     },
   },
   {
-    name: 'get_financial_ratios',
-    description: 'Get TTM financial ratios: gross/net/operating margins, current ratio, quick ratio, interest coverage, asset turnover',
-    input_schema: {
-      type: 'object',
-      properties: { symbol: { type: 'string' } },
-      required: ['symbol'],
+    type: 'function',
+    function: {
+      name: 'get_cash_flow',
+      description: 'Get cash flow statements (last 4 periods): operating cash flow, capex, free cash flow, dividends, buybacks',
+      parameters: {
+        type: 'object',
+        properties: {
+          symbol: { type: 'string' },
+          period: { type: 'string', enum: ['annual', 'quarter'] },
+        },
+        required: ['symbol'],
+      },
     },
   },
   {
-    name: 'get_dcf_valuation',
-    description: 'Get intrinsic value from discounted cash flow (DCF) model and compare to current stock price',
-    input_schema: {
-      type: 'object',
-      properties: { symbol: { type: 'string' } },
-      required: ['symbol'],
+    type: 'function',
+    function: {
+      name: 'get_key_metrics',
+      description: 'Get TTM key financial metrics: PE, PB, PS, EV/EBITDA, ROE, ROA, ROIC, debt/equity, FCF yield, dividend yield',
+      parameters: {
+        type: 'object',
+        properties: { symbol: { type: 'string' } },
+        required: ['symbol'],
+      },
     },
   },
   {
-    name: 'get_analyst_ratings',
-    description: 'Get recent analyst grade ratings (Strong Buy/Buy/Hold/Sell) from investment banks with dates and firms',
-    input_schema: {
-      type: 'object',
-      properties: { symbol: { type: 'string' } },
-      required: ['symbol'],
+    type: 'function',
+    function: {
+      name: 'get_financial_ratios',
+      description: 'Get TTM financial ratios: gross/net/operating margins, current ratio, quick ratio, interest coverage, asset turnover',
+      parameters: {
+        type: 'object',
+        properties: { symbol: { type: 'string' } },
+        required: ['symbol'],
+      },
     },
   },
   {
-    name: 'get_price_target',
-    description: 'Get Wall Street consensus price target: high, low, median, and average price targets across all analysts',
-    input_schema: {
-      type: 'object',
-      properties: { symbol: { type: 'string' } },
-      required: ['symbol'],
+    type: 'function',
+    function: {
+      name: 'get_dcf_valuation',
+      description: 'Get intrinsic value from discounted cash flow (DCF) model and compare to current stock price',
+      parameters: {
+        type: 'object',
+        properties: { symbol: { type: 'string' } },
+        required: ['symbol'],
+      },
     },
   },
   {
-    name: 'get_insider_trades',
-    description: 'Get recent insider transactions (purchases and sales) by company executives, directors, and 10%+ shareholders',
-    input_schema: {
-      type: 'object',
-      properties: { symbol: { type: 'string' } },
-      required: ['symbol'],
+    type: 'function',
+    function: {
+      name: 'get_analyst_ratings',
+      description: 'Get recent analyst grade ratings (Strong Buy/Buy/Hold/Sell) from investment banks with dates and firms',
+      parameters: {
+        type: 'object',
+        properties: { symbol: { type: 'string' } },
+        required: ['symbol'],
+      },
     },
   },
   {
-    name: 'get_recent_news',
-    description: 'Get recent news articles and headlines about the company from financial media',
-    input_schema: {
-      type: 'object',
-      properties: { symbol: { type: 'string' } },
-      required: ['symbol'],
+    type: 'function',
+    function: {
+      name: 'get_price_target',
+      description: 'Get Wall Street consensus price target: high, low, median, and average price targets across all analysts',
+      parameters: {
+        type: 'object',
+        properties: { symbol: { type: 'string' } },
+        required: ['symbol'],
+      },
     },
   },
   {
-    name: 'get_peers',
-    description: 'Get the list of peer and competitor companies in the same industry sector for comparison',
-    input_schema: {
-      type: 'object',
-      properties: { symbol: { type: 'string' } },
-      required: ['symbol'],
+    type: 'function',
+    function: {
+      name: 'get_insider_trades',
+      description: 'Get recent insider transactions (purchases and sales) by company executives, directors, and 10%+ shareholders',
+      parameters: {
+        type: 'object',
+        properties: { symbol: { type: 'string' } },
+        required: ['symbol'],
+      },
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'get_recent_news',
+      description: 'Get recent news articles and headlines about the company from financial media',
+      parameters: {
+        type: 'object',
+        properties: { symbol: { type: 'string' } },
+        required: ['symbol'],
+      },
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'get_peers',
+      description: 'Get the list of peer and competitor companies in the same industry sector for comparison',
+      parameters: {
+        type: 'object',
+        properties: { symbol: { type: 'string' } },
+        required: ['symbol'],
+      },
     },
   },
 ];
@@ -279,18 +322,18 @@ async function runResearch(ticker, shouldSave) {
   if (!FMP_KEY) {
     throw new Error('FMP_API_KEY environment variable is not set. See .env.example for setup instructions.');
   }
-  if (!process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_SECRET_ACCESS_KEY) {
-    throw new Error('AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY must be set. See .env.example.');
+  if (!process.env.OPENROUTER_API_KEY) {
+    throw new Error('OPENROUTER_API_KEY environment variable is not set. See .env.example for setup instructions.');
   }
 
   console.error(`\nEquity Research Agent`);
   console.error(`════════════════════════════════════`);
   console.error(`Ticker: ${symbol}`);
-  console.error(`Model:  claude-3-5-sonnet (Bedrock)`);
-  console.error(`Region: ${process.env.AWS_REGION || 'us-east-1'}`);
+  console.error(`Model:  poolside/laguna-m.1:free (OpenRouter)`);
   console.error(`════════════════════════════════════\n`);
 
   const messages = [
+    { role: 'system', content: SYSTEM_PROMPT },
     {
       role: 'user',
       content: `Conduct a comprehensive equity research analysis for the stock ticker ${symbol}. Use ALL available tools to gather complete financial data before writing the report.`,
@@ -303,51 +346,43 @@ async function runResearch(ticker, shouldSave) {
   while (true) {
     iteration++;
 
-    const response = await client.messages.create({
-      model: 'anthropic.claude-3-5-sonnet-20241022-v2:0',
-      max_tokens: 16000,
-      system: SYSTEM_PROMPT,
-      tools: TOOLS,
+    const response = await client.chat.send({
+      model: 'poolside/laguna-m.1:free',
       messages,
+      tools: TOOLS,
     });
 
-    // Preserve all content blocks (including thinking) in message history
-    messages.push({ role: 'assistant', content: response.content });
+    const message = response.choices[0].message;
+    const finishReason = response.choices[0].finish_reason;
+    messages.push(message);
 
-    if (response.stop_reason === 'end_turn') {
-      report = response.content
-        .filter((b) => b.type === 'text')
-        .map((b) => b.text)
-        .join('');
+    if (finishReason === 'stop' || finishReason === 'end_turn') {
+      report = message.content || '';
       console.error(`\nReport generation complete.\n`);
       break;
     }
 
-    if (response.stop_reason === 'tool_use') {
-      const toolUses = response.content.filter((b) => b.type === 'tool_use');
-      console.error(`[Step ${iteration}] Fetching data via ${toolUses.length} tool(s):`);
-      toolUses.forEach((tu) => console.error(`  → ${tu.name}(${JSON.stringify(tu.input)})`));
+    if (finishReason === 'tool_calls') {
+      const toolCalls = message.tool_calls || [];
+      console.error(`[Step ${iteration}] Fetching data via ${toolCalls.length} tool(s):`);
+      toolCalls.forEach((tc) => console.error(`  → ${tc.function.name}(${tc.function.arguments})`));
 
       const toolResults = await Promise.all(
-        toolUses.map(async (tu) => {
+        toolCalls.map(async (tc) => {
           try {
-            const result = await executeTool(tu.name, tu.input);
+            const input = JSON.parse(tc.function.arguments);
+            const result = await executeTool(tc.function.name, input);
             const content = JSON.stringify(result);
-            console.error(`  ✓ ${tu.name} — ${content.length} chars`);
-            return { type: 'tool_result', tool_use_id: tu.id, content };
+            console.error(`  ✓ ${tc.function.name} — ${content.length} chars`);
+            return { role: 'tool', tool_call_id: tc.id, content };
           } catch (err) {
-            console.error(`  ✗ ${tu.name} — ${err.message}`);
-            return {
-              type: 'tool_result',
-              tool_use_id: tu.id,
-              content: `Error retrieving data: ${err.message}`,
-              is_error: true,
-            };
+            console.error(`  ✗ ${tc.function.name} — ${err.message}`);
+            return { role: 'tool', tool_call_id: tc.id, content: `Error retrieving data: ${err.message}` };
           }
         })
       );
 
-      messages.push({ role: 'user', content: toolResults });
+      messages.push(...toolResults);
     }
   }
 
