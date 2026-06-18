@@ -3,12 +3,15 @@
   "version": "1.0.0",
   "type": "module",
   "description": "AI-powered equity research agent using Claude + FMP API",
-  "engines": { "node": ">=18" },
+  "engines": {
+    "node": ">=18"
+  },
   "main": "agent.js",
   "scripts": {
     "research": "node agent.js"
   },
   "dependencies": {
+    "@anthropic-ai/bedrock-sdk": "^0.30.2",
     "@anthropic-ai/sdk": "^0.52.0"
   }
 }

@@ -1,7 +1,11 @@
-import Anthropic from '@anthropic-ai/sdk';
+import AnthropicBedrock from '@anthropic-ai/bedrock-sdk';
 import { writeFileSync } from 'fs';
 
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+const client = new AnthropicBedrock({
+  awsAccessKey: process.env.AWS_ACCESS_KEY_ID,
+  awsSecretKey: process.env.AWS_SECRET_ACCESS_KEY,
+  awsRegion: process.env.AWS_REGION || 'us-east-1',
+});
 const FMP_KEY = process.env.FMP_API_KEY;
 const V3 = 'https://financialmodelingprep.com/api/v3';
 const V4 = 'https://financialmodelingprep.com/api/v4';
@@ -275,11 +279,15 @@ async function runResearch(ticker, shouldSave) {
   if (!FMP_KEY) {
     throw new Error('FMP_API_KEY environment variable is not set. See .env.example for setup instructions.');
   }
+  if (!process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_SECRET_ACCESS_KEY) {
+    throw new Error('AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY must be set. See .env.example.');
+  }
 
   console.error(`\nEquity Research Agent`);
   console.error(`════════════════════════════════════`);
   console.error(`Ticker: ${symbol}`);
-  console.error(`Model:  claude-opus-4-8`);
+  console.error(`Model:  claude-3-5-sonnet (Bedrock)`);
+  console.error(`Region: ${process.env.AWS_REGION || 'us-east-1'}`);
   console.error(`════════════════════════════════════\n`);
 
   const messages = [
@@ -296,9 +304,8 @@ async function runResearch(ticker, shouldSave) {
     iteration++;
 
     const response = await client.messages.create({
-      model: 'claude-opus-4-8',
+      model: 'anthropic.claude-3-5-sonnet-20241022-v2:0',
       max_tokens: 16000,
-      thinking: { type: 'adaptive' },
       system: SYSTEM_PROMPT,
       tools: TOOLS,
       messages,
