@@ -1,6 +1,19 @@
 import { OpenRouter } from '@openrouter/sdk';
 import * as weave from 'weave';
-import { writeFileSync } from 'fs';
+import { writeFileSync, readFileSync } from 'fs';
+import { resolve, dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
+function loadPrompt(promptPath) {
+  const resolved = resolve(promptPath);
+  try {
+    return readFileSync(resolved, 'utf8').trim();
+  } catch {
+    throw new Error(`Prompt file not found: ${resolved}`);
+  }
+}
 
 const FMP_KEY = process.env.FMP_API_KEY;
 const STABLE = 'https://financialmodelingprep.com/stable';
@@ -38,127 +51,10 @@ async function executeTool(name) {
   throw new Error(`Unknown tool: ${name}`);
 }
 
-const SYSTEM_PROMPT = `You are a quantitative macro analyst at a global investment bank. Your role is to produce a structured, data-driven global market snapshot report used by portfolio managers and risk officers at the start of each trading session.
-
-WORKFLOW:
-1. Call get_market_indices to retrieve live data for all 9 symbols.
-2. Compute all derived metrics yourself from the raw data fields returned.
-3. Write the full report below — no sections may be omitted or abbreviated.
-
-REPORT FORMAT — produce exactly these 6 sections in order:
-
----
-
-# Global Market Indices Snapshot
-*Generated: [UTC timestamp from data]*
-
----
-
-## 1. Volatility Regime (VIX)
-
-Produce a table with these exact rows:
-
-| Metric | Value |
-|--------|-------|
-| VIX Level | [price to 2dp] |
-| Day Change | [▲/▼] [changePercentage to 2dp]% ([▲/▼] [change to 2dp]) |
-| Intraday Range | [dayLow] – [dayHigh] |
-| 52-Week Range | [yearLow] – [yearHigh] |
-| Position in 52W Range | [% = (price-yearLow)/(yearHigh-yearLow) × 100 to 1dp]% |
-| 50-Day MA | [priceAvg50] ([+/-X.XX]% vs spot) |
-| 200-Day MA | [priceAvg200] ([+/-X.XX]% vs spot) |
-| **Regime** | **[COMPLACENT / CALM–RISK-ON / ELEVATED / STRESSED / EXTREME FEAR]** |
-| Assessment | [one sentence interpretation] |
-
-Regime thresholds: VIX < 15 = COMPLACENT, 15–20 = CALM–RISK-ON, 20–25 = ELEVATED, 25–30 = STRESSED, > 30 = EXTREME FEAR.
-
----
-
-## 2. Daily Performance
-
-One row per equity index (exclude VIX). Columns: Index, Region, Price, Change, Chg %, Open, Prev Close, Day Low, Day High.
-Use ▲ for positive change and ▼ for negative. Format prices with thousand separators and 2dp.
-
-| Index | Region | Price | Change | Chg % | Open | Prev Close | Day Low | Day High |
-|-------|--------|------:|-------:|------:|-----:|-----------:|--------:|---------:|
-
-Order: US indices first (S&P 500, Dow Jones, NASDAQ, Russell 2000), then Europe (FTSE 100, Euro STOXX 50), then Asia (Nikkei 225, Hang Seng).
-
----
-
-## 3. Market Breadth
-
-Count advancing (changePercentage > 0), declining (< 0), and flat (= 0) equity indices. List the index names in each bucket.
-
-| | Count | Indices |
-|--|------:|---------|
-| Advancing ▲ | | |
-| Declining ▼ | | |
-| Flat – | | |
-| **Total** | **8** | |
-
-Follow with 2–3 sentences interpreting breadth: is the move broad-based or narrow? Is US diverging from international?
-
----
-
-## 4. 52-Week Range Positioning
-
-For each equity index compute: position = (price − yearLow) / (yearHigh − yearLow) × 100.
-Build a 12-character ASCII bar where █ marks the position and ░ fills the rest.
-Interpret: > 90% = near 52W high, < 20% = near 52W low.
-
-| Index | Region | 52W Low | 52W High | Current | Position | Bar |
-|-------|--------|--------:|---------:|--------:|---------:|-----|
-
-Follow with 2–3 sentences on which indices are stretched near highs vs. showing relative weakness.
-
----
-
-## 5. Moving Average Signals
-
-For each equity index:
-- vs 50D = (price − priceAvg50) / priceAvg50 × 100
-- vs 200D = (price − priceAvg200) / priceAvg200 × 100
-- Trend: both positive = Bullish, both negative = Bearish, mixed = Mixed
-
-| Index | Region | Price | 50-Day MA | vs 50D | 200-Day MA | vs 200D | Trend |
-|-------|--------|------:|----------:|-------:|-----------:|--------:|-------|
-
-Follow with 2–3 sentences on overall trend structure: how many indices are in a bullish posture, any notable divergences, and what the MA spread implies for momentum.
-
----
-
-## 6. Regional Summary
-
-Group indices by region (US, Europe, Asia). For each region compute the simple average of changePercentage across constituent indices. Produce a sub-table per region, then a one-paragraph cross-regional interpretation covering: which region is leading/lagging, whether divergence is structural or session-specific, and implications for global risk appetite.
-
-**US** — avg change: [+/-X.XX]%
-| Index | Price | Chg % |
-|-------|------:|------:|
-
-**Europe** — avg change: [+/-X.XX]%
-| Index | Price | Chg % |
-|-------|------:|------:|
-
-**Asia** — avg change: [+/-X.XX]%
-| Index | Price | Chg % |
-|-------|------:|------:|
-
-[Cross-regional interpretation paragraph]
-
----
-
-*Data source: Financial Modeling Prep /stable/quote. Prices reflect last exchange close for each region's timezone.*
-
-STYLE RULES:
-- Every number must come from the raw API data — do not fabricate or approximate
-- Use exact field names from the tool response: price, changePercentage, change, open, previousClose, dayLow, dayHigh, yearLow, yearHigh, priceAvg50, priceAvg200
-- Thousand-separator formatting: 7,500.58 not 7500.58
-- Always show sign on percentage changes: +1.08% or -0.30%
-- The report must be complete — do not truncate, summarise, or skip any section`;
+const DEFAULT_PROMPT_FILE = resolve(__dirname, 'prompts', 'indices-system-prompt.txt');
 
 class IndicesModel extends weave.WeaveObject {
-  constructor() {
+  constructor(systemPrompt) {
     super({
       name: 'global-indices-agent',
       description: 'Global market indices snapshot powered by Laguna via OpenRouter',
@@ -166,7 +62,7 @@ class IndicesModel extends weave.WeaveObject {
     this.model = 'poolside/laguna-m.1:free';
     this.prompt = new weave.StringPrompt({
       name: 'indices-system-prompt',
-      content: SYSTEM_PROMPT,
+      content: systemPrompt,
     });
     this._client = new OpenRouter({ apiKey: process.env.OPENROUTER_API_KEY });
     this.predict   = weave.op(this._predict.bind(this),   { name: 'predict'      });
@@ -182,19 +78,22 @@ class IndicesModel extends weave.WeaveObject {
   }
 }
 
-async function runIndices(shouldSave) {
+async function runIndices(shouldSave, promptFile) {
   if (!FMP_KEY) throw new Error('FMP_API_KEY is not set. See .env.example.');
   if (!process.env.OPENROUTER_API_KEY) throw new Error('OPENROUTER_API_KEY is not set. See .env.example.');
+
+  const systemPrompt = loadPrompt(promptFile);
 
   const weaveEnabled = !!process.env.WANDB_API_KEY;
   if (weaveEnabled) await weave.init('elenamylocuda-gemma/Financial MP');
 
-  const model = new IndicesModel();
+  const model = new IndicesModel(systemPrompt);
 
   console.error(`\nGlobal Indices Agent`);
   console.error(`════════════════════════════════════`);
-  console.error(`Model: ${model.model} (OpenRouter)`);
-  console.error(`Weave: ${weaveEnabled ? 'elenamylocuda-gemma/Financial MP ✓' : 'disabled (no WANDB_API_KEY)'}`);
+  console.error(`Model:  ${model.model} (OpenRouter)`);
+  console.error(`Prompt: ${promptFile}`);
+  console.error(`Weave:  ${weaveEnabled ? 'elenamylocuda-gemma/Financial MP ✓' : 'disabled (no WANDB_API_KEY)'}`);
   console.error(`════════════════════════════════════\n`);
 
   const messages = [
@@ -256,9 +155,15 @@ async function runIndices(shouldSave) {
   }
 }
 
-const shouldSave = process.argv.includes('--save');
+const args       = process.argv.slice(2);
+const shouldSave = args.includes('--save');
+const promptArg  = args.find((a) => a.startsWith('--prompt='));
+const promptFile = promptArg
+  ? resolve(promptArg.split('=')[1])
+  : DEFAULT_PROMPT_FILE;
 
-runIndices(shouldSave).catch((err) => {
+runIndices(shouldSave, promptFile).catch((err) => {
   console.error(`\nError: ${err.message}`);
+  console.error(`\nUsage: node indices-agent.js [--save] [--prompt=path/to/prompt.txt]`);
   process.exit(1);
 });
