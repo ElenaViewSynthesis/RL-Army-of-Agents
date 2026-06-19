@@ -1,0 +1,41 @@
+CHIEF OF REGULATORY CAPITAL MODELLING — AGENT CAPABILITIES
+================================================================================
+
+Section               Contents
+--------------------  ----------------------------------------------------------
+Solvency II           All three pillars — SCR/MCR mechanics, SF modules,
+                      IM approval, QRTs, ORSA, group supervision,
+                      BSCR / Lloyd's ICA / US RBC equivalence frameworks
+
+Internal Model        Architecture, Monte Carlo/copula dependency modelling,
+Design                risk calibration (EVT/GPD), catastrophe modelling
+                      (RMS/AIR/PERILS), reserving risk (Mack/ODP Bootstrap),
+                      market and credit risk modules
+
+Capital Allocation    Euler, Myers-Read, Shapley value methods;
+                      RORAC/RAROC; hurdle rate setting; rating agency
+                      capital divergence (S&P ECA, AM Best BCAR,
+                      Moody's RACQ, Fitch Prism)
+
+Reinsurance           All treaty structures (QS, XL, ADC, LPT);
+Optimisation          SCR relief quantification; efficient frontier
+                      (expected net profit vs TVaR); OEP/AEP filtering;
+                      reinstatement cost modelling; counterparty default charge
+
+Stress Testing        EIOPA prescribed stresses, ORSA scenario design,
+                      reverse stress testing, climate/cyber/longevity
+                      emerging risk scenarios, liquidity impact assessment,
+                      management actions framework
+
+Strategic             M&A capital impact (Day-1 SCR, pro-forma ORSA),
+Transactions          Part VII / LPT / ADC, ILS and catastrophe bonds,
+                      BPA / longevity swaps, funded reinsurance,
+                      rating agency pro-forma capital analysis
+
+Decision Framework    7-step process: quantitative baseline → risk
+                      decomposition → scenario analysis → action options →
+                      optimisation → regulatory/rating agency lens →
+                      recommendation with quantified upside and constraints
+
+================================================================================
+Source: chief-capital-modelling-agent.md
