@@ -1,6 +1,7 @@
 // import AnthropicBedrock from '@anthropic-ai/bedrock-sdk';
 // import Anthropic from '@anthropic-ai/sdk';
 import { OpenRouter } from '@openrouter/sdk';
+import * as weave from 'weave';
 import { writeFileSync } from 'fs';
 
 // const client = new AnthropicBedrock({
@@ -9,7 +10,7 @@ import { writeFileSync } from 'fs';
 //   awsRegion: process.env.AWS_REGION || 'us-east-1',
 // });
 // const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-const client = new OpenRouter({ apiKey: process.env.OPENROUTER_API_KEY });
+// client moved into ResearchModel constructor below
 const FMP_KEY = process.env.FMP_API_KEY;
 const STABLE = 'https://financialmodelingprep.com/stable';
 
@@ -315,6 +316,34 @@ STYLE REQUIREMENTS:
 - Use comparative language: "Revenue grew 23% YoY to $94.8B vs. peer median of 12%"
 - Be opinionated — analysts who say "it depends" are useless. Take a clear stance.`;
 
+// ── ResearchModel ─────────────────────────────────────────────────────────────
+// JS equivalent of Python's class JsonModel(weave.Model):
+//   prompt: weave.Prompt = weave.StringPrompt(...)
+//   @weave.op def predict(...)
+class ResearchModel extends weave.WeaveObject {
+  constructor() {
+    super({ name: 'equity-research-agent', description: 'Institutional equity research powered by Laguna via OpenRouter' });
+    this.model = 'poolside/laguna-m.1:free';
+    // StringPrompt is versioned and stored in Weave — visible in the UI alongside traces
+    this.prompt = new weave.StringPrompt({
+      name: 'equity-research-system-prompt',
+      content: SYSTEM_PROMPT,
+    });
+    this._client = new OpenRouter({ apiKey: process.env.OPENROUTER_API_KEY });
+    // @weave.op equivalent — wraps the method so every call is a logged trace
+    this.predict = weave.op(this._predict.bind(this), { name: 'predict' });
+    this.callTool = weave.op(this._callTool.bind(this), { name: 'fmp_tool' });
+  }
+
+  async _predict(messages) {
+    return this._client.chat.send({ model: this.model, messages, tools: TOOLS });
+  }
+
+  async _callTool(name, input) {
+    return executeTool(name, input);
+  }
+}
+
 async function runResearch(ticker, shouldSave) {
   const symbol = ticker.toUpperCase();
 
@@ -325,14 +354,22 @@ async function runResearch(ticker, shouldSave) {
     throw new Error('OPENROUTER_API_KEY environment variable is not set. See .env.example for setup instructions.');
   }
 
+  const weaveEnabled = !!process.env.WANDB_API_KEY;
+  if (weaveEnabled) {
+    await weave.init('elenamylocuda-gemma/Financial MP');
+  }
+
+  const model = new ResearchModel();
+
   console.error(`\nEquity Research Agent`);
   console.error(`════════════════════════════════════`);
   console.error(`Ticker: ${symbol}`);
-  console.error(`Model:  poolside/laguna-m.1:free (OpenRouter)`);
+  console.error(`Model:  ${model.model} (OpenRouter)`);
+  console.error(`Weave:  ${weaveEnabled ? 'elenamylocuda-gemma/Financial MP ✓' : 'disabled (no WANDB_API_KEY)'}`);
   console.error(`════════════════════════════════════\n`);
 
   const messages = [
-    { role: 'system', content: SYSTEM_PROMPT },
+    { role: 'system', content: model.prompt.format() },
     {
       role: 'user',
       content: `Conduct a comprehensive equity research analysis for the stock ticker ${symbol}. Use ALL available tools to gather complete financial data before writing the report.`,
@@ -345,11 +382,7 @@ async function runResearch(ticker, shouldSave) {
   while (true) {
     iteration++;
 
-    const response = await client.chat.send({
-      model: 'poolside/laguna-m.1:free',
-      messages,
-      tools: TOOLS,
-    });
+    const response = await model.predict(messages);
 
     const message = response.choices[0].message;
     const finishReason = response.choices[0].finishReason;
@@ -370,7 +403,7 @@ async function runResearch(ticker, shouldSave) {
         toolCalls.map(async (tc) => {
           try {
             const input = JSON.parse(tc.function.arguments);
-            const result = await executeTool(tc.function.name, input);
+            const result = await model.callTool(tc.function.name, input);
             const content = JSON.stringify(result);
             console.error(`  ✓ ${tc.function.name} — ${content.length} chars`);
             return { role: 'tool', toolCallId: tc.id, content };
