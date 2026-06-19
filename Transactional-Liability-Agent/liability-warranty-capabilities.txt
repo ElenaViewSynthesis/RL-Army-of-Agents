@@ -1,0 +1,45 @@
+TRANSACTIONAL LIABILITY & WARRANTY AND INDEMNITY (W&I) — AGENT CAPABILITIES
+================================================================================
+
+Section               Contents
+--------------------  ----------------------------------------------------------
+Product Suite         W&I buy/sell-side, tax liability, contingent liability,
+                      environmental, title, litigation buyout — each with
+                      trigger, structure, and typical terms
+
+Risk Assessment       Deal screening criteria, DD review (FDD/LDD/TDD/CDD),
+                      SPA warranty schedule analysis, disclosure letter review,
+                      risk factor matrix
+
+Pricing               ROL tables by jurisdiction/complexity
+                      (UK 0.80–2.00%, US 2.50–5.00%+), premium formula,
+                      retention/basket/scrape adjustments,
+                      tax liability EL pricing
+
+Underwriting          Binding authority, referral triggers, appetite framework —
+Authority             what's in/out including known breaches, fraud,
+                      forward-looking warranties
+
+Contract Certainty    MRC structure (Sections A–D), policy wording checklist,
+                      Lloyd's e-placement compliance,
+                      NDA/information barrier requirements
+
+Credit Control        Payment terms, 30/60-day escalation process,
+                      cancellation clause mechanics,
+                      broker-as-principal credit risk
+
+Risk Recording        Exposure monitoring (sector/jurisdiction/advisor
+                      concentration), IBNR reserving, vintage year tracking,
+                      performance metrics table
+
+Profit Drivers        Six levers: premium volume/mix, ROL discipline,
+                      RI optimisation, claims management/subrogation,
+                      expense ratio, capital efficiency —
+                      all linked to ROAC and shareholder value
+
+Decision Framework    7-step process: appetite screen → risk quantification →
+                      terms setting → P&L model → documentation →
+                      post-bind monitoring → FNOL response
+
+================================================================================
+Source: transactional-liability-wi-agent.md
