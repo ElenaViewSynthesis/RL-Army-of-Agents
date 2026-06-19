@@ -14,12 +14,50 @@ import { writeFileSync } from 'fs';
 const FMP_KEY = process.env.FMP_API_KEY;
 const STABLE = 'https://financialmodelingprep.com/stable';
 
+// 429 and 5xx are transient — worth retrying.
+// 4xx client errors (401, 403, 404) are permanent — fail immediately.
+const FMP_RETRYABLE = new Set([429, 500, 503]);
+const FMP_MAX_RETRIES = 3;
+const FMP_BASE_DELAY  = 1000; // ms — doubles each attempt: 1s, 2s, 4s
+
 async function fmpGet(url, params = {}) {
-  const qs = new URLSearchParams({ ...params, apikey: FMP_KEY }).toString();
-  const sep = url.includes('?') ? '&' : '?';
-  const res = await fetch(`${url}${sep}${qs}`);
-  if (!res.ok) throw new Error(`FMP API ${res.status} ${res.statusText} — ${url}`);
-  return res.json();
+  const qs      = new URLSearchParams({ ...params, apikey: FMP_KEY }).toString();
+  const sep     = url.includes('?') ? '&' : '?';
+  const fullUrl = `${url}${sep}${qs}`;
+
+  for (let attempt = 0; attempt <= FMP_MAX_RETRIES; attempt++) {
+    let res;
+
+    // Catch network-level failures (DNS, timeout, connection reset).
+    // These are transient and get the same retry treatment as 503.
+    try {
+      res = await fetch(fullUrl);
+    } catch (networkErr) {
+      if (attempt === FMP_MAX_RETRIES) throw networkErr;
+      const delay = FMP_BASE_DELAY * 2 ** attempt + Math.random() * FMP_BASE_DELAY;
+      console.error(`  FMP network error (${networkErr.message}) — retry ${attempt + 1}/${FMP_MAX_RETRIES} in ${(delay / 1000).toFixed(1)}s`);
+      await new Promise((r) => setTimeout(r, delay));
+      continue;
+    }
+
+    // Success — parse and return immediately.
+    if (res.ok) return res.json();
+
+    // Permanent client error — no point retrying.
+    if (!FMP_RETRYABLE.has(res.status) || attempt === FMP_MAX_RETRIES) {
+      throw new Error(`FMP API ${res.status} ${res.statusText} — ${url}`);
+    }
+
+    // Transient error — compute how long to wait before next attempt.
+    // Respect Retry-After header if the server sends one (common on 429).
+    const retryAfter = res.headers.get('retry-after');
+    const delay = retryAfter
+      ? parseInt(retryAfter, 10) * 1000
+      : FMP_BASE_DELAY * 2 ** attempt + Math.random() * FMP_BASE_DELAY;
+
+    console.error(`  FMP ${res.status} — retry ${attempt + 1}/${FMP_MAX_RETRIES} in ${(delay / 1000).toFixed(1)}s`);
+    await new Promise((r) => setTimeout(r, delay));
+  }
 }
 
 const TOOLS = [
