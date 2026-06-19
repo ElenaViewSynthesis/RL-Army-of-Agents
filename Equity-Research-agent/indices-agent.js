@@ -109,8 +109,16 @@ async function runIndices(shouldSave, promptFile) {
   let report = '';
   let iteration = 0;
 
+  const MAX_ITERATIONS = 5;
+
   while (true) {
     iteration++;
+    if (iteration > MAX_ITERATIONS) {
+      throw new Error(
+        `Agentic loop exceeded ${MAX_ITERATIONS} iterations without reaching a stop condition. ` +
+        `Last finish_reason was 'tool_calls' — possible runaway tool-call cycle.`
+      );
+    }
 
     const response = await model.predict(messages);
     const message      = response.choices[0].message;
