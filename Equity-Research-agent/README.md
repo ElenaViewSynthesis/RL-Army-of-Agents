@@ -5,7 +5,7 @@ An AI-powered equity research agent that produces institutional-grade research r
 ## What it does
 
 Given a ticker symbol, the agent:
-1. Calls 13 FMP data endpoints in parallel (financials, valuation, analyst ratings, peers, and more)
+1. Calls 14 FMP data endpoints in parallel (financials, valuation, analyst ratings, peers, global indices + VIX, and more)
 2. Runs an agentic loop where the model autonomously decides what data to gather
 3. Synthesizes all data into a comprehensive 10-section research report with a BUY/HOLD/SELL rating and 12-month price target
 4. Streams reasoning tokens internally — the model thinks before it writes
@@ -116,7 +116,7 @@ User: "Research AAPL"
   ↓
 OpenRouter (poolside/laguna-m.1:free)
   ↓ tool_calls (parallel)
-FMP /stable API — fetches 13 data points
+FMP /stable API — fetches 14 data points
   ↓ tool results
 Model reasons + writes full report
   ↓
@@ -142,6 +142,7 @@ All endpoints use `https://financialmodelingprep.com/stable` base URL with `?sym
 | `get_analyst_ratings` | `/stable/grades` | ✓ |
 | `get_price_target` | `/stable/price-target-consensus` | ✓ |
 | `get_peers` | `/stable/stock-peers` | ✓ |
+| `get_market_indices` | `/stable/quote` (×9 symbols) | ✓ |
 | `get_insider_trades` | — | ✗ requires paid FMP plan |
 | `get_recent_news` | — | ✗ requires paid FMP plan |
 
@@ -149,4 +150,4 @@ All endpoints use `https://financialmodelingprep.com/stable` base URL with `?sym
 
 - Node.js 18+ (uses native `fetch`)
 - OpenRouter account with `poolside/laguna-m.1:free` access
-- FMP API key (free tier: 250 req/day — enough for ~19 full reports/day across 13 tools)
+- FMP API key (free tier: 250 req/day — enough for ~17 full reports/day across 14 tools, with `get_market_indices` making 9 sub-requests)

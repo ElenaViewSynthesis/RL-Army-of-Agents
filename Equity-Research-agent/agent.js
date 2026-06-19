@@ -188,6 +188,18 @@ const TOOLS = [
       },
     },
   },
+  {
+    type: 'function',
+    function: {
+      name: 'get_market_indices',
+      description: 'Get real-time quotes for 8 major global indices (S&P 500, Dow Jones, NASDAQ, Russell 2000, FTSE 100, Nikkei 225, Hang Seng, Euro STOXX 50) plus the CBOE Volatility Index (VIX). Use this to assess macro market conditions, global risk sentiment, and whether the current environment is risk-on or risk-off. VIX above 20 signals elevated fear; above 30 is extreme stress.',
+      parameters: {
+        type: 'object',
+        properties: {},
+        required: [],
+      },
+    },
+  },
 ];
 
 async function executeTool(name, input) {
@@ -221,6 +233,11 @@ async function executeTool(name, input) {
       return [{ note: 'Stock news requires FMP paid plan — not available on current subscription.' }];
     case 'get_peers':
       return fmpGet(`${STABLE}/stock-peers`, { symbol: sym });
+    case 'get_market_indices': {
+      const INDICES = ['^VIX', '^GSPC', '^DJI', '^IXIC', '^RUT', '^FTSE', '^N225', '^HSI', '^STOXX50E'];
+      const results = await Promise.all(INDICES.map((s) => fmpGet(`${STABLE}/quote`, { symbol: s })));
+      return results.flat();
+    }
     default:
       throw new Error(`Unknown tool: ${name}`);
   }
@@ -229,8 +246,9 @@ async function executeTool(name, input) {
 const SYSTEM_PROMPT = `You are a senior equity research analyst at a premier investment bank (Goldman Sachs, Morgan Stanley caliber). Your mandate is to produce institutional-grade equity research reports used by portfolio managers to make investment decisions.
 
 WORKFLOW:
-1. Call ALL 13 available tools to gather comprehensive data on the company. Do not skip any tool.
-2. You may call multiple tools in parallel to gather data efficiently.
+1. Call ALL 14 available tools to gather comprehensive data on the company. Do not skip any tool.
+2. Always call get_market_indices first (or in parallel with other tools) to establish the macro backdrop — VIX level, global index performance, and risk sentiment frame the entire report.
+3. You may call multiple tools in parallel to gather data efficiently.
 3. After all data is gathered, synthesize it into a complete research report.
 
 REPORT FORMAT — Output must follow this exact structure:
