@@ -2,7 +2,13 @@
 // import Anthropic from '@anthropic-ai/sdk';
 import { OpenRouter } from '@openrouter/sdk';
 import * as weave from 'weave';
-import { writeFileSync } from 'fs';
+import { writeFileSync, mkdirSync } from 'fs';
+import { resolve, dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const OUTPUT_DIR = resolve(__dirname, 'output');
+mkdirSync(OUTPUT_DIR, { recursive: true });
 
 // const client = new AnthropicBedrock({
 //   awsAccessKey: process.env.AWS_ACCESS_KEY_ID,
@@ -485,8 +491,8 @@ async function runResearch(ticker, shouldSave) {
   console.log(report);
 
   if (shouldSave) {
-    const date = new Date().toISOString().slice(0, 10);
-    const filename = `${symbol}-research-${date}.md`;
+    const date     = new Date().toISOString().slice(0, 10);
+    const filename = resolve(OUTPUT_DIR, `${symbol}-research-${date}.md`);
     writeFileSync(filename, report, 'utf8');
     console.error(`\nSaved: ${filename}`);
   }

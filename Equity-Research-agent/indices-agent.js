@@ -1,10 +1,12 @@
 import { OpenRouter } from '@openrouter/sdk';
 import * as weave from 'weave';
-import { writeFileSync, readFileSync } from 'fs';
+import { writeFileSync, readFileSync, mkdirSync } from 'fs';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
+const __dirname  = dirname(fileURLToPath(import.meta.url));
+const OUTPUT_DIR = resolve(__dirname, 'output');
+mkdirSync(OUTPUT_DIR, { recursive: true });
 
 function loadPrompt(promptPath) {
   const resolved = resolve(promptPath);
@@ -195,7 +197,7 @@ async function runIndices(shouldSave, promptFile) {
 
   if (shouldSave) {
     const date     = new Date().toISOString().slice(0, 10);
-    const filename = `indices-agent-${date}.md`;
+    const filename = resolve(OUTPUT_DIR, `indices-agent-${date}.md`);
     writeFileSync(filename, report, 'utf8');
     console.error(`Saved: ${filename}`);
   }

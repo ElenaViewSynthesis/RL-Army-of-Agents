@@ -1,4 +1,10 @@
-import { writeFileSync } from 'fs';
+import { writeFileSync, mkdirSync } from 'fs';
+import { resolve, dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname  = dirname(fileURLToPath(import.meta.url));
+const OUTPUT_DIR = resolve(__dirname, 'output');
+mkdirSync(OUTPUT_DIR, { recursive: true });
 
 const FMP_KEY = process.env.FMP_API_KEY;
 if (!FMP_KEY) throw new Error('FMP_API_KEY not set');
@@ -138,7 +144,7 @@ ln(`*Data source: Financial Modeling Prep /stable/quote. Timestamps reflect last
 // ── write file ────────────────────────────────────────────────────────────────
 
 const output = lines.join('\n');
-const filename = `indices-${dateSlug}.md`;
+const filename = resolve(OUTPUT_DIR, `indices-${dateSlug}.md`);
 writeFileSync(filename, output, 'utf8');
 process.stdout.write(output + '\n');
 process.stderr.write(`\nSaved → ${filename}\n`);
