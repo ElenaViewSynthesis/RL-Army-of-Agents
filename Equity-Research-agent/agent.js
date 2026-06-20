@@ -7,7 +7,7 @@ import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { fmpGet, STABLE } from './lib/fmp.js';
 import { runAgentLoop } from './lib/loop.js';
-import { MODEL, WEAVE_PROJECT, INDICES } from './config.js';
+import { MODEL, MODEL_NEMOTRON, WEAVE_PROJECT, INDICES } from './config.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const OUTPUT_DIR = resolve(__dirname, 'output');
@@ -331,22 +331,74 @@ STYLE REQUIREMENTS:
 //   prompt: weave.Prompt = weave.StringPrompt(...)
 //   @weave.op def predict(...)
 class ResearchModel extends weave.WeaveObject {
-  constructor() {
-    super({ name: 'equity-research-agent', description: 'Institutional equity research powered by Laguna via OpenRouter' });
-    this.model = MODEL;
-    // StringPrompt is versioned and stored in Weave — visible in the UI alongside traces
+  constructor(modelId = MODEL) {
+    super({ name: 'equity-research-agent', description: 'Institutional equity research powered by OpenRouter' });
+    this.model      = modelId;
+    this.isNemotron = modelId.includes('nemotron');
     this.prompt = new weave.StringPrompt({
       name: 'equity-research-system-prompt',
       content: SYSTEM_PROMPT,
     });
     this._client = new OpenRouter({ apiKey: process.env.OPENROUTER_API_KEY });
-    // @weave.op equivalent — wraps the method so every call is a logged trace
-    this.predict = weave.op(this._predict.bind(this), { name: 'predict' });
-    this.callTool = weave.op(this._callTool.bind(this), { name: 'fmp_tool' });
+    this.predict  = weave.op(this._predict.bind(this),  { name: 'predict'   });
+    this.callTool = weave.op(this._callTool.bind(this), { name: 'fmp_tool'  });
   }
 
   async _predict(messages) {
+    if (this.isNemotron) return this._predictStreaming(messages);
     return this._client.chat.send({ model: this.model, messages, tools: TOOLS });
+  }
+
+  // Streaming path for Nemotron — aggregates chunks into the same shape loop.js expects,
+  // and logs reasoning tokens from the final usage chunk.
+  async _predictStreaming(messages) {
+    const stream = await this._client.chat.send({
+      model: this.model,
+      messages,
+      tools: TOOLS,
+      stream: true,
+    });
+
+    let content     = '';
+    let finishReason = null;
+    const tcMap     = {};   // index → accumulated tool-call object
+
+    for await (const chunk of stream) {
+      const choice = chunk.choices?.[0];
+      const delta  = choice?.delta;
+
+      if (delta?.content) content += delta.content;
+
+      // Accumulate streaming tool-call deltas by index
+      const deltas = delta?.tool_calls ?? delta?.toolCalls ?? [];
+      for (const tc of deltas) {
+        const idx = tc.index ?? 0;
+        if (!tcMap[idx]) tcMap[idx] = { id: '', type: 'function', function: { name: '', arguments: '' } };
+        if (tc.id)                      tcMap[idx].id                    += tc.id;
+        if (tc.function?.name)          tcMap[idx].function.name         += tc.function.name;
+        if (tc.function?.arguments)     tcMap[idx].function.arguments    += tc.function.arguments;
+      }
+
+      if (choice?.finish_reason) finishReason = choice.finish_reason;
+      if (choice?.finishReason)  finishReason = choice.finishReason;
+
+      // Reasoning token count arrives in the final usage chunk
+      const rt = chunk.usage?.reasoningTokens ?? chunk.usage?.reasoning_tokens;
+      if (rt > 0) console.error(`  [Reasoning tokens: ${rt.toLocaleString()}]`);
+    }
+
+    const toolCalls = Object.values(tcMap).filter((tc) => tc.function.name);
+
+    return {
+      choices: [{
+        message: {
+          role:      'assistant',
+          content:   content || null,
+          toolCalls: toolCalls.length > 0 ? toolCalls : undefined,
+        },
+        finishReason: finishReason || 'stop',
+      }],
+    };
   }
 
   async _callTool(name, input) {
@@ -354,7 +406,7 @@ class ResearchModel extends weave.WeaveObject {
   }
 }
 
-async function runResearch(ticker, shouldSave) {
+async function runResearch(ticker, shouldSave, modelId = MODEL) {
   const symbol = ticker.toUpperCase();
 
   if (!FMP_KEY) {
@@ -369,12 +421,12 @@ async function runResearch(ticker, shouldSave) {
     await weave.init(WEAVE_PROJECT);
   }
 
-  const model = new ResearchModel();
+  const model = new ResearchModel(modelId);
 
   console.error(`\nEquity Research Agent`);
   console.error(`════════════════════════════════════`);
   console.error(`Ticker: ${symbol}`);
-  console.error(`Model:  ${model.model} (OpenRouter)`);
+  console.error(`Model:  ${model.model}${model.isNemotron ? ' [reasoning+streaming]' : ''} (OpenRouter)`);
   console.error(`Weave:  ${weaveEnabled ? WEAVE_PROJECT + ' ✓' : 'disabled (no WANDB_API_KEY)'}`);
   console.error(`════════════════════════════════════\n`);
 
@@ -399,21 +451,25 @@ async function runResearch(ticker, shouldSave) {
 }
 
 // CLI
-const args = process.argv.slice(2);
-const ticker = args.find((a) => !a.startsWith('--'));
+const args       = process.argv.slice(2);
+const ticker     = args.find((a) => !a.startsWith('--'));
 const shouldSave = args.includes('--save');
+const modelArg   = args.find((a) => a.startsWith('--model='));
+const modelId    = modelArg
+  ? (modelArg.split('=')[1] === 'nemotron' ? MODEL_NEMOTRON : modelArg.split('=')[1])
+  : MODEL;
 
 if (!ticker) {
-  console.error('Usage: node agent.js <TICKER> [--save]');
+  console.error('Usage: node agent.js <TICKER> [--save] [--model=laguna|nemotron|<model-id>]');
   console.error('');
   console.error('Examples:');
   console.error('  node agent.js AAPL');
   console.error('  node agent.js NVDA --save');
-  console.error('  node agent.js MSFT --save > msft-report.md');
+  console.error('  node agent.js MSFT --save --model=nemotron');
   process.exit(1);
 }
 
-runResearch(ticker, shouldSave).catch((err) => {
+runResearch(ticker, shouldSave, modelId).catch((err) => {
   console.error(`\nError: ${err.message}`);
   process.exit(1);
 });
