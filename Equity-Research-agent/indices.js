@@ -1,15 +1,13 @@
 import { writeFileSync, mkdirSync } from 'fs';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { fmpGet, STABLE } from './lib/fmp.js';
 
 const __dirname  = dirname(fileURLToPath(import.meta.url));
 const OUTPUT_DIR = resolve(__dirname, 'output');
 mkdirSync(OUTPUT_DIR, { recursive: true });
 
-const FMP_KEY = process.env.FMP_API_KEY;
-if (!FMP_KEY) throw new Error('FMP_API_KEY not set');
-
-const STABLE = 'https://financialmodelingprep.com/stable';
+if (!process.env.FMP_API_KEY) throw new Error('FMP_API_KEY not set');
 
 const SYMBOLS = [
   { sym: '^VIX',      label: 'VIX',          region: 'US'     },
@@ -25,8 +23,7 @@ const SYMBOLS = [
 
 const quotes = await Promise.all(
   SYMBOLS.map(async ({ sym, label, region }) => {
-    const res = await fetch(`${STABLE}/quote?symbol=${encodeURIComponent(sym)}&apikey=${FMP_KEY}`);
-    const data = await res.json();
+    const data = await fmpGet(`${STABLE}/quote`, { symbol: sym });
     return { ...data[0], label, region };
   })
 );
