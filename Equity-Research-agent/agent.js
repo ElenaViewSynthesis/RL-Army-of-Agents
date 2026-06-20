@@ -7,6 +7,7 @@ import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { fmpGet, STABLE } from './lib/fmp.js';
 import { runAgentLoop } from './lib/loop.js';
+import { MODEL, WEAVE_PROJECT, INDICES } from './config.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const OUTPUT_DIR = resolve(__dirname, 'output');
@@ -226,8 +227,7 @@ async function executeTool(name, input) {
     case 'get_peers':
       return fmpGet(`${STABLE}/stock-peers`, { symbol: sym });
     case 'get_market_indices': {
-      const INDICES = ['^VIX', '^GSPC', '^DJI', '^IXIC', '^RUT', '^FTSE', '^N225', '^HSI', '^STOXX50E'];
-      const results = await Promise.all(INDICES.map((s) => fmpGet(`${STABLE}/quote`, { symbol: s })));
+      const results = await Promise.all(INDICES.map((i) => fmpGet(`${STABLE}/quote`, { symbol: i.sym })));
       return results.flat();
     }
     default:
@@ -333,7 +333,7 @@ STYLE REQUIREMENTS:
 class ResearchModel extends weave.WeaveObject {
   constructor() {
     super({ name: 'equity-research-agent', description: 'Institutional equity research powered by Laguna via OpenRouter' });
-    this.model = 'poolside/laguna-m.1:free';
+    this.model = MODEL;
     // StringPrompt is versioned and stored in Weave — visible in the UI alongside traces
     this.prompt = new weave.StringPrompt({
       name: 'equity-research-system-prompt',
@@ -366,7 +366,7 @@ async function runResearch(ticker, shouldSave) {
 
   const weaveEnabled = !!process.env.WANDB_API_KEY;
   if (weaveEnabled) {
-    await weave.init('elenamylocuda-gemma/Financial MP');
+    await weave.init(WEAVE_PROJECT);
   }
 
   const model = new ResearchModel();
@@ -375,7 +375,7 @@ async function runResearch(ticker, shouldSave) {
   console.error(`════════════════════════════════════`);
   console.error(`Ticker: ${symbol}`);
   console.error(`Model:  ${model.model} (OpenRouter)`);
-  console.error(`Weave:  ${weaveEnabled ? 'elenamylocuda-gemma/Financial MP ✓' : 'disabled (no WANDB_API_KEY)'}`);
+  console.error(`Weave:  ${weaveEnabled ? '${WEAVE_PROJECT} ✓' : 'disabled (no WANDB_API_KEY)'}`);
   console.error(`════════════════════════════════════\n`);
 
   const messages = [

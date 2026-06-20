@@ -5,6 +5,7 @@ import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { fmpGet, STABLE } from './lib/fmp.js';
 import { runAgentLoop } from './lib/loop.js';
+import { MODEL, WEAVE_PROJECT, INDICES } from './config.js';
 
 const __dirname  = dirname(fileURLToPath(import.meta.url));
 const OUTPUT_DIR = resolve(__dirname, 'output');
@@ -27,9 +28,8 @@ const TOOLS = [
     function: {
       name: 'get_market_indices',
       description:
-        'Fetch real-time quotes for 9 global market symbols: ^VIX (CBOE Volatility Index), ' +
-        '^GSPC (S&P 500), ^DJI (Dow Jones), ^IXIC (NASDAQ Composite), ^RUT (Russell 2000), ' +
-        '^FTSE (FTSE 100), ^STOXX50E (Euro STOXX 50), ^N225 (Nikkei 225), ^HSI (Hang Seng). ' +
+        `Fetch real-time quotes for ${INDICES.length} global market symbols: ` +
+        INDICES.map((i) => `${i.sym} (${i.label})`).join(', ') + '. ' +
         'Returns price, changePercentage, change, open, previousClose, dayLow, dayHigh, ' +
         'yearLow, yearHigh, priceAvg50, priceAvg200, volume, and timestamp for each symbol.',
       parameters: { type: 'object', properties: {}, required: [] },
@@ -39,8 +39,7 @@ const TOOLS = [
 
 async function executeTool(name) {
   if (name === 'get_market_indices') {
-    const INDICES = ['^VIX', '^GSPC', '^DJI', '^IXIC', '^RUT', '^FTSE', '^STOXX50E', '^N225', '^HSI'];
-    const results = await Promise.all(INDICES.map((s) => fmpGet(`${STABLE}/quote`, { symbol: s })));
+    const results = await Promise.all(INDICES.map((i) => fmpGet(`${STABLE}/quote`, { symbol: i.sym })));
     return results.flat();
   }
   throw new Error(`Unknown tool: ${name}`);
@@ -54,7 +53,7 @@ class IndicesModel extends weave.WeaveObject {
       name: 'global-indices-agent',
       description: 'Global market indices snapshot powered by Laguna via OpenRouter',
     });
-    this.model = 'poolside/laguna-m.1:free';
+    this.model = MODEL;
     this.prompt = new weave.StringPrompt({
       name: 'indices-system-prompt',
       content: systemPrompt,
@@ -80,7 +79,7 @@ async function runIndices(shouldSave, promptFile) {
   const systemPrompt = loadPrompt(promptFile);
 
   const weaveEnabled = !!process.env.WANDB_API_KEY;
-  if (weaveEnabled) await weave.init('elenamylocuda-gemma/Financial MP');
+  if (weaveEnabled) await weave.init(WEAVE_PROJECT);
 
   const model = new IndicesModel(systemPrompt);
 
@@ -88,7 +87,7 @@ async function runIndices(shouldSave, promptFile) {
   console.error(`════════════════════════════════════`);
   console.error(`Model:  ${model.model} (OpenRouter)`);
   console.error(`Prompt: ${promptFile}`);
-  console.error(`Weave:  ${weaveEnabled ? 'elenamylocuda-gemma/Financial MP ✓' : 'disabled (no WANDB_API_KEY)'}`);
+  console.error(`Weave:  ${weaveEnabled ? `${WEAVE_PROJECT} ✓` : 'disabled (no WANDB_API_KEY)'}`);
   console.error(`════════════════════════════════════\n`);
 
   const messages = [

@@ -2,6 +2,7 @@ import { writeFileSync, mkdirSync } from 'fs';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { fmpGet, STABLE } from './lib/fmp.js';
+import { INDICES, VIX_SYMBOL } from './config.js';
 
 const __dirname  = dirname(fileURLToPath(import.meta.url));
 const OUTPUT_DIR = resolve(__dirname, 'output');
@@ -9,20 +10,8 @@ mkdirSync(OUTPUT_DIR, { recursive: true });
 
 if (!process.env.FMP_API_KEY) throw new Error('FMP_API_KEY not set');
 
-const SYMBOLS = [
-  { sym: '^VIX',      label: 'VIX',          region: 'US'     },
-  { sym: '^GSPC',     label: 'S&P 500',       region: 'US'     },
-  { sym: '^DJI',      label: 'Dow Jones',     region: 'US'     },
-  { sym: '^IXIC',     label: 'NASDAQ Comp.',  region: 'US'     },
-  { sym: '^RUT',      label: 'Russell 2000',  region: 'US'     },
-  { sym: '^FTSE',     label: 'FTSE 100',      region: 'Europe' },
-  { sym: '^STOXX50E', label: 'Euro STOXX 50', region: 'Europe' },
-  { sym: '^N225',     label: 'Nikkei 225',    region: 'Asia'   },
-  { sym: '^HSI',      label: 'Hang Seng',     region: 'Asia'   },
-];
-
 const quotes = await Promise.all(
-  SYMBOLS.map(async ({ sym, label, region }) => {
+  INDICES.map(async ({ sym, label, region }) => {
     const data = await fmpGet(`${STABLE}/quote`, { symbol: sym });
     return { ...data[0], label, region };
   })
@@ -43,7 +32,7 @@ const pad  = (s, n, right = false) => right ? String(s).padStart(n) : String(s).
 
 // ── VIX regime ───────────────────────────────────────────────────────────────
 
-const vix = quotes.find(q => q.symbol === '^VIX');
+const vix = quotes.find(q => q.symbol === VIX_SYMBOL);
 const vixPrice = vix?.price ?? 0;
 let regime, regimeNote;
 if      (vixPrice < 15) { regime = 'COMPLACENT';       regimeNote = 'Historically low fear — markets pricing near-zero near-term risk.'; }
@@ -54,7 +43,7 @@ else                    { regime = 'EXTREME FEAR';     regimeNote = 'Above 30 �
 
 // ── breadth: how many indices are positive ────────────────────────────────────
 
-const equities = quotes.filter(q => q.symbol !== '^VIX');
+const equities = quotes.filter(q => q.symbol !== VIX_SYMBOL);
 const advancing = equities.filter(q => q.changePercentage > 0).length;
 const declining  = equities.filter(q => q.changePercentage < 0).length;
 const flat       = equities.length - advancing - declining;
