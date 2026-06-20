@@ -7,7 +7,7 @@ import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { fmpGet, STABLE } from './lib/fmp.js';
 import { runAgentLoop } from './lib/loop.js';
-import { MODEL, MODEL_NEMOTRON, WEAVE_PROJECT, INDICES } from './config.js';
+import { MODEL, MODEL_NEMOTRON, MODEL_LAGUNA, WEAVE_PROJECT, INDICES } from './config.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const OUTPUT_DIR = resolve(__dirname, 'output');
@@ -455,8 +455,9 @@ const args       = process.argv.slice(2);
 const ticker     = args.find((a) => !a.startsWith('--'));
 const shouldSave = args.includes('--save');
 const modelArg   = args.find((a) => a.startsWith('--model='));
+const MODEL_ALIASES = { nemotron: MODEL_NEMOTRON, laguna: MODEL_LAGUNA };
 const modelId    = modelArg
-  ? (modelArg.split('=')[1] === 'nemotron' ? MODEL_NEMOTRON : modelArg.split('=')[1])
+  ? (MODEL_ALIASES[modelArg.split('=')[1]] ?? modelArg.split('=')[1])
   : MODEL;
 
 if (!ticker) {
