@@ -375,7 +375,7 @@ async function runResearch(ticker, shouldSave) {
   console.error(`════════════════════════════════════`);
   console.error(`Ticker: ${symbol}`);
   console.error(`Model:  ${model.model} (OpenRouter)`);
-  console.error(`Weave:  ${weaveEnabled ? '${WEAVE_PROJECT} ✓' : 'disabled (no WANDB_API_KEY)'}`);
+  console.error(`Weave:  ${weaveEnabled ? WEAVE_PROJECT + ' ✓' : 'disabled (no WANDB_API_KEY)'}`);
   console.error(`════════════════════════════════════\n`);
 
   const messages = [
