@@ -386,7 +386,7 @@ async function runResearch(ticker, shouldSave) {
     },
   ];
 
-  const report = await runAgentLoop(model, messages, { maxIterations: 10 });
+  const report = await runAgentLoop(model, messages, { maxIterations: 20 });
 
   console.log(report);
 
