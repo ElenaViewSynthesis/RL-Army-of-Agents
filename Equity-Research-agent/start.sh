@@ -4,10 +4,11 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
-# ── ensure python3-venv is available ─────────────────────────────────────────
-if ! python3 -m venv --help &>/dev/null; then
-  echo "Installing python3-venv..."
-  sudo apt install python3-venv python3-pip -y
+# ── ensure python3-venv + ensurepip are available ────────────────────────────
+PY_VER=$(python3 -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')")
+if ! python3 -m ensurepip --version &>/dev/null; then
+  echo "Installing python${PY_VER}-venv..."
+  sudo apt install -y "python${PY_VER}-venv"
 fi
 
 # ── create venv if it doesn't exist ──────────────────────────────────────────
