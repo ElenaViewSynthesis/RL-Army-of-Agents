@@ -1,32 +1,22 @@
 #!/usr/bin/env bash
 set -e
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$SCRIPT_DIR"
+cd "$(dirname "${BASH_SOURCE[0]}")"
 
-# ── ensure python3-venv + ensurepip are available ────────────────────────────
-PY_VER=$(python3 -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')")
-if ! python3 -m ensurepip --version &>/dev/null; then
-  echo "Installing python${PY_VER}-venv..."
-  sudo apt install -y "python${PY_VER}-venv"
-fi
+# Install version-specific venv package
+sudo apt install -y python3.12-venv
 
-# ── create venv if it doesn't exist ──────────────────────────────────────────
-if [ ! -d ".venv" ]; then
-  echo "Creating virtual environment..."
+# Recreate venv if missing or broken
+if [ ! -d ".venv" ] || ! .venv/bin/python3 -c "" &>/dev/null; then
+  rm -rf .venv
   python3 -m venv .venv
 fi
 
-# ── activate ──────────────────────────────────────────────────────────────────
 source .venv/bin/activate
-
-# ── install / sync dependencies ───────────────────────────────────────────────
-echo "Installing dependencies..."
 pip install -q -r requirements.txt
 
-# ── start server ──────────────────────────────────────────────────────────────
 echo ""
-echo "Starting Equity Research API on http://localhost:8000"
-echo "Docs: http://localhost:8000/docs"
+echo "Equity Research API → http://localhost:8000"
+echo "Docs            → http://localhost:8000/docs"
 echo ""
 uvicorn api:app --reload --port 8000
