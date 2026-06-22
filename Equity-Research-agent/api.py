@@ -311,6 +311,9 @@ async def ui():
     .bubble.assistant{align-self:flex-start}
     .bubble.assistant .label{font-size:.72rem;color:#64748b;margin-bottom:4px}
     .bubble.error{color:#f87171;align-self:flex-start;font-size:.9rem}
+    #samples{display:none;padding:0 24px 10px;gap:8px;flex-wrap:wrap}
+    .chip{background:#1a1f2e;border:1px solid #2d3748;color:#93c5fd;padding:7px 13px;border-radius:20px;font-size:.8rem;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:320px}
+    .chip:hover{background:#1e3a5f;border-color:#3b82f6}
     #bar{display:flex;gap:8px;padding:14px 24px;border-top:1px solid #1e2535;align-items:center}
     #input{flex:1;background:#1a1f2e;border:1px solid #1e2535;color:#e2e8f0;padding:12px 16px;border-radius:8px;font-size:.95rem;outline:none;resize:none;height:48px}
     #input:focus{border-color:#3b82f6}
@@ -333,8 +336,9 @@ async def ui():
     </select>
   </header>
   <div id="messages"></div>
+  <div id="samples"></div>
   <div id="bar">
-    <textarea id="input" placeholder="Ask about a stock, sector, or market event…"></textarea>
+    <textarea id="input" placeholder="VIX is at 28 and rising — what does elevated fear mean for equity positioning and sector rotation today?"></textarea>
     <button id="cancel" class="btn" onclick="cancel()">Cancel</button>
     <button id="send"   class="btn" onclick="sendMsg()">Send</button>
   </div>
@@ -346,6 +350,31 @@ async def ui():
     const msgs     = document.getElementById('messages');
     let controller = null;
     let timerInterval = null;
+
+    const AGENT_META = {
+      '': {
+        placeholder: 'VIX is at 28 and rising — what does elevated fear mean for equity positioning and sector rotation today?',
+        samples: []
+      },
+      'chief-capital-modelling-agent': {
+        placeholder: 'e.g. Our AI liability portfolio has grown to £120M GWP — what reinsurance structure maximises SCR relief?',
+        samples: [
+          'We are writing AI model failure liability for enterprise SaaS startups with no credible loss history. How should we calibrate the SCR frequency-severity distribution under Solvency II Pillar 1, and what EVT tail-fitting approach would you recommend?',
+          'Our AI errors & omissions book covers 200 Series B/C startups at £150M GWP. Design a CAT XL reinsurance programme that maximises SCR relief within a 15% net cost-of-capital constraint — include attachment point, limit, and reinstatement recommendations.',
+          'Model a systemic AI infrastructure failure scenario: a major cloud provider LLM API outage affects 80% of our insured AI startup portfolio simultaneously. Quantify the aggregate PML, SCR uplift, Solvency II coverage ratio impact, and credible management actions.',
+          'We want to launch an AI product liability line targeting Series A startups at £1M–£5M limit. Using Euler allocation, what capital per £1M of limit deployed justifies a RORAC above our 12% hurdle rate, and how does this compare against our existing cyber book?'
+        ]
+      },
+      'transactional-liability-wi-agent': {
+        placeholder: 'e.g. We are underwriting a W&I policy on a Series C AI startup acquisition — what are the key warranty risks to stress-test?',
+        samples: [
+          'We are underwriting a W&I policy for a £45M acquisition of an AI data analytics startup. The SPA includes IP ownership warranties and data privacy representations. What are the three highest-severity warranty risks and how should we structure the tipping basket?',
+          'Price a W&I policy for a fintech AI startup acquisition at £80M enterprise value. The target processes personal financial data under GDPR. Provide a ROL indication, recommended retention, and key exclusions given the regulatory exposure.',
+          'The acquirer of an AI startup is claiming a material warranty breach six months post-close — the training data allegedly included unlicensed third-party content, creating IP infringement exposure. Walk through the claims investigation process and reserve methodology.',
+          'We have a pipeline of five AI startup W&I deals closing this quarter totalling £220M in aggregate limit. Assess the portfolio accumulation risk, identify correlated exposures across the book, and recommend a reinsurance structure to manage peak aggregate loss.'
+        ]
+      }
+    };
 
     // Populate agent dropdown
     fetch('/agents').then(r => r.json()).then(({ agents }) => {
@@ -360,9 +389,24 @@ async def ui():
 
     function onAgentChange() {
       const name = document.getElementById('agent').value;
-      inputEl.placeholder = name
-        ? `Ask the ${document.getElementById('agent').selectedOptions[0].text} agent…`
-        : 'Ask about a stock, sector, or market event…';
+      const meta = AGENT_META[name] || AGENT_META[''];
+      inputEl.placeholder = meta.placeholder;
+      renderSamples(meta.samples);
+    }
+
+    function renderSamples(samples) {
+      const box = document.getElementById('samples');
+      box.innerHTML = '';
+      if (!samples.length) { box.style.display = 'none'; return; }
+      box.style.display = 'flex';
+      samples.forEach(s => {
+        const chip = document.createElement('button');
+        chip.className = 'chip';
+        chip.title = s;
+        chip.textContent = s.length > 72 ? s.slice(0, 70) + '…' : s;
+        chip.onclick = () => { inputEl.value = s; inputEl.focus(); };
+        box.appendChild(chip);
+      });
     }
 
     function getEndpoint() {
