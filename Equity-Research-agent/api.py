@@ -194,9 +194,8 @@ class ChatRequest(BaseModel):
 
 async def _openrouter_stream(messages: list, model: str):
     full_model = MODEL_ALIASES.get(model, model)
-    # connect_timeout=10s (fail fast if OpenRouter unreachable)
-    # read_timeout=30s (fail if stuck in free-tier PROCESSING queue)
-    timeout = httpx.Timeout(connect=10.0, read=30.0, write=10.0, pool=5.0)
+    # connect_timeout=10s; read_timeout=660s (11 min) — free-tier queue can take 7-10 min
+    timeout = httpx.Timeout(connect=10.0, read=660.0, write=10.0, pool=5.0)
     try:
         async with httpx.AsyncClient(timeout=timeout) as client:
             async with client.stream(
@@ -227,7 +226,7 @@ async def _openrouter_stream(messages: list, model: str):
                     except (KeyError, json.JSONDecodeError):
                         continue
     except httpx.ReadTimeout:
-        yield f"data: {json.dumps({'error': 'Request timed out — model may be queued (free tier). Try again or add credits at openrouter.ai/credits.'})}\n\n"
+        yield f"data: {json.dumps({'error': 'Request timed out after 11 minutes — OpenRouter queue may be overloaded. Try again or add credits at openrouter.ai/credits.'})}\n\n"
     except httpx.ConnectError:
         yield f"data: {json.dumps({'error': 'Cannot reach OpenRouter — check your internet connection.'})}\n\n"
     yield f"data: {json.dumps({'done': True})}\n\n"
@@ -305,6 +304,7 @@ async def ui():
     const cancelBtn= document.getElementById('cancel');
     const msgs     = document.getElementById('messages');
     let controller = null;
+    let timerInterval = null;
 
     inputEl.addEventListener('keydown', e => {
       if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); }
@@ -328,13 +328,29 @@ async def ui():
     }
 
     function setBusy(busy) {
-      sendBtn.disabled  = busy;
+      sendBtn.disabled = busy;
       cancelBtn.style.display = busy ? 'inline-block' : 'none';
-      inputEl.disabled  = busy;
+      inputEl.disabled = busy;
+    }
+
+    function startTimer(el) {
+      const t0 = Date.now();
+      timerInterval = setInterval(() => {
+        const s = Math.floor((Date.now() - t0) / 1000);
+        const m = Math.floor(s / 60);
+        const ss = String(s % 60).padStart(2, '0');
+        el.textContent = m > 0 ? `Waiting… ${m}m${ss}s` : `Waiting… ${s}s`;
+      }, 1000);
+    }
+
+    function stopTimer() {
+      clearInterval(timerInterval);
+      timerInterval = null;
     }
 
     function cancel() {
       if (controller) { controller.abort(); controller = null; }
+      stopTimer();
     }
 
     async function sendMsg() {
@@ -345,7 +361,8 @@ async def ui():
       addBubble('user', message);
       const out = addBubble('assistant', '');
       out.className = 'thinking';
-      out.textContent = 'Thinking…';
+      out.textContent = 'Waiting… 0s';
+      startTimer(out);
 
       controller = new AbortController();
       try {
@@ -369,20 +386,22 @@ async def ui():
             if (!line.startsWith('data: ')) continue;
             const data = JSON.parse(line.slice(6));
             if (data.error) {
+              stopTimer();
               out.className = '';
               out.closest('.bubble').className = 'bubble error';
               out.textContent = '⚠ ' + data.error;
               return;
             }
             if (data.content) {
-              if (!started) { out.className=''; out.textContent=''; started=true; }
+              if (!started) { stopTimer(); out.className=''; out.textContent=''; started=true; }
               out.textContent += data.content;
               msgs.scrollTop = msgs.scrollHeight;
             }
           }
         }
-        if (!started) { out.className=''; out.textContent = '(no response)'; }
+        if (!started) { stopTimer(); out.className=''; out.textContent = '(no response)'; }
       } catch (e) {
+        stopTimer();
         out.className = '';
         out.closest('.bubble').className = 'bubble error';
         out.textContent = e.name === 'AbortError' ? 'Cancelled.' : '⚠ ' + e.message;
