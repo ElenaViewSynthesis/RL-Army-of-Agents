@@ -17,7 +17,8 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import HTMLResponse, StreamingResponse
 from pydantic import BaseModel
 
-BASE_DIR = Path(__file__).parent
+BASE_DIR  = Path(__file__).parent
+AGENTS_DIR = BASE_DIR / "agents"
 load_dotenv(BASE_DIR / ".env")
 
 app = FastAPI(
@@ -184,6 +185,43 @@ async def get_report(filename: str):
     return {"filename": filename, "content": path.read_text(encoding="utf-8")}
 
 
+# ── agent definitions ─────────────────────────────────────────────────────────
+
+@app.get("/agents")
+async def list_agents():
+    """List all available agent definitions in agents/."""
+    if not AGENTS_DIR.exists():
+        return {"agents": []}
+    agents = [
+        {"name": f.stem, "filename": f.name}
+        for f in sorted(AGENTS_DIR.glob("*.md"))
+    ]
+    return {"agents": agents}
+
+
+@app.post("/agents/{name}/chat/stream")
+async def agent_chat_stream(name: str, req: "ChatRequest"):
+    """
+    Chat with a named agent using its .md definition as the system prompt.
+    Streams SSE tokens identical to /chat/stream.
+
+    Available agents: chief-capital-modelling-agent, transactional-liability-wi-agent
+    """
+    path = AGENTS_DIR / f"{name}.md"
+    if not path.exists():
+        raise HTTPException(status_code=404, detail=f"Agent '{name}' not found. GET /agents for the list.")
+    system_prompt = path.read_text(encoding="utf-8")
+    messages = [
+        {"role": "system", "content": system_prompt},
+        {"role": "user",   "content": req.message},
+    ]
+    return StreamingResponse(
+        _openrouter_stream(messages, req.model),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+    )
+
+
 # ── chat completions ──────────────────────────────────────────────────────────
 
 class ChatRequest(BaseModel):
@@ -286,6 +324,9 @@ async def ui():
 <body>
   <header>
     <h1>Equity Research AI</h1>
+    <select id="agent" onchange="onAgentChange()">
+      <option value="">— General chat —</option>
+    </select>
     <select id="model">
       <option value="nemotron">Nemotron Ultra 550B</option>
       <option value="laguna">Laguna M.1</option>
@@ -305,6 +346,29 @@ async def ui():
     const msgs     = document.getElementById('messages');
     let controller = null;
     let timerInterval = null;
+
+    // Populate agent dropdown
+    fetch('/agents').then(r => r.json()).then(({ agents }) => {
+      const sel = document.getElementById('agent');
+      agents.forEach(a => {
+        const opt = document.createElement('option');
+        opt.value = a.name;
+        opt.textContent = a.name.replace(/-agent$/, '').replace(/-/g, ' ').replace(/\\b\\w/g, c => c.toUpperCase());
+        sel.appendChild(opt);
+      });
+    });
+
+    function onAgentChange() {
+      const name = document.getElementById('agent').value;
+      inputEl.placeholder = name
+        ? `Ask the ${document.getElementById('agent').selectedOptions[0].text} agent…`
+        : 'Ask about a stock, sector, or market event…';
+    }
+
+    function getEndpoint() {
+      const agent = document.getElementById('agent').value;
+      return agent ? `/agents/${agent}/chat/stream` : '/chat/stream';
+    }
 
     inputEl.addEventListener('keydown', e => {
       if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); }
@@ -366,7 +430,7 @@ async def ui():
 
       controller = new AbortController();
       try {
-        const res = await fetch('/chat/stream', {
+        const res = await fetch(getEndpoint(), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ message, model: document.getElementById('model').value }),
