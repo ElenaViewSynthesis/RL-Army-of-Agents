@@ -357,7 +357,7 @@ async def ui():
         samples: []
       },
       'chief-capital-modelling-agent': {
-        placeholder: 'e.g. Our AI liability portfolio has grown to £120M GWP — what reinsurance structure maximises SCR relief?',
+        placeholder: 'SCR calibration for AI model failure liability with no loss history (EVT tail-fitting)',
         samples: [
           'We are writing AI model failure liability for enterprise SaaS startups with no credible loss history. How should we calibrate the SCR frequency-severity distribution under Solvency II Pillar 1, and what EVT tail-fitting approach would you recommend?',
           'Our AI errors & omissions book covers 200 Series B/C startups at £150M GWP. Design a CAT XL reinsurance programme that maximises SCR relief within a 15% net cost-of-capital constraint — include attachment point, limit, and reinstatement recommendations.',
