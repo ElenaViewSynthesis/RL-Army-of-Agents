@@ -2,6 +2,124 @@
 
 An AI-powered equity research agent that produces institutional-grade research reports for any publicly traded stock. Powered by **nvidia/nemotron-3-ultra-550b-a55b** (default) via OpenRouter and the **Financial Modeling Prep (FMP) stable API**.
 
+---
+
+## Specialist Agents — Corgi Insurance for AI Startups
+
+The platform ships two actuarial specialist agents in `agents/`, designed for **insurance and reinsurance of AI startups** in industrial settings. Each agent is backed by a structured `.md` definition file that encodes deep domain expertise as a durable system prompt — selectable from the chat UI dropdown or callable directly via API.
+
+### Chief of Regulatory Capital Modelling
+
+**Agent file:** `agents/chief-capital-modelling-agent.md`
+
+![Chief of Capital Modelling — Chat UI](assets/chief-capital-modelling-ui.png)
+
+The Chief Capital Modelling agent operates as a Fellow-level actuary with 15+ years of Solvency II Internal Model experience. It provides quantitative capital analysis across the full lifecycle of an AI insurance portfolio: SCR calibration, reinsurance optimisation, stress testing, and strategic transaction support.
+
+**Intended use:** Capital teams at AI-focused insurers and reinsurers requiring rigorous, regulator-ready quantitative analysis — board presentations, ORSA submissions, or underwriting decision support.
+
+**Industrial query examples:**
+
+```
+We are writing AI model failure liability for enterprise SaaS startups with no
+credible loss history. How should we calibrate the SCR frequency-severity
+distribution under Solvency II Pillar 1, and what EVT tail-fitting approach
+would you recommend?
+```
+
+```
+Our AI errors & omissions book covers 200 Series B/C startups at £150M GWP.
+Design a CAT XL reinsurance programme that maximises SCR relief within a 15%
+net cost-of-capital constraint — include attachment point, limit, and
+reinstatement recommendations.
+```
+
+```
+Model a systemic AI infrastructure failure scenario: a major cloud provider
+LLM API outage affects 80% of our insured AI startup portfolio simultaneously.
+Quantify the aggregate PML, SCR uplift, Solvency II coverage ratio impact,
+and credible management actions.
+```
+
+```
+We want to launch an AI product liability line targeting Series A startups at
+£1M–£5M limit. Using Euler allocation, what capital per £1M of limit deployed
+justifies a RORAC above our 12% hurdle rate, and how does this compare against
+our existing cyber book?
+```
+
+**Call via API:**
+```bash
+curl -s -X POST "http://localhost:8000/agents/chief-capital-modelling-agent/chat/stream" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "message": "Our AI errors & omissions book covers 200 Series B/C startups at £150M GWP. Design a CAT XL reinsurance programme that maximises SCR relief within a 15% net cost-of-capital constraint — include attachment point, limit, and reinstatement recommendations.",
+    "model": "nemotron"
+  }'
+```
+
+---
+
+### Transactional Liability — Warranty & Indemnity Underwriter
+
+**Agent file:** `agents/transactional-liability-wi-agent.md`
+
+The W&I agent operates as a senior Warranty & Indemnity underwriter with deep expertise in AI startup M&A transactions. It handles SPA warranty review, ROL pricing, MRC contract certainty documentation, and portfolio accumulation management for tech-sector transactional liability books.
+
+**Intended use:** W&I underwriting teams assessing AI startup acquisitions — deal triage, policy structuring, claims investigation, and reinsurance placement for transactional liability portfolios.
+
+**Industrial query examples:**
+
+```
+We are underwriting a W&I policy for a £45M acquisition of an AI data analytics
+startup. The SPA includes IP ownership warranties and data privacy representations.
+What are the three highest-severity warranty risks and how should we structure
+the tipping basket?
+```
+
+```
+Price a W&I policy for a fintech AI startup acquisition at £80M enterprise value.
+The target processes personal financial data under GDPR. Provide a ROL indication,
+recommended retention, and key exclusions given the regulatory exposure.
+```
+
+```
+The acquirer of an AI startup is claiming a material warranty breach six months
+post-close — the training data allegedly included unlicensed third-party content,
+creating IP infringement exposure. Walk through the claims investigation process
+and reserve methodology.
+```
+
+```
+We have a pipeline of five AI startup W&I deals closing this quarter totalling
+£220M in aggregate limit. Assess the portfolio accumulation risk, identify
+correlated exposures across the book, and recommend a reinsurance structure
+to manage peak aggregate loss.
+```
+
+**Call via API:**
+```bash
+curl -s -X POST "http://localhost:8000/agents/transactional-liability-wi-agent/chat/stream" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "message": "Price a W&I policy for a fintech AI startup acquisition at £80M enterprise value. The target processes personal financial data under GDPR. Provide a ROL indication, recommended retention, and key exclusions.",
+    "model": "nemotron"
+  }'
+```
+
+---
+
+### Adding new agents
+
+Drop any `.md` file into `agents/` — it is automatically registered at server startup and appears in the chat UI dropdown. No code changes required.
+
+```bash
+cp my-new-agent-definition.md Equity-Research-agent/agents/
+# restart server — agent appears in dropdown immediately
+```
+
+---
+
 ## What it does
 
 Given a ticker symbol, the agent:
@@ -161,108 +279,6 @@ kill $(lsof -t -i:8000) 2>/dev/null; bash start.sh
 node check-credits.js
 ```
 
----
-
-## Specialist Agents — Corgi Insurance for AI Startups
-
-The platform ships two actuarial specialist agents in `agents/`, designed for **insurance and reinsurance of AI startups** in industrial settings. Each agent is backed by a structured `.md` definition file that encodes deep domain expertise as a durable system prompt — selectable from the chat UI dropdown or callable directly via API.
-
----
-
-### Chief of Regulatory Capital Modelling
-
-**Agent file:** `agents/chief-capital-modelling-agent.md`
-
-The Chief Capital Modelling agent operates as a Fellow-level actuary with 15+ years of Solvency II Internal Model experience. It provides quantitative capital analysis across the full lifecycle of an AI insurance portfolio: SCR calibration, reinsurance optimisation, stress testing, and strategic transaction support.
-
-**Intended use:** Capital teams at AI-focused insurers and reinsurers requiring rigorous, regulator-ready quantitative analysis — board presentations, ORSA submissions, or underwriting decision support.
-
-**Industrial query examples:**
-
-```
-We are writing AI model failure liability for enterprise SaaS startups with no
-credible loss history. How should we calibrate the SCR frequency-severity
-distribution under Solvency II Pillar 1, and what EVT tail-fitting approach
-would you recommend?
-```
-
-```
-Our AI errors & omissions book covers 200 Series B/C startups at £150M GWP.
-Design a CAT XL reinsurance programme that maximises SCR relief within a 15%
-net cost-of-capital constraint — include attachment point, limit, and
-reinstatement recommendations.
-```
-
-```
-Model a systemic AI infrastructure failure scenario: a major cloud provider
-LLM API outage affects 80% of our insured AI startup portfolio simultaneously.
-Quantify the aggregate PML, SCR uplift, Solvency II coverage ratio impact,
-and credible management actions.
-```
-
-```
-We want to launch an AI product liability line targeting Series A startups at
-£1M–£5M limit. Using Euler allocation, what capital per £1M of limit deployed
-justifies a RORAC above our 12% hurdle rate, and how does this compare against
-our existing cyber book?
-```
-
-**Call via API:**
-```bash
-curl -s -X POST "http://localhost:8000/agents/chief-capital-modelling-agent/chat/stream" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "message": "Our AI errors & omissions book covers 200 Series B/C startups at £150M GWP. Design a CAT XL reinsurance programme that maximises SCR relief within a 15% net cost-of-capital constraint — include attachment point, limit, and reinstatement recommendations.",
-    "model": "nemotron"
-  }'
-```
-
----
-
-### Transactional Liability — Warranty & Indemnity Underwriter
-
-**Agent file:** `agents/transactional-liability-wi-agent.md`
-
-The W&I agent operates as a senior Warranty & Indemnity underwriter with deep expertise in AI startup M&A transactions. It handles SPA warranty review, ROL pricing, MRC contract certainty documentation, and portfolio accumulation management for tech-sector transactional liability books.
-
-**Intended use:** W&I underwriting teams assessing AI startup acquisitions — deal triage, policy structuring, claims investigation, and reinsurance placement for transactional liability portfolios.
-
-**Industrial query examples:**
-
-```
-We are underwriting a W&I policy for a £45M acquisition of an AI data analytics
-startup. The SPA includes IP ownership warranties and data privacy representations.
-What are the three highest-severity warranty risks and how should we structure
-the tipping basket?
-```
-
-```
-Price a W&I policy for a fintech AI startup acquisition at £80M enterprise value.
-The target processes personal financial data under GDPR. Provide a ROL indication,
-recommended retention, and key exclusions given the regulatory exposure.
-```
-
-**Call via API:**
-```bash
-curl -s -X POST "http://localhost:8000/agents/transactional-liability-wi-agent/chat/stream" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "message": "Price a W&I policy for a fintech AI startup acquisition at £80M enterprise value. The target processes personal financial data under GDPR. Provide a ROL indication, recommended retention, and key exclusions.",
-    "model": "nemotron"
-  }'
-```
-
----
-
-### Adding new agents
-
-Drop any `.md` file into `agents/` — it is automatically registered at server startup and appears in the chat UI dropdown. No code changes required.
-
-```bash
-cp my-new-agent-definition.md Equity-Research-agent/agents/
-# restart server — agent appears in dropdown immediately
-```
-
 ## Test script
 
 `test.js` validates both connections (OpenRouter + FMP) without running a full report:
@@ -327,4 +343,4 @@ All endpoints use `https://financialmodelingprep.com/stable` base URL with `?sym
 - OpenRouter account — `nvidia/nemotron-3-ultra-550b-a55b:free` (default) or `poolside/laguna-m.1:free`
 - FMP API key (free tier: 250 req/day — enough for ~17 full reports/day)
 
-> **OpenRouter free tier note:** `:free` models require a deposited balance (≥ $10) to unlock 1,000 req/day and avoid queue delays. With $0 balance requests may hang; the server applies a 30s timeout and surfaces the error in the UI.
+> **OpenRouter free tier note:** `:free` models require a deposited balance (≥ $10) to unlock 1,000 req/day and avoid queue delays. With $0 balance requests may hang; the server applies an 11-minute timeout and surfaces the error in the UI.
