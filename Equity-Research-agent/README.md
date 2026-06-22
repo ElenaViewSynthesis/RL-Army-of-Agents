@@ -23,6 +23,38 @@ Given a ticker symbol, the agent:
 9. Risk Factors
 10. Recent Developments
 
+## Quick start
+
+### Terminal
+```bash
+# 1. Install Node dependencies
+npm install
+
+# 2. Copy and fill in your API keys
+cp .env.example .env
+
+# 3. Run a research report
+set -a && source .env && set +a
+node agent.js NVDA --save --model=nemotron
+```
+
+Reports are saved to `output/NVDA-research-YYYY-MM-DD.md`. Progress logs stream to stderr; the report goes to stdout.
+
+### Chat UI (WSL / Linux)
+```bash
+# Start the FastAPI server (kills any existing process on port 8000 first)
+kill $(lsof -t -i:8000) 2>/dev/null; bash start.sh
+```
+
+Then open **http://localhost:8000/** in your browser. Type a question in the input field and press Enter — responses stream token by token. A live timer shows how long the model has been processing. Use the **Cancel** button to abort at any time.
+
+To run a full equity research report via the API:
+```bash
+curl -s -X POST "http://localhost:8000/research/NVDA?model=nemotron&save=true"
+```
+
+---
+
 ## Setup
 
 **1. Install dependencies**
