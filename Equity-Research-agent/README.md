@@ -97,6 +97,27 @@ correlated exposures across the book, and recommend a reinsurance structure
 to manage peak aggregate loss.
 ```
 
+```
+An acquirer is completing a £35M acquisition of an EU AI Act Tier-2 high-risk
+AI system provider to the financial sector. The SPA contains representations
+on regulatory compliance and conformity assessments. With EU AI Act enforcement
+six months post-close, quantify the warranty exposure, structure a W&I policy
+with appropriate sublimits for regulatory non-compliance, and advise whether a
+separate regulatory liability top-up cover is warranted.
+```
+
+```
+We are underwriting a £60M W&I policy on the acquisition of an AI-powered
+credit underwriting platform. Due diligence identified that 30% of the training
+dataset was sourced from third-party vendors under licences that pre-date the
+current use case. The seller is unwilling to provide specific indemnity. Advise
+on how to price the residual IP warranty exposure, appropriate policy sublimits,
+and whether a synthetic data clean-up covenant should be required as a condition
+of binding.
+```
+
+**Sample output:** [W&I policy — Fintech AI Startup Acquisition (£80M EV)](sample-outputs/wi-fintech-ai-startup-2026-06-22.md) — full ROL indication, retention, exclusions schedule, and pre-bind conditions.
+
 **Call via API:**
 ```bash
 curl -s -X POST "http://localhost:8000/agents/transactional-liability-wi-agent/chat/stream" \
