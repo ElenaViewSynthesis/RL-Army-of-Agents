@@ -194,26 +194,42 @@ class ChatRequest(BaseModel):
 
 async def _openrouter_stream(messages: list, model: str):
     full_model = MODEL_ALIASES.get(model, model)
-    async with httpx.AsyncClient(timeout=120) as client:
-        async with client.stream(
-            "POST",
-            "https://openrouter.ai/api/v1/chat/completions",
-            headers={
-                "Authorization": f"Bearer {os.environ['OPENROUTER_API_KEY']}",
-                "Content-Type": "application/json",
-            },
-            json={"model": full_model, "messages": messages, "stream": True},
-        ) as resp:
-            async for line in resp.aiter_lines():
-                if not line.startswith("data: ") or line == "data: [DONE]":
-                    continue
-                try:
-                    chunk = json.loads(line[6:])
-                    content = chunk["choices"][0]["delta"].get("content", "")
-                    if content:
-                        yield f"data: {json.dumps({'content': content})}\n\n"
-                except (KeyError, json.JSONDecodeError):
-                    continue
+    # connect_timeout=10s (fail fast if OpenRouter unreachable)
+    # read_timeout=30s (fail if stuck in free-tier PROCESSING queue)
+    timeout = httpx.Timeout(connect=10.0, read=30.0, write=10.0, pool=5.0)
+    try:
+        async with httpx.AsyncClient(timeout=timeout) as client:
+            async with client.stream(
+                "POST",
+                "https://openrouter.ai/api/v1/chat/completions",
+                headers={
+                    "Authorization": f"Bearer {os.environ['OPENROUTER_API_KEY']}",
+                    "Content-Type": "application/json",
+                },
+                json={"model": full_model, "messages": messages, "stream": True},
+            ) as resp:
+                if resp.status_code != 200:
+                    body = await resp.aread()
+                    yield f"data: {json.dumps({'error': f'OpenRouter {resp.status_code}: {body.decode()[:200]}'})}\n\n"
+                    return
+                async for line in resp.aiter_lines():
+                    if not line.startswith("data: ") or line == "data: [DONE]":
+                        continue
+                    try:
+                        chunk = json.loads(line[6:])
+                        # surface OpenRouter error objects (e.g. rate limit)
+                        if "error" in chunk:
+                            yield f"data: {json.dumps({'error': chunk['error'].get('message', str(chunk['error']))})}\n\n"
+                            return
+                        content = chunk["choices"][0]["delta"].get("content", "")
+                        if content:
+                            yield f"data: {json.dumps({'content': content})}\n\n"
+                    except (KeyError, json.JSONDecodeError):
+                        continue
+    except httpx.ReadTimeout:
+        yield f"data: {json.dumps({'error': 'Request timed out — model may be queued (free tier). Try again or add credits at openrouter.ai/credits.'})}\n\n"
+    except httpx.ConnectError:
+        yield f"data: {json.dumps({'error': 'Cannot reach OpenRouter — check your internet connection.'})}\n\n"
     yield f"data: {json.dumps({'done': True})}\n\n"
 
 
@@ -239,7 +255,7 @@ async def chat_stream(req: ChatRequest):
 
 @app.get("/", response_class=HTMLResponse)
 async def ui():
-    """Simple chat UI with streaming support."""
+    """Chat UI with streaming, cancel button, and error display."""
     return """<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -247,21 +263,25 @@ async def ui():
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Equity Research AI</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: system-ui, sans-serif; background: #0f1117; color: #e2e8f0; height: 100vh; display: flex; flex-direction: column; }
-    header { padding: 14px 24px; border-bottom: 1px solid #1e2535; display: flex; align-items: center; gap: 12px; }
-    header h1 { font-size: 1rem; font-weight: 600; color: #93c5fd; }
-    select { background: #1a1f2e; border: 1px solid #1e2535; color: #e2e8f0; padding: 6px 10px; border-radius: 6px; font-size: 0.85rem; }
-    #messages { flex: 1; overflow-y: auto; padding: 24px; display: flex; flex-direction: column; gap: 20px; }
-    .bubble { max-width: 820px; line-height: 1.7; font-size: 0.95rem; white-space: pre-wrap; word-break: break-word; }
-    .bubble.user { align-self: flex-end; background: #1e3a5f; padding: 12px 16px; border-radius: 14px 14px 2px 14px; }
-    .bubble.assistant { align-self: flex-start; color: #e2e8f0; }
-    .bubble.assistant .label { font-size: 0.75rem; color: #64748b; margin-bottom: 4px; }
-    #bar { display: flex; gap: 8px; padding: 14px 24px; border-top: 1px solid #1e2535; }
-    #input { flex: 1; background: #1a1f2e; border: 1px solid #1e2535; color: #e2e8f0; padding: 12px 16px; border-radius: 8px; font-size: 0.95rem; outline: none; resize: none; height: 48px; }
-    #input:focus { border-color: #3b82f6; }
-    #send { background: #3b82f6; color: #fff; border: none; padding: 0 20px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.95rem; }
-    #send:disabled { opacity: 0.4; cursor: not-allowed; }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:system-ui,sans-serif;background:#0f1117;color:#e2e8f0;height:100vh;display:flex;flex-direction:column}
+    header{padding:14px 24px;border-bottom:1px solid #1e2535;display:flex;align-items:center;gap:12px}
+    header h1{font-size:1rem;font-weight:600;color:#93c5fd;flex:1}
+    select{background:#1a1f2e;border:1px solid #1e2535;color:#e2e8f0;padding:6px 10px;border-radius:6px;font-size:.85rem}
+    #messages{flex:1;overflow-y:auto;padding:24px;display:flex;flex-direction:column;gap:20px}
+    .bubble{max-width:820px;line-height:1.7;font-size:.95rem;white-space:pre-wrap;word-break:break-word}
+    .bubble.user{align-self:flex-end;background:#1e3a5f;padding:12px 16px;border-radius:14px 14px 2px 14px}
+    .bubble.assistant{align-self:flex-start}
+    .bubble.assistant .label{font-size:.72rem;color:#64748b;margin-bottom:4px}
+    .bubble.error{color:#f87171;align-self:flex-start;font-size:.9rem}
+    #bar{display:flex;gap:8px;padding:14px 24px;border-top:1px solid #1e2535;align-items:center}
+    #input{flex:1;background:#1a1f2e;border:1px solid #1e2535;color:#e2e8f0;padding:12px 16px;border-radius:8px;font-size:.95rem;outline:none;resize:none;height:48px}
+    #input:focus{border-color:#3b82f6}
+    .btn{border:none;padding:0 18px;height:48px;border-radius:8px;font-weight:600;cursor:pointer;font-size:.9rem}
+    #send{background:#3b82f6;color:#fff}
+    #cancel{background:#374151;color:#e2e8f0;display:none}
+    #send:disabled,#cancel:disabled{opacity:.4;cursor:not-allowed}
+    .thinking{color:#64748b;font-style:italic}
   </style>
 </head>
 <body>
@@ -275,26 +295,29 @@ async def ui():
   <div id="messages"></div>
   <div id="bar">
     <textarea id="input" placeholder="Ask about a stock, sector, or market event…"></textarea>
-    <button id="send" onclick="send()">Send</button>
+    <button id="cancel" class="btn" onclick="cancel()">Cancel</button>
+    <button id="send"   class="btn" onclick="sendMsg()">Send</button>
   </div>
 
   <script>
-    const input = document.getElementById('input');
-    const btn   = document.getElementById('send');
-    const msgs  = document.getElementById('messages');
+    const inputEl  = document.getElementById('input');
+    const sendBtn  = document.getElementById('send');
+    const cancelBtn= document.getElementById('cancel');
+    const msgs     = document.getElementById('messages');
+    let controller = null;
 
-    input.addEventListener('keydown', e => {
-      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
+    inputEl.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); }
     });
 
-    function append(role, text) {
+    function addBubble(role, text='') {
       const wrap = document.createElement('div');
-      wrap.className = `bubble ${role}`;
+      wrap.className = 'bubble ' + role;
       if (role === 'assistant') {
-        const label = document.createElement('div');
-        label.className = 'label';
-        label.textContent = document.getElementById('model').selectedOptions[0].text;
-        wrap.appendChild(label);
+        const lbl = document.createElement('div');
+        lbl.className = 'label';
+        lbl.textContent = document.getElementById('model').selectedOptions[0].text;
+        wrap.appendChild(lbl);
       }
       const body = document.createElement('div');
       body.textContent = text;
@@ -304,23 +327,38 @@ async def ui():
       return body;
     }
 
-    async function send() {
-      const message = input.value.trim();
-      if (!message || btn.disabled) return;
-      input.value = '';
-      btn.disabled = true;
-      append('user', message);
-      const out = append('assistant', '');
+    function setBusy(busy) {
+      sendBtn.disabled  = busy;
+      cancelBtn.style.display = busy ? 'inline-block' : 'none';
+      inputEl.disabled  = busy;
+    }
 
+    function cancel() {
+      if (controller) { controller.abort(); controller = null; }
+    }
+
+    async function sendMsg() {
+      const message = inputEl.value.trim();
+      if (!message || sendBtn.disabled) return;
+      inputEl.value = '';
+      setBusy(true);
+      addBubble('user', message);
+      const out = addBubble('assistant', '');
+      out.className = 'thinking';
+      out.textContent = 'Thinking…';
+
+      controller = new AbortController();
       try {
         const res = await fetch('/chat/stream', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ message, model: document.getElementById('model').value }),
+          signal: controller.signal,
         });
         const reader  = res.body.getReader();
         const decoder = new TextDecoder();
         let buf = '';
+        let started = false;
         while (true) {
           const { done, value } = await reader.read();
           if (done) break;
@@ -330,14 +368,28 @@ async def ui():
           for (const line of lines) {
             if (!line.startsWith('data: ')) continue;
             const data = JSON.parse(line.slice(6));
-            if (data.content) { out.textContent += data.content; msgs.scrollTop = msgs.scrollHeight; }
+            if (data.error) {
+              out.className = '';
+              out.closest('.bubble').className = 'bubble error';
+              out.textContent = '⚠ ' + data.error;
+              return;
+            }
+            if (data.content) {
+              if (!started) { out.className=''; out.textContent=''; started=true; }
+              out.textContent += data.content;
+              msgs.scrollTop = msgs.scrollHeight;
+            }
           }
         }
+        if (!started) { out.className=''; out.textContent = '(no response)'; }
       } catch (e) {
-        out.textContent = 'Error: ' + e.message;
+        out.className = '';
+        out.closest('.bubble').className = 'bubble error';
+        out.textContent = e.name === 'AbortError' ? 'Cancelled.' : '⚠ ' + e.message;
       } finally {
-        btn.disabled = false;
-        input.focus();
+        controller = null;
+        setBusy(false);
+        inputEl.focus();
       }
     }
   </script>
