@@ -15,8 +15,16 @@ fi
 source .venv/bin/activate
 pip install -q -r requirements.txt
 
+# Free port 8000 if already in use
+PORT=8000
+PID=$(lsof -t -i:$PORT 2>/dev/null || true)
+if [ -n "$PID" ]; then
+  echo "Port $PORT in use (PID $PID) — killing..."
+  kill "$PID" && sleep 1
+fi
+
 echo ""
-echo "Equity Research API → http://localhost:8000"
-echo "Docs            → http://localhost:8000/docs"
+echo "Equity Research API → http://localhost:$PORT"
+echo "Docs            → http://localhost:$PORT/docs"
 echo ""
-uvicorn api:app --reload --port 8000
+uvicorn api:app --reload --port $PORT
