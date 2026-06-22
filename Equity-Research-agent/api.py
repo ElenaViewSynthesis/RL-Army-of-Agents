@@ -185,6 +185,14 @@ async def get_report(filename: str):
     return {"filename": filename, "content": path.read_text(encoding="utf-8")}
 
 
+# ── chat completions ──────────────────────────────────────────────────────────
+
+class ChatRequest(BaseModel):
+    message: str
+    model: str = "nemotron"
+    system: str | None = None
+
+
 # ── agent definitions ─────────────────────────────────────────────────────────
 
 @app.get("/agents")
@@ -200,7 +208,7 @@ async def list_agents():
 
 
 @app.post("/agents/{name}/chat/stream")
-async def agent_chat_stream(name: str, req: "ChatRequest"):
+async def agent_chat_stream(name: str, req: ChatRequest):
     """
     Chat with a named agent using its .md definition as the system prompt.
     Streams SSE tokens identical to /chat/stream.
@@ -220,14 +228,6 @@ async def agent_chat_stream(name: str, req: "ChatRequest"):
         media_type="text/event-stream",
         headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
     )
-
-
-# ── chat completions ──────────────────────────────────────────────────────────
-
-class ChatRequest(BaseModel):
-    message: str
-    model: str = "nemotron"
-    system: str | None = None
 
 
 async def _openrouter_stream(messages: list, model: str):
