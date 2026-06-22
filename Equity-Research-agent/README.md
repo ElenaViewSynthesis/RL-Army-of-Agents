@@ -1,6 +1,6 @@
 # Equity Research Agent
 
-An AI-powered equity research agent that produces institutional-grade research reports for any publicly traded stock. Powered by **poolside/laguna-m.1** via OpenRouter and the **Financial Modeling Prep (FMP) stable API**.
+An AI-powered equity research agent that produces institutional-grade research reports for any publicly traded stock. Powered by **nvidia/nemotron-3-ultra-550b-a55b** (default) via OpenRouter and the **Financial Modeling Prep (FMP) stable API**.
 
 ## What it does
 
@@ -42,12 +42,22 @@ You need two API keys:
 
 ## Usage
 
+### Model selection
+
+The default model is Nemotron (reasoning + streaming). Switch with `--model`:
+
+```bash
+node agent.js AAPL --model=nemotron   # default — reasoning, streaming
+node agent.js AAPL --model=laguna     # faster, no reasoning tokens
+node agent.js AAPL --model=nvidia/nemotron-3-ultra-550b-a55b:free  # full ID
+```
+
 ### Single stock
 
 ```bash
 # Using run.sh (recommended — auto-loads .env)
 bash run.sh AAPL
-bash run.sh NVDA --save        # saves report to NVDA-research-YYYY-MM-DD.md
+bash run.sh NVDA --save        # saves report to output/NVDA-research-YYYY-MM-DD.md
 bash run.sh MSFT --save        # saves and prints
 
 # Or manually with env exported
@@ -89,6 +99,34 @@ node agent.js AAPL --save 2>/dev/null > aapl-report.md
 node agent.js AAPL 2>progress.log > aapl-report.md
 ```
 
+## FastAPI server
+
+Serves the agent as a REST API with a built-in chat UI.
+
+**Start (WSL / Linux)**
+```bash
+# First run or after port conflict
+kill $(lsof -t -i:8000) 2>/dev/null; bash start.sh
+```
+
+`start.sh` installs Python deps, creates/repairs the venv, and starts uvicorn. On subsequent runs it auto-kills any existing process on port 8000.
+
+| URL | Description |
+|-----|-------------|
+| `http://localhost:8000/` | Chat UI — input field with streaming responses |
+| `http://localhost:8000/docs` | Interactive API docs |
+| `POST /research/{ticker}` | Full equity report as JSON |
+| `GET /research/{ticker}/stream` | SSE stream — tool call progress + report |
+| `POST /indices` | Global indices snapshot |
+| `GET /output` | List saved reports |
+| `GET /output/{filename}` | Fetch a saved report |
+| `POST /chat/stream` | Direct chat completions (SSE) |
+
+**Check OpenRouter credits**
+```bash
+node check-credits.js
+```
+
 ## Test script
 
 `test.js` validates both connections (OpenRouter + FMP) without running a full report:
@@ -114,13 +152,13 @@ Output shows:
 ```
 User: "Research AAPL"
   ↓
-OpenRouter (poolside/laguna-m.1:free)
-  ↓ tool_calls (parallel)
+OpenRouter (nvidia/nemotron-3-ultra-550b-a55b:free — default)
+  ↓ tool_calls (streaming, with reasoning tokens)
 FMP /stable API — fetches 14 data points
   ↓ tool results
 Model reasons + writes full report
   ↓
-Agent prints / saves .md file
+Agent prints / saves .md to output/
 ```
 
 Tool calls within a single turn are executed in parallel with `Promise.all()`. The message history is preserved across turns. The model uses OpenAI-compatible function calling format (`type: 'function'`, `toolCalls`, `finishReason`).
@@ -149,5 +187,8 @@ All endpoints use `https://financialmodelingprep.com/stable` base URL with `?sym
 ## Requirements
 
 - Node.js 18+ (uses native `fetch`)
-- OpenRouter account with `poolside/laguna-m.1:free` access
-- FMP API key (free tier: 250 req/day — enough for ~17 full reports/day across 14 tools, with `get_market_indices` making 9 sub-requests)
+- Python 3.12+ with `python3.12-venv` (for FastAPI server)
+- OpenRouter account — `nvidia/nemotron-3-ultra-550b-a55b:free` (default) or `poolside/laguna-m.1:free`
+- FMP API key (free tier: 250 req/day — enough for ~17 full reports/day)
+
+> **OpenRouter free tier note:** `:free` models require a deposited balance (≥ $10) to unlock 1,000 req/day and avoid queue delays. With $0 balance requests may hang; the server applies a 30s timeout and surfaces the error in the UI.
