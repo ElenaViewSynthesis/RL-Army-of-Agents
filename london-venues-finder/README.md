@@ -14,6 +14,35 @@ This project is designed to make venue discovery faster and easier for people pl
 - Open a map view to check nearby transport, cafes, restaurants, hotels, and useful amenities.
 - Store venue details such as neighbourhood, closest station, capacity, website, and event fit.
 
+## Run With Mintlify
+
+This folder includes the Mintlify documentation setup for the London Coworking Event Finder:
+
+- `docs.json` controls the Mintlify site configuration and navigation.
+- `index.mdx` is the Mintlify landing page.
+- `snippets/CoworkingFinder.jsx` contains the interactive React component used by the page.
+
+To preview the Mintlify site locally, install the Mintlify CLI:
+
+```bash
+npm i -g mint
+```
+
+Then run the local dev server from this folder:
+
+```bash
+cd london-venues-finder
+mint dev
+```
+
+Mintlify will start a local preview at:
+
+```text
+http://localhost:3000
+```
+
+To deploy, connect the GitHub repository to Mintlify, install the Mintlify GitHub App, and make sure this folder is included in the deployment branch. After setup, Mintlify will redeploy when changes are pushed to the configured branch.
+
 ## Venue Data
 
 | Field | Description |
