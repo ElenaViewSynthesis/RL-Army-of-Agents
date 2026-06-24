@@ -297,8 +297,24 @@ kill $(lsof -t -i:8000) 2>/dev/null; bash start.sh
 
 **Check OpenRouter credits**
 ```bash
+# Reads OPENROUTER_API_KEY from .env automatically
 node check-credits.js
 ```
+
+Output:
+```
+OpenRouter API Key Info
+═══════════════════════════════════
+Label          : (none)
+Usage (USD)    : $0.0000
+Credit limit   : unlimited
+Remaining      : unlimited
+Rate limit     : -1 req / minute
+Is free tier   : true
+═══════════════════════════════════
+```
+
+> Free tier models (`:free` suffix) require a deposited balance ≥ $10 to unlock 1,000 req/day. With $0 balance, requests queue and may time out after 7–10 minutes.
 
 ## Test script
 
