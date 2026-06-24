@@ -9,8 +9,10 @@ import asyncio
 import json
 import os
 import time
+from datetime import date
 from pathlib import Path
 
+import asyncpg
 import httpx
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Query
@@ -31,6 +33,63 @@ MODEL_ALIASES = {
     "nemotron": "nvidia/nemotron-3-ultra-550b-a55b:free",
     "laguna":   "poolside/laguna-m.1:free",
 }
+
+# ── database pool ─────────────────────────────────────────────────────────────
+
+_db_pool: asyncpg.Pool | None = None
+
+
+@app.on_event("startup")
+async def _startup():
+    global _db_pool
+    db_url = os.environ.get("SUPABASE_DB_URL")
+    if db_url:
+        _db_pool = await asyncpg.create_pool(db_url, min_size=1, max_size=5, ssl="require")
+
+
+@app.on_event("shutdown")
+async def _shutdown():
+    if _db_pool:
+        await _db_pool.close()
+
+
+async def _save_agent_response(agent_name: str, model: str, query: str, response: str):
+    """Persist agent response to Supabase and write a markdown file to sample-outputs/."""
+    full_model = MODEL_ALIASES.get(model, model)
+    today = date.today().isoformat()
+
+    # ── Supabase insert ───────────────────────────────────────────────────────
+    if _db_pool:
+        try:
+            async with _db_pool.acquire() as conn:
+                await conn.execute(
+                    """INSERT INTO agent_responses (agent_name, model, query, response)
+                       VALUES ($1, $2, $3, $4)""",
+                    agent_name, full_model, query, response,
+                )
+        except Exception as e:
+            print(f"[db] save failed: {e}")
+
+    # ── markdown file ─────────────────────────────────────────────────────────
+    out_dir = BASE_DIR / "sample-outputs"
+    out_dir.mkdir(exist_ok=True)
+    base = f"{agent_name}-{today}"
+    path = out_dir / f"{base}.md"
+    counter = 1
+    while path.exists():
+        path = out_dir / f"{base}-{counter}.md"
+        counter += 1
+    header = (
+        f"# Agent Response — {agent_name}\n\n"
+        f"**Query:** {query}\n\n"
+        f"**Agent:** {agent_name}\n"
+        f"**Model:** {full_model}\n"
+        f"**Date:** {today}\n\n"
+        f"---\n\n"
+    )
+    path.write_text(header + response + "\n", encoding="utf-8")
+    print(f"[save] {path.name}")
+
 
 # ── internal helpers ──────────────────────────────────────────────────────────
 
@@ -224,10 +283,28 @@ async def agent_chat_stream(name: str, req: ChatRequest):
         {"role": "user",   "content": req.message},
     ]
     return StreamingResponse(
-        _openrouter_stream(messages, req.model),
+        _agent_stream_and_save(name, messages, req.model, req.message),
         media_type="text/event-stream",
         headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
     )
+
+
+async def _agent_stream_and_save(agent_name: str, messages: list, model: str, query: str):
+    """Wraps _openrouter_stream: passes tokens through and saves the full response on completion."""
+    accumulated: list[str] = []
+    async for chunk in _openrouter_stream(messages, model):
+        yield chunk
+        if chunk.startswith("data: "):
+            try:
+                data = json.loads(chunk[6:].strip())
+                if "content" in data:
+                    accumulated.append(data["content"])
+                elif data.get("done") and accumulated:
+                    asyncio.create_task(
+                        _save_agent_response(agent_name, model, query, "".join(accumulated))
+                    )
+            except (json.JSONDecodeError, KeyError):
+                pass
 
 
 async def _openrouter_stream(messages: list, model: str):
