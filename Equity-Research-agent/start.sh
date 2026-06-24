@@ -23,8 +23,14 @@ if [ -n "$PID" ]; then
   kill "$PID" && sleep 1
 fi
 
+mkdir -p logs
+LOG_FILE="logs/server-$(date +%Y-%m-%d).log"
+
 echo ""
 echo "Equity Research API → http://localhost:$PORT"
 echo "Docs            → http://localhost:$PORT/docs"
+echo "Logs            → $LOG_FILE"
 echo ""
-uvicorn api:app --reload --port $PORT
+
+# Stream to terminal and append to dated log file simultaneously
+uvicorn api:app --reload --port $PORT 2>&1 | tee -a "$LOG_FILE"
