@@ -1,6 +1,7 @@
 // import AnthropicBedrock from '@anthropic-ai/bedrock-sdk';
 // import Anthropic from '@anthropic-ai/sdk';
 import { OpenRouter } from '@openrouter/sdk';
+import { createClient } from '@supabase/supabase-js';
 import * as weave from 'weave';
 import { writeFileSync, mkdirSync } from 'fs';
 import { resolve, dirname } from 'path';
@@ -442,12 +443,32 @@ async function runResearch(ticker, shouldSave, modelId = MODEL) {
 
   console.log(report);
 
+  // Always persist to Supabase (fire-and-forget — does not block CLI output)
+  _saveToSupabase(symbol, model.model, report).catch((e) =>
+    console.error(`[supabase] save failed: ${e.message}`)
+  );
+
   if (shouldSave) {
     const date     = new Date().toISOString().slice(0, 10);
     const filename = resolve(OUTPUT_DIR, `${symbol}-research-${date}.md`);
     writeFileSync(filename, report, 'utf8');
     console.error(`\nSaved: ${filename}`);
   }
+}
+
+async function _saveToSupabase(ticker, modelId, report) {
+  const url = process.env.SUPABASE_URL;
+  const key = process.env.SUPABASE_SECRET_KEY;
+  if (!url || !key) return;
+  const supabase = createClient(url, key);
+  const { error } = await supabase.from('agent_responses').insert({
+    agent_name: 'equity-research',
+    model:      modelId,
+    query:      ticker,
+    response:   report,
+  });
+  if (error) throw new Error(error.message);
+  console.error('[supabase] report saved ✓');
 }
 
 // CLI
