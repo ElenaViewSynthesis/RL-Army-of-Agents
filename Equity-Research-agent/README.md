@@ -295,6 +295,23 @@ kill $(lsof -t -i:8000) 2>/dev/null; bash start.sh
 | `GET /agents` | List available agent definitions |
 | `POST /agents/{name}/chat/stream` | Chat with a named specialist agent (SSE) |
 
+**Check Supabase DB is reachable (WSL)**
+```bash
+# 1. DNS resolves?
+getent hosts db.phmzdhbyliiqtwrltqmo.supabase.co
+
+# 2. Port open? (use -4 to force IPv4 if WSL returns IPv6 error)
+nc -4 -zv db.phmzdhbyliiqtwrltqmo.supabase.co 5432
+
+# 3. If IPv6 is causing "Network is unreachable", fix permanently
+echo "precedence ::ffff:0:0/96 100" | sudo tee -a /etc/gai.conf
+
+# 4. Confirm pool connected — look for this line after bash start.sh
+# [db] Supabase pool connected ✓
+```
+
+See [`SUPABASE.md`](SUPABASE.md) for full diagnostics, psql test, and SQL queries.
+
 **Check OpenRouter credits**
 ```bash
 # Reads OPENROUTER_API_KEY from .env automatically

@@ -58,12 +58,24 @@ nc -zv db.phmzdhbyliiqtwrltqmo.supabase.co 5432
 Connection to db.phmzdhbyliiqtwrltqmo.supabase.co 5432 port [tcp/postgresql] succeeded!
 ```
 
-**If it times out or is refused** — port 5432 is blocked. Try the PgBouncer pooler on port 6543:
+**If you see `Network is unreachable` with an IPv6 address** — WSL resolved to IPv6 but has no IPv6 routing. Force IPv4:
+```bash
+nc -4 -zv db.phmzdhbyliiqtwrltqmo.supabase.co 5432
+```
+
+If `-4` succeeds, permanently prefer IPv4 in WSL:
+```bash
+echo "precedence ::ffff:0:0/96 100" | sudo tee -a /etc/gai.conf
+```
+
+Then restart the server — asyncpg will resolve to IPv4 and connect.
+
+**If port 5432 is blocked entirely** — try the PgBouncer pooler on port 6543:
 ```bash
 nc -zv db.phmzdhbyliiqtwrltqmo.supabase.co 6543
 ```
 
-If port 6543 succeeds, update `SUPABASE_DB_URL` in `.env` to use port 6543:
+If port 6543 succeeds, update `SUPABASE_DB_URL` in `.env`:
 ```env
 SUPABASE_DB_URL=postgresql://postgres:YOUR_PASSWORD@db.phmzdhbyliiqtwrltqmo.supabase.co:6543/postgres
 ```
