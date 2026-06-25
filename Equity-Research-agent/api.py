@@ -327,19 +327,21 @@ async def agent_chat_stream(name: str, req: ChatRequest):
 async def _agent_stream_and_save(agent_name: str, messages: list, model: str, query: str):
     """Wraps _openrouter_stream: passes tokens through and saves the full response on completion."""
     accumulated: list[str] = []
-    async for chunk in _openrouter_stream(messages, model):
-        yield chunk
-        if chunk.startswith("data: "):
-            try:
-                data = json.loads(chunk[6:].strip())
-                if "content" in data:
-                    accumulated.append(data["content"])
-                elif data.get("done") and accumulated:
-                    asyncio.create_task(
-                        _save_agent_response(agent_name, model, query, "".join(accumulated))
-                    )
-            except (json.JSONDecodeError, KeyError):
-                pass
+    try:
+        async for chunk in _openrouter_stream(messages, model):
+            yield chunk
+            if chunk.startswith("data: "):
+                try:
+                    data = json.loads(chunk[6:].strip())
+                    if "content" in data:
+                        accumulated.append(data["content"])
+                except (json.JSONDecodeError, KeyError):
+                    pass
+    finally:
+        if accumulated:
+            asyncio.create_task(
+                _save_agent_response(agent_name, model, query, "".join(accumulated))
+            )
 
 
 async def _openrouter_stream(messages: list, model: str):
