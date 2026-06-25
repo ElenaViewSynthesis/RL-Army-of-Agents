@@ -44,7 +44,11 @@ async def _startup():
     global _db_pool
     db_url = os.environ.get("SUPABASE_DB_URL")
     if db_url:
-        _db_pool = await asyncpg.create_pool(db_url, min_size=1, max_size=5, ssl="require")
+        try:
+            _db_pool = await asyncpg.create_pool(db_url, min_size=1, max_size=5, ssl="require")
+            print("[db] Supabase pool connected ✓")
+        except Exception as e:
+            print(f"[db] Supabase unreachable at startup — saves disabled: {e}")
 
 
 @app.on_event("shutdown")
