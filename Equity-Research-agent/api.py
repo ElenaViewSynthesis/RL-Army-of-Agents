@@ -13,6 +13,7 @@ from datetime import date
 from pathlib import Path
 
 import asyncpg
+import boto3
 import httpx
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Query
@@ -74,6 +75,9 @@ async def _save_agent_response(agent_name: str, model: str, query: str, response
         except Exception as e:
             print(f"[db] save failed: {e}")
 
+    # ── Supabase Storage (S3) ─────────────────────────────────────────────────
+    _upload_to_storage(f"{agent_name}/{today}-{agent_name}.md", header + response)
+
     # ── markdown file ─────────────────────────────────────────────────────────
     out_dir = BASE_DIR / "sample-outputs"
     out_dir.mkdir(exist_ok=True)
@@ -93,6 +97,33 @@ async def _save_agent_response(agent_name: str, model: str, query: str, response
     )
     path.write_text(header + response + "\n", encoding="utf-8")
     print(f"[save] {path.name}")
+
+
+def _upload_to_storage(key: str, body: str):
+    """Upload a text file to Supabase Storage via S3 protocol (best-effort)."""
+    endpoint   = os.environ.get("SUPABASE_S3_ENDPOINT")
+    access_key = os.environ.get("SUPABASE_S3_ACCESS_KEY")
+    secret_key = os.environ.get("SUPABASE_S3_SECRET_KEY")
+    region     = os.environ.get("SUPABASE_S3_REGION", "eu-west-1")
+    if not (endpoint and access_key and secret_key):
+        return
+    try:
+        s3 = boto3.client(
+            "s3",
+            endpoint_url=endpoint,
+            aws_access_key_id=access_key,
+            aws_secret_access_key=secret_key,
+            region_name=region,
+        )
+        s3.put_object(
+            Bucket="agent-outputs",
+            Key=key,
+            Body=body.encode("utf-8"),
+            ContentType="text/markdown; charset=utf-8",
+        )
+        print(f"[storage] uploaded → agent-outputs/{key}")
+    except Exception as e:
+        print(f"[storage] upload failed: {e}")
 
 
 # ── internal helpers ──────────────────────────────────────────────────────────

@@ -8,6 +8,7 @@ import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { fmpGet, STABLE } from './lib/fmp.js';
 import { runAgentLoop } from './lib/loop.js';
+import { uploadFile } from './lib/storage.js';
 import { MODEL, MODEL_NEMOTRON, MODEL_LAGUNA, WEAVE_PROJECT, INDICES } from './config.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -469,6 +470,10 @@ async function _saveToSupabase(ticker, modelId, report) {
   });
   if (error) throw new Error(error.message);
   console.error('[supabase] report saved ✓');
+
+  // Also upload markdown to Supabase Storage
+  const date = new Date().toISOString().slice(0, 10);
+  await uploadFile(`equity-research/${ticker}-${date}.md`, report);
 }
 
 // CLI
