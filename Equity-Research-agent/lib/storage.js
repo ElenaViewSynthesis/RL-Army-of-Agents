@@ -1,6 +1,6 @@
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 
-const BUCKET = 'agent-outputs';
+const BUCKET = 'insuranceRISKagent';
 
 function _client() {
   const endpoint  = process.env.SUPABASE_S3_ENDPOINT;

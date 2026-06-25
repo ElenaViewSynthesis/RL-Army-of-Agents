@@ -116,12 +116,12 @@ def _upload_to_storage(key: str, body: str):
             region_name=region,
         )
         s3.put_object(
-            Bucket="agent-outputs",
+            Bucket="insuranceRISKagent",
             Key=key,
             Body=body.encode("utf-8"),
             ContentType="text/markdown; charset=utf-8",
         )
-        print(f"[storage] uploaded → agent-outputs/{key}")
+        print(f"[storage] uploaded → insuranceRISKagent/{key}")
     except Exception as e:
         print(f"[storage] upload failed: {e}")
 
