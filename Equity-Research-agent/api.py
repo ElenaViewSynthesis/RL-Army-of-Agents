@@ -15,6 +15,7 @@ from pathlib import Path
 import asyncpg
 import boto3
 import httpx
+from botocore.config import Config
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import HTMLResponse, StreamingResponse
@@ -62,8 +63,23 @@ async def _save_agent_response(agent_name: str, model: str, query: str, response
     """Persist agent response to Supabase and write a markdown file to sample-outputs/."""
     full_model = MODEL_ALIASES.get(model, model)
     today = date.today().isoformat()
+    header = (
+        f"# Agent Response — {agent_name}\n\n"
+        f"**Query:** {query}\n\n"
+        f"**Agent:** {agent_name}\n"
+        f"**Model:** {full_model}\n"
+        f"**Date:** {today}\n\n"
+        f"---\n\n"
+    )
+    payload = {
+        "agent_name": agent_name,
+        "model": full_model,
+        "query": query,
+        "response": response,
+    }
 
     # ── Supabase insert ───────────────────────────────────────────────────────
+    saved = False
     if _db_pool:
         try:
             async with _db_pool.acquire() as conn:
@@ -72,8 +88,12 @@ async def _save_agent_response(agent_name: str, model: str, query: str, response
                        VALUES ($1, $2, $3, $4)""",
                     agent_name, full_model, query, response,
                 )
+            saved = True
         except Exception as e:
             print(f"[db] save failed: {e}")
+
+    if not saved:
+        await _save_agent_response_rest(payload)
 
     # ── Supabase Storage (S3) ─────────────────────────────────────────────────
     _upload_to_storage(f"{agent_name}/{today}-{agent_name}.md", header + response)
@@ -87,16 +107,34 @@ async def _save_agent_response(agent_name: str, model: str, query: str, response
     while path.exists():
         path = out_dir / f"{base}-{counter}.md"
         counter += 1
-    header = (
-        f"# Agent Response — {agent_name}\n\n"
-        f"**Query:** {query}\n\n"
-        f"**Agent:** {agent_name}\n"
-        f"**Model:** {full_model}\n"
-        f"**Date:** {today}\n\n"
-        f"---\n\n"
-    )
     path.write_text(header + response + "\n", encoding="utf-8")
     print(f"[save] {path.name}")
+
+
+async def _save_agent_response_rest(payload: dict):
+    """Persist via Supabase REST when the direct Postgres route is unavailable."""
+    url = os.environ.get("SUPABASE_URL")
+    key = os.environ.get("SUPABASE_SECRET_KEY")
+    if not (url and key):
+        print("[db] Supabase REST credentials not set — save skipped")
+        return
+
+    try:
+        async with httpx.AsyncClient(timeout=20.0) as client:
+            resp = await client.post(
+                f"{url.rstrip('/')}/rest/v1/agent_responses",
+                headers={
+                    "apikey": key,
+                    "Authorization": f"Bearer {key}",
+                    "Content-Type": "application/json",
+                    "Prefer": "return=minimal",
+                },
+                json=payload,
+            )
+            resp.raise_for_status()
+        print("[db] Supabase REST save ✓")
+    except Exception as e:
+        print(f"[db] Supabase REST save failed: {e}")
 
 
 def _upload_to_storage(key: str, body: str):
@@ -114,6 +152,7 @@ def _upload_to_storage(key: str, body: str):
             aws_access_key_id=access_key,
             aws_secret_access_key=secret_key,
             region_name=region,
+            config=Config(s3={"addressing_style": "path"}),
         )
         s3.put_object(
             Bucket="insuranceRISKagent",
