@@ -222,6 +222,18 @@ async def _stream_sse(script_args: list[str]):
 
 # ── symbols cache ─────────────────────────────────────────────────────────────
 
+_FREE_TIER_SYMBOLS = {
+    "AAPL","TSLA","AMZN","MSFT","NVDA","GOOGL","META","NFLX","JPM","V",
+    "BAC","PYPL","DIS","T","PFE","COST","INTC","KO","TGT","NKE","SPY",
+    "BA","BABA","XOM","WMT","GE","CSCO","VZ","JNJ","CVX","PLTR","SQ",
+    "SHOP","SBUX","SOFI","HOOD","RBLX","SNAP","AMD","UBER","FDX","ABBV",
+    "ETSY","MRNA","LMT","GM","F","LCID","CCL","DAL","UAL","AAL","TSM",
+    "SONY","ET","MRO","COIN","RIVN","RIOT","CPRX","VWO","SPYG","NOK",
+    "ROKU","VIAC","ATVI","BIDU","DOCU","ZM","PINS","TLRY","WBA","MGM",
+    "NIO","C","GS","WFC","ADBE","PEP","UNH","CARR","HCA","TWTR","BILI",
+    "SIRI","FUBO","RKT",
+}
+
 _symbols_cache: dict = {"data": None, "ts": 0.0}
 
 
@@ -229,7 +241,7 @@ _symbols_cache: dict = {"data": None, "ts": 0.0}
 
 @app.get("/symbols")
 async def list_symbols():
-    """Proxy FMP /stable/stock-list and cache for 1 hour."""
+    """Return free-tier symbols with metadata from FMP /stable/stock-list (cached 1 hour)."""
     import time as _time
     fmp_key = os.environ.get("FMP_API_KEY")
     if not fmp_key:
@@ -243,7 +255,11 @@ async def list_symbols():
             params={"apikey": fmp_key},
         )
         resp.raise_for_status()
-        data = resp.json()
+        all_symbols = resp.json()
+    data = sorted(
+        [s for s in all_symbols if (s.get("symbol") or "") in _FREE_TIER_SYMBOLS],
+        key=lambda s: s.get("symbol", ""),
+    )
     _symbols_cache["data"] = data
     _symbols_cache["ts"] = now
     return {"symbols": data, "count": len(data)}
