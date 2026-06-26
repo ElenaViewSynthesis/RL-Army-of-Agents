@@ -4,7 +4,7 @@ An AI-powered equity research agent that produces institutional-grade research r
 
 ---
 
-## Specialist Agents — Corgi Insurance for AI Startups
+## Actuarial Agents — Corgi Insurance for AI Startups
 
 The platform ships two actuarial specialist agents in `agents/`, designed for **insurance and reinsurance of AI startups** in industrial settings. Each agent is backed by a structured `.md` definition file that encodes deep domain expertise as a durable system prompt — selectable from the chat UI dropdown or callable directly via API.
 
