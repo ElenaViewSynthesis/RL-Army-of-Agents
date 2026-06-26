@@ -220,7 +220,34 @@ async def _stream_sse(script_args: list[str]):
     yield f"data: {json.dumps({'type': 'done'})}\n\n"
 
 
+# ── symbols cache ─────────────────────────────────────────────────────────────
+
+_symbols_cache: dict = {"data": None, "ts": 0.0}
+
+
 # ── routes ────────────────────────────────────────────────────────────────────
+
+@app.get("/symbols")
+async def list_symbols():
+    """Proxy FMP /stable/stock-list and cache for 1 hour."""
+    import time as _time
+    fmp_key = os.environ.get("FMP_API_KEY")
+    if not fmp_key:
+        raise HTTPException(status_code=500, detail="FMP_API_KEY not set")
+    now = _time.time()
+    if _symbols_cache["data"] is not None and now - _symbols_cache["ts"] < 3600:
+        return {"symbols": _symbols_cache["data"], "count": len(_symbols_cache["data"])}
+    async with httpx.AsyncClient(timeout=30.0) as client:
+        resp = await client.get(
+            "https://financialmodelingprep.com/stable/stock-list",
+            params={"apikey": fmp_key},
+        )
+        resp.raise_for_status()
+        data = resp.json()
+    _symbols_cache["data"] = data
+    _symbols_cache["ts"] = now
+    return {"symbols": data, "count": len(data)}
+
 
 @app.get("/health")
 async def health():
@@ -475,6 +502,26 @@ async def ui():
     #cancel{background:#374151;color:#e2e8f0;display:none}
     #send:disabled,#cancel:disabled{opacity:.4;cursor:not-allowed}
     .thinking{color:#64748b;font-style:italic}
+    .sym-btn{background:#1e3a5f;border:1px solid #3b82f6;color:#93c5fd;padding:6px 14px;border-radius:6px;font-size:.8rem;font-weight:600;cursor:pointer;white-space:nowrap}
+    .sym-btn:hover{background:#243f6a;border-color:#60a5fa}
+    #symModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;align-items:center;justify-content:center}
+    #symModal.open{display:flex}
+    #symBox{background:#1a1f2e;border:1px solid #2d3748;border-radius:12px;width:min(780px,95vw);max-height:82vh;display:flex;flex-direction:column;overflow:hidden}
+    #symHeader{display:flex;align-items:center;gap:10px;padding:16px 20px;border-bottom:1px solid #2d3748}
+    #symTitle{color:#93c5fd;font-weight:600;font-size:.95rem;white-space:nowrap}
+    #symSearch{flex:1;background:#0f1117;border:1px solid #2d3748;color:#e2e8f0;padding:8px 12px;border-radius:6px;font-size:.9rem;outline:none}
+    #symSearch:focus{border-color:#3b82f6}
+    #symClose{background:none;border:none;color:#64748b;font-size:1.5rem;cursor:pointer;line-height:1;padding:0 4px}
+    #symClose:hover{color:#e2e8f0}
+    #symCount{font-size:.75rem;color:#64748b;padding:6px 20px;border-bottom:1px solid #1e2535}
+    #symList{overflow-y:auto;flex:1}
+    #symList table{width:100%;border-collapse:collapse;font-size:.85rem}
+    #symList th{position:sticky;top:0;background:#1a1f2e;color:#64748b;font-weight:500;text-align:left;padding:8px 16px;border-bottom:1px solid #2d3748;font-size:.78rem;text-transform:uppercase;letter-spacing:.04em}
+    #symList td{padding:9px 16px;border-bottom:1px solid #1e2535}
+    #symList tbody tr{cursor:pointer}
+    #symList tbody tr:hover td{background:#0f1117}
+    #symList td:first-child{color:#93c5fd;font-weight:600;font-family:monospace;font-size:.9rem}
+    #symLoading{padding:32px;text-align:center;color:#64748b;font-style:italic}
   </style>
 </head>
 <body>
@@ -487,6 +534,7 @@ async def ui():
       <option value="nemotron">Nemotron Ultra 550B</option>
       <option value="laguna">Laguna M.1</option>
     </select>
+    <button class="sym-btn" onclick="openSymbols()">Browse Symbols</button>
   </header>
   <div id="messages"></div>
   <div id="samples"></div>
@@ -494,6 +542,22 @@ async def ui():
     <textarea id="input" placeholder="VIX is at 28 and rising — what does elevated fear mean for equity positioning and sector rotation today?"></textarea>
     <button id="cancel" class="btn" onclick="cancel()">Cancel</button>
     <button id="send"   class="btn" onclick="sendMsg()">Send</button>
+  </div>
+
+  <!-- Symbols modal -->
+  <div id="symModal" onclick="if(event.target===this)closeSymbols()">
+    <div id="symBox">
+      <div id="symHeader">
+        <span id="symTitle">Available Symbols — FMP Free Tier</span>
+        <input id="symSearch" type="text" placeholder="Search ticker or company name…" oninput="debounceFilter()">
+        <button id="symClose" onclick="closeSymbols()" title="Close">&#x2715;</button>
+      </div>
+      <div id="symCount"></div>
+      <div id="symList">
+        <div id="symLoading">Loading symbols…</div>
+        <table style="display:none"><thead><tr><th>Ticker</th><th>Company</th><th>Exchange</th><th>Type</th></tr></thead><tbody id="symBody"></tbody></table>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -613,6 +677,84 @@ async def ui():
       if (controller) { controller.abort(); controller = null; }
       stopTimer();
     }
+
+    // ── Symbols modal ────────────────────────────────────────────────────────
+    let allSymbols = [];
+    let symLoaded  = false;
+    let filterTimer = null;
+
+    function openSymbols() {
+      document.getElementById('symModal').classList.add('open');
+      document.getElementById('symSearch').focus();
+      if (!symLoaded) loadSymbols();
+    }
+
+    function closeSymbols() {
+      document.getElementById('symModal').classList.remove('open');
+    }
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closeSymbols();
+    });
+
+    async function loadSymbols() {
+      try {
+        const res = await fetch('/symbols');
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const { symbols } = await res.json();
+        allSymbols = symbols || [];
+        symLoaded  = true;
+        document.getElementById('symLoading').style.display = 'none';
+        document.querySelector('#symList table').style.display = '';
+        document.getElementById('symBody').addEventListener('click', e => {
+          const row = e.target.closest('tr[data-ticker]');
+          if (row) pickSymbol(row.dataset.ticker);
+        });
+        renderSymbols(allSymbols);
+      } catch(e) {
+        document.getElementById('symLoading').textContent = 'Failed to load: ' + e.message;
+      }
+    }
+
+    function debounceFilter() {
+      clearTimeout(filterTimer);
+      filterTimer = setTimeout(applyFilter, 180);
+    }
+
+    function applyFilter() {
+      const q = document.getElementById('symSearch').value.toLowerCase().trim();
+      const filtered = q
+        ? allSymbols.filter(s =>
+            (s.symbol||'').toLowerCase().includes(q) ||
+            (s.name||'').toLowerCase().includes(q))
+        : allSymbols;
+      renderSymbols(filtered);
+    }
+
+    function esc(s) {
+      return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function renderSymbols(list) {
+      const shown = list.slice(0, 250);
+      document.getElementById('symCount').textContent =
+        `Showing ${shown.length} of ${list.length.toLocaleString()} (${allSymbols.length.toLocaleString()} total)`;
+      document.getElementById('symBody').innerHTML = shown.map(s =>
+        `<tr data-ticker="${esc(s.symbol)}">
+          <td>${esc(s.symbol)}</td>
+          <td>${esc(s.name)}</td>
+          <td>${esc(s.exchangeShortName||s.exchange)}</td>
+          <td>${esc(s.type)}</td>
+        </tr>`
+      ).join('');
+    }
+
+    function pickSymbol(ticker) {
+      inputEl.value = ticker;
+      closeSymbols();
+      inputEl.focus();
+    }
+    // ── End symbols modal ─────────────────────────────────────────────────────
 
     async function sendMsg() {
       const message = inputEl.value.trim();
