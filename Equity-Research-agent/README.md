@@ -12,7 +12,7 @@ The platform ships two actuarial specialist agents in `agents/`, designed for **
 
 **Agent file:** `agents/chief-capital-modelling-agent.md`
 
-![Chief of Capital Modelling — Chat UI](assets/chief-capital-modelling-ui.png)
+![W&I — £80M Fintech Valuation ROL](assets/80mil-valuation-ROL.png)
 
 The Chief Capital Modelling agent operates as a Fellow-level actuary with 15+ years of Solvency II Internal Model experience. It provides quantitative capital analysis across the full lifecycle of an AI insurance portfolio: SCR calibration, reinsurance optimisation, stress testing, and strategic transaction support.
 
