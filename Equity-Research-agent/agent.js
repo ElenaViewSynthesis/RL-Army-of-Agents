@@ -1,6 +1,7 @@
 // import AnthropicBedrock from '@anthropic-ai/bedrock-sdk';
 // import Anthropic from '@anthropic-ai/sdk';
 import { OpenRouter } from '@openrouter/sdk';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import { createClient } from '@supabase/supabase-js';
 import * as weave from 'weave';
 import { writeFileSync, mkdirSync } from 'fs';
@@ -328,25 +329,93 @@ STYLE REQUIREMENTS:
 - Use comparative language: "Revenue grew 23% YoY to $94.8B vs. peer median of 12%"
 - Be opinionated — analysts who say "it depends" are useless. Take a clear stance.`;
 
+// ── Gemini format converters ──────────────────────────────────────────────────
+
+function toGeminiTools(tools) {
+  return [{ functionDeclarations: tools.map((t) => ({ name: t.function.name, description: t.function.description, parameters: t.function.parameters })) }];
+}
+
+function toGeminiContents(messages) {
+  const idToName = {};
+  for (const msg of messages) {
+    if (msg.toolCalls) for (const tc of msg.toolCalls) idToName[tc.id] = tc.function.name;
+  }
+  const contents = [];
+  let i = 0;
+  while (i < messages.length) {
+    const msg = messages[i];
+    if (msg.role === 'system') { i++; continue; }
+    if (msg.role === 'user') {
+      contents.push({ role: 'user', parts: [{ text: msg.content }] });
+      i++;
+    } else if (msg.role === 'assistant') {
+      const parts = [];
+      if (msg.content) parts.push({ text: msg.content });
+      if (msg.toolCalls) for (const tc of msg.toolCalls) parts.push({ functionCall: { name: tc.function.name, args: JSON.parse(tc.function.arguments || '{}') } });
+      contents.push({ role: 'model', parts });
+      i++;
+    } else if (msg.role === 'tool') {
+      const parts = [];
+      while (i < messages.length && messages[i].role === 'tool') {
+        const m = messages[i];
+        parts.push({ functionResponse: { name: idToName[m.toolCallId] || m.toolCallId, response: { result: m.content } } });
+        i++;
+      }
+      contents.push({ role: 'user', parts });
+    } else {
+      i++;
+    }
+  }
+  return contents;
+}
+
+function fromGeminiResponse(result) {
+  const parts = result.response.candidates[0].content.parts || [];
+  const funcCalls = parts.filter((p) => p.functionCall);
+  const content   = parts.filter((p) => p.text).map((p) => p.text).join('') || null;
+  const toolCalls = funcCalls.map((fc, idx) => ({ id: `gemini_${idx}_${fc.functionCall.name}`, type: 'function', function: { name: fc.functionCall.name, arguments: JSON.stringify(fc.functionCall.args) } }));
+  return {
+    choices: [{
+      message: { role: 'assistant', content, toolCalls: toolCalls.length > 0 ? toolCalls : undefined },
+      finishReason: toolCalls.length > 0 ? 'tool_calls' : 'stop',
+    }],
+  };
+}
+
 // ── ResearchModel ─────────────────────────────────────────────────────────────
 // JS equivalent of Python's class JsonModel(weave.Model):
 //   prompt: weave.Prompt = weave.StringPrompt(...)
 //   @weave.op def predict(...)
 class ResearchModel extends weave.WeaveObject {
   constructor(modelId = MODEL) {
-    super({ name: 'equity-research-agent', description: 'Institutional equity research powered by OpenRouter' });
+    super({ name: 'equity-research-agent', description: 'Institutional equity research powered by OpenRouter / Gemini' });
     this.model      = modelId;
     this.isNemotron = modelId.includes('nemotron');
+    this.isGemini   = modelId.startsWith('gemini');
     this.prompt = new weave.StringPrompt({
       name: 'equity-research-system-prompt',
       content: SYSTEM_PROMPT,
     });
-    this._client = new OpenRouter({ apiKey: process.env.OPENROUTER_API_KEY });
+    if (this.isGemini) {
+      this._gemini = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    } else {
+      this._client = new OpenRouter({ apiKey: process.env.OPENROUTER_API_KEY });
+    }
     this.predict  = weave.op(this._predict.bind(this),  { name: 'predict'   });
     this.callTool = weave.op(this._callTool.bind(this), { name: 'fmp_tool'  });
   }
 
   async _predict(messages) {
+    if (this.isGemini) {
+      const systemMsg = messages.find((m) => m.role === 'system');
+      const model = this._gemini.getGenerativeModel({
+        model: this.model,
+        systemInstruction: systemMsg?.content,
+        tools: toGeminiTools(TOOLS),
+      });
+      const result = await model.generateContent({ contents: toGeminiContents(messages) });
+      return fromGeminiResponse(result);
+    }
     if (this.isNemotron) return this._predictStreaming(messages);
     return this._client.chat.send({ model: this.model, messages, tools: TOOLS });
   }
@@ -414,7 +483,11 @@ async function runResearch(ticker, shouldSave, modelId = MODEL) {
   if (!FMP_KEY) {
     throw new Error('FMP_API_KEY environment variable is not set. See .env.example for setup instructions.');
   }
-  if (!process.env.OPENROUTER_API_KEY) {
+  const isGeminiModel = modelId.startsWith('gemini');
+  if (isGeminiModel && !process.env.GEMINI_API_KEY) {
+    throw new Error('GEMINI_API_KEY environment variable is not set.');
+  }
+  if (!isGeminiModel && !process.env.OPENROUTER_API_KEY) {
     throw new Error('OPENROUTER_API_KEY environment variable is not set. See .env.example for setup instructions.');
   }
 
@@ -428,7 +501,8 @@ async function runResearch(ticker, shouldSave, modelId = MODEL) {
   console.error(`\nEquity Research Agent`);
   console.error(`════════════════════════════════════`);
   console.error(`Ticker: ${symbol}`);
-  console.error(`Model:  ${model.model}${model.isNemotron ? ' [reasoning+streaming]' : ''} (OpenRouter)`);
+  const backend = model.isGemini ? 'Gemini API' : 'OpenRouter';
+  console.error(`Model:  ${model.model}${model.isNemotron ? ' [reasoning+streaming]' : ''} (${backend})`);
   console.error(`Weave:  ${weaveEnabled ? WEAVE_PROJECT + ' ✓' : 'disabled (no WANDB_API_KEY)'}`);
   console.error(`════════════════════════════════════\n`);
 
