@@ -435,7 +435,7 @@ async def chat_stream(req: ChatRequest):
     messages.append({"role": "user", "content": req.message})
 
     return StreamingResponse(
-        _openrouter_stream(messages, req.model),
+        _agent_stream_and_save("general-chat", messages, req.model, req.message),
         media_type="text/event-stream",
         headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
     )
