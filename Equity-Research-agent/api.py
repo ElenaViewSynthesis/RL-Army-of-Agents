@@ -789,7 +789,7 @@ async def ui():
         document.querySelector('#symList table').style.display = '';
         document.getElementById('symBody').addEventListener('click', e => {
           const row = e.target.closest('tr[data-ticker]');
-          if (row) pickSymbol(row.dataset.ticker);
+          if (row) pickSymbol(row.dataset.ticker, row.dataset.name);
         });
         renderSymbols(allSymbols);
       } catch(e) {
@@ -821,7 +821,7 @@ async def ui():
       document.getElementById('symCount').textContent =
         `Showing ${shown.length} of ${list.length.toLocaleString()} (${allSymbols.length.toLocaleString()} total)`;
       document.getElementById('symBody').innerHTML = shown.map(s =>
-        `<tr data-ticker="${esc(s.symbol)}">
+        `<tr data-ticker="${esc(s.symbol)}" data-name="${esc(s.name)}">
           <td>${esc(s.symbol)}</td>
           <td>${esc(s.name)}</td>
           <td>${esc(s.exchangeShortName||s.exchange)}</td>
@@ -830,8 +830,9 @@ async def ui():
       ).join('');
     }
 
-    function pickSymbol(ticker) {
-      inputEl.value = msgs.children.length === 0 ? `Research ${ticker}` : ticker;
+    function pickSymbol(ticker, name) {
+      const label = name ? `${ticker} (${name})` : ticker;
+      inputEl.value = msgs.children.length === 0 ? `Research ${label}` : label;
       closeSymbols();
       inputEl.focus();
     }
