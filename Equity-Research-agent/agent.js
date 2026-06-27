@@ -349,10 +349,14 @@ function toGeminiContents(messages) {
       contents.push({ role: 'user', parts: [{ text: msg.content }] });
       i++;
     } else if (msg.role === 'assistant') {
-      const parts = [];
-      if (msg.content) parts.push({ text: msg.content });
-      if (msg.toolCalls) for (const tc of msg.toolCalls) parts.push({ functionCall: { name: tc.function.name, args: JSON.parse(tc.function.arguments || '{}') } });
-      contents.push({ role: 'model', parts });
+      if (msg._geminiParts) {
+        contents.push({ role: 'model', parts: msg._geminiParts });
+      } else {
+        const parts = [];
+        if (msg.content) parts.push({ text: msg.content });
+        if (msg.toolCalls) for (const tc of msg.toolCalls) parts.push({ functionCall: { name: tc.function.name, args: JSON.parse(tc.function.arguments || '{}') } });
+        contents.push({ role: 'model', parts });
+      }
       i++;
     } else if (msg.role === 'tool') {
       const parts = [];
@@ -376,7 +380,8 @@ function fromGeminiResponse(result) {
   const toolCalls = funcCalls.map((fc, idx) => ({ id: `gemini_${idx}_${fc.functionCall.name}`, type: 'function', function: { name: fc.functionCall.name, arguments: JSON.stringify(fc.functionCall.args) } }));
   return {
     choices: [{
-      message: { role: 'assistant', content, toolCalls: toolCalls.length > 0 ? toolCalls : undefined },
+      // _geminiParts preserves thought_signature tokens required by thinking models
+      message: { role: 'assistant', content, toolCalls: toolCalls.length > 0 ? toolCalls : undefined, _geminiParts: parts },
       finishReason: toolCalls.length > 0 ? 'tool_calls' : 'stop',
     }],
   };
