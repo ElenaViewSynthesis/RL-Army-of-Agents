@@ -222,17 +222,95 @@ async def _stream_sse(script_args: list[str]):
 
 # ── symbols cache ─────────────────────────────────────────────────────────────
 
-_FREE_TIER_SYMBOLS = {
-    "AAPL","TSLA","AMZN","MSFT","NVDA","GOOGL","META","NFLX","JPM","V",
-    "BAC","PYPL","DIS","T","PFE","COST","INTC","KO","TGT","NKE","SPY",
-    "BA","BABA","XOM","WMT","GE","CSCO","VZ","JNJ","CVX","PLTR","SQ",
-    "SHOP","SBUX","SOFI","HOOD","RBLX","SNAP","AMD","UBER","FDX","ABBV",
-    "ETSY","MRNA","LMT","GM","F","LCID","CCL","DAL","UAL","AAL","TSM",
-    "SONY","ET","MRO","COIN","RIVN","RIOT","CPRX","VWO","SPYG","NOK",
-    "ROKU","VIAC","ATVI","BIDU","DOCU","ZM","PINS","TLRY","WBA","MGM",
-    "NIO","C","GS","WFC","ADBE","PEP","UNH","CARR","HCA","TWTR","BILI",
-    "SIRI","FUBO","RKT",
-}
+_FREE_TIER_SYMBOLS = [
+    {"symbol":"AAPL",  "name":"Apple Inc.",                       "exchangeShortName":"NASDAQ","type":"stock"},
+    {"symbol":"ABBV",  "name":"AbbVie Inc.",                      "exchangeShortName":"NYSE",  "type":"stock"},
+    {"symbol":"ADBE",  "name":"Adobe Inc.",                       "exchangeShortName":"NASDAQ","type":"stock"},
+    {"symbol":"AAL",   "name":"American Airlines Group",          "exchangeShortName":"NASDAQ","type":"stock"},
+    {"symbol":"AMD",   "name":"Advanced Micro Devices",           "exchangeShortName":"NASDAQ","type":"stock"},
+    {"symbol":"AMZN",  "name":"Amazon.com Inc.",                  "exchangeShortName":"NASDAQ","type":"stock"},
+    {"symbol":"ATVI",  "name":"Activision Blizzard",              "exchangeShortName":"NASDAQ","type":"stock"},
+    {"symbol":"BA",    "name":"Boeing Co.",                       "exchangeShortName":"NYSE",  "type":"stock"},
+    {"symbol":"BAC",   "name":"Bank of America Corp.",            "exchangeShortName":"NYSE",  "type":"stock"},
+    {"symbol":"BABA",  "name":"Alibaba Group Holding",            "exchangeShortName":"NYSE",  "type":"stock"},
+    {"symbol":"BIDU",  "name":"Baidu Inc.",                       "exchangeShortName":"NASDAQ","type":"stock"},
+    {"symbol":"BILI",  "name":"Bilibili Inc.",                    "exchangeShortName":"NASDAQ","type":"stock"},
+    {"symbol":"C",     "name":"Citigroup Inc.",                   "exchangeShortName":"NYSE",  "type":"stock"},
+    {"symbol":"CARR",  "name":"Carrier Global Corp.",             "exchangeShortName":"NYSE",  "type":"stock"},
+    {"symbol":"CCL",   "name":"Carnival Corporation",             "exchangeShortName":"NYSE",  "type":"stock"},
+    {"symbol":"COIN",  "name":"Coinbase Global Inc.",             "exchangeShortName":"NASDAQ","type":"stock"},
+    {"symbol":"COST",  "name":"Costco Wholesale Corp.",           "exchangeShortName":"NASDAQ","type":"stock"},
+    {"symbol":"CPRX",  "name":"Catalyst Pharmaceuticals",         "exchangeShortName":"NASDAQ","type":"stock"},
+    {"symbol":"CSCO",  "name":"Cisco Systems Inc.",               "exchangeShortName":"NASDAQ","type":"stock"},
+    {"symbol":"CVX",   "name":"Chevron Corporation",              "exchangeShortName":"NYSE",  "type":"stock"},
+    {"symbol":"DAL",   "name":"Delta Air Lines Inc.",             "exchangeShortName":"NYSE",  "type":"stock"},
+    {"symbol":"DIS",   "name":"Walt Disney Co.",                  "exchangeShortName":"NYSE",  "type":"stock"},
+    {"symbol":"DOCU",  "name":"DocuSign Inc.",                    "exchangeShortName":"NASDAQ","type":"stock"},
+    {"symbol":"ET",    "name":"Energy Transfer LP",               "exchangeShortName":"NYSE",  "type":"stock"},
+    {"symbol":"ETSY",  "name":"Etsy Inc.",                        "exchangeShortName":"NASDAQ","type":"stock"},
+    {"symbol":"F",     "name":"Ford Motor Co.",                   "exchangeShortName":"NYSE",  "type":"stock"},
+    {"symbol":"FDX",   "name":"FedEx Corporation",                "exchangeShortName":"NYSE",  "type":"stock"},
+    {"symbol":"FUBO",  "name":"fuboTV Inc.",                      "exchangeShortName":"NYSE",  "type":"stock"},
+    {"symbol":"GE",    "name":"GE Aerospace",                     "exchangeShortName":"NYSE",  "type":"stock"},
+    {"symbol":"GM",    "name":"General Motors Co.",               "exchangeShortName":"NYSE",  "type":"stock"},
+    {"symbol":"GOOGL", "name":"Alphabet Inc.",                    "exchangeShortName":"NASDAQ","type":"stock"},
+    {"symbol":"GS",    "name":"Goldman Sachs Group",              "exchangeShortName":"NYSE",  "type":"stock"},
+    {"symbol":"HCA",   "name":"HCA Healthcare Inc.",              "exchangeShortName":"NYSE",  "type":"stock"},
+    {"symbol":"HOOD",  "name":"Robinhood Markets Inc.",           "exchangeShortName":"NASDAQ","type":"stock"},
+    {"symbol":"INTC",  "name":"Intel Corporation",                "exchangeShortName":"NASDAQ","type":"stock"},
+    {"symbol":"JNJ",   "name":"Johnson & Johnson",                "exchangeShortName":"NYSE",  "type":"stock"},
+    {"symbol":"JPM",   "name":"JPMorgan Chase & Co.",             "exchangeShortName":"NYSE",  "type":"stock"},
+    {"symbol":"KO",    "name":"Coca-Cola Co.",                    "exchangeShortName":"NYSE",  "type":"stock"},
+    {"symbol":"LCID",  "name":"Lucid Group Inc.",                 "exchangeShortName":"NASDAQ","type":"stock"},
+    {"symbol":"LMT",   "name":"Lockheed Martin Corp.",            "exchangeShortName":"NYSE",  "type":"stock"},
+    {"symbol":"META",  "name":"Meta Platforms Inc.",              "exchangeShortName":"NASDAQ","type":"stock"},
+    {"symbol":"MGM",   "name":"MGM Resorts International",        "exchangeShortName":"NYSE",  "type":"stock"},
+    {"symbol":"MRNA",  "name":"Moderna Inc.",                     "exchangeShortName":"NASDAQ","type":"stock"},
+    {"symbol":"MRO",   "name":"Marathon Oil Corporation",         "exchangeShortName":"NYSE",  "type":"stock"},
+    {"symbol":"MSFT",  "name":"Microsoft Corporation",            "exchangeShortName":"NASDAQ","type":"stock"},
+    {"symbol":"NFLX",  "name":"Netflix Inc.",                     "exchangeShortName":"NASDAQ","type":"stock"},
+    {"symbol":"NIO",   "name":"NIO Inc.",                         "exchangeShortName":"NYSE",  "type":"stock"},
+    {"symbol":"NKE",   "name":"Nike Inc.",                        "exchangeShortName":"NYSE",  "type":"stock"},
+    {"symbol":"NOK",   "name":"Nokia Corporation",                "exchangeShortName":"NYSE",  "type":"stock"},
+    {"symbol":"NVDA",  "name":"NVIDIA Corporation",               "exchangeShortName":"NASDAQ","type":"stock"},
+    {"symbol":"PEP",   "name":"PepsiCo Inc.",                     "exchangeShortName":"NASDAQ","type":"stock"},
+    {"symbol":"PFE",   "name":"Pfizer Inc.",                      "exchangeShortName":"NYSE",  "type":"stock"},
+    {"symbol":"PINS",  "name":"Pinterest Inc.",                   "exchangeShortName":"NYSE",  "type":"stock"},
+    {"symbol":"PLTR",  "name":"Palantir Technologies",            "exchangeShortName":"NASDAQ","type":"stock"},
+    {"symbol":"PYPL",  "name":"PayPal Holdings Inc.",             "exchangeShortName":"NASDAQ","type":"stock"},
+    {"symbol":"RBLX",  "name":"Roblox Corporation",               "exchangeShortName":"NYSE",  "type":"stock"},
+    {"symbol":"RIOT",  "name":"Riot Platforms Inc.",              "exchangeShortName":"NASDAQ","type":"stock"},
+    {"symbol":"RIVN",  "name":"Rivian Automotive Inc.",           "exchangeShortName":"NASDAQ","type":"stock"},
+    {"symbol":"RKT",   "name":"Rocket Companies Inc.",            "exchangeShortName":"NYSE",  "type":"stock"},
+    {"symbol":"ROKU",  "name":"Roku Inc.",                        "exchangeShortName":"NASDAQ","type":"stock"},
+    {"symbol":"SBUX",  "name":"Starbucks Corporation",            "exchangeShortName":"NASDAQ","type":"stock"},
+    {"symbol":"SHOP",  "name":"Shopify Inc.",                     "exchangeShortName":"NYSE",  "type":"stock"},
+    {"symbol":"SIRI",  "name":"Sirius XM Holdings",               "exchangeShortName":"NASDAQ","type":"stock"},
+    {"symbol":"SNAP",  "name":"Snap Inc.",                        "exchangeShortName":"NYSE",  "type":"stock"},
+    {"symbol":"SOFI",  "name":"SoFi Technologies",                "exchangeShortName":"NASDAQ","type":"stock"},
+    {"symbol":"SONY",  "name":"Sony Group Corporation",           "exchangeShortName":"NYSE",  "type":"stock"},
+    {"symbol":"SPY",   "name":"SPDR S&P 500 ETF Trust",           "exchangeShortName":"NYSE",  "type":"etf"},
+    {"symbol":"SPYG",  "name":"SPDR Portfolio S&P 500 Growth ETF","exchangeShortName":"NYSE",  "type":"etf"},
+    {"symbol":"SQ",    "name":"Block Inc.",                       "exchangeShortName":"NYSE",  "type":"stock"},
+    {"symbol":"T",     "name":"AT&T Inc.",                        "exchangeShortName":"NYSE",  "type":"stock"},
+    {"symbol":"TGT",   "name":"Target Corporation",               "exchangeShortName":"NYSE",  "type":"stock"},
+    {"symbol":"TLRY",  "name":"Tilray Brands Inc.",               "exchangeShortName":"NASDAQ","type":"stock"},
+    {"symbol":"TSM",   "name":"Taiwan Semiconductor Mfg.",        "exchangeShortName":"NYSE",  "type":"stock"},
+    {"symbol":"TSLA",  "name":"Tesla Inc.",                       "exchangeShortName":"NASDAQ","type":"stock"},
+    {"symbol":"TWTR",  "name":"Twitter / X Corp.",                "exchangeShortName":"NYSE",  "type":"stock"},
+    {"symbol":"UAL",   "name":"United Airlines Holdings",         "exchangeShortName":"NASDAQ","type":"stock"},
+    {"symbol":"UBER",  "name":"Uber Technologies Inc.",           "exchangeShortName":"NYSE",  "type":"stock"},
+    {"symbol":"UNH",   "name":"UnitedHealth Group Inc.",          "exchangeShortName":"NYSE",  "type":"stock"},
+    {"symbol":"V",     "name":"Visa Inc.",                        "exchangeShortName":"NYSE",  "type":"stock"},
+    {"symbol":"VIAC",  "name":"Paramount Global (ex-ViacomCBS)",  "exchangeShortName":"NASDAQ","type":"stock"},
+    {"symbol":"VWO",   "name":"Vanguard FTSE Emerging Markets ETF","exchangeShortName":"NYSE", "type":"etf"},
+    {"symbol":"VZ",    "name":"Verizon Communications",           "exchangeShortName":"NYSE",  "type":"stock"},
+    {"symbol":"WBA",   "name":"Walgreens Boots Alliance",         "exchangeShortName":"NASDAQ","type":"stock"},
+    {"symbol":"WFC",   "name":"Wells Fargo & Co.",                "exchangeShortName":"NYSE",  "type":"stock"},
+    {"symbol":"WMT",   "name":"Walmart Inc.",                     "exchangeShortName":"NYSE",  "type":"stock"},
+    {"symbol":"XOM",   "name":"Exxon Mobil Corp.",                "exchangeShortName":"NYSE",  "type":"stock"},
+    {"symbol":"ZM",    "name":"Zoom Video Communications",        "exchangeShortName":"NASDAQ","type":"stock"},
+]
 
 _symbols_cache: dict = {"data": None, "ts": 0.0}
 
@@ -241,28 +319,8 @@ _symbols_cache: dict = {"data": None, "ts": 0.0}
 
 @app.get("/symbols")
 async def list_symbols():
-    """Return free-tier symbols with metadata from FMP /stable/stock-list (cached 1 hour)."""
-    import time as _time
-    fmp_key = os.environ.get("FMP_API_KEY")
-    if not fmp_key:
-        raise HTTPException(status_code=500, detail="FMP_API_KEY not set")
-    now = _time.time()
-    if _symbols_cache["data"] is not None and now - _symbols_cache["ts"] < 3600:
-        return {"symbols": _symbols_cache["data"], "count": len(_symbols_cache["data"])}
-    async with httpx.AsyncClient(timeout=30.0) as client:
-        resp = await client.get(
-            "https://financialmodelingprep.com/stable/stock-list",
-            params={"apikey": fmp_key},
-        )
-        resp.raise_for_status()
-        all_symbols = resp.json()
-    data = sorted(
-        [s for s in all_symbols if (s.get("symbol") or "") in _FREE_TIER_SYMBOLS],
-        key=lambda s: s.get("symbol", ""),
-    )
-    _symbols_cache["data"] = data
-    _symbols_cache["ts"] = now
-    return {"symbols": data, "count": len(data)}
+    """Return the hardcoded list of FMP free-tier supported symbols."""
+    return {"symbols": _FREE_TIER_SYMBOLS, "count": len(_FREE_TIER_SYMBOLS)}
 
 
 @app.get("/health")

@@ -1,7 +1,7 @@
 export const MODEL_NEMOTRON = 'nvidia/nemotron-3-ultra-550b-a55b:free';
 export const MODEL_LAGUNA   = 'poolside/laguna-m.1:free';
 export const MODEL_GEMINI   = 'gemini-3.5-flash';
-export const MODEL          = MODEL_GEMINI;
+export const MODEL          = MODEL_NEMOTRON;
 export const WEAVE_PROJECT = 'elenamylocuda-gemma/Financial MP';
 export const VIX_SYMBOL    = '^VIX';
 
