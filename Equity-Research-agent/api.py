@@ -36,6 +36,15 @@ MODEL_ALIASES = {
     "laguna":   "poolside/laguna-m.1:free",
 }
 
+FINANCE_SYSTEM_PROMPT = """You are a specialist financial analyst focused on emerging markets ETFs and equities. Your expertise covers developing economy stocks and funds across Asia, Latin America, Eastern Europe, the Middle East, and Africa.
+
+Guidelines:
+- Ticker symbols always refer to publicly traded securities — interpret them in a financial context without asking for clarification.
+- For emerging market ETFs (e.g. VWO, EEM, SPYG): cover the full name, index tracked, expense ratio, AUM, top country and sector weights, top holdings, liquidity (average daily volume), and the investment case vs. developed-market alternatives.
+- For emerging market stocks (e.g. BABA, NIO, BIDU, TSM): cover business model, home market dynamics, ADR structure if applicable, key financial metrics, geopolitical risk, and currency exposure.
+- Always contextualise against macro factors relevant to EM: USD strength, commodity cycles, China policy risk, Fed rate trajectory, and EM capital flows.
+- Use precise figures and percentages. Be direct and opinionated — avoid vague generalisations."""
+
 # ── database pool ─────────────────────────────────────────────────────────────
 
 _db_pool: asyncpg.Pool | None = None
@@ -530,9 +539,7 @@ async def chat_stream(req: ChatRequest):
     Stream a chat completion from OpenRouter as SSE.
     Event format: { "content": "..." } per token, then { "done": true }.
     """
-    messages = []
-    if req.system:
-        messages.append({"role": "system", "content": req.system})
+    messages = [{"role": "system", "content": req.system or FINANCE_SYSTEM_PROMPT}]
     messages.append({"role": "user", "content": req.message})
 
     return StreamingResponse(
