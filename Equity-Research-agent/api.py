@@ -824,7 +824,7 @@ async def ui():
     }
 
     function pickSymbol(ticker) {
-      inputEl.value = ticker;
+      inputEl.value = msgs.children.length === 0 ? `Research ${ticker}` : ticker;
       closeSymbols();
       inputEl.focus();
     }
