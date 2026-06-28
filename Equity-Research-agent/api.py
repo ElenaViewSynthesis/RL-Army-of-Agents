@@ -615,6 +615,74 @@ async def _fetch_sec_filings_context(days: int = 30, limit: int = 50) -> str:
     return "\n".join(lines)
 
 
+@app.get("/sec-filings/form-type")
+async def sec_filings_by_form_type(
+    form_type: str = Query(..., alias="formType", description="SEC form type e.g. 8-K, 10-K, 10-Q, 13D, 13F, S-1, DEF 14A"),
+    from_date: str = Query(default=None, alias="from", description="Start date YYYY-MM-DD (default: 30 days ago)"),
+    to_date:   str = Query(default=None, alias="to",   description="End date YYYY-MM-DD (default: today)"),
+    page:      int = Query(default=0,    description="Page index"),
+    limit:     int = Query(default=20,   description="Results per page (max 100)"),
+):
+    """
+    Search SEC filings by form type (premium FMP endpoint).
+    Supports 8-K, 10-K, 10-Q, 13D, 13F, S-1, DEF 14A, and other SEC form types.
+    """
+    fmp_key = os.environ.get("FMP_API_KEY")
+    if not fmp_key:
+        raise HTTPException(status_code=503, detail="FMP_API_KEY not configured")
+
+    today = date.today()
+    params = {
+        "formType": form_type,
+        "from":     from_date or (today - timedelta(days=30)).isoformat(),
+        "to":       to_date   or today.isoformat(),
+        "page":     page,
+        "limit":    min(limit, 100),
+        "apikey":   fmp_key,
+    }
+
+    try:
+        async with httpx.AsyncClient(timeout=20.0) as client:
+            resp = await client.get(f"{FMP_STABLE}/sec-filings-search/form-type", params=params)
+            resp.raise_for_status()
+            filings = resp.json()
+    except httpx.HTTPStatusError as e:
+        raise HTTPException(status_code=e.response.status_code, detail=f"FMP error: {e.response.text[:200]}")
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"FMP request failed: {e}")
+
+    return {"filings": filings, "count": len(filings), "form_type": form_type, "params": params}
+
+
+@app.get("/sec-filings/search")
+async def sec_filings_company_search(
+    company: str = Query(..., description="Company or entity name to search e.g. 'Berkshire', 'Apple'"),
+):
+    """
+    Search for SEC filers by company or entity name (premium FMP endpoint).
+    Returns CIK, SIC code, industry title, business address, and phone number.
+    Use this to identify the correct entity before pulling their specific filings.
+    """
+    fmp_key = os.environ.get("FMP_API_KEY")
+    if not fmp_key:
+        raise HTTPException(status_code=503, detail="FMP_API_KEY not configured")
+
+    try:
+        async with httpx.AsyncClient(timeout=20.0) as client:
+            resp = await client.get(
+                f"{FMP_STABLE}/sec-filings-company-search/name",
+                params={"company": company, "apikey": fmp_key},
+            )
+            resp.raise_for_status()
+            results = resp.json()
+    except httpx.HTTPStatusError as e:
+        raise HTTPException(status_code=e.response.status_code, detail=f"FMP error: {e.response.text[:200]}")
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"FMP request failed: {e}")
+
+    return {"results": results, "count": len(results), "query": company}
+
+
 @app.post("/chat/stream")
 async def chat_stream(req: ChatRequest):
     """
@@ -757,10 +825,10 @@ async def ui():
       'sec-filings-analyst': {
         placeholder: 'Which companies filed material 8-K events this week — M&A, CEO changes, or impairments — and what are the investment implications?',
         samples: [
-          'Triage the recent 8-K filings above. Which events are Tier 1 catalysts (M&A close, CEO departure, bankruptcy) and which can be deprioritised? Give me a ranked watchlist.',
-          'Identify any 8-K filings in the list that suggest M&A activity — Item 1.01 definitive agreements or Item 2.01 completions — and assess the implied deal multiples and sector context.',
-          'Flag all Item 5.02 leadership change filings from the last 30 days. Which departures look sudden and unexplained, and what does the board composition signal about strategic direction?',
-          'Which 8-K filers in the technology or semiconductor sector have disclosed material new contracts or strategic partnerships in the last 30 days? Assess the revenue materiality and competitive read-through.'
+          'Triage the recent 8-K filings above. Which events are Tier 1 catalysts (M&A close, CEO departure, bankruptcy) and which can be deprioritised? Give me a ranked watchlist with investment action for each.',
+          'Flag all Item 5.02 leadership change filings. Which CEO or CFO departures look sudden and unexplained vs planned succession, and what does each signal about corporate health or a pending strategic pivot?',
+          'I want to screen for activist investor activity. Walk me through how to use 13D filings to identify hedge funds accumulating stakes, and what to look for in the Schedule 13D to assess whether an activist campaign is likely.',
+          'Explain the key differences between 10-K, 10-Q, 8-K, 13D, and 13F filings — when each is filed, what it discloses, and which form type is most relevant for spotting early-stage investment catalysts.'
         ]
       }
     };

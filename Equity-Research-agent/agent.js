@@ -200,15 +200,46 @@ const TOOLS = [
     type: 'function',
     function: {
       name: 'get_sec_filings_8k',
-      description: 'Get recent 8-K SEC filings for a company (premium FMP endpoint). Returns filing date, accepted date, form type, and direct links to the SEC document. Use to check for recent material corporate events: M&A announcements (Item 1.01/2.01), CEO/officer changes (Item 5.02), impairments (Item 2.06), bankruptcy (Item 1.03), and other material disclosures. Provide a date range of the last 90 days to capture recent activity.',
+      description: 'Get recent 8-K SEC filings (premium FMP endpoint). Returns filing date, accepted date, form type, and direct SEC document links. Use to check for recent material corporate events: M&A announcements (Item 1.01/2.01), CEO/officer changes (Item 5.02), impairments (Item 2.06), bankruptcy (Item 1.03). Provide a date range of the last 90 days.',
       parameters: {
         type: 'object',
         properties: {
-          from_date: { type: 'string', description: 'Start date YYYY-MM-DD — use 90 days before today to capture recent events' },
+          from_date: { type: 'string', description: 'Start date YYYY-MM-DD — use 90 days before today' },
           to_date:   { type: 'string', description: 'End date YYYY-MM-DD — use today\'s date' },
-          limit:     { type: 'number', description: 'Number of results to return (default 20, max 100)' },
+          limit:     { type: 'number', description: 'Number of results (default 20, max 100)' },
         },
         required: ['from_date', 'to_date'],
+      },
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'get_sec_filings_by_form_type',
+      description: 'Search SEC filings by any form type (premium FMP endpoint). Use formType=13D to find activist investors accumulating stakes in a company, 13F for institutional holdings disclosures, 10-K for annual reports, 10-Q for quarterly reports, S-1 for IPO filings, DEF 14A for proxy statements. Broader than get_sec_filings_8k — use when you need non-8K filing types.',
+      parameters: {
+        type: 'object',
+        properties: {
+          form_type: { type: 'string', description: 'SEC form type: 8-K, 10-K, 10-Q, 13D, 13F, S-1, DEF 14A, etc.' },
+          from_date: { type: 'string', description: 'Start date YYYY-MM-DD' },
+          to_date:   { type: 'string', description: 'End date YYYY-MM-DD' },
+          limit:     { type: 'number', description: 'Number of results (default 20, max 100)' },
+        },
+        required: ['form_type', 'from_date', 'to_date'],
+      },
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'get_company_sec_filings_search',
+      description: 'Search for SEC filers by company or entity name (premium FMP endpoint). Returns CIK number, SIC code, industry title, business address, and phone. Use this to identify the correct SEC registrant entity when the company name is known but the ticker is ambiguous — especially useful for subsidiaries, holding companies, funds, and foreign private issuers.',
+      parameters: {
+        type: 'object',
+        properties: {
+          company: { type: 'string', description: 'Company or entity name to search e.g. "Berkshire", "Apple", "Vanguard"' },
+        },
+        required: ['company'],
       },
     },
   },
@@ -261,6 +292,26 @@ async function executeTool(name, input) {
         return [{ note: `SEC 8-K filings require an FMP paid plan — not available on current subscription. (${err.message})` }];
       }
     }
+    case 'get_sec_filings_by_form_type': {
+      try {
+        return await fmpGet(`${STABLE}/sec-filings-search/form-type`, {
+          formType: input.form_type,
+          from:     input.from_date,
+          to:       input.to_date,
+          limit:    input.limit || 20,
+          page:     0,
+        });
+      } catch (err) {
+        return [{ note: `SEC filings by form type require an FMP paid plan — not available on current subscription. (${err.message})` }];
+      }
+    }
+    case 'get_company_sec_filings_search': {
+      try {
+        return await fmpGet(`${STABLE}/sec-filings-company-search/name`, { company: input.company });
+      } catch (err) {
+        return [{ note: `SEC company search requires an FMP paid plan — not available on current subscription. (${err.message})` }];
+      }
+    }
     default:
       throw new Error(`Unknown tool: ${name}`);
   }
@@ -269,7 +320,7 @@ async function executeTool(name, input) {
 const SYSTEM_PROMPT = `You are a senior equity research analyst at a premier investment bank (Goldman Sachs, Morgan Stanley caliber). Your mandate is to produce institutional-grade equity research reports used by portfolio managers to make investment decisions.
 
 WORKFLOW:
-1. Call ALL 15 available tools to gather comprehensive data on the company. Do not skip any tool.
+1. Call ALL 17 available tools to gather comprehensive data on the company. Do not skip any tool.
 2. Always call get_market_indices first (or in parallel with other tools) to establish the macro backdrop — VIX level, global index performance, and risk sentiment frame the entire report.
 3. You may call multiple tools in parallel to gather data efficiently.
 3. After all data is gathered, synthesize it into a complete research report.
