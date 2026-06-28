@@ -171,11 +171,14 @@ The preferred path. The pool is established at server startup with `ssl="require
 **2. REST API fallback (httpx → `/rest/v1/agent_responses`)**
 If the direct pool is unavailable at startup (DNS failure, port blocked, etc.), the server automatically falls back to the Supabase REST API via `httpx`. Saves still land in the same `agent_responses` table — they just go through the PostgREST layer instead of a raw Postgres connection. Look for `[db] Supabase REST save ✓` in logs.
 
-**3. Supabase Storage (S3 via boto3)**
-Runs in parallel with the database save — always attempted regardless of which DB path succeeded. Uploads the response as a markdown file to the `insuranceRISKagent` bucket. Look for `[storage] uploaded →` in logs.
+**3. Supabase Storage (S3-compatible via boto3 / @aws-sdk/client-s3)**
+Runs in parallel with the database save. Uploads the response as a markdown file to the `insuranceRISKagent` bucket using Supabase's S3-compatible endpoint. Look for `[supabase-s3] uploaded →` in logs.
 
-**4. Local markdown file**
-Always written to `sample-outputs/` as a dated `.md` file. This is the zero-dependency fallback — it works even if all Supabase connections are down.
+**4. AWS S3 (primary cloud storage bucket)**
+Runs in parallel with the Supabase upload — both are attempted on every save regardless of each other's outcome. Uploads the same markdown file to the bucket named in `AWS_S3_BUCKET`. Uses standard AWS credentials (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_S3_REGION`). Look for `[aws-s3] uploaded →` in logs. Silently skipped if credentials or bucket name are not set.
+
+**5. Local markdown file**
+Always written to `sample-outputs/` as a dated `.md` file. This is the zero-dependency fallback — it works even if all remote connections are down.
 
 ---
 

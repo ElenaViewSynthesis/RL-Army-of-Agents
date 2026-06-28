@@ -105,8 +105,10 @@ async def _save_agent_response(agent_name: str, model: str, query: str, response
     if not saved:
         await _save_agent_response_rest(payload)
 
-    # ── Supabase Storage (S3) ─────────────────────────────────────────────────
-    _upload_to_storage(f"{agent_name}/{today}-{agent_name}.md", header + response)
+    # ── Storage (Supabase S3 + AWS S3, both best-effort) ─────────────────────
+    storage_key = f"{agent_name}/{today}-{agent_name}.md"
+    _upload_to_storage(storage_key, header + response)
+    _upload_to_aws_s3(storage_key, header + response)
 
     # ── markdown file ─────────────────────────────────────────────────────────
     out_dir = BASE_DIR / "sample-outputs"
@@ -148,7 +150,7 @@ async def _save_agent_response_rest(payload: dict):
 
 
 def _upload_to_storage(key: str, body: str):
-    """Upload a text file to Supabase Storage via S3 protocol (best-effort)."""
+    """Upload a text file to Supabase Storage via S3-compatible protocol (best-effort)."""
     endpoint   = os.environ.get("SUPABASE_S3_ENDPOINT")
     access_key = os.environ.get("SUPABASE_S3_ACCESS_KEY")
     secret_key = os.environ.get("SUPABASE_S3_SECRET_KEY")
@@ -170,9 +172,35 @@ def _upload_to_storage(key: str, body: str):
             Body=body.encode("utf-8"),
             ContentType="text/markdown; charset=utf-8",
         )
-        print(f"[storage] uploaded → insuranceRISKagent/{key}")
+        print(f"[supabase-s3] uploaded → insuranceRISKagent/{key}")
     except Exception as e:
-        print(f"[storage] upload failed: {e}")
+        print(f"[supabase-s3] upload failed: {e}")
+
+
+def _upload_to_aws_s3(key: str, body: str):
+    """Upload a text file to AWS S3 (best-effort)."""
+    access_key = os.environ.get("AWS_ACCESS_KEY_ID")
+    secret_key = os.environ.get("AWS_SECRET_ACCESS_KEY")
+    region     = os.environ.get("AWS_S3_REGION", "eu-west-1")
+    bucket     = os.environ.get("AWS_S3_BUCKET")
+    if not (access_key and secret_key and bucket):
+        return
+    try:
+        s3 = boto3.client(
+            "s3",
+            aws_access_key_id=access_key,
+            aws_secret_access_key=secret_key,
+            region_name=region,
+        )
+        s3.put_object(
+            Bucket=bucket,
+            Key=key,
+            Body=body.encode("utf-8"),
+            ContentType="text/markdown; charset=utf-8",
+        )
+        print(f"[aws-s3] uploaded → {bucket}/{key}")
+    except Exception as e:
+        print(f"[aws-s3] upload failed: {e}")
 
 
 # ── internal helpers ──────────────────────────────────────────────────────────
