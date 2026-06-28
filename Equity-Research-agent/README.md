@@ -378,6 +378,114 @@ Agent prints / saves .md to output/
 
 Tool calls within a single turn are executed in parallel with `Promise.all()`. The message history is preserved across turns. The model uses OpenAI-compatible function calling format (`type: 'function'`, `toolCalls`, `finishReason`).
 
+## AWS S3 Storage
+
+Agent responses are uploaded to an AWS S3 bucket in parallel with the Supabase save on every run. The bucket name and IAM credentials are set in `.env` — never committed to git.
+
+### Required environment variables
+
+```env
+AWS_ACCESS_KEY_ID=AKIASFZWT65S2PKRAOEC
+AWS_SECRET_ACCESS_KEY=your_secret_key_here
+AWS_S3_REGION=eu-west-2
+AWS_S3_BUCKET=your-bucket-name-here
+```
+
+### Creating an IAM user and access key
+
+1. Go to **AWS Console → IAM → Users → Create user**
+2. Name the user (e.g. `risk-agent-insurance`) — no console access needed for programmatic use
+3. On the **Permissions** step, click **"Attach policies directly"**
+4. Search for and select **`AmazonS3FullAccess`** — this grants `PutObject`, `GetObject`, and `ListBucket` on all buckets in the account
+
+   For a tighter least-privilege policy, create an inline policy instead:
+
+   ```json
+   {
+     "Version": "2012-10-17",
+     "Statement": [
+       {
+         "Effect": "Allow",
+         "Action": ["s3:PutObject", "s3:GetObject", "s3:ListBucket"],
+         "Resource": [
+           "arn:aws:s3:::your-bucket-name-here",
+           "arn:aws:s3:::your-bucket-name-here/*"
+         ]
+       }
+     ]
+   }
+   ```
+
+5. After the user is created, go to the user → **Security credentials → Create access key**
+6. Select **"Application running outside AWS"** as the use case
+7. Copy the **Access key ID** and **Secret access key** into `.env`
+
+> The secret key is shown only once at creation time — copy it immediately.
+
+### Attaching a policy to an existing IAM user
+
+If the user already exists but is missing permissions, go to:
+
+**IAM → Users → `risk-agent-insurance` → Permissions tab → Add permissions → Attach policies directly**
+
+Search for `AmazonS3FullAccess`, select it, and confirm. Policy propagation takes a few seconds.
+
+### Testing the connection
+
+Run this one-off test from the project root after setting `.env`:
+
+```bash
+# From WSL or Bash — uses the project's installed @aws-sdk/client-s3
+node -e "
+import('@aws-sdk/client-s3').then(async ({ S3Client, PutObjectCommand, ListObjectsV2Command }) => {
+  const client = new S3Client({
+    region: process.env.AWS_S3_REGION,
+    credentials: {
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    },
+  });
+  await client.send(new PutObjectCommand({
+    Bucket: process.env.AWS_S3_BUCKET,
+    Key: 'test/connection-test.txt',
+    Body: 'connection OK',
+    ContentType: 'text/plain',
+  }));
+  console.log('PutObject OK');
+  const r = await client.send(new ListObjectsV2Command({ Bucket: process.env.AWS_S3_BUCKET, Prefix: 'test/' }));
+  console.log('ListObjects OK —', r.KeyCount, 'object(s)');
+});
+"
+```
+
+Expected output:
+```
+PutObject OK
+ListObjects OK — 1 object(s)
+```
+
+If you see `not authorized to perform: s3:PutObject`, the IAM user is missing the S3 policy — attach `AmazonS3FullAccess` (see above).
+
+### How saves work in the agent
+
+When any agent completes a response, the server calls both storage targets in parallel:
+
+```js
+await Promise.allSettled([
+  uploadFile(storageKey, report),        // Supabase S3
+  uploadFileToAWS(storageKey, report),   // AWS S3
+]);
+```
+
+A failure in one never blocks the other. Look for these lines in the server log to confirm both are working:
+
+```
+[supabase-s3] uploaded → insuranceRISKagent/equity-research/NVDA-2026-06-28.md
+[aws-s3] uploaded → etf-insurance-s3-149901539173-eu-west-2-an/equity-research/NVDA-2026-06-28.md
+```
+
+---
+
 ## SEC Filings endpoints
 
 > **Requires a paid FMP plan.** Free-tier keys return `402 Payment Required`. The server passes the 402 through cleanly — no crash. The SEC Filings Analyst chat agent still loads on free tier; it just responds from LLM knowledge rather than live injected filing data.
