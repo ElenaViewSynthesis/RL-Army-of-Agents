@@ -261,11 +261,11 @@ const TOOLS = [
     type: 'function',
     function: {
       name: 'get_etf_asset_exposure',
-      description: 'Get the asset class allocation breakdown for an ETF (premium FMP endpoint). Shows allocation across equities, bonds, cash, commodities, REITs, and other asset classes. Critical for understanding how a fund responds differently to interest rate moves, credit spread widening, and market shocks.',
+      description: 'Reverse ETF lookup — discover which ETFs hold a specific stock (premium FMP endpoint). Pass a stock ticker (e.g. AAPL, NVDA) and receive a list of all ETFs that hold it, with each ETF\'s share count, weight percentage, and market value of the position. Use this to quantify passive ETF ownership of the subject company, estimate forced-selling or buying flows from index rebalancing, and assess concentration of ETF demand.',
       parameters: {
         type: 'object',
         properties: {
-          symbol: { type: 'string', description: 'ETF ticker e.g. SPY, VWO, AGG, BND' },
+          symbol: { type: 'string', description: 'Stock ticker to look up ETF holders e.g. AAPL, NVDA, MSFT, TSLA' },
         },
         required: ['symbol'],
       },

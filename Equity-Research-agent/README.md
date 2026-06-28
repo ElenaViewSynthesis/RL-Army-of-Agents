@@ -299,7 +299,7 @@ kill $(lsof -t -i:8000) 2>/dev/null; bash start.sh
 | `GET /sec-filings/search` | Search SEC filers by company name *(premium FMP)* |
 | `GET /etf/holdings` | Full holding-level breakdown of an ETF *(premium FMP)* |
 | `GET /etf/sector-weightings` | Sector allocation weights for an ETF *(premium FMP)* |
-| `GET /etf/asset-exposure` | Asset class allocation (equities/bonds/cash/REITs) *(premium FMP)* |
+| `GET /etf/asset-exposure` | Reverse ETF lookup — which ETFs hold a given stock *(premium FMP)* |
 | `GET /etf/info` | ETF metadata — expense ratio, AUM, benchmark, inception *(premium FMP)* |
 | `GET /symbols` | Hardcoded list of FMP free-tier supported symbols |
 | `GET /health` | Server health and available models |

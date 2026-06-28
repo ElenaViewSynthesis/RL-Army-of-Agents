@@ -724,15 +724,16 @@ async def etf_sector_weightings(symbol: str = Query(..., description="ETF ticker
 
 
 @app.get("/etf/asset-exposure")
-async def etf_asset_exposure(symbol: str = Query(..., description="ETF ticker e.g. SPY, VWO, AGG")):
+async def etf_asset_exposure(symbol: str = Query(..., description="Stock ticker to look up ETF holders e.g. AAPL, NVDA, MSFT")):
     """
-    Asset class allocation breakdown for an ETF (premium FMP endpoint).
-    Shows allocation across equities, bonds, cash, commodities, REITs, and other
-    asset classes — critical for understanding how a fund responds to interest
-    rate moves and market shocks.
+    Reverse ETF lookup — discover which ETFs hold a specific stock (premium FMP endpoint).
+    Pass a stock ticker (e.g. AAPL) and receive a list of all ETFs that hold it,
+    with each ETF's share count, weight percentage, and market value of the position.
+    Useful for understanding institutional ETF exposure to a single name and for
+    estimating passive-flow impact when the stock moves.
     """
     data = await _fmp_get("etf/asset-exposure", {"symbol": symbol.upper()})
-    return {"symbol": symbol.upper(), "asset_exposure": data}
+    return {"symbol": symbol.upper(), "etf_holders": data, "count": len(data) if isinstance(data, list) else 0}
 
 
 @app.get("/etf/info")
