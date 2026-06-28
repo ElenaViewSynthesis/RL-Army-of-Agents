@@ -120,7 +120,7 @@ async def _save_agent_response(agent_name: str, model: str, query: str, response
         path = out_dir / f"{base}-{counter}.md"
         counter += 1
     path.write_text(header + response + "\n", encoding="utf-8")
-    print(f"[save] {path.name}")
+    print(f"[save] {path.name}", flush=True)
 
 
 async def _save_agent_response_rest(payload: dict):
@@ -172,9 +172,9 @@ def _upload_to_storage(key: str, body: str):
             Body=body.encode("utf-8"),
             ContentType="text/markdown; charset=utf-8",
         )
-        print(f"[supabase-s3] uploaded → insuranceRISKagent/{key}")
+        print(f"[supabase-s3] uploaded → insuranceRISKagent/{key}", flush=True)
     except Exception as e:
-        print(f"[supabase-s3] upload failed: {e}")
+        print(f"[supabase-s3] upload failed: {e}", flush=True)
 
 
 def _upload_to_aws_s3(key: str, body: str):
@@ -198,9 +198,9 @@ def _upload_to_aws_s3(key: str, body: str):
             Body=body.encode("utf-8"),
             ContentType="text/markdown; charset=utf-8",
         )
-        print(f"[aws-s3] uploaded → {bucket}/{key}")
+        print(f"[aws-s3] uploaded → {bucket}/{key}", flush=True)
     except Exception as e:
-        print(f"[aws-s3] upload failed: {e}")
+        print(f"[aws-s3] upload failed: {e}", flush=True)
 
 
 # ── internal helpers ──────────────────────────────────────────────────────────
