@@ -196,6 +196,22 @@ const TOOLS = [
       },
     },
   },
+  {
+    type: 'function',
+    function: {
+      name: 'get_sec_filings_8k',
+      description: 'Get recent 8-K SEC filings for a company (premium FMP endpoint). Returns filing date, accepted date, form type, and direct links to the SEC document. Use to check for recent material corporate events: M&A announcements (Item 1.01/2.01), CEO/officer changes (Item 5.02), impairments (Item 2.06), bankruptcy (Item 1.03), and other material disclosures. Provide a date range of the last 90 days to capture recent activity.',
+      parameters: {
+        type: 'object',
+        properties: {
+          from_date: { type: 'string', description: 'Start date YYYY-MM-DD — use 90 days before today to capture recent events' },
+          to_date:   { type: 'string', description: 'End date YYYY-MM-DD — use today\'s date' },
+          limit:     { type: 'number', description: 'Number of results to return (default 20, max 100)' },
+        },
+        required: ['from_date', 'to_date'],
+      },
+    },
+  },
 ];
 
 async function executeTool(name, input) {
@@ -233,6 +249,18 @@ async function executeTool(name, input) {
       const results = await Promise.all(INDICES.map((i) => fmpGet(`${STABLE}/quote`, { symbol: i.sym })));
       return results.flat();
     }
+    case 'get_sec_filings_8k': {
+      try {
+        return await fmpGet(`${STABLE}/sec-filings-8k`, {
+          from:  input.from_date,
+          to:    input.to_date,
+          limit: input.limit || 20,
+          page:  0,
+        });
+      } catch (err) {
+        return [{ note: `SEC 8-K filings require an FMP paid plan — not available on current subscription. (${err.message})` }];
+      }
+    }
     default:
       throw new Error(`Unknown tool: ${name}`);
   }
@@ -241,7 +269,7 @@ async function executeTool(name, input) {
 const SYSTEM_PROMPT = `You are a senior equity research analyst at a premier investment bank (Goldman Sachs, Morgan Stanley caliber). Your mandate is to produce institutional-grade equity research reports used by portfolio managers to make investment decisions.
 
 WORKFLOW:
-1. Call ALL 14 available tools to gather comprehensive data on the company. Do not skip any tool.
+1. Call ALL 15 available tools to gather comprehensive data on the company. Do not skip any tool.
 2. Always call get_market_indices first (or in parallel with other tools) to establish the macro backdrop — VIX level, global index performance, and risk sentiment frame the entire report.
 3. You may call multiple tools in parallel to gather data efficiently.
 3. After all data is gathered, synthesize it into a complete research report.

@@ -9,7 +9,7 @@ import asyncio
 import json
 import os
 import time
-from datetime import date
+from datetime import date, timedelta
 from pathlib import Path
 
 import asyncpg
@@ -21,8 +21,9 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import HTMLResponse, StreamingResponse
 from pydantic import BaseModel
 
-BASE_DIR  = Path(__file__).parent
+BASE_DIR   = Path(__file__).parent
 AGENTS_DIR = BASE_DIR / "agents"
+FMP_STABLE = "https://financialmodelingprep.com/stable"
 load_dotenv(BASE_DIR / ".env")
 
 app = FastAPI(
@@ -462,9 +463,16 @@ async def agent_chat_stream(name: str, req: ChatRequest):
     if not path.exists():
         raise HTTPException(status_code=404, detail=f"Agent '{name}' not found. GET /agents for the list.")
     system_prompt = path.read_text(encoding="utf-8")
+
+    user_content = req.message
+    if name == "sec-filings-analyst":
+        context = await _fetch_sec_filings_context()
+        if context:
+            user_content = f"{req.message}\n\n---\n\n{context}"
+
     messages = [
         {"role": "system", "content": system_prompt},
-        {"role": "user",   "content": req.message},
+        {"role": "user",   "content": user_content},
     ]
     return StreamingResponse(
         _agent_stream_and_save(name, messages, req.model, req.message),
@@ -531,6 +539,80 @@ async def _openrouter_stream(messages: list, model: str):
     except httpx.ConnectError:
         yield f"data: {json.dumps({'error': 'Cannot reach OpenRouter — check your internet connection.'})}\n\n"
     yield f"data: {json.dumps({'done': True})}\n\n"
+
+
+@app.get("/sec-filings")
+async def sec_filings(
+    from_date: str = Query(default=None, alias="from", description="Start date YYYY-MM-DD (default: 30 days ago)"),
+    to_date:   str = Query(default=None, alias="to",   description="End date YYYY-MM-DD (default: today)"),
+    page:      int = Query(default=0,    description="Page index"),
+    limit:     int = Query(default=20,   description="Results per page (max 100)"),
+):
+    """
+    Fetch recent 8-K SEC filings from FMP (premium endpoint).
+    Returns raw FMP response. Requires a paid FMP API key.
+    """
+    fmp_key = os.environ.get("FMP_API_KEY")
+    if not fmp_key:
+        raise HTTPException(status_code=503, detail="FMP_API_KEY not configured")
+
+    today = date.today()
+    params = {
+        "from":   from_date or (today - timedelta(days=30)).isoformat(),
+        "to":     to_date   or today.isoformat(),
+        "page":   page,
+        "limit":  min(limit, 100),
+        "apikey": fmp_key,
+    }
+
+    try:
+        async with httpx.AsyncClient(timeout=20.0) as client:
+            resp = await client.get(f"{FMP_STABLE}/sec-filings-8k", params=params)
+            resp.raise_for_status()
+            filings = resp.json()
+    except httpx.HTTPStatusError as e:
+        raise HTTPException(status_code=e.response.status_code, detail=f"FMP error: {e.response.text[:200]}")
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"FMP request failed: {e}")
+
+    return {"filings": filings, "count": len(filings), "params": params}
+
+
+async def _fetch_sec_filings_context(days: int = 30, limit: int = 50) -> str:
+    """Fetch recent 8-K filings and format them as a compact context block for the LLM."""
+    fmp_key = os.environ.get("FMP_API_KEY")
+    if not fmp_key:
+        return ""
+    today = date.today()
+    params = {
+        "from":   (today - timedelta(days=days)).isoformat(),
+        "to":     today.isoformat(),
+        "page":   0,
+        "limit":  limit,
+        "apikey": fmp_key,
+    }
+    try:
+        async with httpx.AsyncClient(timeout=20.0) as client:
+            resp = await client.get(f"{FMP_STABLE}/sec-filings-8k", params=params)
+            resp.raise_for_status()
+            filings = resp.json()
+    except Exception as e:
+        print(f"[sec-filings] context fetch failed: {e}")
+        return ""
+
+    if not filings:
+        return f"No 8-K filings found in the last {days} days."
+
+    lines = [f"8-K filings — last {days} days ({len(filings)} results):"]
+    for f in filings:
+        symbol      = f.get("symbol", "?")
+        filed       = (f.get("filingDate") or "")[:10]
+        accepted    = (f.get("acceptedDate") or "")[:10]
+        link        = f.get("finalLink") or f.get("link") or ""
+        has_fin     = " [+financials]" if f.get("hasFinancials") else ""
+        lines.append(f"  {symbol} | Filed {filed} | Accepted {accepted}{has_fin} | {link}")
+
+    return "\n".join(lines)
 
 
 @app.post("/chat/stream")
@@ -670,6 +752,15 @@ async def ui():
           'Price a W&I policy for a fintech AI startup acquisition at £80M enterprise value. The target processes personal financial data under GDPR. Provide a ROL indication, recommended retention, and key exclusions given the regulatory exposure.',
           'The acquirer of an AI startup is claiming a material warranty breach six months post-close — the training data allegedly included unlicensed third-party content, creating IP infringement exposure. Walk through the claims investigation process and reserve methodology.',
           'We have a pipeline of five AI startup W&I deals closing this quarter totalling £220M in aggregate limit. Assess the portfolio accumulation risk, identify correlated exposures across the book, and recommend a reinsurance structure to manage peak aggregate loss.'
+        ]
+      },
+      'sec-filings-analyst': {
+        placeholder: 'Which companies filed material 8-K events this week — M&A, CEO changes, or impairments — and what are the investment implications?',
+        samples: [
+          'Triage the recent 8-K filings above. Which events are Tier 1 catalysts (M&A close, CEO departure, bankruptcy) and which can be deprioritised? Give me a ranked watchlist.',
+          'Identify any 8-K filings in the list that suggest M&A activity — Item 1.01 definitive agreements or Item 2.01 completions — and assess the implied deal multiples and sector context.',
+          'Flag all Item 5.02 leadership change filings from the last 30 days. Which departures look sudden and unexplained, and what does the board composition signal about strategic direction?',
+          'Which 8-K filers in the technology or semiconductor sector have disclosed material new contracts or strategic partnerships in the last 30 days? Assess the revenue materiality and competitive read-through.'
         ]
       }
     };
