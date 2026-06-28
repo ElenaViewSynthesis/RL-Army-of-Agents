@@ -1,5 +1,6 @@
 node_modules/
 .env
+local.env
 *.md.bak
 output/
 logs/*.log
