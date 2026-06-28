@@ -775,6 +775,18 @@ async def etf_info(symbol: str = Query(..., description="ETF ticker e.g. SPY, VW
     return {"symbol": symbol.upper(), "info": data}
 
 
+@app.get("/mutual-fund/holdings")
+async def mutual_fund_holdings(symbol: str = Query(..., description="Mutual fund ticker e.g. VFIAX, FXAIX, AGTHX")):
+    """
+    Full holding-level breakdown for a mutual fund (premium FMP endpoint).
+    Returns each position's ticker, name, ISIN, CUSIP, share count,
+    weight percentage, and market value — equivalent to etf/holdings but
+    scoped to mutual fund share classes.
+    """
+    data = await _fmp_get("mutual-fund/holdings", {"symbol": symbol.upper()})
+    return {"symbol": symbol.upper(), "holdings": data, "count": len(data) if isinstance(data, list) else 0}
+
+
 @app.post("/chat/stream")
 async def chat_stream(req: ChatRequest):
     """

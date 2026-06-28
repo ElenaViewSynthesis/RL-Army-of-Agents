@@ -144,7 +144,7 @@ cp my-new-agent-definition.md Equity-Research-agent/agents/
 ## What it does
 
 Given a ticker symbol, the agent:
-1. Calls 21 FMP data endpoints in parallel (financials, valuation, analyst ratings, peers, global indices + VIX, SEC filings, ETF holdings/sectors/asset exposure, and more)
+1. Calls 22 FMP data endpoints in parallel (financials, valuation, analyst ratings, peers, global indices + VIX, SEC filings, ETF holdings/sectors/asset exposure, mutual fund holdings, and more)
 2. Runs an agentic loop where the model autonomously decides what data to gather
 3. Synthesizes all data into a comprehensive 10-section research report with a BUY/HOLD/SELL rating and 12-month price target
 4. Streams reasoning tokens internally — the model thinks before it writes
@@ -301,6 +301,7 @@ kill $(lsof -t -i:8000) 2>/dev/null; bash start.sh
 | `GET /etf/sector-weightings` | Sector allocation weights for an ETF *(FMP Premium tier)* |
 | `GET /etf/asset-exposure` | Reverse ETF lookup — which ETFs hold a given stock *(FMP Premium tier)* |
 | `GET /etf/info` | ETF metadata — expense ratio, AUM, benchmark, inception *(FMP Premium tier)* |
+| `GET /mutual-fund/holdings` | Full position-level breakdown for a mutual fund *(FMP Premium tier)* |
 | `GET /symbols` | Hardcoded list of FMP free-tier supported symbols |
 | `GET /health` | Server health and available models |
 
@@ -651,6 +652,7 @@ All endpoints use `https://financialmodelingprep.com/stable` base URL with `?sym
 | `get_etf_sector_weightings` | `/stable/etf/sector-weightings` | ✗ FMP Premium tier required |
 | `get_etf_asset_exposure` | `/stable/etf/asset-exposure` | ✗ FMP Premium tier required |
 | `get_etf_info` | `/stable/etf/info` | ✗ FMP Premium tier required |
+| `get_mutual_fund_holdings` | `/stable/mutual-fund/holdings` | ✗ FMP Premium tier required |
 
 ## Requirements
 

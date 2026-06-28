@@ -288,6 +288,20 @@ const TOOLS = [
   {
     type: 'function',
     function: {
+      name: 'get_mutual_fund_holdings',
+      description: 'Get the full holding-level breakdown for a mutual fund (premium FMP endpoint). Returns each position\'s ticker, name, ISIN, CUSIP, share count, weight percentage, and market value. Use when the subject is a mutual fund share class (e.g. VFIAX, FXAIX, AGTHX) rather than an ETF — equivalent to get_etf_holdings but scoped to mutual funds.',
+      parameters: {
+        type: 'object',
+        properties: {
+          symbol: { type: 'string', description: 'Mutual fund ticker e.g. VFIAX, FXAIX, AGTHX, PRGFX' },
+        },
+        required: ['symbol'],
+      },
+    },
+  },
+  {
+    type: 'function',
+    function: {
       name: 'get_company_sec_filings_search',
       description: 'Search for SEC filers by company or entity name (premium FMP endpoint). Returns CIK number, SIC code, industry title, business address, and phone. Use this to identify the correct SEC registrant entity when the company name is known but the ticker is ambiguous — especially useful for subsidiaries, holding companies, funds, and foreign private issuers.',
       parameters: {
@@ -396,6 +410,13 @@ async function executeTool(name, input) {
         return [{ note: `ETF info requires an FMP paid plan — not available on current subscription. (${err.message})` }];
       }
     }
+    case 'get_mutual_fund_holdings': {
+      try {
+        return await fmpGet(`${STABLE}/mutual-fund/holdings`, { symbol: (input.symbol || '').toUpperCase() });
+      } catch (err) {
+        return [{ note: `Mutual fund holdings require an FMP paid plan — not available on current subscription. (${err.message})` }];
+      }
+    }
     default:
       throw new Error(`Unknown tool: ${name}`);
   }
@@ -404,7 +425,7 @@ async function executeTool(name, input) {
 const SYSTEM_PROMPT = `You are a senior equity research analyst at a premier investment bank (Goldman Sachs, Morgan Stanley caliber). Your mandate is to produce institutional-grade equity research reports used by portfolio managers to make investment decisions.
 
 WORKFLOW:
-1. Call ALL 21 available tools to gather comprehensive data on the company. Do not skip any tool. When the subject is an ETF or mutual fund, call get_etf_holdings, get_etf_sector_weightings, get_etf_asset_exposure, and get_etf_info in addition to the standard tools.
+1. Call ALL 22 available tools to gather comprehensive data on the company. Do not skip any tool. When the subject is an ETF or mutual fund, call get_etf_holdings, get_etf_sector_weightings, get_etf_asset_exposure, get_etf_info, and get_mutual_fund_holdings in addition to the standard tools.
 2. Always call get_market_indices first (or in parallel with other tools) to establish the macro backdrop — VIX level, global index performance, and risk sentiment frame the entire report.
 3. You may call multiple tools in parallel to gather data efficiently.
 3. After all data is gathered, synthesize it into a complete research report.
