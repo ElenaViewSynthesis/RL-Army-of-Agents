@@ -144,7 +144,7 @@ cp my-new-agent-definition.md Equity-Research-agent/agents/
 ## What it does
 
 Given a ticker symbol, the agent:
-1. Calls 14 FMP data endpoints in parallel (financials, valuation, analyst ratings, peers, global indices + VIX, and more)
+1. Calls 17 FMP data endpoints in parallel (financials, valuation, analyst ratings, peers, global indices + VIX, SEC filings, and more)
 2. Runs an agentic loop where the model autonomously decides what data to gather
 3. Synthesizes all data into a comprehensive 10-section research report with a BUY/HOLD/SELL rating and 12-month price target
 4. Streams reasoning tokens internally — the model thinks before it writes
@@ -294,6 +294,11 @@ kill $(lsof -t -i:8000) 2>/dev/null; bash start.sh
 | `POST /chat/stream` | Direct chat completions (SSE) |
 | `GET /agents` | List available agent definitions |
 | `POST /agents/{name}/chat/stream` | Chat with a named specialist agent (SSE) |
+| `GET /sec-filings` | Latest 8-K filings by date range *(premium FMP)* |
+| `GET /sec-filings/form-type` | Any SEC form type — 10-K, 13D, 13F, etc. *(premium FMP)* |
+| `GET /sec-filings/search` | Search SEC filers by company name *(premium FMP)* |
+| `GET /symbols` | Hardcoded list of FMP free-tier supported symbols |
+| `GET /health` | Server health and available models |
 
 **Check Supabase DB is reachable (WSL)**
 ```bash
@@ -369,6 +374,144 @@ Agent prints / saves .md to output/
 
 Tool calls within a single turn are executed in parallel with `Promise.all()`. The message history is preserved across turns. The model uses OpenAI-compatible function calling format (`type: 'function'`, `toolCalls`, `finishReason`).
 
+## SEC Filings endpoints
+
+> **Requires a paid FMP plan.** Free-tier keys return `402 Payment Required`. The server passes the 402 through cleanly — no crash. The SEC Filings Analyst chat agent still loads on free tier; it just responds from LLM knowledge rather than live injected filing data.
+
+Three endpoints are available. All use `https://financialmodelingprep.com/stable` as the base and your `FMP_API_KEY` from `.env`.
+
+---
+
+### `GET /sec-filings` — Latest 8-K filings
+
+```
+GET http://localhost:8000/sec-filings?from=2024-01-01&to=2024-03-01&page=0&limit=20
+```
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `from` | string | 30 days ago | Start date `YYYY-MM-DD` |
+| `to` | string | today | End date `YYYY-MM-DD` |
+| `page` | number | 0 | Page index |
+| `limit` | number | 20 | Results per page (max 100) |
+
+**Example response:**
+```json
+{
+  "filings": [
+    {
+      "symbol": "SUNE",
+      "cik": "0000022701",
+      "filingDate": "2024-03-04 00:00:00",
+      "acceptedDate": "2024-03-01 22:47:48",
+      "formType": "8-K",
+      "hasFinancials": null,
+      "link": "https://www.sec.gov/Archives/edgar/data/22701/000089710124000091/0000897101-24-000091-index.htm",
+      "finalLink": "https://www.sec.gov/Archives/edgar/data/22701/000089710124000091/pegy240248_8k.htm"
+    }
+  ],
+  "count": 1,
+  "params": {
+    "from": "2024-01-01",
+    "to": "2024-03-01",
+    "page": 0,
+    "limit": 20
+  }
+}
+```
+
+---
+
+### `GET /sec-filings/form-type` — Any SEC form type
+
+Supports `8-K`, `10-K`, `10-Q`, `13D`, `13F`, `S-1`, `DEF 14A`, and any other SEC form type.
+
+```
+GET http://localhost:8000/sec-filings/form-type?formType=13D&from=2024-01-01&to=2024-03-31&limit=20
+```
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `formType` | string | ✓ | SEC form type e.g. `8-K`, `10-K`, `13D`, `13F` |
+| `from` | string | | Start date `YYYY-MM-DD` (default: 30 days ago) |
+| `to` | string | | End date `YYYY-MM-DD` (default: today) |
+| `page` | number | | Page index (default: 0) |
+| `limit` | number | | Results per page, max 100 (default: 20) |
+
+**Example response:**
+```json
+{
+  "filings": [
+    {
+      "symbol": "TSLA",
+      "cik": "0001318605",
+      "filingDate": "2024-02-14 00:00:00",
+      "acceptedDate": "2024-02-13 20:15:32",
+      "formType": "13D",
+      "hasFinancials": null,
+      "link": "https://www.sec.gov/Archives/edgar/data/1318605/000120919124012345/0001209191-24-012345-index.htm",
+      "finalLink": "https://www.sec.gov/Archives/edgar/data/1318605/000120919124012345/sc13d.htm"
+    }
+  ],
+  "count": 1,
+  "form_type": "13D",
+  "params": {
+    "formType": "13D",
+    "from": "2024-01-01",
+    "to": "2024-03-31",
+    "page": 0,
+    "limit": 20
+  }
+}
+```
+
+**Common `formType` values:**
+
+| Form | What it is |
+|------|-----------|
+| `8-K` | Material corporate events — M&A, CEO changes, earnings pre-releases |
+| `10-K` | Annual report |
+| `10-Q` | Quarterly report |
+| `13D` | Activist investor schedule — filed when >5% stake acquired with intent to influence |
+| `13F` | Institutional holdings disclosure — quarterly snapshot of fund positions |
+| `S-1` | IPO registration statement |
+| `DEF 14A` | Proxy statement — exec pay, shareholder votes, director elections |
+
+---
+
+### `GET /sec-filings/search` — Search filers by company name
+
+```
+GET http://localhost:8000/sec-filings/search?company=Berkshire
+```
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `company` | string | ✓ | Company or entity name |
+
+**Example response:**
+```json
+{
+  "results": [
+    {
+      "symbol": "BGRY",
+      "name": "BERKSHIRE GREY, INC.",
+      "cik": "0001824734",
+      "sicCode": "3569",
+      "industryTitle": "GENERAL INDUSTRIAL MACHINERY & EQUIPMENT, NEC",
+      "businessAddress": "140 SOUTH ROAD, BEDFORD MA 01730",
+      "phoneNumber": "(833) 848-9900"
+    }
+  ],
+  "count": 1,
+  "query": "Berkshire"
+}
+```
+
+Use this endpoint to resolve a company name to its CIK before pulling specific filings, especially for subsidiaries, holding companies, mutual funds, and foreign private issuers where the ticker is ambiguous.
+
+---
+
 ## FMP tools — stable endpoints
 
 All endpoints use `https://financialmodelingprep.com/stable` base URL with `?symbol=` query params.
@@ -389,6 +532,9 @@ All endpoints use `https://financialmodelingprep.com/stable` base URL with `?sym
 | `get_market_indices` | `/stable/quote` (×9 symbols) | ✓ |
 | `get_insider_trades` | — | ✗ requires paid FMP plan |
 | `get_recent_news` | — | ✗ requires paid FMP plan |
+| `get_sec_filings_8k` | `/stable/sec-filings-8k` | ✗ requires paid FMP plan |
+| `get_sec_filings_by_form_type` | `/stable/sec-filings-search/form-type` | ✗ requires paid FMP plan |
+| `get_company_sec_filings_search` | `/stable/sec-filings-company-search/name` | ✗ requires paid FMP plan |
 
 ## Requirements
 
