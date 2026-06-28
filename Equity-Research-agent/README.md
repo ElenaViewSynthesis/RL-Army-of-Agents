@@ -297,10 +297,10 @@ kill $(lsof -t -i:8000) 2>/dev/null; bash start.sh
 | `GET /sec-filings` | Latest 8-K filings by date range *(premium FMP)* |
 | `GET /sec-filings/form-type` | Any SEC form type — 10-K, 13D, 13F, etc. *(premium FMP)* |
 | `GET /sec-filings/search` | Search SEC filers by company name *(premium FMP)* |
-| `GET /etf/holdings` | Full holding-level breakdown of an ETF *(premium FMP)* |
-| `GET /etf/sector-weightings` | Sector allocation weights for an ETF *(premium FMP)* |
-| `GET /etf/asset-exposure` | Reverse ETF lookup — which ETFs hold a given stock *(premium FMP)* |
-| `GET /etf/info` | ETF metadata — expense ratio, AUM, benchmark, inception *(premium FMP)* |
+| `GET /etf/holdings` | Full holding-level breakdown of an ETF *(FMP Premium tier)* |
+| `GET /etf/sector-weightings` | Sector allocation weights for an ETF *(FMP Premium tier)* |
+| `GET /etf/asset-exposure` | Reverse ETF lookup — which ETFs hold a given stock *(FMP Premium tier)* |
+| `GET /etf/info` | ETF metadata — expense ratio, AUM, benchmark, inception *(FMP Premium tier)* |
 | `GET /symbols` | Hardcoded list of FMP free-tier supported symbols |
 | `GET /health` | Server health and available models |
 
@@ -539,10 +539,10 @@ All endpoints use `https://financialmodelingprep.com/stable` base URL with `?sym
 | `get_sec_filings_8k` | `/stable/sec-filings-8k` | ✗ requires paid FMP plan |
 | `get_sec_filings_by_form_type` | `/stable/sec-filings-search/form-type` | ✗ requires paid FMP plan |
 | `get_company_sec_filings_search` | `/stable/sec-filings-company-search/name` | ✗ requires paid FMP plan |
-| `get_etf_holdings` | `/stable/etf/holdings` | ✗ requires paid FMP plan |
-| `get_etf_sector_weightings` | `/stable/etf/sector-weightings` | ✗ requires paid FMP plan |
-| `get_etf_asset_exposure` | `/stable/etf/asset-exposure` | ✗ requires paid FMP plan |
-| `get_etf_info` | `/stable/etf/info` | ✗ requires paid FMP plan |
+| `get_etf_holdings` | `/stable/etf/holdings` | ✗ FMP Premium tier required |
+| `get_etf_sector_weightings` | `/stable/etf/sector-weightings` | ✗ FMP Premium tier required |
+| `get_etf_asset_exposure` | `/stable/etf/asset-exposure` | ✗ FMP Premium tier required |
+| `get_etf_info` | `/stable/etf/info` | ✗ FMP Premium tier required |
 
 ## Requirements
 
