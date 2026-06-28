@@ -1,0 +1,61 @@
+{
+  "filings": [
+    {
+      "symbol": "OTLK",
+      "cik": "0001649989",
+      "filingDate": "2026-06-26 00:00:00",
+      "acceptedDate": "2026-06-26 17:30:25",
+      "formType": "8-K",
+      "hasFinancials": false,
+      "link": "https://www.sec.gov/Archives/edgar/data/1649989/000110465926078337/0001104659-26-078337-index.htm",
+      "finalLink": "https://www.sec.gov/Archives/edgar/data/1649989/000110465926078337/tm2619105d1_8k.htm"
+    },
+    {
+      "symbol": "OTLKW",
+      "cik": "0001649989",
+      "filingDate": "2026-06-26 00:00:00",
+      "acceptedDate": "2026-06-26 17:30:25",
+      "formType": "8-K",
+      "hasFinancials": false,
+      "link": "https://www.sec.gov/Archives/edgar/data/1649989/000110465926078337/0001104659-26-078337-index.htm",
+      "finalLink": "https://www.sec.gov/Archives/edgar/data/1649989/000110465926078337/tm2619105d1_8k.htm"
+    },
+    {
+      "symbol": "LGL",
+      "cik": "0000061004",
+      "filingDate": "2026-06-26 00:00:00",
+      "acceptedDate": "2026-06-26 17:30:21",
+      "formType": "8-K",
+      "hasFinancials": false,
+      "link": "https://www.sec.gov/Archives/edgar/data/61004/000143774926021864/0001437749-26-021864-index.htm",
+      "finalLink": "https://www.sec.gov/Archives/edgar/data/61004/000143774926021864/lglg20260626c_8k.htm"
+    },
+    {
+      "symbol": "LGL-WT",
+      "cik": "0000061004",
+      "filingDate": "2026-06-26 00:00:00",
+      "acceptedDate": "2026-06-26 17:30:21",
+      "formType": "8-K",
+      "hasFinancials": false,
+      "link": "https://www.sec.gov/Archives/edgar/data/61004/000143774926021864/0001437749-26-021864-index.htm",
+      "finalLink": "https://www.sec.gov/Archives/edgar/data/61004/000143774926021864/lglg20260626c_8k.htm"
+    },
+    {
+      "symbol": "GRAF-UN",
+      "cik": "0001897463",
+      "filingDate": "2026-06-26 00:00:00",
+      "acceptedDate": "2026-06-26 17:29:50",
+      "formType": "8-K",
+      "hasFinancials": false,
+      "link": "https://www.sec.gov/Archives/edgar/data/1897463/000110465926078336/0001104659-26-078336-index.htm",
+      "finalLink": "https://www.sec.gov/Archives/edgar/data/1897463/000110465926078336/tm2618324d10_8k.htm"
+    }
+  ],
+  "count": 5,
+  "params": {
+    "from": "2026-05-29",
+    "to": "2026-06-28",
+    "page": 0,
+    "limit": 5
+  }
+}
