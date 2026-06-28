@@ -232,6 +232,62 @@ const TOOLS = [
   {
     type: 'function',
     function: {
+      name: 'get_etf_holdings',
+      description: 'Get the full breakdown of securities held within an ETF or mutual fund (premium FMP endpoint). Returns each holding\'s asset ticker, name, ISIN, CUSIP, share count, weight percentage, and market value. Use for exposure analysis, concentration risk, and issuer-level risk when the subject is an ETF (e.g. SPY, VWO, QQQ, AGG).',
+      parameters: {
+        type: 'object',
+        properties: {
+          symbol: { type: 'string', description: 'ETF or mutual fund ticker e.g. SPY, VWO, QQQ, AGG' },
+        },
+        required: ['symbol'],
+      },
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'get_etf_sector_weightings',
+      description: 'Get the sector allocation breakdown for an ETF (premium FMP endpoint). Returns each sector\'s weight percentage (Financials, Technology, Healthcare, Energy, etc.). Essential for sector exposure analysis, portfolio risk management, and stress testing across economic scenarios.',
+      parameters: {
+        type: 'object',
+        properties: {
+          symbol: { type: 'string', description: 'ETF ticker e.g. SPY, VWO, QQQ' },
+        },
+        required: ['symbol'],
+      },
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'get_etf_asset_exposure',
+      description: 'Get the asset class allocation breakdown for an ETF (premium FMP endpoint). Shows allocation across equities, bonds, cash, commodities, REITs, and other asset classes. Critical for understanding how a fund responds differently to interest rate moves, credit spread widening, and market shocks.',
+      parameters: {
+        type: 'object',
+        properties: {
+          symbol: { type: 'string', description: 'ETF ticker e.g. SPY, VWO, AGG, BND' },
+        },
+        required: ['symbol'],
+      },
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'get_etf_info',
+      description: 'Get ETF and mutual fund metadata (premium FMP endpoint). Returns expense ratio, AUM, issuer, benchmark index tracked, inception date, and other operational details. Use for liquidity assessment, operational due diligence, and comparing cost efficiency across similar funds.',
+      parameters: {
+        type: 'object',
+        properties: {
+          symbol: { type: 'string', description: 'ETF or mutual fund ticker e.g. SPY, VWO, QQQ' },
+        },
+        required: ['symbol'],
+      },
+    },
+  },
+  {
+    type: 'function',
+    function: {
       name: 'get_company_sec_filings_search',
       description: 'Search for SEC filers by company or entity name (premium FMP endpoint). Returns CIK number, SIC code, industry title, business address, and phone. Use this to identify the correct SEC registrant entity when the company name is known but the ticker is ambiguous — especially useful for subsidiaries, holding companies, funds, and foreign private issuers.',
       parameters: {
@@ -312,6 +368,34 @@ async function executeTool(name, input) {
         return [{ note: `SEC company search requires an FMP paid plan — not available on current subscription. (${err.message})` }];
       }
     }
+    case 'get_etf_holdings': {
+      try {
+        return await fmpGet(`${STABLE}/etf/holdings`, { symbol: (input.symbol || '').toUpperCase() });
+      } catch (err) {
+        return [{ note: `ETF holdings require an FMP paid plan — not available on current subscription. (${err.message})` }];
+      }
+    }
+    case 'get_etf_sector_weightings': {
+      try {
+        return await fmpGet(`${STABLE}/etf/sector-weightings`, { symbol: (input.symbol || '').toUpperCase() });
+      } catch (err) {
+        return [{ note: `ETF sector weightings require an FMP paid plan — not available on current subscription. (${err.message})` }];
+      }
+    }
+    case 'get_etf_asset_exposure': {
+      try {
+        return await fmpGet(`${STABLE}/etf/asset-exposure`, { symbol: (input.symbol || '').toUpperCase() });
+      } catch (err) {
+        return [{ note: `ETF asset exposure requires an FMP paid plan — not available on current subscription. (${err.message})` }];
+      }
+    }
+    case 'get_etf_info': {
+      try {
+        return await fmpGet(`${STABLE}/etf/info`, { symbol: (input.symbol || '').toUpperCase() });
+      } catch (err) {
+        return [{ note: `ETF info requires an FMP paid plan — not available on current subscription. (${err.message})` }];
+      }
+    }
     default:
       throw new Error(`Unknown tool: ${name}`);
   }
@@ -320,7 +404,7 @@ async function executeTool(name, input) {
 const SYSTEM_PROMPT = `You are a senior equity research analyst at a premier investment bank (Goldman Sachs, Morgan Stanley caliber). Your mandate is to produce institutional-grade equity research reports used by portfolio managers to make investment decisions.
 
 WORKFLOW:
-1. Call ALL 17 available tools to gather comprehensive data on the company. Do not skip any tool.
+1. Call ALL 21 available tools to gather comprehensive data on the company. Do not skip any tool. When the subject is an ETF or mutual fund, call get_etf_holdings, get_etf_sector_weightings, get_etf_asset_exposure, and get_etf_info in addition to the standard tools.
 2. Always call get_market_indices first (or in parallel with other tools) to establish the macro backdrop — VIX level, global index performance, and risk sentiment frame the entire report.
 3. You may call multiple tools in parallel to gather data efficiently.
 3. After all data is gathered, synthesize it into a complete research report.

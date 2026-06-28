@@ -144,7 +144,7 @@ cp my-new-agent-definition.md Equity-Research-agent/agents/
 ## What it does
 
 Given a ticker symbol, the agent:
-1. Calls 17 FMP data endpoints in parallel (financials, valuation, analyst ratings, peers, global indices + VIX, SEC filings, and more)
+1. Calls 21 FMP data endpoints in parallel (financials, valuation, analyst ratings, peers, global indices + VIX, SEC filings, ETF holdings/sectors/asset exposure, and more)
 2. Runs an agentic loop where the model autonomously decides what data to gather
 3. Synthesizes all data into a comprehensive 10-section research report with a BUY/HOLD/SELL rating and 12-month price target
 4. Streams reasoning tokens internally — the model thinks before it writes
@@ -297,6 +297,10 @@ kill $(lsof -t -i:8000) 2>/dev/null; bash start.sh
 | `GET /sec-filings` | Latest 8-K filings by date range *(premium FMP)* |
 | `GET /sec-filings/form-type` | Any SEC form type — 10-K, 13D, 13F, etc. *(premium FMP)* |
 | `GET /sec-filings/search` | Search SEC filers by company name *(premium FMP)* |
+| `GET /etf/holdings` | Full holding-level breakdown of an ETF *(premium FMP)* |
+| `GET /etf/sector-weightings` | Sector allocation weights for an ETF *(premium FMP)* |
+| `GET /etf/asset-exposure` | Asset class allocation (equities/bonds/cash/REITs) *(premium FMP)* |
+| `GET /etf/info` | ETF metadata — expense ratio, AUM, benchmark, inception *(premium FMP)* |
 | `GET /symbols` | Hardcoded list of FMP free-tier supported symbols |
 | `GET /health` | Server health and available models |
 
@@ -365,7 +369,7 @@ User: "Research AAPL"
   ↓
 OpenRouter (nvidia/nemotron-3-ultra-550b-a55b:free — default)
   ↓ tool_calls (streaming, with reasoning tokens)
-FMP /stable API — fetches 14 data points
+FMP /stable API — fetches 21 data points
   ↓ tool results
 Model reasons + writes full report
   ↓
@@ -535,6 +539,10 @@ All endpoints use `https://financialmodelingprep.com/stable` base URL with `?sym
 | `get_sec_filings_8k` | `/stable/sec-filings-8k` | ✗ requires paid FMP plan |
 | `get_sec_filings_by_form_type` | `/stable/sec-filings-search/form-type` | ✗ requires paid FMP plan |
 | `get_company_sec_filings_search` | `/stable/sec-filings-company-search/name` | ✗ requires paid FMP plan |
+| `get_etf_holdings` | `/stable/etf/holdings` | ✗ requires paid FMP plan |
+| `get_etf_sector_weightings` | `/stable/etf/sector-weightings` | ✗ requires paid FMP plan |
+| `get_etf_asset_exposure` | `/stable/etf/asset-exposure` | ✗ requires paid FMP plan |
+| `get_etf_info` | `/stable/etf/info` | ✗ requires paid FMP plan |
 
 ## Requirements
 

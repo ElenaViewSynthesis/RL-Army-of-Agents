@@ -683,6 +683,69 @@ async def sec_filings_company_search(
     return {"results": results, "count": len(results), "query": company}
 
 
+async def _fmp_get(path: str, params: dict) -> list | dict:
+    """Shared FMP GET helper for simple symbol-keyed endpoints."""
+    fmp_key = os.environ.get("FMP_API_KEY")
+    if not fmp_key:
+        raise HTTPException(status_code=503, detail="FMP_API_KEY not configured")
+    try:
+        async with httpx.AsyncClient(timeout=20.0) as client:
+            resp = await client.get(f"{FMP_STABLE}/{path}", params={**params, "apikey": fmp_key})
+            resp.raise_for_status()
+            return resp.json()
+    except httpx.HTTPStatusError as e:
+        raise HTTPException(status_code=e.response.status_code, detail=f"FMP error: {e.response.text[:200]}")
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"FMP request failed: {e}")
+
+
+# ── ETF endpoints ─────────────────────────────────────────────────────────────
+
+@app.get("/etf/holdings")
+async def etf_holdings(symbol: str = Query(..., description="ETF ticker e.g. SPY, VWO, QQQ")):
+    """
+    Full breakdown of securities held within an ETF or mutual fund (premium FMP endpoint).
+    Returns each holding's asset ticker, name, ISIN, CUSIP, share count,
+    weight percentage, and market value.
+    """
+    data = await _fmp_get("etf/holdings", {"symbol": symbol.upper()})
+    return {"symbol": symbol.upper(), "holdings": data, "count": len(data) if isinstance(data, list) else 0}
+
+
+@app.get("/etf/sector-weightings")
+async def etf_sector_weightings(symbol: str = Query(..., description="ETF ticker e.g. SPY, VWO, QQQ")):
+    """
+    Sector allocation breakdown for an ETF (premium FMP endpoint).
+    Returns each sector's weight percentage — essential for sector exposure
+    analysis, portfolio risk management, and stress testing.
+    """
+    data = await _fmp_get("etf/sector-weightings", {"symbol": symbol.upper()})
+    return {"symbol": symbol.upper(), "sectors": data}
+
+
+@app.get("/etf/asset-exposure")
+async def etf_asset_exposure(symbol: str = Query(..., description="ETF ticker e.g. SPY, VWO, AGG")):
+    """
+    Asset class allocation breakdown for an ETF (premium FMP endpoint).
+    Shows allocation across equities, bonds, cash, commodities, REITs, and other
+    asset classes — critical for understanding how a fund responds to interest
+    rate moves and market shocks.
+    """
+    data = await _fmp_get("etf/asset-exposure", {"symbol": symbol.upper()})
+    return {"symbol": symbol.upper(), "asset_exposure": data}
+
+
+@app.get("/etf/info")
+async def etf_info(symbol: str = Query(..., description="ETF ticker e.g. SPY, VWO, QQQ")):
+    """
+    ETF and mutual fund metadata (premium FMP endpoint).
+    Returns expense ratio, AUM, issuer, benchmark index, inception date,
+    and other operational details useful for liquidity and due diligence.
+    """
+    data = await _fmp_get("etf/info", {"symbol": symbol.upper()})
+    return {"symbol": symbol.upper(), "info": data}
+
+
 @app.post("/chat/stream")
 async def chat_stream(req: ChatRequest):
     """
