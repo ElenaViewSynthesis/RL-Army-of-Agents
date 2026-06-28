@@ -146,15 +146,36 @@ order by created_at desc;
 
 ## Storage Bucket
 
-Agent responses are also uploaded as markdown files to the `insuranceRISKagent` bucket.
+Supabase Storage connects via the S3-compatible endpoint over HTTPS. No SSL enforcement setting on the Postgres database is needed — storage and the database are independent services. Files are visible in the Supabase dashboard once the S3 credentials are correctly set in `.env`.
+
+Agent responses are uploaded as markdown files to the `insuranceRISKagent` bucket:
 
 | Path | Source |
 |------|--------|
 | `equity-research/{TICKER}-{date}.md` | `node agent.js` runs |
 | `transactional-liability-wi-agent/{date}-transactional-liability-wi-agent.md` | Chat UI — W&I agent |
 | `chief-capital-modelling-agent/{date}-chief-capital-modelling-agent.md` | Chat UI — Capital Modelling agent |
+| `sec-filings-analyst/{date}-sec-filings-analyst.md` | Chat UI — SEC Filings Analyst agent |
 
 View files: **Supabase dashboard → Storage → insuranceRISKagent**
+
+---
+
+## Persistence — How Saves Work
+
+Agent responses are written through two layers, in order:
+
+**1. Direct Postgres pool (asyncpg → `agent_responses` table)**
+The preferred path. The pool is established at server startup with `ssl="require"`. If the pool is healthy, inserts go directly to Postgres. Look for `[db] Supabase pool connected ✓` in the server log to confirm.
+
+**2. REST API fallback (httpx → `/rest/v1/agent_responses`)**
+If the direct pool is unavailable at startup (DNS failure, port blocked, etc.), the server automatically falls back to the Supabase REST API via `httpx`. Saves still land in the same `agent_responses` table — they just go through the PostgREST layer instead of a raw Postgres connection. Look for `[db] Supabase REST save ✓` in logs.
+
+**3. Supabase Storage (S3 via boto3)**
+Runs in parallel with the database save — always attempted regardless of which DB path succeeded. Uploads the response as a markdown file to the `insuranceRISKagent` bucket. Look for `[storage] uploaded →` in logs.
+
+**4. Local markdown file**
+Always written to `sample-outputs/` as a dated `.md` file. This is the zero-dependency fallback — it works even if all Supabase connections are down.
 
 ---
 
