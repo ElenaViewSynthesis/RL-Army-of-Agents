@@ -11,7 +11,7 @@ finance_coordinator          (root_agent — pure router, no data tools)
 └── risk_agent               leverage · margin fragility · red flags
 ```
 
-The coordinator holds no market tools itself — it delegates to the specialist whose `description` best matches the query, mirroring the domain of the sibling `Equity-Research-agent`. Market tools are currently **stubbed** (representative FMP field shapes) so the tree runs end-to-end before the data layer is wired in.
+The coordinator holds no market tools itself — it delegates to the specialist whose `description` best matches the query, mirroring the domain of the sibling `Equity-Research-agent`. Market tools call the **live Financial Modeling Prep (FMP) `/stable` API** (6 core endpoints: profile, quote, key-metrics-ttm, discounted-cash-flow, grades + price-target-consensus, stock-peers). Tools return `{"error": ...}` on a missing key / premium gate / network failure so the model reports the gap rather than crashing.
 
 ## Layout
 
@@ -23,7 +23,9 @@ Google-ADK-agents/
 │   ├── agent.py                 # root_agent = coordinator + sub_agents
 │   ├── config.py                # env-driven model selection (ADK_MODEL)
 │   ├── sub_agents/              # fundamentals / valuation / risk specialists
-│   └── tools/                   # market_tools.py (FMP-shaped stubs)
+│   └── tools/
+│       ├── fmp_client.py        # shared FMP /stable GET helper
+│       └── market_tools.py      # 6 live FMP tool functions
 └── .env.example
 ```
 
@@ -33,9 +35,9 @@ Google-ADK-agents/
 # from Google-ADK-agents/
 uv sync                          # install google-adk into .venv
 
-# Provide a Gemini key (Google AI Studio) — ADK reads .env next to the package
+# ADK reads the .env next to the agent package
 cp .env.example finance_coordinator/.env
-# edit finance_coordinator/.env → set GOOGLE_API_KEY
+# edit finance_coordinator/.env → set GOOGLE_API_KEY (Gemini) and FMP_API_KEY (market data)
 ```
 
 ## Run
@@ -49,6 +51,6 @@ Try: `research NVDA`, `is TSLA expensive right now?`, `what are the risks in AAP
 
 ## Next steps
 
-- Replace the stubs in `tools/market_tools.py` with live FMP `/stable` calls (reuse the key + endpoints from `Equity-Research-agent`).
+- Add the premium FMP endpoints (SEC filings, ETF/mutual-fund holdings, ownership) as further tools.
 - Add a `SequentialAgent` pipeline for a full report (fundamentals → valuation → risk → synthesis).
 - Wire the coordinator into a `Runner` + session service for programmatic/API use.

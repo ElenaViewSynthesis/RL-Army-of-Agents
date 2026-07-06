@@ -340,6 +340,7 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "google-adk" },
+    { name = "httpx" },
 ]
 
 [package.dev-dependencies]
@@ -348,7 +349,10 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "google-adk", specifier = ">=2.3.0" }]
+requires-dist = [
+    { name = "google-adk", specifier = ">=2.3.0" },
+    { name = "httpx", specifier = ">=0.28.1" },
+]
 
 [package.metadata.requires-dev]
 dev = [{ name = "pytest", specifier = ">=8.0.0" }]

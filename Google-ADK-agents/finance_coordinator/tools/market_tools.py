@@ -1,17 +1,17 @@
-"""Market-data tools for the finance sub-agents.
+"""Market-data tools for the finance sub-agents — live Financial Modeling Prep.
 
-These are intentionally stubbed with representative shapes so the agent tree
-runs end-to-end without a live data provider. Swap the bodies for real
-Financial Modeling Prep (FMP) `/stable` calls when wiring in the API key —
-the function signatures and return dicts already match the FMP field names
-used by the sibling `Equity-Research-agent`.
+Each function calls an FMP ``/stable`` endpoint via :mod:`fmp_client` and
+returns a JSON-serializable dict. ADK wraps them as tools automatically; the
+first docstring line becomes the tool description the model sees, so keep it
+crisp. Endpoint paths match the sibling ``Equity-Research-agent``.
 
-Each function returns a JSON-serializable dict. ADK wraps them as tools
-automatically; the docstring becomes the tool description the model sees, so
-keep the first line crisp and action-oriented.
+Tools never raise: on a missing key, premium gate, or network failure they
+return ``{"error": ...}`` so the model can report the gap rather than crash.
 """
 
 from __future__ import annotations
+
+from .fmp_client import fmp_get, first_record
 
 
 def get_company_profile(symbol: str) -> dict:
@@ -20,14 +20,7 @@ def get_company_profile(symbol: str) -> dict:
     Args:
         symbol: Stock ticker, e.g. "NVDA".
     """
-    return {
-        "symbol": symbol.upper(),
-        "companyName": f"{symbol.upper()} (stub)",
-        "sector": "Unknown",
-        "industry": "Unknown",
-        "marketCap": None,
-        "description": "Stubbed profile — wire up FMP /stable/profile.",
-    }
+    return first_record(fmp_get("profile", {"symbol": symbol.upper()}))
 
 
 def get_stock_quote(symbol: str) -> dict:
@@ -36,15 +29,7 @@ def get_stock_quote(symbol: str) -> dict:
     Args:
         symbol: Stock ticker, e.g. "NVDA".
     """
-    return {
-        "symbol": symbol.upper(),
-        "price": None,
-        "changePercentage": None,
-        "dayLow": None,
-        "dayHigh": None,
-        "volume": None,
-        "_note": "Stubbed — wire up FMP /stable/quote.",
-    }
+    return first_record(fmp_get("quote", {"symbol": symbol.upper()}))
 
 
 def get_key_metrics(symbol: str) -> dict:
@@ -53,15 +38,7 @@ def get_key_metrics(symbol: str) -> dict:
     Args:
         symbol: Stock ticker, e.g. "NVDA".
     """
-    return {
-        "symbol": symbol.upper(),
-        "peRatioTTM": None,
-        "roeTTM": None,
-        "netProfitMarginTTM": None,
-        "debtToEquityTTM": None,
-        "freeCashFlowYieldTTM": None,
-        "_note": "Stubbed — wire up FMP /stable/key-metrics-ttm.",
-    }
+    return first_record(fmp_get("key-metrics-ttm", {"symbol": symbol.upper()}))
 
 
 def get_dcf_valuation(symbol: str) -> dict:
@@ -70,25 +47,22 @@ def get_dcf_valuation(symbol: str) -> dict:
     Args:
         symbol: Stock ticker, e.g. "NVDA".
     """
-    return {
-        "symbol": symbol.upper(),
-        "dcf": None,
-        "stockPrice": None,
-        "_note": "Stubbed — wire up FMP /stable/discounted-cash-flow.",
-    }
+    return first_record(fmp_get("discounted-cash-flow", {"symbol": symbol.upper()}))
 
 
 def get_analyst_ratings(symbol: str) -> dict:
-    """Return analyst grade distribution and consensus price target.
+    """Return analyst grade actions and the consensus price target.
 
     Args:
         symbol: Stock ticker, e.g. "NVDA".
     """
+    sym = symbol.upper()
+    grades = fmp_get("grades", {"symbol": sym, "limit": 10})
+    consensus = first_record(fmp_get("price-target-consensus", {"symbol": sym}))
     return {
-        "symbol": symbol.upper(),
-        "consensus": None,
-        "priceTargetConsensus": None,
-        "_note": "Stubbed — wire up FMP /stable/grades + price-target-consensus.",
+        "symbol": sym,
+        "recent_grades": grades,
+        "price_target_consensus": consensus,
     }
 
 
@@ -98,8 +72,7 @@ def get_peers(symbol: str) -> dict:
     Args:
         symbol: Stock ticker, e.g. "NVDA".
     """
-    return {
-        "symbol": symbol.upper(),
-        "peers": [],
-        "_note": "Stubbed — wire up FMP /stable/stock-peers.",
-    }
+    data = fmp_get("stock-peers", {"symbol": symbol.upper()})
+    if isinstance(data, dict):
+        return data  # error dict
+    return {"symbol": symbol.upper(), "peers": data}
