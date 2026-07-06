@@ -1,13 +1,18 @@
-"""Valuation specialist — DCF fair value, peers, and analyst sentiment."""
+"""Valuation specialist — DCF fair value, peers, and analyst sentiment.
+
+Runs on an **open model via OpenRouter** (LiteLLM), while the coordinator and
+the other specialists run on Gemini — demonstrating heterogeneous models
+coordinating inside one ADK agent tree.
+"""
 
 from google.adk.agents import LlmAgent
 
-from ..config import MODEL
+from ..config import openrouter_model
 from ..tools import get_dcf_valuation, get_peers, get_analyst_ratings
 
 valuation_agent = LlmAgent(
     name="valuation_agent",
-    model=MODEL,
+    model=openrouter_model(),
     description=(
         "Assesses whether a stock is cheap or expensive: DCF fair value vs "
         "price, peer multiples, and the analyst consensus / price target. Use "

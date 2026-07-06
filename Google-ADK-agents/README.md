@@ -4,16 +4,18 @@ Multi-agent financial-research orchestrator built on **Google's Agent Developmen
 
 Two selectable agents ship in this project:
 
-## 1. `finance_coordinator` — interactive router
+## 1. `finance_coordinator` — interactive router (multi-model)
 
 ```
-finance_coordinator          (root_agent — pure router, no data tools)
-├── fundamentals_agent       profile · quote · TTM key metrics
-├── valuation_agent          DCF fair value · peers · analyst consensus
-└── risk_agent               leverage · margin fragility · red flags
+finance_coordinator          (root_agent — pure router, no data tools)   [Gemini]
+├── fundamentals_agent       profile · quote · TTM key metrics           [Gemini]
+├── valuation_agent          DCF fair value · peers · analyst consensus  [OpenRouter]
+└── risk_agent               leverage · margin fragility · red flags     [Gemini]
 ```
 
 The coordinator holds no market tools itself — it delegates to the specialist whose `description` best matches the query. Best for ad-hoc questions ("is TSLA expensive?", "risks in AAPL?").
+
+**Heterogeneous models, one tree.** The coordinator and two specialists run on **Gemini** directly; the `valuation_agent` runs on an **open model via OpenRouter** (LiteLLM — default `meta-llama/llama-3.3-70b-instruct`). ADK's delegation is model-agnostic, so a Gemini coordinator can transfer to an OpenRouter-backed sub-agent and back. Model wiring lives in `config.py` (`GEMINI_MODEL` string vs `openrouter_model()` LiteLLM handle); swap either via `ADK_MODEL` / `OPENROUTER_MODEL` in `.env`.
 
 ## 2. `equity_report_pipeline` — deterministic full report
 
@@ -58,7 +60,10 @@ uv sync                          # install google-adk into .venv
 
 # ADK reads the .env next to the agent package
 cp .env.example finance_coordinator/.env
-# edit finance_coordinator/.env → set GOOGLE_API_KEY (Gemini) and FMP_API_KEY (market data)
+# edit finance_coordinator/.env → set:
+#   GOOGLE_API_KEY      (Gemini agents)
+#   OPENROUTER_API_KEY  (the OpenRouter/LiteLLM valuation agent)
+#   FMP_API_KEY         (market-data tools)
 ```
 
 ## Run

@@ -58,6 +58,10 @@ def get_analyst_ratings(symbol: str) -> dict:
     """
     sym = symbol.upper()
     grades = fmp_get("grades", {"symbol": sym, "limit": 10})
+    # FMP's /grades ignores `limit` and returns full history (1000s of rows),
+    # which overflows smaller model context windows — bound it client-side.
+    if isinstance(grades, list):
+        grades = grades[:10]
     consensus = first_record(fmp_get("price-target-consensus", {"symbol": sym}))
     return {
         "symbol": sym,

@@ -58,7 +58,10 @@ export const getAnalystRatings = tool({
       fmpGet("grades", { symbol: sym, limit: 10 }),
       fmpGet("price-target-consensus", { symbol: sym }),
     ]);
-    return { symbol: sym, recent_grades: grades, price_target_consensus: firstRecord(consensus) };
+    // FMP's /grades ignores `limit` and returns full history (1000s of rows),
+    // which overflows smaller model context windows — bound it client-side.
+    const recentGrades = Array.isArray(grades) ? grades.slice(0, 10) : grades;
+    return { symbol: sym, recent_grades: recentGrades, price_target_consensus: firstRecord(consensus) };
   },
 });
 
