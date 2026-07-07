@@ -1,0 +1,11 @@
+{
+  "name": "google-adk-ts-agent",
+  "version": "0.1.0",
+  "description": "Streaming finance chat agent on Google's TypeScript ADK (@google/adk)",
+  "type": "module",
+  "main": "agent.ts",
+  "scripts": {
+    "chat": "adk web",
+    "cli": "adk run agent.ts"
+  }
+}
