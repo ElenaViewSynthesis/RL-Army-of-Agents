@@ -21,9 +21,17 @@ from google.adk.models.lite_llm import LiteLlm
 MODEL: str = os.getenv("ADK_MODEL", "gemini-2.5-flash")
 GEMINI_MODEL: str = MODEL  # explicit alias for readability at call sites
 
-# ── OpenRouter (open model via LiteLLM) ───────────────────────────────────────
+# ── OpenRouter (open reasoning model via LiteLLM) ─────────────────────────────
+# Default to a nemotron reasoning model. Reasoning is enabled per OpenRouter's
+# `reasoning` body param, forwarded through LiteLLM via `extra_body`.
 OPENROUTER_MODEL_ID: str = os.getenv(
-    "OPENROUTER_MODEL", "meta-llama/llama-3.3-70b-instruct"
+    "OPENROUTER_MODEL", "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free"
+)
+# Toggle reasoning off with OPENROUTER_REASONING=0/false for non-reasoning models.
+OPENROUTER_REASONING: bool = os.getenv("OPENROUTER_REASONING", "1").lower() not in (
+    "0",
+    "false",
+    "no",
 )
 
 
@@ -33,8 +41,15 @@ def openrouter_model() -> LiteLlm:
     litellm resolves the ``openrouter/`` prefix and authenticates with
     ``OPENROUTER_API_KEY``; we pass it explicitly so the agent fails fast with a
     clear error if the key is missing rather than at first token.
+
+    When reasoning is enabled we forward ``extra_body={"reasoning": {"enabled":
+    True}}`` — OpenRouter's flag to make the model think before it answers. ADK
+    manages the multi-turn message loop, so reasoning traces are threaded across
+    turns by the framework rather than by hand-passing ``reasoning_details``.
     """
+    extra = {"reasoning": {"enabled": True}} if OPENROUTER_REASONING else {}
     return LiteLlm(
         model=f"openrouter/{OPENROUTER_MODEL_ID}",
         api_key=os.getenv("OPENROUTER_API_KEY"),
+        extra_body=extra,
     )

@@ -1,8 +1,8 @@
 """Valuation specialist — DCF fair value, peers, and analyst sentiment.
 
-Runs on an **open model via OpenRouter** (LiteLLM), while the coordinator and
-the other specialists run on Gemini — demonstrating heterogeneous models
-coordinating inside one ADK agent tree.
+Runs on an **open reasoning model via OpenRouter** (nemotron, reasoning enabled
+through LiteLLM), while the coordinator and the other specialists run on Gemini
+— demonstrating heterogeneous models coordinating inside one ADK agent tree.
 """
 
 from google.adk.agents import LlmAgent
