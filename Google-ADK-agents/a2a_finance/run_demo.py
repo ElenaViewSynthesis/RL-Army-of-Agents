@@ -28,34 +28,45 @@ except AttributeError:
 
 SCRIPT_DIR = Path(__file__).resolve().parent          # a2a_finance/
 PROJECT = SCRIPT_DIR.parent                            # Google-ADK-agents/
-PORT = os.getenv("A2A_VALUATION_PORT", "8001")
-CARD = f"http://localhost:{PORT}/.well-known/agent-card.json"
+
+# (module app, port) for each specialist A2A service.
+SERVICES = [
+    ("a2a_finance.fundamentals_service:a2a_app", os.getenv("A2A_FUNDAMENTALS_PORT", "8002")),
+    ("a2a_finance.valuation_service:a2a_app", os.getenv("A2A_VALUATION_PORT", "8001")),
+    ("a2a_finance.risk_service:a2a_app", os.getenv("A2A_RISK_PORT", "8003")),
+]
 
 from dotenv import load_dotenv  # noqa: E402
 load_dotenv(PROJECT / "finance_coordinator" / ".env")
 sys.path.insert(0, str(PROJECT))
 
 
-def start_server() -> subprocess.Popen:
-    return subprocess.Popen(
-        ["uv", "run", "uvicorn", "a2a_finance.valuation_service:a2a_app",
-         "--port", PORT, "--log-level", "warning"],
-        cwd=str(PROJECT), env=os.environ.copy(),
-        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-    )
+def start_servers() -> list[subprocess.Popen]:
+    procs = []
+    for app, port in SERVICES:
+        procs.append(subprocess.Popen(
+            ["uv", "run", "uvicorn", app, "--port", port, "--log-level", "warning"],
+            cwd=str(PROJECT), env=os.environ.copy(),
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+        ))
+    return procs
 
 
-def wait_for_card(timeout: float = 60.0) -> bool:
+def wait_for_all(timeout: float = 90.0) -> bool:
     import httpx
+    cards = [f"http://localhost:{port}/.well-known/agent-card.json" for _, port in SERVICES]
     deadline = time.time() + timeout
-    while time.time() < deadline:
-        try:
-            if httpx.get(CARD, timeout=2).status_code == 200:
-                return True
-        except Exception:
-            pass
-        time.sleep(1)
-    return False
+    pending = set(cards)
+    while pending and time.time() < deadline:
+        for url in list(pending):
+            try:
+                if httpx.get(url, timeout=2).status_code == 200:
+                    pending.discard(url)
+            except Exception:
+                pass
+        if pending:
+            time.sleep(1)
+    return not pending
 
 
 async def run_coordinator(ticker: str, question: str) -> None:
@@ -89,20 +100,23 @@ def main() -> None:
         print("Error: OPENROUTER_API_KEY not set (finance_coordinator/.env)", file=sys.stderr)
         sys.exit(1)
 
-    print(f"▸ starting A2A valuation service on :{PORT} …", file=sys.stderr)
-    server = start_server()
+    ports = ", ".join(port for _, port in SERVICES)
+    print(f"▸ starting A2A services on :{ports} …", file=sys.stderr)
+    servers = start_servers()
     try:
-        if not wait_for_card():
-            print("A2A service did not come up in time.", file=sys.stderr)
+        if not wait_for_all():
+            print("Not all A2A services came up in time.", file=sys.stderr)
             sys.exit(2)
-        print("▸ service up; running coordinator\n", file=sys.stderr)
+        print("▸ all services up; running coordinator\n", file=sys.stderr)
         asyncio.run(run_coordinator(ticker, question))
     finally:
-        server.terminate()
-        try:
-            server.wait(timeout=10)
-        except Exception:
-            server.kill()
+        for s in servers:
+            s.terminate()
+        for s in servers:
+            try:
+                s.wait(timeout=10)
+            except Exception:
+                s.kill()
 
 
 if __name__ == "__main__":
