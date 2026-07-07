@@ -78,6 +78,21 @@ uv run adk run report_pipeline          # full-report pipeline (CLI)
 - Router — try: `is TSLA expensive right now?`, `what are the risks in AAPL?`
 - Pipeline — try: `NVDA` or `full report on MSFT` → runs all four steps → rated note.
 
+> `adk run`/`adk web` target a package `root_agent` (both Gemini), so they need Gemini quota. To exercise the **OpenRouter reasoning agent without Gemini**, use the runner below.
+
+### `run_valuation.py` — stream the reasoning agent (no Gemini needed)
+
+Drives the OpenRouter reasoning `valuation_agent` directly. **Streaming is the default**; `--structured` emits a Pydantic-validated `ResearchNote` as JSON via a two-step flow (reasoning agent gathers with tools → non-reasoning formatter agent with `output_schema` emits the note).
+
+```bash
+uv run python run_valuation.py NVDA                    # stream tokens (default)
+uv run python run_valuation.py AAPL -q "cheap vs DCF?"  # streaming, specific question
+uv run python run_valuation.py TSLA --structured         # schema-validated JSON note
+uv run python run_valuation.py NVDA --no-reasoning -m meta-llama/llama-3.3-70b-instruct
+```
+
+`schema.py` holds the `ResearchNote` Pydantic model (the Python analogue of the TS zod schema). Runs from any working directory (WSL-friendly) — paths resolve relative to the script.
+
 ## Next steps
 
 - Add the premium FMP endpoints (SEC filings, ETF/mutual-fund holdings, ownership) as further tools.

@@ -23,8 +23,9 @@ OpenRouter-Agent/
 ├── package.json          # type: module; "agent" script via tsx
 ├── tsconfig.json
 ├── src/
-│   ├── agent.ts          # CLI: callModel loop, streams answer + logs tool calls
+│   ├── agent.ts          # CLI: streaming (default) + --structured modes
 │   ├── tools.ts          # 6 FMP tools via tool()
+│   ├── schema.ts         # zod research-note schema + submit_research_note tool
 │   └── fmp.ts            # FMP /stable client
 └── .env.example
 ```
@@ -39,14 +40,22 @@ cp .env.example .env      # add OPENROUTER_API_KEY and FMP_API_KEY
 
 ## Run
 
+**Streaming (default)** — the answer streams to stdout token by token:
 ```bash
 npm run agent -- NVDA
 npm run agent -- AAPL "is it expensive right now?"
 ```
 
-- The answer streams to **stdout**; tool calls and token usage go to **stderr**, so you can split them:
+**Structured output (zod)** — emit a schema-validated research note as JSON:
+```bash
+npm run agent -- NVDA --structured
+```
+A `submit_research_note` tool (its zod `inputSchema` *is* the output contract, `src/schema.ts`) is added to the loop; the model gathers data with the FMP tools, then calls it as its final answer. We stop on that call (`hasToolCall`), validate the arguments with `researchNoteSchema.parse`, and print the note. Fields: `ticker · rating · currentPrice · priceTarget · fundamentals · valuation · risks[] · confidence · summary`.
+
+- Tool calls and token usage go to **stderr**, the answer/JSON to **stdout**, so you can split them:
   ```bash
   npm run agent -- NVDA 2>/dev/null > nvda-brief.md
+  npm run agent -- NVDA --structured 2>/dev/null > nvda-note.json
   ```
 - Model defaults to `~anthropic/claude-sonnet-latest`. Override with `OPENROUTER_MODEL` in `.env` (e.g. `nvidia/nemotron-3-ultra-550b-a55b`, `poolside/laguna-m.1`).
 

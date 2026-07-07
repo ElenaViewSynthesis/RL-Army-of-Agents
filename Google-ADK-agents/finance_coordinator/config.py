@@ -35,7 +35,9 @@ OPENROUTER_REASONING: bool = os.getenv("OPENROUTER_REASONING", "1").lower() not 
 )
 
 
-def openrouter_model() -> LiteLlm:
+def openrouter_model(
+    model_id: str | None = None, reasoning: bool | None = None
+) -> LiteLlm:
     """Return a LiteLLM model handle for an open model on OpenRouter.
 
     litellm resolves the ``openrouter/`` prefix and authenticates with
@@ -46,10 +48,30 @@ def openrouter_model() -> LiteLlm:
     True}}`` — OpenRouter's flag to make the model think before it answers. ADK
     manages the multi-turn message loop, so reasoning traces are threaded across
     turns by the framework rather than by hand-passing ``reasoning_details``.
+
+    Args:
+        model_id: Override the OpenRouter model id (defaults to
+            ``OPENROUTER_MODEL_ID``).
+        reasoning: Override the reasoning toggle. Set ``False`` for structured
+            (JSON) output, where a reasoning trace would corrupt the payload.
     """
-    extra = {"reasoning": {"enabled": True}} if OPENROUTER_REASONING else {}
+    mid = model_id or OPENROUTER_MODEL_ID
+    use_reasoning = OPENROUTER_REASONING if reasoning is None else reasoning
+    extra = {"reasoning": {"enabled": True}} if use_reasoning else {}
     return LiteLlm(
-        model=f"openrouter/{OPENROUTER_MODEL_ID}",
+        model=f"openrouter/{mid}",
         api_key=os.getenv("OPENROUTER_API_KEY"),
         extra_body=extra,
     )
+
+
+# Model for structured/JSON output (formatter agent). Reasoning off so the trace
+# doesn't pollute the JSON; instruction-following model by default.
+FORMATTER_MODEL_ID: str = os.getenv(
+    "OPENROUTER_FORMATTER_MODEL", "meta-llama/llama-3.3-70b-instruct"
+)
+
+
+def formatter_model() -> LiteLlm:
+    """A non-reasoning OpenRouter model for schema-constrained output."""
+    return openrouter_model(model_id=FORMATTER_MODEL_ID, reasoning=False)
