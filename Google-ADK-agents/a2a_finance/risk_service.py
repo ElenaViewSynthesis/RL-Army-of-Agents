@@ -18,7 +18,7 @@ from finance_coordinator.models import OpenRouterLlm
 from finance_coordinator.tools import get_company_profile, get_key_metrics
 
 PORT = int(os.getenv("A2A_RISK_PORT", "8003"))
-MODEL = os.getenv("A2A_RISK_MODEL", "meta-llama/llama-3.3-70b-instruct")
+MODEL = os.getenv("A2A_RISK_MODEL", "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free")
 
 risk_agent = LlmAgent(
     name="risk_agent",

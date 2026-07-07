@@ -18,7 +18,7 @@ from finance_coordinator.models import OpenRouterLlm
 from finance_coordinator.tools import get_company_profile, get_stock_quote, get_key_metrics
 
 PORT = int(os.getenv("A2A_FUNDAMENTALS_PORT", "8002"))
-MODEL = os.getenv("A2A_FUNDAMENTALS_MODEL", "meta-llama/llama-3.3-70b-instruct")
+MODEL = os.getenv("A2A_FUNDAMENTALS_MODEL", "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free")
 
 fundamentals_agent = LlmAgent(
     name="fundamentals_agent",

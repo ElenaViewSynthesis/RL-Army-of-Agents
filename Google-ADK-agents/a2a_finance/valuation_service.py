@@ -21,7 +21,7 @@ from finance_coordinator.tools import get_dcf_valuation, get_peers, get_analyst_
 
 PORT = int(os.getenv("A2A_VALUATION_PORT", "8001"))
 # Reliable tool-calling model for the service. Override with A2A_VALUATION_MODEL.
-MODEL = os.getenv("A2A_VALUATION_MODEL", "meta-llama/llama-3.3-70b-instruct")
+MODEL = os.getenv("A2A_VALUATION_MODEL", "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free")
 
 valuation_agent = LlmAgent(
     name="valuation_agent",
