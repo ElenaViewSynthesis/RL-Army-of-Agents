@@ -61,7 +61,7 @@ uv sync                          # install google-adk into .venv
 # ADK reads the .env next to the agent package
 cp .env.example finance_coordinator/.env
 # edit finance_coordinator/.env → set:
-#   GOOGLE_API_KEY      (Gemini agents)
+#   GEMINI_API_KEY      (Gemini agents)
 #   OPENROUTER_API_KEY  (the OpenRouter/LiteLLM valuation agent)
 #   FMP_API_KEY         (market-data tools)
 ```
