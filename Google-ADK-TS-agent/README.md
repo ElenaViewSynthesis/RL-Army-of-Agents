@@ -42,10 +42,10 @@ cp .env.example .env    # then fill in GEMINI_API_KEY and FMP_API_KEY
 - `GEMINI_API_KEY` — Gemini key from [AI Studio](https://aistudio.google.com/app/apikey).
 - `FMP_API_KEY` — [financialmodelingprep.com](https://financialmodelingprep.com).
 
-## ⚠️ Conflicts to know about
+## Prerequisites & known limitations
 
-**1. API-key name & provider.** `@google/adk` uses **`GEMINI_API_KEY`** and talks to the Gemini API directly. That differs from the sibling **Python** ADK project, which uses **`GOOGLE_API_KEY`** (with `GOOGLE_GENAI_USE_VERTEXAI=FALSE`). Same Google account, *different env-var name* — don't assume one `.env` line works for both.
+**1. API-key name — aligned.** `@google/adk` uses **`GEMINI_API_KEY`**. The sibling **Python** ADK project now uses the same name (its `google-genai` backend accepts `GEMINI_API_KEY`), so both projects share one env-var name — no mismatch to reconcile. Both run against AI Studio (`GOOGLE_GENAI_USE_VERTEXAI=FALSE`); the value can be the same key.
 
-**2. Gemini quota.** This agent's model (`gemini-flash-latest`) needs a Gemini key **with quota**. The key used elsewhere in this repo currently returns `429 RESOURCE_EXHAUSTED` with a per-minute limit of **0** across all models — so the streaming chat will authenticate but fail to generate until billing/quota is enabled on the Google project (or a key from a project with free-tier quota is used). This is the same blocker as the Python coordinator's Gemini path; it is not a code issue. Unlike the Python project, the TS ADK quickstart is **Gemini-first**, so there is no OpenRouter/LiteLLM fallback wired here.
+**2. Gemini billing balance.** This agent's model (`gemini-flash-latest`) needs a funded Gemini account. Billing is set up on the key used in this repo, but it currently returns `429 RESOURCE_EXHAUSTED — "prepayment credits are depleted"`, so the streaming chat authenticates but can't generate until the prepay balance is topped up at [AI Studio billing](https://ai.studio/projects). Same blocker as the Python coordinator's Gemini path; not a code issue. Unlike the Python project, the TS ADK quickstart is **Gemini-first**, so there is no OpenRouter/LiteLLM fallback wired here.
 
 **3. Node version.** The quickstart requires **Node 24.13+**; installing on **Node 20** fails during a transitive `@google/genai` preinstall step on Windows (`STATUS_DLL_INIT_FAILED`). Install and run this under Node 24 (e.g. in WSL with `nvm use 24`).
