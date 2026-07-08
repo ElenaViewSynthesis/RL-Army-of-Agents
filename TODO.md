@@ -23,9 +23,10 @@ client SDK).
    chunks to partial `LlmResponse`s.
    → `Google-ADK-agents/finance_coordinator/models/openrouter_llm.py`
 
-4. **Reasoning handling in `OpenRouterLlm`.** Reasoning models bleed the reasoning trace into
-   `content`. Add the OpenRouter `reasoning` param and separate the trace from the answer
-   (thought parts vs. text).
+4. ~~**Reasoning handling in `OpenRouterLlm`.**~~ ✅ Done — requests OpenRouter `reasoning`
+   and surfaces `msg.reasoning` as a genai *thought* part (`thought=True`), kept out of the
+   answer text and not resent as content on later turns. Observe via `part.thought` on event
+   parts. *(Still open: thread `reasoning_details` across turns for full multi-turn continuity.)*
 
 5. **Premium FMP tools.** Port the SEC filings / ETF / mutual-fund / ownership endpoints (already
    implemented in `Equity-Research-agent/`) into the shared tool set.

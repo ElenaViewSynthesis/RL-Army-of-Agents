@@ -60,6 +60,9 @@ def _messages_from_request(llm_request: LlmRequest) -> list[dict]:
         tool_calls: list[dict] = []
         tool_msgs: list[dict] = []  # function_response -> separate 'tool' messages
         for part in content.parts or []:
+            if getattr(part, "thought", None):
+                # Reasoning traces are not resent as content on later turns.
+                continue
             if getattr(part, "text", None):
                 text_parts.append(part.text)
             elif getattr(part, "function_call", None):
@@ -86,6 +89,9 @@ class OpenRouterLlm(BaseLlm):
     """ADK model that talks to OpenRouter via its official client SDK."""
 
     max_tokens: int = 2000
+    # When True, request reasoning and surface it as a separate genai *thought*
+    # part (thought=True) instead of letting it bleed into the answer text.
+    reasoning: bool = True
 
     @classmethod
     def supported_models(cls) -> list[str]:
@@ -107,11 +113,19 @@ class OpenRouterLlm(BaseLlm):
         tools = _tools_from_request(llm_request)
         if tools:
             kwargs["tools"] = tools
+        if self.reasoning:
+            # Ask OpenRouter to return the reasoning trace in a dedicated field.
+            kwargs["reasoning"] = {"enabled": True}
 
         resp = await client.chat.send_async(**kwargs)
         msg = resp.choices[0].message
 
         parts: list[types.Part] = []
+        # Reasoning first, as a genai *thought* part — kept out of the answer text
+        # so the flow engine / callers can distinguish thinking from the response.
+        reasoning_text = getattr(msg, "reasoning", None)
+        if reasoning_text:
+            parts.append(types.Part(text=reasoning_text, thought=True))
         if getattr(msg, "content", None):
             parts.append(types.Part(text=msg.content))
         for tc in getattr(msg, "tool_calls", None) or []:
