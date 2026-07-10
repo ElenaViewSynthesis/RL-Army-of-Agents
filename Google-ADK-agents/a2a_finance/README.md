@@ -3,12 +3,14 @@
 Tier-A [Agent2Agent (A2A)](https://google.github.io/A2A/) coordination for the finance agents. Specialist agents run as **independent A2A services**; a coordinator delegates to them **over HTTP** via `RemoteA2aAgent` — not in-process `sub_agents`. Everything runs on the **OpenRouter client SDK** (`OpenRouterLlm`), so no Gemini is needed.
 
 ```
-finance_coordinator (OpenRouterLlm)              ── coordinator process ──
+finance_coordinator (OpenRouterLlm)              ── coordinator process (Python) ──
         │  transfer_to_agent  ──▶  A2A / HTTP
-        ├──▶ fundamentals_agent   (:8002)   profile · quote · TTM metrics
-        ├──▶ valuation_agent      (:8001)   DCF · peers · analyst consensus
-        └──▶ risk_agent           (:8003)   leverage · margins · red flags
-   each specialist = an independent A2A service (to_a2a), OpenRouterLlm + FMP tools
+        ├──▶ fundamentals_agent   (:8002)   profile · quote · TTM metrics      [Python]
+        ├──▶ valuation_agent      (:8001)   DCF · peers · analyst consensus    [Python]
+        ├──▶ risk_agent           (:8003)   leverage · margins · red flags     [Python]
+        └──▶ openrouter_research_agent (:8100)  general read     [TypeScript — Tier B]
+   Python specialists = to_a2a services on OpenRouterLlm + FMP tools;
+   the TS node = @openrouter/agent wrapped in @a2a-js/sdk (cross-runtime bridge).
 ```
 
 ## Pieces
@@ -48,7 +50,22 @@ uv run python -c "import asyncio; from a2a_finance.coordinator import root_agent
 2. Expose it: `app = to_a2a(agent, port=800X)` → serve with uvicorn.
 3. Register it on the coordinator: `RemoteA2aAgent(name=…, agent_card="http://…/.well-known/agent-card.json")` in `sub_agents`.
 
-Because agents talk over the protocol, a future service could even be a **different runtime** (e.g. the TypeScript `OpenRouter-Agent`) as long as it speaks A2A — that's the cross-runtime bridge (Tier B).
+Because agents talk over the protocol, a service can be a **different runtime** — done in **Tier B**: the TypeScript `OpenRouter-Agent` is exposed over A2A (via `@a2a-js/sdk`) and consumed here as `openrouter_research_agent`. See below.
+
+## Tier B — cross-runtime bridge (Python ↔ TypeScript)
+
+The `openrouter_research_agent` node is a **TypeScript** agent (`@openrouter/agent`) wrapped in an A2A server (`@a2a-js/sdk`), reachable by the Python coordinator over the same protocol. Nothing in the coordinator knows or cares that it's a different language — that's the point of A2A.
+
+```bash
+# 1) start the TypeScript A2A service (from OpenRouter-Agent/)
+cd ../OpenRouter-Agent && npm run a2a          # → http://localhost:8100
+
+# 2) start the 3 Python services + run the coordinator (from Google-ADK-agents/)
+uv run python a2a_finance/run_demo.py NVDA "give me a general read"
+#   → coordinator routes the broad read to the TS agent over A2A
+```
+
+Override the TS card URL with `A2A_OPENROUTER_CARD`. Because `RemoteA2aAgent` resolves cards lazily, the coordinator still runs with only the Python specialists if the TS service is down — it just can't route there.
 
 ## Config
 

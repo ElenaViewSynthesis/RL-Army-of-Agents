@@ -51,6 +51,21 @@ remote_risk = RemoteA2aAgent(
     ),
 )
 
+# Cross-runtime (Tier B): a TypeScript agent (@openrouter/agent) exposed over A2A.
+# Its card lives on the Node service (default :8100). Construction is lazy, so
+# this only requires the TS server running when the coordinator routes to it.
+remote_openrouter_ts = RemoteA2aAgent(
+    name="openrouter_research_agent",
+    agent_card=os.getenv(
+        "A2A_OPENROUTER_CARD", "http://localhost:8100/.well-known/agent-card.json"
+    ),
+    description=(
+        "Remote general equity-research agent running on a DIFFERENT runtime "
+        "(TypeScript / OpenRouter Agent SDK), reachable over A2A. Good for a "
+        "broad quick read or a cross-runtime second opinion."
+    ),
+)
+
 root_agent = LlmAgent(
     name="finance_coordinator",
     model=OpenRouterLlm(model=COORD_MODEL),
@@ -65,8 +80,14 @@ root_agent = LlmAgent(
         "valuation_agent.\n"
         "- Downside / red flags / 'what could go wrong' -> transfer to "
         "risk_agent.\n"
-        "For a broad 'research TICKER' request, consult the relevant specialists "
-        "and combine their answers into a short brief. Always name the ticker."
+        "- Broad 'give me a general/quick read on TICKER' -> transfer to "
+        "openrouter_research_agent (a cross-runtime agent).\n"
+        "Always name the ticker being analyzed."
     ),
-    sub_agents=[remote_fundamentals, remote_valuation, remote_risk],
+    sub_agents=[
+        remote_fundamentals,
+        remote_valuation,
+        remote_risk,
+        remote_openrouter_ts,
+    ],
 )

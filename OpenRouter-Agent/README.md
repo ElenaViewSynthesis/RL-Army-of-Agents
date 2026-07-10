@@ -59,6 +59,17 @@ A `submit_research_note` tool (its zod `inputSchema` *is* the output contract, `
   ```
 - Model defaults to `~anthropic/claude-sonnet-latest`. Override with `OPENROUTER_MODEL` in `.env` (e.g. `nvidia/nemotron-3-ultra-550b-a55b`, `poolside/laguna-m.1`).
 
+## A2A server (cross-runtime bridge)
+
+Expose this agent over the **A2A protocol** so a different-runtime coordinator (e.g. the Python ADK system in [`../Google-ADK-agents/a2a_finance`](../Google-ADK-agents/a2a_finance)) can delegate to it:
+
+```bash
+npm run a2a          # → http://localhost:8100
+#   agent card → http://localhost:8100/.well-known/agent-card.json
+```
+
+`src/a2a-server.ts` wraps the same `callModel` tool loop in an `@a2a-js/sdk` `AgentExecutor` + Express app — the TypeScript analogue of ADK's `to_a2a`. A Python `RemoteA2aAgent` pointed at the card above talks to it over JSON-RPC; verified end-to-end (Python coordinator → this TS agent → live FMP data). Port override: `A2A_OR_PORT`.
+
 ## Requirements
 
 - Node.js 20.12+ (native `fetch`, `process.loadEnvFile`)

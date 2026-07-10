@@ -7,11 +7,11 @@ client SDK).
 
 ## To implement (priority order)
 
-1. **Tier B — cross-runtime A2A bridge.** Wrap the TypeScript `OpenRouter-Agent/`
-   (`@openrouter/agent`) in an A2A **server** (agent-card endpoint + message/task handling per
-   the A2A spec — hand-rolled, since there's no native support) so the Python coordinator can
-   delegate to it via `RemoteA2aAgent` over the wire. The real cross-language bridge.
-   *Est. ~12–14 steps.*
+1. ~~**Tier B — cross-runtime A2A bridge.**~~ ✅ Done — the TypeScript `OpenRouter-Agent`
+   is exposed over A2A via `@a2a-js/sdk` (`src/a2a-server.ts`, `npm run a2a`, :8100) and
+   registered on the Python coordinator as `openrouter_research_agent`. Verified end-to-end:
+   Python `RemoteA2aAgent` → TS server → live FMP data. Used the official A2A JS SDK instead of
+   hand-rolling the protocol.
 
 2. **Broad "research TICKER" fan-out.** The coordinator currently routes one query → one
    specialist. Add a mode that consults all three A2A specialists and synthesizes one research
