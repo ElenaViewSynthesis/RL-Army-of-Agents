@@ -13,10 +13,13 @@ client SDK).
    Python `RemoteA2aAgent` → TS server → live FMP data. Used the official A2A JS SDK instead of
    hand-rolling the protocol.
 
-2. **Broad "research TICKER" fan-out.** The coordinator currently routes one query → one
-   specialist. Add a mode that consults all three A2A specialists and synthesizes one research
-   note — likely via `AgentTool` (call sub-agents as tools so control returns) rather than
-   `transfer_to_agent` (which hands off control).
+2. **Broad "research TICKER" fan-out.** ⚠️ Mechanism done, needs speedup.
+   `a2a_finance/research.py` — `research_agent` wraps each A2A specialist as an `AgentTool`
+   (control returns after each, unlike `transfer_to_agent`) and synthesizes one note; run via
+   `run_demo.py <TICKER> --research`. **Verified the fan-out calls specialists and control
+   returns, but execution is sequential and times out** (didn't finish 3 A2A tool-loops + synth
+   even at 9 min). **Follow-up: parallelize** — run the 3 specialists concurrently
+   (`ParallelAgent`, sum→max latency) then synthesize, so it completes in a usable window.
 
 3. **True streaming in `OpenRouterLlm`.** It yields a single `LlmResponse` per turn today
    (non-streaming). Add token streaming via the client SDK's streaming call, mapping partial

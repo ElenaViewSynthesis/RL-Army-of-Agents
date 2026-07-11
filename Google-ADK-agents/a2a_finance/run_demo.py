@@ -69,12 +69,20 @@ def wait_for_all(timeout: float = 90.0) -> bool:
     return not pending
 
 
-async def run_coordinator(ticker: str, question: str) -> None:
+async def run_coordinator(ticker: str, question: str, *, research: bool = False) -> None:
     from google.adk.runners import InMemoryRunner
     from google.genai import types
-    from a2a_finance.coordinator import root_agent
 
-    prompt = f"For {ticker}: {question}" if question else f"Is {ticker} cheap or expensive right now?"
+    if research:
+        # Fan-out: consult all specialists (as AgentTools) → synthesize one note.
+        from a2a_finance.research import root_agent
+        prompt = f"Write a full research note on {ticker}."
+        label = "RESEARCH NOTE (fan-out via A2A)"
+    else:
+        # Routing: coordinator transfers the query to one specialist.
+        from a2a_finance.coordinator import root_agent
+        prompt = f"For {ticker}: {question}" if question else f"Is {ticker} cheap or expensive right now?"
+        label = "COORDINATOR (via A2A)"
     runner = InMemoryRunner(agent=root_agent, app_name="a2a")
     await runner.session_service.create_session(app_name="a2a", user_id="u", session_id="s")
     msg = types.Content(role="user", parts=[types.Part(text=prompt)])
@@ -89,13 +97,15 @@ async def run_coordinator(ticker: str, question: str) -> None:
             t = "".join(p.text for p in ev.content.parts if getattr(p, "text", None))
             if t:
                 final = t
-    print("\n--- COORDINATOR (via A2A) ---\n")
+    print(f"\n--- {label} ---\n")
     print(final or "(no response)")
 
 
 def main() -> None:
-    ticker = (sys.argv[1] if len(sys.argv) > 1 else "NVDA").upper()
-    question = " ".join(sys.argv[2:]).strip()
+    args = [a for a in sys.argv[1:] if a not in ("--research", "--fanout")]
+    research = any(a in ("--research", "--fanout") for a in sys.argv[1:])
+    ticker = (args[0] if args else "NVDA").upper()
+    question = " ".join(args[1:]).strip()
     if not os.getenv("OPENROUTER_API_KEY"):
         print("Error: OPENROUTER_API_KEY not set (finance_coordinator/.env)", file=sys.stderr)
         sys.exit(1)
@@ -107,8 +117,9 @@ def main() -> None:
         if not wait_for_all():
             print("Not all A2A services came up in time.", file=sys.stderr)
             sys.exit(2)
-        print("▸ all services up; running coordinator\n", file=sys.stderr)
-        asyncio.run(run_coordinator(ticker, question))
+        mode = "research fan-out" if research else "coordinator"
+        print(f"▸ all services up; running {mode}\n", file=sys.stderr)
+        asyncio.run(run_coordinator(ticker, question, research=research))
     finally:
         for s in servers:
             s.terminate()
