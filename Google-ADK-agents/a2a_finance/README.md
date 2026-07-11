@@ -8,8 +8,9 @@ finance_coordinator (OpenRouterLlm)              ── coordinator process (Pyt
         ├──▶ fundamentals_agent   (:8002)   profile · quote · TTM metrics      [Python]
         ├──▶ valuation_agent      (:8001)   DCF · peers · analyst consensus    [Python]
         ├──▶ risk_agent           (:8003)   leverage · margins · red flags     [Python]
+        ├──▶ commodities_agent    (:8004)   oil/gas/metal prices (OilPrice)    [Python]
         └──▶ openrouter_research_agent (:8100)  general read     [TypeScript — Tier B]
-   Python specialists = to_a2a services on OpenRouterLlm + FMP tools;
+   Python specialists = to_a2a services on OpenRouterLlm (+ FMP / OilPrice tools);
    the TS node = @openrouter/agent wrapped in @a2a-js/sdk (cross-runtime bridge).
 ```
 
@@ -76,7 +77,8 @@ Override the TS card URL with `A2A_OPENROUTER_CARD`. Because `RemoteA2aAgent` re
 | `OPENROUTER_MODEL` | `meta-llama/llama-3.3-70b-instruct` | model for the coordinator |
 | `A2A_FUNDAMENTALS_MODEL` | `meta-llama/llama-3.3-70b-instruct` | fundamentals service (fast) |
 | `A2A_VALUATION_MODEL` / `A2A_RISK_MODEL` | `nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free` | valuation / risk services (reasoning) |
-| `A2A_FUNDAMENTALS_PORT` / `A2A_VALUATION_PORT` / `A2A_RISK_PORT` | `8002` / `8001` / `8003` | service ports |
+| `A2A_FUNDAMENTALS_PORT` / `A2A_VALUATION_PORT` / `A2A_RISK_PORT` / `A2A_COMMODITIES_PORT` | `8002` / `8001` / `8003` / `8004` | service ports |
+| `OILPRICE_API_KEY` | — | commodities service (OilPrice API) |
 
 > **Model latency note:** the valuation/risk services default to the **Nemotron reasoning** model on OpenRouter's **free tier**, which queues (often several minutes) before responding — the dominant fan-out bottleneck. Fundamentals now defaults to fast **Llama 3.3 70B**; override valuation/risk the same way (`A2A_VALUATION_MODEL=meta-llama/llama-3.3-70b-instruct`, `A2A_RISK_MODEL=...`) for a fast end-to-end run.
 

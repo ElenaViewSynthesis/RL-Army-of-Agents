@@ -51,6 +51,15 @@ remote_risk = RemoteA2aAgent(
     ),
 )
 
+remote_commodities = RemoteA2aAgent(
+    name="commodities_agent",
+    agent_card=_card("A2A_COMMODITIES_CARD", 8004),
+    description=(
+        "Remote commodities specialist (over A2A): live oil, gas, metal, coal, "
+        "and other commodity prices and history via the OilPrice API."
+    ),
+)
+
 # Cross-runtime (Tier B): a TypeScript agent (@openrouter/agent) exposed over A2A.
 # Its card lives on the Node service (default :8100). Construction is lazy, so
 # this only requires the TS server running when the coordinator routes to it.
@@ -82,12 +91,15 @@ root_agent = LlmAgent(
         "risk_agent.\n"
         "- Broad 'give me a general/quick read on TICKER' -> transfer to "
         "openrouter_research_agent (a cross-runtime agent).\n"
-        "Always name the ticker being analyzed."
+        "- Commodity prices (oil, gas, metals, coal — WTI, Brent, gold, etc.) -> "
+        "transfer to commodities_agent.\n"
+        "Always name the ticker or commodity being analyzed."
     ),
     sub_agents=[
         remote_fundamentals,
         remote_valuation,
         remote_risk,
+        remote_commodities,
         remote_openrouter_ts,
     ],
 )
