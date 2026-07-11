@@ -2,6 +2,8 @@
 
 A commodity-prices agent on ADK, backed by the live **[OilPrice API](https://oilpriceapi.com)** (460+ commodity codes across oil, gas, metals, coal, refined products, macro indicators, and more). Runs on the OpenRouter client SDK (`OpenRouterLlm`) — no Gemini needed.
 
+> **Full provider & tools reference:** [`OILPRICE_API.md`](OILPRICE_API.md) — endpoints, response envelopes, catalog categories, and the per-provider MD convention.
+
 ## Tools (`tools.py`)
 
 | Tool | OilPrice endpoint | Returns |
