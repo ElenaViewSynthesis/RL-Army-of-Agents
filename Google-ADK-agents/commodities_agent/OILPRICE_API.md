@@ -8,7 +8,15 @@ Reference for the **commodities_agent** service. Convention: every third-party d
 - **Key env var:** `OILPRICE_API_KEY` (in gitignored `finance_coordinator/.env`)
 - **Client:** `commodities_agent/tools.py` (httpx)
 - **Model:** `OpenRouterLlm` (OpenRouter client SDK) — no Gemini needed
-- **Rate limit (free tier):** 10,000 requests/period; surfaced in `X-Ratelimit-{Limit,Remaining,Reset,Used,Tier}` response headers
+- **Focus:** energy-specific price feed for oil/gas prototypes — real-time WTI, Brent, natural gas, and other commodities.
+
+### Plans & limits
+
+- **Free tier:** 200 requests/month; no credit card required.
+- **Hard rate limit (all plans):** 60 requests/minute (1/sec). Exceeding it returns **`429 Too Many Requests` — "Rate limit exceeded"**; implement backoff or upgrade.
+- Responses also carry `X-Ratelimit-{Limit,Remaining,Reset,Used,Tier}` headers for tracking.
+
+> The client returns `{"error": …}` on failures; add retry/backoff on `429` before scaling request volume.
 
 ---
 
@@ -36,6 +44,18 @@ Reference for the **commodities_agent** service. Convention: every third-party d
 
 ## API endpoints (verified)
 
+| Method | Endpoint | Description | Auth | Granularity |
+|--------|----------|-------------|------|-------------|
+| GET | `/prices/latest` | Latest commodity prices | Yes | spot |
+| GET | `/prices/past_day` | Prices over 24h | Yes | hourly |
+| GET | `/prices/past_week` | Prices over 7d | Yes | daily |
+| GET | `/prices/past_month` | Prices over 30d | Yes | daily |
+| GET | `/prices/past_year` | Prices over ~1y | Yes | daily *(works; not in official docs table)* |
+| GET | `/prices/historical` | Custom date range (`start_date`, `end_date`) | Yes — **Paid** per docs *(observed returning `daily_average` data on the free key)* | daily |
+| GET | `/commodities` | List all commodities | Yes | — |
+
+All paths are under the `https://api.oilpriceapi.com/v1` base. Verified envelopes below.
+
 ### `GET /v1/commodities`
 Full catalog of 460+ codes. **Envelope:** `{ "status": "success", "data": { "commodities": [ … ] } }`
 
@@ -54,7 +74,10 @@ Latest price for one commodity. Without `by_code` it returns a default (Brent), 
 ```
 
 ### `GET /v1/prices/{period}?by_code=<CODE>`
-Historical series. `period` ∈ `past_day` · `past_week` · `past_month` · `past_year`. Returns up to ~100 points. **Envelope:** `{ "status": "success", "data": { "prices": [ … ] } }` where each point is `{ price, formatted, currency, code, unit, type, created_at, updated_at }`.
+Historical series. `period` ∈ `past_day` (hourly, 24h) · `past_week` (daily, 7d) · `past_month` (daily, 30d) · `past_year` (daily). Returns up to ~100 points. **Envelope:** `{ "status": "success", "data": { "prices": [ … ] } }` where each point is `{ price, formatted, currency, code, unit, type, created_at, updated_at }`.
+
+### `GET /v1/prices/historical?by_code=<CODE>&start_date=<YYYY-MM-DD>&end_date=<YYYY-MM-DD>`
+Custom date range — **marked Paid** in the provider docs (observed returning `type: "daily_average"` data on the current free key; treat as paid for production). Same `{ data: { prices: [ … ] } }` envelope. **Not yet wired as an agent tool** — add a `get_commodity_range` tool if/when needed.
 
 ---
 
