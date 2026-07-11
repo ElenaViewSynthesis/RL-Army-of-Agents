@@ -74,9 +74,10 @@ Override the TS card URL with `A2A_OPENROUTER_CARD`. Because `RemoteA2aAgent` re
 | `OPENROUTER_API_KEY` | — | required (client SDK auth) |
 | `FMP_API_KEY` | — | market-data tools |
 | `OPENROUTER_MODEL` | `meta-llama/llama-3.3-70b-instruct` | model for the coordinator |
-| `A2A_{FUNDAMENTALS,VALUATION,RISK}_MODEL` | `nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free` | model per service |
+| `A2A_FUNDAMENTALS_MODEL` | `meta-llama/llama-3.3-70b-instruct` | fundamentals service (fast) |
+| `A2A_VALUATION_MODEL` / `A2A_RISK_MODEL` | `nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free` | valuation / risk services (reasoning) |
 | `A2A_FUNDAMENTALS_PORT` / `A2A_VALUATION_PORT` / `A2A_RISK_PORT` | `8002` / `8001` / `8003` | service ports |
 
-> **Model latency note:** the services default to the **Nemotron reasoning** model on OpenRouter's **free tier**, which queues (often several minutes) before responding — the reasoning + tool loop can take a while end-to-end. For a fast demo, override to a quicker model, e.g. `A2A_VALUATION_MODEL=meta-llama/llama-3.3-70b-instruct` (same for `A2A_FUNDAMENTALS_MODEL` / `A2A_RISK_MODEL`).
+> **Model latency note:** the valuation/risk services default to the **Nemotron reasoning** model on OpenRouter's **free tier**, which queues (often several minutes) before responding — the dominant fan-out bottleneck. Fundamentals now defaults to fast **Llama 3.3 70B**; override valuation/risk the same way (`A2A_VALUATION_MODEL=meta-llama/llama-3.3-70b-instruct`, `A2A_RISK_MODEL=...`) for a fast end-to-end run.
 
 > A2A support in ADK is marked **experimental** (the warnings on startup are expected). Requires `a2a-sdk>=0.3.4,<0.4` and `sse-starlette` (both pinned in `pyproject.toml`).

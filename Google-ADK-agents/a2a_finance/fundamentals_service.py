@@ -18,7 +18,9 @@ from finance_coordinator.models import OpenRouterLlm
 from finance_coordinator.tools import get_company_profile, get_stock_quote, get_key_metrics
 
 PORT = int(os.getenv("A2A_FUNDAMENTALS_PORT", "8002"))
-MODEL = os.getenv("A2A_FUNDAMENTALS_MODEL", "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free")
+# Fast, reliable tool-calling model — the reasoning models on OpenRouter's free
+# tier queue for minutes, which is the fan-out bottleneck. Override via env.
+MODEL = os.getenv("A2A_FUNDAMENTALS_MODEL", "meta-llama/llama-3.3-70b-instruct")
 
 fundamentals_agent = LlmAgent(
     name="fundamentals_agent",
