@@ -11,11 +11,24 @@ with an ``{"error": ...}`` fallback so the agent reports gaps instead of crashin
 from __future__ import annotations
 
 import os
+import time
 
 import httpx
 
 BASE = "https://api.oilpriceapi.com/v1"
 _TIMEOUT = 20.0
+
+# Curated "Fuse Energy" watchlist — codes most useful to a UK/London energy
+# retailer, grouped by theme. See commodities_agent/FUSE_ENERGY_WATCHLIST.md.
+FUSE_WATCHLIST: list[tuple[str, str, str]] = [
+    ("NATURAL_GAS_GBP", "UK Natural Gas", "gas"),
+    ("NATURAL_GAS_TTF_SPOT_EUR", "TTF Natural Gas Spot", "gas"),
+    ("BRENT_CRUDE_USD", "Brent Crude", "petroleum"),
+    ("GASOIL_USD", "ICE Gasoil (Rotterdam)", "petroleum"),
+    ("UK_CARBON_GBP", "UK Carbon (UK ETS)", "carbon"),
+    ("EU_CARBON_EUR", "EU Carbon (EU ETS)", "carbon"),
+    ("NEWCASTLE_COAL_USD", "Newcastle Coal (API6)", "coal"),
+]
 _MAX_ROWS = 30  # cap catalog/search output so it fits the model context
 
 
@@ -126,3 +139,28 @@ def get_commodity_history(code: str, period: str = "past_week") -> dict:
     prices = (data.get("data") or {}).get("prices", []) if isinstance(data, dict) else []
     slim = [{"price": p.get("price"), "at": p.get("created_at")} for p in prices[:60]]
     return {"code": code.upper(), "period": period, "count": len(prices), "prices": slim}
+
+
+def list_fuse_watchlist() -> dict:
+    """Return live prices for the curated Fuse Energy watchlist in one call.
+
+    Fetches the latest price for each code most useful to a UK/London energy
+    retailer — UK & TTF gas, Brent, ICE Gasoil, UK & EU carbon, and Newcastle
+    coal — grouped by theme (gas, petroleum, carbon, coal). Takes no arguments.
+    """
+    # One request per code; throttle to respect the 60/min (1/sec) rate limit.
+    themes: dict[str, list] = {}
+    for i, (code, label, theme) in enumerate(FUSE_WATCHLIST):
+        if i:
+            time.sleep(1.05)
+        p = get_commodity_price(code)
+        themes.setdefault(theme, []).append({
+            "code": code,
+            "label": label,
+            "price": p.get("price"),
+            "formatted": p.get("formatted"),
+            "currency": p.get("currency"),
+            "unit": p.get("unit"),
+            "error": p.get("error"),
+        })
+    return {"watchlist": "fuse_energy", "count": len(FUSE_WATCHLIST), "by_theme": themes}

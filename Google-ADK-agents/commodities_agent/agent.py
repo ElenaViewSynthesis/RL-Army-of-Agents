@@ -16,6 +16,7 @@ from .tools import (
     search_commodities,
     get_commodity_price,
     get_commodity_history,
+    list_fuse_watchlist,
 )
 
 MODEL = os.getenv("OPENROUTER_MODEL", "meta-llama/llama-3.3-70b-instruct")
@@ -35,9 +36,18 @@ root_agent = LlmAgent(
         "- Use get_commodity_price for the latest price and get_commodity_history "
         "for trends over past_day/week/month/year.\n"
         "- Use list_commodities to browse a category (e.g. 'metal', 'gas').\n"
+        "- For a UK/London energy retailer's key benchmarks (Fuse Energy), call "
+        "list_fuse_watchlist to get UK/TTF gas, Brent, gasoil, carbon, and coal "
+        "prices in one shot.\n"
         "Report the price with its unit and currency (e.g. '$75.22 / barrel'), "
         "cite the code you used, and if a tool reports missing data say so "
         "rather than inventing figures."
     ),
-    tools=[list_commodities, search_commodities, get_commodity_price, get_commodity_history],
+    tools=[
+        list_commodities,
+        search_commodities,
+        get_commodity_price,
+        get_commodity_history,
+        list_fuse_watchlist,
+    ],
 )

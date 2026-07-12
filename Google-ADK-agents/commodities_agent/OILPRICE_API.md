@@ -89,6 +89,7 @@ Custom date range — **marked Paid** in the provider docs (observed returning `
 | `list_commodities` | `/v1/commodities` (filtered) | `(category: str = "")` → `{ count, showing, truncated, commodities[] }` — by category, capped at 30 |
 | `get_commodity_price` | `/v1/prices/latest` | `(code: str)` → `{ code, price, formatted, currency, unit, type, updated_at }` |
 | `get_commodity_history` | `/v1/prices/{period}` | `(code: str, period: str = "past_week")` → `{ code, period, count, prices[] }` — `prices` slimmed to `{price, at}`, first 60 |
+| `list_fuse_watchlist` | `/v1/prices/latest` ×7 | `()` → `{ watchlist, count, by_theme{} }` — the curated Fuse Energy watchlist (UK/TTF gas, Brent, gasoil, UK/EU carbon, Newcastle coal) with live prices; throttled 1/sec. See [`FUSE_ENERGY_WATCHLIST.md`](FUSE_ENERGY_WATCHLIST.md) |
 
 **Design notes**
 - **Bounded output:** the catalog is 469 rows, so `search`/`list` cap at 30 and history slims to `{price, at}` × 60 — keeps tool results inside the model's context window.

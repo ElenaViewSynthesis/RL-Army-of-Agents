@@ -5,6 +5,8 @@ A curated watchlist of OilPrice commodity codes for **[Fuse Energy](https://www.
 - Live prices captured **2026-07-12** (indicative — re-fetch via `get_commodity_price(code)`).
 - See [`OILPRICE_API.md`](OILPRICE_API.md) for the full provider/API reference.
 
+> **Live in the agent:** call the `list_fuse_watchlist()` tool to fetch this watchlist's current prices in one shot (grouped by theme). E.g. `uv run python -m commodities_agent.run "Show me the Fuse Energy watchlist prices."`
+
 ---
 
 ## 🔥 Core watchlist — highest relevance
