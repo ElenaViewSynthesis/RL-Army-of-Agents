@@ -92,6 +92,10 @@ class OpenRouterLlm(BaseLlm):
     # When True, request reasoning and surface it as a separate genai *thought*
     # part (thought=True) instead of letting it bleed into the answer text.
     reasoning: bool = True
+    # Per-request timeout (ms). Default 10 min — OpenRouter free/queued models
+    # (e.g. Nemotron reasoning) can sit in a busy-traffic queue for minutes.
+    # Override with OPENROUTER_TIMEOUT_MS.
+    timeout_ms: int = int(os.getenv("OPENROUTER_TIMEOUT_MS", "600000"))
 
     @classmethod
     def supported_models(cls) -> list[str]:
@@ -101,7 +105,7 @@ class OpenRouterLlm(BaseLlm):
     async def generate_content_async(
         self, llm_request: LlmRequest, stream: bool = False
     ) -> AsyncGenerator[LlmResponse, None]:
-        client = OpenRouter(api_key=os.getenv("OPENROUTER_API_KEY"))
+        client = OpenRouter(api_key=os.getenv("OPENROUTER_API_KEY"), timeout_ms=self.timeout_ms)
         cfg = llm_request.config
         max_tokens = getattr(cfg, "max_output_tokens", None) or self.max_tokens
 

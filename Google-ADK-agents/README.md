@@ -62,9 +62,12 @@ uv sync                          # install google-adk into .venv
 cp .env.example finance_coordinator/.env
 # edit finance_coordinator/.env → set:
 #   GEMINI_API_KEY      (Gemini agents)
-#   OPENROUTER_API_KEY  (the OpenRouter/LiteLLM valuation agent)
-#   FMP_API_KEY         (market-data tools)
+#   OPENROUTER_API_KEY  (OpenRouter-backed agents — A2A specialists, commodities)
+#   FMP_API_KEY         (equity market-data tools)
+#   OILPRICE_API_KEY    (commodities agent)
 ```
+
+> **Busy-traffic timeout:** OpenRouter-backed calls default to a **10-minute** per-request timeout (`OpenRouterLlm.timeout_ms`), since free/queued models can sit in a queue for minutes under load. Override with `OPENROUTER_TIMEOUT_MS`.
 
 ## Run
 
@@ -92,6 +95,64 @@ uv run python run_valuation.py NVDA --no-reasoning -m meta-llama/llama-3.3-70b-i
 ```
 
 `schema.py` holds the `ResearchNote` Pydantic model (the Python analogue of the TS zod schema). Runs from any working directory (WSL-friendly) — paths resolve relative to the script.
+
+---
+
+## Running the agents
+
+All OpenRouter-backed agents run **without Gemini**. See [`SHOWCASE.md`](SHOWCASE.md) for the full prompt catalog.
+
+### 🛢️ Commodities agent (OilPrice API)
+
+Live oil/gas/metal/coal prices, history, and the curated Fuse Energy watchlist. Standalone, streaming:
+
+```bash
+# from Google-ADK-agents/
+uv run python -m commodities_agent.run "Show me the Fuse Energy watchlist prices."
+uv run python -m commodities_agent.run "What is WTI crude trading at, and how has it moved this month?"
+
+# "daily glimpse" — all endpoints at once (priority: gasoil, UK gas, petroleum):
+uv run python -m commodities_agent.run \
+  "Show the Fuse Energy watchlist prices, then report the past-day movement for GASOIL_USD, NATURAL_GAS_GBP, and BRENT_CRUDE_USD."
+```
+
+See [`commodities_agent/`](commodities_agent/) — [`OILPRICE_API.md`](commodities_agent/OILPRICE_API.md) (provider ref), [`FUSE_ENERGY_WATCHLIST.md`](commodities_agent/FUSE_ENERGY_WATCHLIST.md) (curated codes).
+
+### 🔀 A2A multi-agent system
+
+Specialists run as independent A2A services (`:8001` valuation · `:8002` fundamentals · `:8003` risk · `:8004` commodities); a coordinator delegates to them over HTTP. `run_demo.py` boots the services, runs the coordinator, then tears down:
+
+```bash
+# from Google-ADK-agents/ — routing mode (one query → the matching specialist)
+uv run python a2a_finance/run_demo.py AAPL "what are the key risks?"
+uv run python a2a_finance/run_demo.py WTI  "current price of WTI crude oil?"   # → commodities service
+
+# research fan-out — consult all equity specialists, synthesize one note
+# (override the slow reasoning defaults for a fast run):
+A2A_VALUATION_MODEL=meta-llama/llama-3.3-70b-instruct \
+A2A_RISK_MODEL=meta-llama/llama-3.3-70b-instruct \
+  uv run python a2a_finance/run_demo.py NVDA --research
+
+# or run one service manually and inspect its agent card:
+uv run uvicorn a2a_finance.commodities_service:a2a_app --port 8004
+curl http://localhost:8004/.well-known/agent-card.json
+```
+
+Full details in [`a2a_finance/README.md`](a2a_finance/README.md).
+
+### 🟦 Cross-runtime TS node (Tier B)
+
+The Python coordinator can delegate to a **TypeScript** agent (`@openrouter/agent` wrapped in `@a2a-js/sdk`) over A2A. Start the TS service, then route to it:
+
+```bash
+# terminal 1 — from ../OpenRouter-Agent/
+npm run a2a                      # → http://localhost:8100  (agent card at /.well-known/agent-card.json)
+
+# terminal 2 — from Google-ADK-agents/
+uv run python a2a_finance/run_demo.py MSFT "give me a general read"   # coordinator routes to the TS agent
+```
+
+Because `RemoteA2aAgent` resolves cards lazily, the coordinator still runs with only the Python specialists if the TS service is down — it just can't route there.
 
 ## Next steps
 
