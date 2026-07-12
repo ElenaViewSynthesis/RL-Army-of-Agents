@@ -17,8 +17,8 @@ re-tokenizing text. Tool observations, environment responses, templates and user
 | # | Milestone | Status |
 |---|-----------|--------|
 | 1 | Repository, schemas, config loading, unit tests | ✅ done |
-| 2 | Local Docker sandbox environment + bug-fix task + verifier + budgets | ⬜ next |
-| 3 | SGLang + slime adapter (custom generate fn, token/logprob/mask preservation, Sample conversion, custom RM, smoke test) | ⬜ |
+| 2 | Local Docker sandbox environment + bug-fix task + verifier + budgets | ✅ done |
+| 3 | SGLang + slime adapter (custom generate fn, token/logprob/mask preservation, Sample conversion, custom RM, smoke test) | ⬜ next |
 | 4 | GRPO baseline (multi-candidate rollouts, eval, metric logging) | ⬜ |
 | 5 | GSPO experiment (algorithm switch, fixed variables, MoE-ready model adapter) | ⬜ |
 | 6 | Synthetic-data pipeline (Distilabel-style generation → verification → versioned Parquet/JSONL) | ⬜ |
@@ -48,22 +48,25 @@ re-tokenizing text. Tool observations, environment responses, templates and user
   validation, config loading/overrides, reward composition, loss-mask correctness.
 - Tooling: uv workspace, ruff (format + lint), mypy strict, pytest.
 
-## Milestone 2 — plan (next)
+## Milestone 2 — delivered
 
-1. `packages/environments`: `Environment` protocol + local Docker sandbox adapter
-   (create container from image, mount a task repo copy, exec with timeouts, teardown).
-2. Task type: repository bug-fixing (`configs/environments/repo_bugfix.yaml` + a tiny fixture
-   repo with a failing unit test under `tests/integration/fixtures/`).
-3. `packages/agents`: tools `read_file`, `edit_file`, `run_shell` — every invocation recorded
-   as `TrajectoryEvent`s (`TOOL_CALL` + `TOOL_RESULT`, `loss_mask=0`).
-4. `packages/verifiers`: clean-sandbox unit-test verifier — applies the agent's patch to a
-   pristine checkout in a **second** container, restores the canonical test files, runs the
-   test suite. The agent's container never touches the evaluation container (anti
-   reward-hacking boundary).
-5. Budget enforcement: token, per-tool call and wallclock budgets checked before each step;
-   violations terminate with `TerminalState.BUDGET_EXCEEDED` and a recorded reason.
-6. Integration tests for sandbox isolation (skipped automatically when Docker is absent) and
-   unit tests with a mocked container runtime (explicitly labelled mocks).
+- `packages/environments` (`trajectoryos.environments`): `Sandbox` protocol with
+  path-traversal guards; `DockerSandbox` (docker CLI, `--network none`, memory/CPU caps,
+  repo copied in — no host mounts) and `LocalProcessSandbox` (real execution in a temp dir;
+  explicitly documented as non-isolated, for tests/dev only).
+- `packages/agents` (`trajectoryos.agents`): `read_file` / `edit_file` / `run_shell` tools,
+  `BudgetTracker` (token, per-tool, wallclock, GPU, cost caps → reason strings),
+  `Policy` protocol + `ScriptedPolicy` (deterministic test policy; tool calls really
+  execute), and `run_episode` — records every step as `TrajectoryEvent`s, enforces budgets
+  before/after each step, accumulates the patch, never discards failures
+  (`terminal_state` + `termination_reason` always set).
+- `packages/verifiers` (`trajectoryos.verifiers`): `CleanSandboxTestVerifier` — fresh
+  pristine sandbox, protected globs reject patches to tests/configs (rejections logged),
+  canonical test command decides success. Reward-hacking paths covered by tests.
+- Fixture task `tests/fixtures/buggy_calculator` + `configs/environments/repo_bugfix.yaml`.
+- Tests: budget enforcement, sandbox/tool behaviour, end-to-end episode → clean verification,
+  reward-hacking rejection; Docker isolation integration tests auto-skip without a daemon
+  (run with Docker up: `uv run pytest tests/integration -v`).
 
 ## Later milestones — key decisions locked in early
 

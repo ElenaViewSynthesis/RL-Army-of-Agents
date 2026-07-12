@@ -7,6 +7,9 @@ dependencies = [
     "trajectoryos-schemas",
     "trajectoryos-core",
     "trajectoryos-rewards",
+    "trajectoryos-environments",
+    "trajectoryos-verifiers",
+    "trajectoryos-agents",
 ]
 
 [dependency-groups]
@@ -27,16 +30,23 @@ members = [
     "packages/schemas",
     "packages/core",
     "packages/rewards",
+    "packages/environments",
+    "packages/verifiers",
+    "packages/agents",
 ]
 
 [tool.uv.sources]
 trajectoryos-schemas = { workspace = true }
 trajectoryos-core = { workspace = true }
 trajectoryos-rewards = { workspace = true }
+trajectoryos-environments = { workspace = true }
+trajectoryos-verifiers = { workspace = true }
+trajectoryos-agents = { workspace = true }
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "-q"
+# tests/fixtures holds task repositories for sandboxes, not test suites.
+addopts = "-q --ignore=tests/fixtures"
 
 [tool.ruff]
 line-length = 100
@@ -49,8 +59,9 @@ select = ["E", "F", "W", "I", "UP", "B", "SIM", "RUF"]
 strict = true
 namespace_packages = true
 explicit_package_bases = true
-mypy_path = "packages/schemas/src,packages/core/src,packages/rewards/src"
+mypy_path = "packages/schemas/src,packages/core/src,packages/rewards/src,packages/environments/src,packages/verifiers/src,packages/agents/src"
 plugins = ["pydantic.mypy"]
+exclude = ["tests/fixtures/"]
 
 [[tool.mypy.overrides]]
 # Optional RNG backends: seeded when installed, absent in the core environment.

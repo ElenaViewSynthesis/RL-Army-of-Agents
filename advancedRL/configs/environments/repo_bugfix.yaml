@@ -1,0 +1,22 @@
+# Repository bug-fixing task: the agent gets an issue, edits files in an
+# isolated sandbox, and is evaluated by re-running the canonical tests in a
+# second, clean sandbox (tests are protected from modification).
+environment:
+  name: docker_repo_sandbox
+  config:
+    image: python:3.12-slim
+    network: none
+    memory: 1g
+    cpus: 1.0
+verifier:
+  name: clean_sandbox_unit_tests
+  config:
+    test_command: python test_calculator.py
+    timeout_seconds: 120
+budget:
+  max_output_tokens: 4096
+  max_tool_calls:
+    read_file: 20
+    edit_file: 20
+    run_shell: 10
+  max_wallclock_seconds: 300
