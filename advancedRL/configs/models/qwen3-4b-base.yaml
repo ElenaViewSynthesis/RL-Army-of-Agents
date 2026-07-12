@@ -1,0 +1,8 @@
+# Initial policy model. Swap hf_repo (or override with
+# TRAJECTORYOS__hf_repo=...) to use another slime-compatible Qwen model;
+# set is_moe: true for Qwen3 MoE checkpoints in GSPO experiments (Milestone 5).
+hf_repo: Qwen/Qwen3-4B-Base
+family: qwen3
+is_moe: false
+max_context_tokens: 32768
+dtype: bfloat16

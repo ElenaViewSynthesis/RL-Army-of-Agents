@@ -1,0 +1,58 @@
+[project]
+name = "trajectoryos-workspace"
+version = "0.1.0"
+description = "TrajectoryOS development workspace (not published)"
+requires-python = ">=3.11"
+dependencies = [
+    "trajectoryos-schemas",
+    "trajectoryos-core",
+    "trajectoryos-rewards",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "mypy>=1.11",
+    "ruff>=0.6",
+    "types-PyYAML>=6.0",
+]
+
+[tool.uv]
+package = false
+
+[tool.uv.workspace]
+# List members explicitly: packages/ also holds not-yet-implemented milestone dirs
+# (.gitkeep only), which a glob would reject for lacking a pyproject.toml.
+members = [
+    "packages/schemas",
+    "packages/core",
+    "packages/rewards",
+]
+
+[tool.uv.sources]
+trajectoryos-schemas = { workspace = true }
+trajectoryos-core = { workspace = true }
+trajectoryos-rewards = { workspace = true }
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM", "RUF"]
+
+[tool.mypy]
+strict = true
+namespace_packages = true
+explicit_package_bases = true
+mypy_path = "packages/schemas/src,packages/core/src,packages/rewards/src"
+plugins = ["pydantic.mypy"]
+
+[[tool.mypy.overrides]]
+# Optional RNG backends: seeded when installed, absent in the core environment.
+module = ["numpy", "torch"]
+ignore_missing_imports = true

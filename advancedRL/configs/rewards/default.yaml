@@ -1,0 +1,12 @@
+# Composite reward weights (see trajectoryos.rewards.composite).
+# Milestone 4 baseline: task success + format correctness + a small token penalty.
+success_weight: 1.0
+quality_weight: 0.0
+progress_weight: 0.0
+format_weight: 0.1
+token_penalty: 0.05
+tool_penalty: 0.0
+latency_penalty: 0.0
+gpu_penalty: 0.0
+retry_penalty: 0.0
+safety_weight: 1.0

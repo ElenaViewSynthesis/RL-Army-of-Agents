@@ -1,0 +1,13 @@
+# GRPO baseline training configuration (consumed from Milestone 3/4 onward).
+# GSPO (Milestone 5) changes ONLY `algorithm`; every other variable stays fixed
+# so the comparison is controlled.
+algorithm: grpo
+seed: 42
+model_config: configs/models/qwen3-4b-base.yaml
+reward_config: configs/rewards/default.yaml
+n_samples_per_prompt: 8
+rollout_batch_size: 32
+max_response_tokens: 4096
+learning_rate: 1.0e-6
+kl_coef: 0.0
+eval_interval_steps: 20
