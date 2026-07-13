@@ -10,6 +10,7 @@ dependencies = [
     "httpx>=0.28.1",
     "litellm>=1.91.0",
     "openrouter>=0.11.6",
+    "psycopg[binary]>=3.2.0",
     "sse-starlette>=3.4.5",
 ]
 

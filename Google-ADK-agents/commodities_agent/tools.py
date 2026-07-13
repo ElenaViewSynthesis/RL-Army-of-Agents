@@ -32,6 +32,26 @@ FUSE_WATCHLIST: list[tuple[str, str, str]] = [
 _MAX_ROWS = 30  # cap catalog/search output so it fits the model context
 
 
+def _persist_price(result: dict, source: str) -> None:
+    """Best-effort write of a fetched price to the A2A store.
+
+    No-ops entirely if persistence isn't configured or the storage module isn't
+    importable — a price fetch must never fail because of the database.
+    """
+    try:
+        from a2a_finance import storage
+
+        storage.save_price(
+            code=result.get("code", ""),
+            price=result.get("price"),
+            currency=result.get("currency"),
+            unit=result.get("unit"),
+            source=source,
+        )
+    except Exception:
+        pass
+
+
 def _get(path: str, params: dict | None = None) -> dict | list:
     key = os.environ.get("OILPRICE_API_KEY")
     if not key:
@@ -112,7 +132,7 @@ def get_commodity_price(code: str) -> dict:
     if isinstance(data, dict) and "error" in data:
         return data
     d = data.get("data", {}) if isinstance(data, dict) else {}
-    return {
+    result = {
         "code": d.get("code", code.upper()),
         "price": d.get("price"),
         "formatted": d.get("formatted"),
@@ -121,6 +141,9 @@ def get_commodity_price(code: str) -> dict:
         "type": d.get("type"),
         "updated_at": d.get("updated_at") or d.get("created_at"),
     }
+    # Persist the numeric point (no-op unless a run + A2A_DB_URL are configured).
+    _persist_price(result, source="oilprice")
+    return result
 
 
 def get_commodity_history(code: str, period: str = "past_week") -> dict:
