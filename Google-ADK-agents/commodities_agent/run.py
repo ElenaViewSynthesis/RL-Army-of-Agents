@@ -41,8 +41,16 @@ async def main() -> int:
     from google.adk.runners import InMemoryRunner
     from google.genai import types
     from commodities_agent.agent import root_agent
+    from a2a_finance import storage
 
     question = " ".join(sys.argv[1:]).strip() or "What is the latest price of Brent crude?"
+
+    # Open a run envelope (no-op unless Supabase is configured). Runs in-process,
+    # so get_commodity_price's save_price attaches its points to this run.
+    run_id = storage.start_run("commodities_agent", prompt=question)
+    if run_id:
+        print(f"  [persistence] run_id={run_id}", file=sys.stderr)
+
     runner = InMemoryRunner(agent=root_agent, app_name="commodities")
     await runner.session_service.create_session(app_name="commodities", user_id="u", session_id="s")
     msg = types.Content(role="user", parts=[types.Part(text=question)])
@@ -58,6 +66,8 @@ async def main() -> int:
 
     print("\n--- COMMODITIES AGENT ---\n")
     print(final or "(no response)")
+    if final:
+        storage.save_response("commodities_agent", text=final, run_id=run_id)
     return 0
 
 

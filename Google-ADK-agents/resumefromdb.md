@@ -59,39 +59,50 @@ Rule of thumb: **numbers → `prices`, words → `agent_responses`, `agent_runs`
 
 ---
 
-## Current state / where we stopped
+## Current state — persistence WIRED (2026-07-13)
 
 - ✅ Project created, schema applied, `pgvector` enabled.
-- ⚠️ Tables are **empty** — the agents do **not** write to them yet.
-- ⚠️ **RLS is enabled with no policies** on all three tables → only a
-  service-role key or a direct Postgres connection (trusted, server-side) can
-  write. Anon/publishable keys are blocked by design.
-- 🔑 **No secret was fetched** (key retrieval was declined). Nothing in `.env`
-  yet for this DB.
+- ✅ **Write path: Supabase REST (PostgREST) with the service-role secret key**
+  (`sb_secret_…`), which bypasses RLS. Chosen over direct Postgres because
+  `psycopg`/`asyncpg`/`psql` are unavailable in the Linux run environment; the
+  REST path needs only `httpx` (already a dependency).
+- ✅ `SUPABASE_URL` + `SUPABASE_SECRET_KEY` live in `finance_coordinator/.env`
+  (gitignored). `storage.py` also has a self-contained `.env` autoloader, so
+  `enabled()` works even from a bare REPL / half-built venv.
+- ✅ **Verified live**: full envelope (`agent_runs` → `prices` + `agent_responses`)
+  writes correctly; test rows cleaned up (tables back to empty).
 
----
+## The storage module (`a2a_finance/storage.py`)
 
-## Next steps (to wire persistence)
+- API: `enabled()`, `start_run(agent, subject, prompt) -> run_id`,
+  `save_price(code, price, currency, unit, source)`, `save_response(agent,
+  subject, text, rating)`, `current_run_id()`.
+- **Graceful**: no-op if `SUPABASE_URL`/`SUPABASE_SECRET_KEY` unset, on any HTTP
+  error; disables itself on 401/403 to avoid retry-storming a bad key.
+- **Run scoping**: a `ContextVar`, plus a process-global fallback, plus an
+  `A2A_RUN_ID` env fallback — so a run opened in one process propagates to the
+  A2A specialist **subprocesses** (they inherit `A2A_RUN_ID` + `SUPABASE_*`).
 
-1. **Decide the write path** (server-side, bypasses RLS):
-   - **Direct Postgres** (recommended): `psycopg` + connection string
-     `postgresql://postgres:<PASSWORD>@db.ketwfywvgzpvhawzcrvi.supabase.co:5432/postgres`
-     — get the password from Supabase dashboard → Project Settings → Database.
-   - **or** Supabase REST (PostgREST) + service-role key.
-2. Add the chosen secret to `finance_coordinator/.env` (gitignored) —
-   e.g. `A2A_DB_URL=postgresql://…`.
-3. Build a **storage module** (`a2a_finance/storage.py`): `start_run(...)`,
-   `save_price(...)`, `save_response(...)` — no-ops gracefully if the env var
-   is unset.
-4. Wire it in: agents/tools call `save_price` on each OilPrice/FMP fetch and
-   the coordinator/specialists call `save_response` with their final text.
-5. (Later) add embeddings to `agent_responses.embedding` for semantic recall.
-6. Add `psycopg[binary]` (or `supabase`) to `pyproject.toml`.
+## Wired producers
+
+- `commodities_agent` `get_commodity_price` → `save_price(source=oilprice)`.
+- `finance_coordinator` `get_stock_quote` → `save_price(source=fmp)`.
+- `a2a_finance/run_demo.py`: `start_run` before booting services (exports
+  `A2A_RUN_ID`), `save_response` on the coordinator's final note.
+- `commodities_agent/run.py` (standalone, in-process): `start_run` +
+  `save_response`; prices captured via the in-process run.
+
+## Next steps
+
+1. (Later) add embeddings to `agent_responses.embedding` for semantic recall
+   (pgvector is enabled; column is NULL today).
+2. Consider per-request `start_run` inside the A2A **services** themselves so
+   direct service calls (not just via the demo driver) persist.
 
 ## Handy facts
 
 - Persist decision (confirmed): store **both** prices and responses.
 - MCP Supabase tools available: `apply_migration`, `execute_sql`, `list_tables`,
   `get_advisors`, `get_project_url`, `get_publishable_keys` (project id above).
-- Run advisors after wiring: `get_advisors(type="security")` — RLS-with-no-policy
-  will flag; that's intentional for a server-only write model, but review.
+- `get_advisors(type="security")` will flag RLS-with-no-policy — intentional for
+  the server-only (service-role) write model.

@@ -29,7 +29,24 @@ def get_stock_quote(symbol: str) -> dict:
     Args:
         symbol: Stock ticker, e.g. "NVDA".
     """
-    return first_record(fmp_get("quote", {"symbol": symbol.upper()}))
+    rec = first_record(fmp_get("quote", {"symbol": symbol.upper()}))
+    if isinstance(rec, dict) and "error" not in rec and rec.get("price") is not None:
+        _persist_price(symbol.upper(), rec.get("price"))
+    return rec
+
+
+def _persist_price(code: str, price) -> None:
+    """Best-effort write of an FMP quote price to the A2A store (no-op if off).
+
+    A price fetch must never fail because of the database, so all errors — including
+    the storage module being unavailable — are swallowed.
+    """
+    try:
+        from a2a_finance import storage
+
+        storage.save_price(code=code, price=price, currency="USD", source="fmp")
+    except Exception:
+        pass
 
 
 def get_key_metrics(symbol: str) -> dict:

@@ -42,12 +42,15 @@ load_dotenv(PROJECT / "finance_coordinator" / ".env")
 sys.path.insert(0, str(PROJECT))
 
 
-def start_servers() -> list[subprocess.Popen]:
+def start_servers(run_id: str | None = None) -> list[subprocess.Popen]:
     procs = []
     for app, port in SERVICES:
+        env = os.environ.copy()
+        if run_id:
+            env["A2A_RUN_ID"] = run_id
         procs.append(subprocess.Popen(
             ["uv", "run", "uvicorn", app, "--port", port, "--log-level", "warning"],
-            cwd=str(PROJECT), env=os.environ.copy(),
+            cwd=str(PROJECT), env=env,
             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
         ))
     return procs
@@ -70,7 +73,13 @@ def wait_for_all(timeout: float = 90.0) -> bool:
     return not pending
 
 
-async def run_coordinator(ticker: str, question: str, *, research: bool = False) -> None:
+async def run_coordinator(
+    ticker: str,
+    question: str,
+    *,
+    research: bool = False,
+    run_id: str | None = None,
+) -> None:
     from google.adk.runners import InMemoryRunner
     from google.genai import types
 
@@ -100,6 +109,15 @@ async def run_coordinator(ticker: str, question: str, *, research: bool = False)
                 final = t
     print(f"\n--- {label} ---\n")
     print(final or "(no response)")
+    if final:
+        from a2a_finance import storage
+
+        storage.save_response(
+            "research_agent" if research else "finance_coordinator",
+            subject=ticker,
+            text=final,
+            run_id=run_id,
+        )
 
 
 def main() -> None:
@@ -111,16 +129,35 @@ def main() -> None:
         print("Error: OPENROUTER_API_KEY not set (finance_coordinator/.env)", file=sys.stderr)
         sys.exit(1)
 
+    if research:
+        prompt = f"Write a full research note on {ticker}."
+    else:
+        prompt = f"For {ticker}: {question}" if question else f"Is {ticker} cheap or expensive right now?"
+    from a2a_finance import storage
+
+    run_id = storage.start_run(
+        "research_agent" if research else "finance_coordinator",
+        subject=ticker,
+        prompt=prompt,
+    )
+    if run_id:
+        os.environ["A2A_RUN_ID"] = run_id
+        print(f"▸ persistence run_id={run_id}", file=sys.stderr)
+    elif storage.enabled():
+        print("▸ persistence configured, but start_run did not return an id", file=sys.stderr)
+    else:
+        print("▸ persistence disabled; no DB rows will be written", file=sys.stderr)
+
     ports = ", ".join(port for _, port in SERVICES)
     print(f"▸ starting A2A services on :{ports} …", file=sys.stderr)
-    servers = start_servers()
+    servers = start_servers(run_id)
     try:
         if not wait_for_all():
             print("Not all A2A services came up in time.", file=sys.stderr)
             sys.exit(2)
         mode = "research fan-out" if research else "coordinator"
         print(f"▸ all services up; running {mode}\n", file=sys.stderr)
-        asyncio.run(run_coordinator(ticker, question, research=research))
+        asyncio.run(run_coordinator(ticker, question, research=research, run_id=run_id))
     finally:
         for s in servers:
             s.terminate()
