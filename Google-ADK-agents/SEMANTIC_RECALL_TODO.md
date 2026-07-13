@@ -12,71 +12,44 @@ Supabase REST + service-role key (see `a2a_finance/storage.py`).
 
 ---
 
-## Decision: model + dimensions
+## Decision: model + dimensions  (revised — 1536, no migration)
 
-- **Model:** `sentence-transformers/all-MiniLM-L6-v2` — 384-dim, ~80 MB, CPU-only,
-  fast, the standard zero-budget default. (Quality alt, also 384-dim:
-  `BAAI/bge-small-en-v1.5`. Higher quality but bigger/slower, 768-dim:
-  `all-mpnet-base-v2` — would need `vector(768)` instead.)
-- **Column must match the model.** The schema ships `embedding vector(1536)`
-  (an OpenAI-era default). MiniLM outputs **384**, so we re-dimension the column
-  to `vector(384)`. Safe today: the only stored response (the WTI run) has
-  `embedding IS NULL`, so no embeddings are lost.
+- **Model:** `Alibaba-NLP/gte-Qwen2-1.5B-instruct` — outputs **1536-dim**
+  embeddings **natively**, so it fits the existing `embedding vector(1536)`
+  column with **no column migration**. Loaded with `trust_remote_code=True`.
+- **Why this over MiniLM/BGE-small (384-dim):** those would force an
+  `ALTER COLUMN … vector(384)` migration; gte-Qwen2 keeps the schema as-is.
+  Trade-off: gte-Qwen2 is a **1.5B-param model** — much heavier: slower CPU
+  inference and a **large first download** (multiple GB) vs MiniLM's ~80 MB.
+  (MiniLM was install-tested and works — kept as a fallback if gte-Qwen2's
+  weight/CPU cost proves impractical; that path would re-add the 384 migration.)
 - **The SAME model must embed both stored notes and query text** — never mix
-  models, or distances become meaningless. If we ever switch models, re-embed all
-  rows and re-dimension.
-- **Dependency weight:** `sentence-transformers` pulls in `torch` (large, 100s of
-  MB–GB, but free). Lighter alternative to evaluate if the install is painful:
-  **`fastembed`** (Qdrant) — ONNX runtime, no torch, ships `bge-small-en-v1.5`
-  (384-dim) — a near drop-in for `embed()`.
+  models, or distances become meaningless.
+- **Instruct-model query asymmetry (important):** GTE *instruct* models expect a
+  task **instruction prefix on the QUERY** but embed **documents plainly**. So
+  `embed()` needs a `is_query` mode: documents → `model.encode(text)`; queries →
+  `model.encode(text, prompt_name="query")` (or manually prepend
+  `"Instruct: Given a search query, retrieve relevant notes\nQuery: "`). Getting
+  this wrong quietly degrades recall quality.
+- **Hard dimension check in code:** `if len(vec) != 1536: return None` — never
+  write a wrong-width vector to a `vector(1536)` column.
 
 ---
 
 ## Steps
 
-### 0. Add the dependency
-- Add `sentence-transformers` (or `fastembed`) to `pyproject.toml`, `uv sync`.
-- First model load downloads weights to the HF cache (one-time, offline after).
-
-### 1. Re-dimension the column (migration)
+### 1. HNSW index — SAFE, no code/venv needed (apply now)
 ```sql
--- no vector index exists yet, and embeddings are all NULL, so this is clean
-ALTER TABLE agent_responses ALTER COLUMN embedding TYPE vector(384);
+create index if not exists agent_responses_embedding_hnsw
+  on agent_responses using hnsw (embedding vector_cosine_ops);
 ```
-Apply via Supabase MCP `apply_migration` (name e.g. `embedding_dim_384`).
+Cosine ops pair with the `<=>` operator in the RPC. (pgvector HNSW supports up to
+2000 dims; 1536 is fine. Table is ~empty, so the build is instant.)
 
-### 2. `embed()` helper  (a2a_finance/embeddings.py)
-- Lazy-load the model **once** into a module-global (loading is slow; reuse it).
-- `embed(text: str) -> list[float] | None` — returns the 384-float vector; returns
-  `None` on any failure (graceful, like the rest of storage).
-- Add `to_pgvector(vec) -> str` → `"[" + ",".join(map(repr, vec)) + "]"` (pgvector
-  wants a **string literal** over REST; PostgREST casts text → vector).
-- Keep the import of `sentence_transformers` inside the function/lazy so a missing
-  dep just disables embeddings (recall off) without breaking price/response writes.
-
-### 3. HNSW index (migration)
-```sql
-CREATE INDEX IF NOT EXISTS agent_responses_embedding_hnsw
-  ON agent_responses USING hnsw (embedding vector_cosine_ops);
-```
-Cosine ops pair with the `<=>` operator used in the RPC.
-
-### 4. Embed on write
-- Extend `storage.save_response(...)`: after computing `embed(text)`, include
-  `"embedding": to_pgvector(vec)` in the POST body (only if `vec` is not None).
-- Best-effort: if embedding fails, still insert the row with `embedding = NULL`
-  (Step 5's backfill catches it later). Persistence must never fail on embeddings.
-
-### 5. Backfill existing NULL rows (one-off script)
-- `scripts/backfill_embeddings.py`: page `SELECT id, text FROM agent_responses
-  WHERE embedding IS NULL` over REST, `embed()` each, `PATCH
-  /rest/v1/agent_responses?id=eq.<id>` with `{"embedding": "[…]"}`.
-- Idempotent (only touches NULLs). Today that's the single WTI row.
-
-### 6. The similarity-search RPC (migration)
+### 2. The similarity-search RPC — SAFE, no code/venv needed (apply now)
 ```sql
 create or replace function match_responses(
-  query_embedding vector(384),
+  query_embedding vector(1536),
   match_count int default 5,
   filter_subject text default null
 )
@@ -96,34 +69,77 @@ search lives in a SQL function, exposed at `POST /rest/v1/rpc/match_responses`.
 `<=>` = cosine distance; `1 - distance` = similarity (1.0 = identical). The
 `order by … <=>` is what the HNSW index accelerates.
 
+### 3. Add the dependency (optional extra + CPU torch)
+- Add as an **optional** extra so torch isn't forced on the core install:
+  ```toml
+  [project.optional-dependencies]
+  recall = ["sentence-transformers>=3.0.0"]
+
+  [[tool.uv.index]]
+  name = "pytorch-cpu"
+  url = "https://download.pytorch.org/whl/cpu"
+  explicit = true
+
+  [tool.uv.sources]
+  torch = { index = "pytorch-cpu" }
+  ```
+- Install with `uv sync --extra recall`. Core install stays light.
+- **Install-test gte-Qwen2 in WSL first** (isolated venv, like the MiniLM test) —
+  it's much bigger; confirm it loads on CPU and returns `dim: 1536` before wiring.
+
+### 4. `embed()` helper  (a2a_finance/embeddings.py)
+- Lazy-load the model **once** into a module-global (loading is slow; reuse it):
+  ```python
+  SentenceTransformer("Alibaba-NLP/gte-Qwen2-1.5B-instruct",
+                      trust_remote_code=True)   # pin a revision before prod
+  ```
+- `embed(text, is_query=False) -> list[float] | None` — documents plain, queries
+  with the instruction prompt (see the query-asymmetry note above).
+  `normalize_embeddings=True`. **Hard-check** `len(vec) == 1536` else return None.
+- `to_pgvector(vec) -> str` → `"[" + ",".join(map(repr, vec)) + "]"` (pgvector
+  wants a string literal over REST; PostgREST casts text → vector).
+- Import `sentence_transformers` lazily inside the function so a missing extra
+  just disables recall (returns None) without breaking price/response writes.
+
+### 5. Embed on write
+- Extend `storage.save_response(...)`: compute `embed(text)` (document mode);
+  if not None, include `"embedding": to_pgvector(vec)` in the POST body.
+- Best-effort: on failure still insert with `embedding = NULL` (Step 6 backfills).
+
+### 6. Backfill existing NULL rows (one-off script)
+- `scripts/backfill_embeddings.py`: page `SELECT id, text FROM agent_responses
+  WHERE embedding IS NULL`, `embed()` each (document mode), `PATCH
+  /rest/v1/agent_responses?id=eq.<id>` with `{"embedding": "[…]"}`. Idempotent.
+  Today that's the single WTI row.
+
 ### 7. `search_similar()`  (a2a_finance/storage.py)
 - `search_similar(query_text, subject=None, limit=5) -> list[dict]`:
-  `embed(query_text)` → `POST /rest/v1/rpc/match_responses` with
+  `embed(query_text, is_query=True)` → `POST /rest/v1/rpc/match_responses` with
   `{"query_embedding": to_pgvector(vec), "match_count": limit,
-    "filter_subject": subject}`. No-op (returns `[]`) if persistence/embeddings off.
+    "filter_subject": subject}`. No-op (`[]`) if persistence/embeddings off.
 
 ### 8. Expose as an ADK tool + wire into an agent
-- Tool `recall_similar_notes(query: str, subject: str = "") -> dict` wrapping
-  `search_similar` (returns top-k prior notes + similarity).
-- Add it to the **research agent** (`a2a_finance/research.py`) and/or coordinator.
-- Update the instruction: *"Before writing your note, call `recall_similar_notes`
-  and reconcile with any prior analyses; cite when a past note informs the view."*
+- Tool `recall_similar_notes(query, subject="")` wrapping `search_similar`.
+- Add it to the **research agent** (`a2a_finance/research.py`) and/or coordinator;
+  instruction: *"Before writing your note, call `recall_similar_notes` and
+  reconcile with any prior analyses."*
 
 ### 9. Verify
 - Embed + insert 2–3 toy notes on the same ticker; confirm `match_responses`
   ranks the semantically closest first (similarity descending).
-- Confirm graceful degradation: with `sentence-transformers` uninstalled, price +
-  response writes still work; recall simply returns `[]`.
-- Clean up toy rows.
+- Confirm graceful degradation: without the `recall` extra, price + response
+  writes still work; recall returns `[]`. Clean up toy rows.
 
 ---
 
 ## Notes / gotchas
-- **Dimension mismatch = hard error.** Column, model output, and RPC signature must
-  all be 384 (or all whatever the chosen model emits).
-- **Normalize?** MiniLM outputs are already ~unit-norm; cosine distance is the
-  right metric. Use `normalize_embeddings=True` in `model.encode(...)` to be safe.
-- **First call latency:** model load (seconds) + weight download (first run only).
-  Load lazily so importing `storage` stays cheap.
-- **RLS:** the RPC is called with the service-role key → bypasses RLS like the rest.
+- **Dimension must be 1536 everywhere:** model output, the `len(vec)` check, the
+  column, and the RPC signature.
+- **`trust_remote_code=True` runs code from the model repo** — pin the model name
+  AND a specific revision (commit) before treating it as production.
+- **Instruct query prefix** (Step Decision) is easy to miss and silently hurts
+  recall — documents plain, queries instructed.
+- **First-call latency:** large weight download (first run) + slower CPU encode
+  than MiniLM. Load lazily so importing `storage` stays cheap.
+- **RLS:** the RPC is called with the service-role key → bypasses RLS.
 - **pgvector over REST:** always pass vectors as the string literal `"[…]"`.
