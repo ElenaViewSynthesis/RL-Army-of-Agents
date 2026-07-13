@@ -10,6 +10,8 @@ dependencies = [
     "httpx>=0.28.1",
     "litellm>=1.91.0",
     "openrouter>=0.11.6",
+    "pydantic>=2.0.0",
+    "python-dotenv>=1.0.0",
     "sse-starlette>=3.4.5",
 ]
 
