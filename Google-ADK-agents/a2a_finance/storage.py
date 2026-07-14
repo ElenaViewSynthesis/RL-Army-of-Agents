@@ -137,6 +137,38 @@ def _post(table: str, row: dict, *, return_row: bool = False) -> Optional[dict]:
         return None
 
 
+def _rpc(name: str, payload: dict) -> list:
+    """Call a PostgREST RPC (`/rest/v1/rpc/<name>`) and return its rows.
+
+    Never raises: returns [] on any failure. Used for the vector-search function
+    (`match_responses`) that plain PostgREST queries can't express.
+    """
+    global _disabled
+    cfg = _config()
+    if _disabled or cfg is None:
+        return []
+    base, key = cfg
+    headers = {
+        "apikey": key,
+        "Authorization": f"Bearer {key}",
+        "Content-Type": "application/json",
+    }
+    try:
+        resp = httpx.post(
+            f"{base}/rest/v1/rpc/{name}", json=payload, headers=headers, timeout=_TIMEOUT
+        )
+        if resp.status_code in (401, 403):
+            logger.warning("A2A persistence auth failed (%s) — disabling.", resp.status_code)
+            _disabled = True
+            return []
+        resp.raise_for_status()
+        data = resp.json()
+        return data if isinstance(data, list) else []
+    except Exception as e:
+        logger.warning("A2A rpc %s failed (skipped): %s", name, e)
+        return []
+
+
 def start_run(agent: str, subject: Optional[str] = None,
               prompt: Optional[str] = None) -> Optional[str]:
     """Open a run envelope and set it as the current run for this context.
@@ -203,8 +235,10 @@ def save_response(agent: str, subject: Optional[str] = None, text: str = "",
                   run_id: Optional[str] = None) -> None:
     """Record an agent's narrative output against a run (no-op if off).
 
-    ``embedding`` is left NULL — a later pass can backfill vectors for semantic
-    recall (see resumefromdb.md).
+    Best-effort embeds ``text`` (document mode) into ``embedding`` for semantic
+    recall. If the ``recall`` extra / model is unavailable the embedding is
+    simply omitted (column stays NULL) and can be backfilled later — the note is
+    always written regardless.
 
     Args:
         agent: Which agent produced the text, e.g. ``"coordinator"``.
@@ -218,8 +252,45 @@ def save_response(agent: str, subject: Optional[str] = None, text: str = "",
     rid = run_id or current_run_id()
     if rid is None:
         return
-    _post(
-        "agent_responses",
-        {"run_id": rid, "agent": agent, "subject": subject,
-         "text": text, "rating": rating},
+    row = {"run_id": rid, "agent": agent, "subject": subject,
+           "text": text, "rating": rating}
+    # Best-effort embedding; never let it block the note write.
+    try:
+        from a2a_finance.embeddings import embed, to_pgvector
+
+        vec = embed(text, is_query=False)
+        if vec is not None:
+            row["embedding"] = to_pgvector(vec)
+    except Exception:
+        pass
+    _post("agent_responses", row)
+
+
+def search_similar(query_text: str, subject: Optional[str] = None,
+                   limit: int = 5) -> list:
+    """Return past notes semantically similar to ``query_text`` (via pgvector).
+
+    Embeds the query (query mode) and calls the ``match_responses`` RPC, which
+    ranks stored notes by cosine similarity. Returns [] if persistence or the
+    embedding model is unavailable, or nothing matches.
+
+    Args:
+        query_text: What to search for (ticker + question, or a theme).
+        subject: Optional exact subject filter (e.g. ticker "NVDA").
+        limit: Max matches to return.
+    """
+    if not enabled() or not query_text:
+        return []
+    try:
+        from a2a_finance.embeddings import embed, to_pgvector
+    except Exception:
+        return []
+    vec = embed(query_text, is_query=True)
+    if vec is None:
+        return []
+    return _rpc(
+        "match_responses",
+        {"query_embedding": to_pgvector(vec),
+         "match_count": limit,
+         "filter_subject": subject or None},
     )
