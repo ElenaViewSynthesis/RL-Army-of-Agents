@@ -15,10 +15,25 @@ dependencies = [
     "sse-starlette>=3.4.5",
 ]
 
+[project.optional-dependencies]
+# Semantic recall via local embeddings. Heavy (pulls torch) — opt in explicitly:
+#   uv sync --extra recall
+recall = ["sentence-transformers>=3.0.0"]
+
 [dependency-groups]
 dev = [
     "pytest>=8.0.0",
 ]
+
+# Pin torch to the CPU wheel index so `uv sync --extra recall` doesn't pull the
+# multi-GB CUDA build (zero-budget / CPU-only embeddings).
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.uv.sources]
+torch = { index = "pytorch-cpu" }
 
 [build-system]
 requires = ["hatchling"]

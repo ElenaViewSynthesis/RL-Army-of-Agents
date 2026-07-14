@@ -23,6 +23,7 @@ from google.adk.agents import LlmAgent
 from google.adk.agents.remote_a2a_agent import RemoteA2aAgent
 from google.adk.tools.agent_tool import AgentTool
 
+from a2a_finance.recall_tools import recall_similar_notes
 from finance_coordinator.models import OpenRouterLlm
 
 
@@ -58,6 +59,9 @@ root_agent = LlmAgent(
         "You are the lead analyst. For a research request on a ticker, gather "
         "all three perspectives by calling EACH specialist tool exactly once "
         "with the ticker: fundamentals_agent, valuation_agent, and risk_agent. "
+        "Before synthesizing, also call recall_similar_notes with the ticker to "
+        "surface any relevant prior notes, and reconcile them into your view "
+        "(flag when a past analysis informs or contradicts the current one). "
         "Then synthesize their outputs into ONE research note with this shape:\n\n"
         "# <TICKER> — Research Note\n"
         "**Rating:** BUY / HOLD / SELL  ·  **12-month target:** <value or n/a>\n\n"
@@ -72,5 +76,6 @@ root_agent = LlmAgent(
         AgentTool(agent=_fundamentals),
         AgentTool(agent=_valuation),
         AgentTool(agent=_risk),
+        recall_similar_notes,
     ],
 )
