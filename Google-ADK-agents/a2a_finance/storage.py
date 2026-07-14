@@ -254,15 +254,18 @@ def save_response(agent: str, subject: Optional[str] = None, text: str = "",
         return
     row = {"run_id": rid, "agent": agent, "subject": subject,
            "text": text, "rating": rating}
-    # Best-effort embedding; never let it block the note write.
-    try:
-        from a2a_finance.embeddings import embed, to_pgvector
+    # Embeddings default to the backfill path (scripts/backfill_embeddings.py) so a
+    # heavy model never loads/infers on the note-write hot path. Opt into
+    # synchronous embed-on-write with A2A_EMBED_ON_WRITE=1 (accepts the latency).
+    if os.getenv("A2A_EMBED_ON_WRITE", "").lower() in ("1", "true", "yes"):
+        try:
+            from a2a_finance.embeddings import embed, to_pgvector
 
-        vec = embed(text, is_query=False)
-        if vec is not None:
-            row["embedding"] = to_pgvector(vec)
-    except Exception:
-        pass
+            vec = embed(text, is_query=False)
+            if vec is not None:
+                row["embedding"] = to_pgvector(vec)
+        except Exception:
+            pass
     _post("agent_responses", row)
 
 

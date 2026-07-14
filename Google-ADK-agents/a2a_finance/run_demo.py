@@ -29,6 +29,12 @@ except AttributeError:
 SCRIPT_DIR = Path(__file__).resolve().parent          # a2a_finance/
 PROJECT = SCRIPT_DIR.parent                            # Google-ADK-agents/
 
+# Load .env BEFORE reading any A2A_*_PORT overrides below, so the port uvicorn
+# binds matches the port each service module advertises in its agent card.
+from dotenv import load_dotenv  # noqa: E402
+load_dotenv(PROJECT / "finance_coordinator" / ".env")
+sys.path.insert(0, str(PROJECT))
+
 # (module app, port) for each specialist A2A service.
 SERVICES = [
     ("a2a_finance.fundamentals_service:a2a_app", os.getenv("A2A_FUNDAMENTALS_PORT", "8002")),
@@ -36,10 +42,6 @@ SERVICES = [
     ("a2a_finance.risk_service:a2a_app", os.getenv("A2A_RISK_PORT", "8003")),
     ("a2a_finance.commodities_service:a2a_app", os.getenv("A2A_COMMODITIES_PORT", "8004")),
 ]
-
-from dotenv import load_dotenv  # noqa: E402
-load_dotenv(PROJECT / "finance_coordinator" / ".env")
-sys.path.insert(0, str(PROJECT))
 
 
 def start_servers(run_id: str | None = None) -> list[subprocess.Popen]:

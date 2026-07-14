@@ -79,6 +79,12 @@ def _get_model():
             kwargs = {"trust_remote_code": True}
             if _MODEL_REVISION:
                 kwargs["revision"] = _MODEL_REVISION
+            else:
+                logger.warning(
+                    "Loading %s with trust_remote_code=True and no pinned "
+                    "revision; set RECALL_MODEL_REVISION to a fixed commit for "
+                    "production (executes remote repo code).", _MODEL_NAME,
+                )
             logger.info("Loading embedding model %s …", _MODEL_NAME)
             _model = SentenceTransformer(_MODEL_NAME, **kwargs)
             return _model

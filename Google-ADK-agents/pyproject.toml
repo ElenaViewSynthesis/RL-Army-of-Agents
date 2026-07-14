@@ -16,9 +16,11 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-# Semantic recall via local embeddings. Heavy (pulls torch) — opt in explicitly:
+# Semantic recall via local embeddings. Heavy — opt in explicitly:
 #   uv sync --extra recall
-recall = ["sentence-transformers>=3.0.0"]
+# torch is listed directly so the CPU-index source pin below actually binds
+# (a source pin doesn't apply to a purely transitive dep).
+recall = ["sentence-transformers>=3.0.0", "torch>=2.2.0"]
 
 [dependency-groups]
 dev = [
