@@ -634,6 +634,8 @@ dependencies = [
     { name = "httpx" },
     { name = "litellm" },
     { name = "openrouter" },
+    { name = "pydantic" },
+    { name = "python-dotenv" },
     { name = "sse-starlette" },
 ]
 
@@ -649,6 +651,8 @@ requires-dist = [
     { name = "httpx", specifier = ">=0.28.1" },
     { name = "litellm", specifier = ">=1.91.0" },
     { name = "openrouter", specifier = ">=0.11.6" },
+    { name = "pydantic", specifier = ">=2.0.0" },
+    { name = "python-dotenv", specifier = ">=1.0.0" },
     { name = "sse-starlette", specifier = ">=3.4.5" },
 ]
 
