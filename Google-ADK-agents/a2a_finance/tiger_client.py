@@ -1,0 +1,172 @@
+"""Optional TimescaleDB (Tiger Cloud) persistence for commodity price time-series.
+
+The numeric time-series half of the system lives here: a TimescaleDB
+**hypertable** ``commodity_prices`` (partitioned on ``ts``), the natural home for
+dense price data — while Supabase keeps the narrative/embedding side
+(``agent_responses``). "Numbers -> TimescaleDB, words -> Supabase."
+
+**Write path: direct Postgres via psycopg.** Config comes from
+``finance_coordinator/.env``: either ``TIGER_DATABASE_URL`` (if already expanded)
+or the individual ``TIGER_DATABASE_*`` parts (host/port/name/user/password).
+
+**Graceful by design.** If no connection is configured, ``psycopg`` isn't
+installed (the optional ``timescale`` extra), or the DB is unreachable, every
+function is a silent no-op. Seeding/persistence must never break a run.
+
+Schema (created out-of-band; see scripts)::
+
+    commodity_prices(ts timestamptz, code text, source text, source_symbol text,
+                     name text, price float8, currency text, unit text,
+                     change float8, PRIMARY KEY (code, source, ts))
+"""
+
+from __future__ import annotations
+
+import logging
+import os
+import threading
+from pathlib import Path
+from typing import Iterable, Optional
+
+logger = logging.getLogger("a2a_finance.tiger_client")
+
+# Self-contained .env autoloader (same pattern as storage.py) so a bare import
+# works without an explicit load_dotenv. Only fills vars that are absent.
+_ENV_PATH = Path(__file__).resolve().parent.parent / "finance_coordinator" / ".env"
+_env_loaded = False
+
+
+def _ensure_env_loaded() -> None:
+    global _env_loaded
+    if _env_loaded:
+        return
+    _env_loaded = True
+    if os.getenv("TIGER_DATABASE_URL") or os.getenv("TIGER_DATABASE_HOST"):
+        return
+    try:
+        for raw in _ENV_PATH.read_text(encoding="utf-8").splitlines():
+            line = raw.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            key, _, val = line.partition("=")
+            key, val = key.strip(), val.strip().strip('"').strip("'")
+            if key and key not in os.environ:
+                os.environ[key] = val
+    except OSError:
+        pass
+
+
+_conn = None
+_conn_lock = threading.Lock()
+_disabled = False
+
+
+def _db_url() -> Optional[str]:
+    """Resolve the connection string from TIGER_DATABASE_URL or the parts.
+
+    Prefer TIGER_DATABASE_URL, but only if it's already expanded (dotenv may not
+    interpolate ``${...}``); otherwise build it from the individual components.
+    """
+    _ensure_env_loaded()
+    url = os.getenv("TIGER_DATABASE_URL")
+    if url and "${" not in url:
+        return url.strip()
+    host = os.getenv("TIGER_DATABASE_HOST")
+    user = os.getenv("TIGER_DATABASE_USER")
+    pwd = os.getenv("TIGER_DATABASE_PASSWORD")
+    name = os.getenv("TIGER_DATABASE_NAME", "tsdb")
+    port = os.getenv("TIGER_DATABASE_PORT", "5432")
+    if host and user and pwd:
+        return f"postgresql://{user}:{pwd}@{host}:{port}/{name}?sslmode=require"
+    return None
+
+
+def enabled() -> bool:
+    """True if a TimescaleDB connection is configured and psycopg importable."""
+    if _disabled or not _db_url():
+        return False
+    try:
+        import psycopg  # noqa: F401
+    except ImportError:
+        return False
+    return True
+
+
+def _get_conn():
+    global _conn, _disabled
+    if _disabled:
+        return None
+    url = _db_url()
+    if not url:
+        _disabled = True
+        return None
+    with _conn_lock:
+        if _conn is not None and not _conn.closed:
+            return _conn
+        try:
+            import psycopg
+        except ImportError:
+            logger.warning("TIGER_DATABASE_* set but psycopg not installed; "
+                           "install the 'timescale' extra. Persistence disabled.")
+            _disabled = True
+            return None
+        try:
+            _conn = psycopg.connect(url, autocommit=True, connect_timeout=15)
+            logger.info("TimescaleDB connected.")
+            return _conn
+        except Exception as e:
+            logger.warning("TimescaleDB connect failed (disabled): %s", e)
+            _disabled = True
+            return None
+
+
+_UPSERT = """
+INSERT INTO commodity_prices
+    (ts, code, source, source_symbol, name, price, currency, unit, change)
+VALUES
+    (%(ts)s, %(code)s, %(source)s, %(source_symbol)s, %(name)s,
+     %(price)s, %(currency)s, %(unit)s, %(change)s)
+ON CONFLICT (code, source, ts) DO UPDATE SET
+    price = EXCLUDED.price, currency = EXCLUDED.currency, unit = EXCLUDED.unit,
+    change = EXCLUDED.change, source_symbol = EXCLUDED.source_symbol,
+    name = EXCLUDED.name
+"""
+
+_COLS = ("ts", "code", "source", "source_symbol", "name",
+         "price", "currency", "unit", "change")
+
+
+def save_prices(rows: Iterable[dict]) -> int:
+    """Upsert commodity price rows into the hypertable. Returns rows written.
+
+    Idempotent on ``(code, source, ts)`` — safe to re-run overlapping windows.
+    Each row needs at least ``ts``, ``code``, ``source``; the rest default to
+    None. No-op (returns 0) if TimescaleDB isn't configured/reachable.
+    """
+    if not enabled():
+        return 0
+    payload = []
+    for r in rows:
+        if not r.get("ts") or not r.get("code") or not r.get("source"):
+            continue
+        payload.append({k: r.get(k) for k in _COLS})
+    if not payload:
+        return 0
+    conn = _get_conn()
+    if conn is None:
+        return 0
+    try:
+        with conn.cursor() as cur:
+            cur.executemany(_UPSERT, payload)
+        return len(payload)
+    except Exception as e:
+        global _conn
+        with _conn_lock:
+            try:
+                if _conn is not None:
+                    _conn.close()
+            except Exception:
+                pass
+            _conn = None
+        logger.warning("TimescaleDB write failed (skipped): %s", e)
+        return 0

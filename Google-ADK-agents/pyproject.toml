@@ -21,6 +21,8 @@ dependencies = [
 # torch is listed directly so the CPU-index source pin below actually binds
 # (a source pin doesn't apply to a purely transitive dep).
 recall = ["sentence-transformers>=3.0.0", "torch>=2.2.0"]
+# TimescaleDB (Tiger Cloud) price persistence — psycopg direct Postgres driver.
+timescale = ["psycopg[binary]>=3.2.0"]
 
 [dependency-groups]
 dev = [
