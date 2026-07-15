@@ -69,6 +69,134 @@ cp .env.example finance_coordinator/.env
 
 > **Busy-traffic timeout:** OpenRouter-backed calls default to a **10-minute** per-request timeout (`OpenRouterLlm.timeout_ms`), since free/queued models can sit in a queue for minutes under load. Override with `OPENROUTER_TIMEOUT_MS`.
 
+### Tiger Cloud (TimescaleDB)
+
+Tiger Cloud stores numeric commodity time series in the `commodity_prices`
+hypertable. The application connects directly to PostgreSQL with `psycopg`;
+the Tiger MCP integration is optional and is only used to let Codex administer
+the service. The service's CPU allocation (including an 8-CPU service) does not
+require any client-side changes.
+
+#### 1. Install the Tiger CLI and authenticate
+
+```bash
+# Install once, then open a new shell if the installer updates PATH.
+curl -fsSL https://cli.tigerdata.com | sh
+
+tiger auth login
+tiger service list
+export TIGER_SERVICE_ID=<service-id>
+```
+
+Save the database password for Tiger CLI commands without putting it in shell
+history:
+
+```bash
+read -rsp "Tiger database password: " TIGER_NEW_PASSWORD
+echo
+export TIGER_NEW_PASSWORD
+tiger db save-password "$TIGER_SERVICE_ID"
+unset TIGER_NEW_PASSWORD
+
+tiger db test-connection "$TIGER_SERVICE_ID" --timeout 10s
+tiger db connection-string "$TIGER_SERVICE_ID"  # excludes the password
+```
+
+#### 2. Configure the application connection
+
+Install the optional PostgreSQL driver and add the connection details from
+Tiger Cloud to `finance_coordinator/.env`:
+
+```bash
+uv sync --extra timescale
+```
+
+```dotenv
+# Used for Tiger CLI/service identification; not read by tiger_client.py.
+TIGER_PROJECT_ID=<project-id>
+TIGER_SERVICE_ID=<service-id>
+
+# Read by a2a_finance/tiger_client.py.
+TIGER_DATABASE_HOST=<host>
+TIGER_DATABASE_PORT=5432
+TIGER_DATABASE_NAME=tsdb
+TIGER_DATABASE_USER=tsdbadmin
+TIGER_DATABASE_PASSWORD=<database-password>
+```
+
+Alternatively, set one fully expanded SSL connection URL instead of the five
+`TIGER_DATABASE_*` connection fields:
+
+```dotenv
+TIGER_DATABASE_URL=postgresql://<user>:<url-encoded-password>@<host>:5432/tsdb?sslmode=require
+```
+
+Do not use `${...}` references inside `TIGER_DATABASE_URL`; the lightweight env
+loader does not interpolate them. `finance_coordinator/.env` is gitignored and
+must never be committed.
+
+#### 3. Create the hypertable and columnstore
+
+Open an interactive `psql` session:
+
+```bash
+tiger db connect "$TIGER_SERVICE_ID"
+```
+
+Run this schema once. It partitions prices on `ts`, groups columnstore data by
+commodity/source, and keeps the latest timestamps together for range queries.
+Tiger Cloud automatically creates a columnstore policy for hypertables created
+with this syntax.
+
+```sql
+CREATE TABLE IF NOT EXISTS commodity_prices (
+    ts            TIMESTAMPTZ NOT NULL,
+    code          TEXT NOT NULL,
+    source        TEXT NOT NULL,
+    source_symbol TEXT,
+    name          TEXT,
+    price         DOUBLE PRECISION,
+    currency      TEXT,
+    unit          TEXT,
+    change        DOUBLE PRECISION,
+    PRIMARY KEY (code, source, ts)
+) WITH (
+    tsdb.hypertable,
+    tsdb.partition_column = 'ts',
+    tsdb.chunk_interval = '7 days',
+    tsdb.segmentby = 'code, source',
+    tsdb.orderby = 'ts DESC'
+);
+
+SELECT hypertable_name
+FROM timescaledb_information.hypertables
+WHERE hypertable_name = 'commodity_prices';
+
+SELECT job_id, proc_name, schedule_interval, config
+FROM timescaledb_information.jobs
+WHERE hypertable_name = 'commodity_prices';
+```
+
+Exit `psql` with `\q`.
+
+#### 4. Test the project write path
+
+The current Tiger write path is the idempotent commodity seeder. It reads
+Tiger, OilPrice, and FMP settings from `finance_coordinator/.env` and upserts on
+`(code, source, ts)`:
+
+```bash
+# Small connection/write test.
+uv run --extra timescale python seed_timescale_prices.py WTI --days 1 --no-fmp
+
+# Seed every configured commodity over the default four-day window.
+uv run --extra timescale python seed_timescale_prices.py
+```
+
+Other agent entry points do not currently write to Tiger Cloud. To expose Tiger
+administration tools to Codex as well, run `tiger mcp install`, restart Codex,
+and verify the registration with `codex mcp list`.
+
 ## Run
 
 ```bash
