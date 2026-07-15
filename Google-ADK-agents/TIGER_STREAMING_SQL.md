@@ -93,9 +93,11 @@ WHERE hypertable_name = 'commodity_prices';
 
 ---
 
-## 4. Streaming / time-series patterns (recommended — not yet applied)
+## 4. Streaming / time-series patterns
 
-TimescaleDB-native queries for the dense (~hourly) OilPrice series.
+TimescaleDB-native queries for the dense (~hourly) OilPrice series. The ad-hoc
+queries below are examples; the **continuous aggregate + refresh policy are
+applied** (see the note under §4's CAGG block).
 
 ```sql
 -- Latest price per code (one row each), newest first.
@@ -146,5 +148,46 @@ SELECT add_continuous_aggregate_policy('commodity_prices_daily',
 SELECT add_retention_policy('commodity_prices', INTERVAL '90 days');
 ```
 
-> Section 4 is a menu, not applied state. Create the continuous aggregate only
-> once enough raw data has accumulated; the retention policy is optional.
+> **Applied:** `commodity_prices_daily` (continuous aggregate) + its hourly
+> refresh policy exist on the service (created after the first full seed). Query
+> it directly — real-time aggregation unions materialized buckets with the
+> latest raw points. The **retention policy above is NOT applied** (optional;
+> add it if/when raw-data volume warrants).
+
+---
+
+## 5. TLS-encrypted database connection
+
+TLS is not a database type. It encrypts network traffic between this application
+and Tiger Cloud so database credentials, SQL queries, and returned data are not
+sent as plaintext. The connection URL enables TLS with `sslmode=require`:
+
+```dotenv
+TIGER_DATABASE_URL=postgresql://<user>:<url-encoded-password>@<host>:5432/tsdb?sslmode=require
+```
+
+When `psycopg` reads this URL, it performs the following connection sequence:
+
+1. Open a TCP connection to the Tiger Cloud PostgreSQL endpoint.
+2. Request a PostgreSQL TLS connection before sending authentication details.
+3. Receive the server certificate and negotiate TLS encryption keys.
+4. Send authentication data, SQL queries, and query results through the
+   encrypted channel.
+5. Fail the connection if TLS cannot be established. `require` does not permit
+   a fallback to an unencrypted connection.
+
+The available PostgreSQL SSL modes provide different levels of protection:
+
+| Mode | Behavior |
+|---|---|
+| `disable` | Do not use TLS. |
+| `prefer` | Try TLS first, but permit an unencrypted fallback. |
+| `require` | Require an encrypted TLS connection. |
+| `verify-ca` | Require TLS and verify that a trusted certificate authority issued the server certificate. |
+| `verify-full` | Require TLS, verify the certificate authority, and verify that the certificate matches the database hostname. |
+
+`sslmode=require` guarantees encryption and prevents a plaintext downgrade, but
+the setting alone does not require full hostname verification. Use
+`sslmode=verify-full` with the appropriate CA certificate when strict server
+identity verification is required. TLS protects data in transit; encryption at
+rest is a separate database and storage configuration.
