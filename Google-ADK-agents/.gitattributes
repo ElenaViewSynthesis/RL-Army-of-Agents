@@ -1,0 +1,4 @@
+# Shell scripts must keep LF line endings so they run under WSL / Linux bash
+# (a CRLF shebang breaks with "bad interpreter"). Applies regardless of the
+# committer's core.autocrlf setting.
+*.sh text eol=lf
