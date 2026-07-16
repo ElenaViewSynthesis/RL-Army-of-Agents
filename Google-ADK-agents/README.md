@@ -234,6 +234,79 @@ survives WSL restarts; on sysvinit-only WSL it does not — re-run
 `sudo service cron start` after a reboot, or use Windows Task Scheduler to invoke
 `wsl bash <path>/scripts/seed_cron.sh`.
 
+#### 6. Insider trades (important-only)
+
+A second dataset alongside prices: FMP's free `insider-trading/latest` feed
+accumulated into the `insider_trades` hypertable. The free feed is capped at the
+latest 100 filings (no symbol filter, no pagination — both premium), so
+`seed_insider_trades.py` polls frequently and upserts (idempotent on
+`(transaction_date, trade_id)`) to build a local, symbol-searchable history.
+
+Only **important** trades are stored — Form 4 open-market buys/sells
+(`P-Purchase` / `S-Sale`) with value ≥ $50k (tunable via `--min-value` /
+`INSIDER_MIN_VALUE`). Awards, option exercises, gifts, tax withholding, Form 3/5,
+and sub-threshold lots are dropped.
+
+Create the hypertable once (psql):
+
+```sql
+CREATE TABLE IF NOT EXISTS insider_trades (
+    transaction_date        TIMESTAMPTZ NOT NULL,
+    trade_id                TEXT NOT NULL,   -- dedup hash (client-computed)
+    symbol                  TEXT NOT NULL,
+    company_cik TEXT, reporting_cik TEXT, reporting_name TEXT, type_of_owner TEXT,
+    transaction_type TEXT, acquisition_disposition TEXT,   -- A = buy, D = sell
+    securities_transacted DOUBLE PRECISION, price DOUBLE PRECISION,
+    value DOUBLE PRECISION, securities_owned DOUBLE PRECISION,
+    form_type TEXT, security_name TEXT, filing_date DATE, url TEXT,
+    PRIMARY KEY (transaction_date, trade_id)
+) WITH (
+    tsdb.hypertable,
+    tsdb.partition_column = 'transaction_date',
+    tsdb.segmentby = 'symbol',
+    tsdb.orderby = 'transaction_date DESC'
+);
+
+CREATE INDEX IF NOT EXISTS insider_trades_symbol_ts
+    ON insider_trades (symbol, transaction_date DESC);
+```
+
+Poll it, then schedule frequent runs during US market hours (feed caps at 100/call):
+
+```bash
+uv run --extra timescale python seed_insider_trades.py                  # poll once
+uv run --extra timescale python seed_insider_trades.py --min-value 100000
+
+# crontab — every 30 min, 14:00-22:00 BST, Mon-Fri (~16 requests/day):
+( crontab -l 2>/dev/null; echo "*/30 14-22 * * 1-5 $(pwd)/scripts/insider_cron.sh" ) | crontab -
+tail -f /tmp/insider_seed.log
+```
+
+#### 7. Continuous aggregates (streaming rollups)
+
+Both hypertables have a TimescaleDB **continuous aggregate** with an hourly
+refresh policy (server-side) — the seed/poll only feeds raw rows; the rollups
+stay fresh on their own:
+
+| Aggregate | Source | Grain |
+|---|---|---|
+| `commodity_prices_daily` | `commodity_prices` | daily OHLC per `(code, source)` |
+| `insider_trades_daily` | `insider_trades` | daily count / value / shares per `(symbol, A/D)` |
+
+Query them directly — real-time aggregation unions materialized buckets with the
+latest raw rows. Full DDL, upserts, and streaming SQL are in
+[`TIGER_STREAMING_SQL.md`](TIGER_STREAMING_SQL.md).
+
+```sql
+-- daily insider $ flow per symbol (A = buy, D = sell)
+SELECT symbol, day,
+       sum(total_value) FILTER (WHERE acquisition_disposition = 'A') AS buy_usd,
+       sum(total_value) FILTER (WHERE acquisition_disposition = 'D') AS sell_usd
+FROM insider_trades_daily
+GROUP BY symbol, day
+ORDER BY day DESC;
+```
+
 ## Run
 
 ```bash
