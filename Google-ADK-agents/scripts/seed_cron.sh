@@ -22,6 +22,12 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 cd "$PROJECT_DIR"
 
+# The repo often lives on /mnt/c (Windows filesystem); a Windows-created .venv
+# there cannot be repaired by Linux uv (fails with I/O error os 5). Put uv's
+# project environment on the Linux filesystem — avoids that and is much faster.
+# Pre-set UV_PROJECT_ENVIRONMENT to override.
+export UV_PROJECT_ENVIRONMENT="${UV_PROJECT_ENVIRONMENT:-$HOME/.venvs/google-adk-agents}"
+
 LOG="${TIGER_SEED_LOG:-/tmp/tiger_seed.log}"
 ARGS=(--days 4)
 [ "${SEED_NO_FMP:-0}" = "1" ] && ARGS+=(--no-fmp)
