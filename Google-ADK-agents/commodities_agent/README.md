@@ -14,6 +14,8 @@ A commodity-prices agent on ADK, backed by the live **[OilPrice API](https://oil
 | `list_commodities(category)` | `/v1/commodities` (filtered) | codes in a category (oil, gas, metal, …) |
 | `get_commodity_price(code)` | `/v1/prices/latest` | latest price, unit, currency, timestamp |
 | `get_commodity_history(code, period)` | `/v1/prices/{past_day\|past_week\|past_month\|past_year}` | historical price series |
+| `list_fuse_watchlist()` | `/v1/prices/latest` ×7 | curated Fuse Energy watchlist prices (UK/TTF gas, Brent, gasoil, carbon, coal) |
+| `list_marine_ports(region, country, major_ports)` | `/v1/marine-ports` | bunker fuel ports + capabilities (grades, coordinates, trading hours) |
 
 Catalog/search output is capped (the full catalog is 460+ rows) and every tool returns `{"error": ...}` on a missing key / auth / network failure rather than raising.
 

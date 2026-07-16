@@ -187,3 +187,45 @@ def list_fuse_watchlist() -> dict:
             "error": p.get("error"),
         })
     return {"watchlist": "fuse_energy", "count": len(FUSE_WATCHLIST), "by_theme": themes}
+
+
+def list_marine_ports(region: str = "", country: str = "", major_ports: bool = False) -> dict:
+    """List marine fuel (bunkering) ports with their details and capabilities.
+
+    Bunkering hubs where ships refuel — with location, available fuel grades
+    (e.g. VLSFO, MGO, HFO), coordinates, and trading hours.
+
+    Args:
+        region: Filter by geographic region — "Asia", "Europe", "Americas", or
+            "Middle East". Empty = all regions.
+        country: Filter by country code. Empty = all countries.
+        major_ports: If True, return only major bunkering hubs.
+    """
+    params: dict = {}
+    if region:
+        params["region"] = region
+    if country:
+        params["country"] = country
+    if major_ports:
+        params["major_ports"] = "true"
+    data = _get("marine-ports", params)
+    if isinstance(data, dict) and "error" in data:
+        return data
+    d = data.get("data", {}) if isinstance(data, dict) else {}
+    ports = d.get("ports", []) or []
+    return {
+        "count": d.get("count", len(ports)),
+        "ports": [
+            {
+                "code": p.get("code"),
+                "name": p.get("name"),
+                "country": p.get("country"),
+                "region": p.get("region"),
+                "major_port": p.get("major_port"),
+                "coordinates": p.get("coordinates"),
+                "fuel_services": p.get("fuel_services"),
+                "trading_hours": p.get("trading_hours"),
+            }
+            for p in ports
+        ],
+    }

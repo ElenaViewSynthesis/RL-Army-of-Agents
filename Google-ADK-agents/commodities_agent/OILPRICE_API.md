@@ -53,6 +53,7 @@ Reference for the **commodities_agent** service. Convention: every third-party d
 | GET | `/prices/past_year` | Prices over ~1y | Yes | daily *(works; not in official docs table)* |
 | GET | `/prices/historical` | Custom date range (`start_date`, `end_date`) | Yes — **Paid** per docs *(observed returning `daily_average` data on the free key)* | daily |
 | GET | `/commodities` | List all commodities | Yes | — |
+| GET | `/marine-ports` | Marine fuel (bunker) ports + capabilities | Yes | — |
 
 All paths are under the `https://api.oilpriceapi.com/v1` base. Verified envelopes below.
 
@@ -79,6 +80,14 @@ Historical series. `period` ∈ `past_day` (hourly, 24h) · `past_week` (daily, 
 ### `GET /v1/prices/historical?by_code=<CODE>&start_date=<YYYY-MM-DD>&end_date=<YYYY-MM-DD>`
 Custom date range — **marked Paid** in the provider docs (observed returning `type: "daily_average"` data on the current free key; treat as paid for production). Same `{ data: { prices: [ … ] } }` envelope. **Not yet wired as an agent tool** — add a `get_commodity_range` tool if/when needed.
 
+### `GET /v1/marine-ports`
+Marine fuel (bunkering) ports — where ships refuel. Verified free on the current key (8 ports). Optional filters: `region` (Asia · Europe · Americas · Middle East), `country` (code), `major_ports` (bool). **Envelope:** `{ "status": "success", "data": { "ports": [ … ], "count": 8, "filters": {…} } }`.
+```json
+{ "code": "SGSIN", "name": "Singapore", "country": "Singapore", "region": "Asia",
+  "major_port": true, "coordinates": { "latitude": 1.2966, "longitude": 103.7764 },
+  "fuel_services": ["MGO_05S", "VLSFO", "HFO_380", "HFO_180"], "trading_hours": "24/7" }
+```
+
 ---
 
 ## Agent tools (`tools.py`)
@@ -90,6 +99,7 @@ Custom date range — **marked Paid** in the provider docs (observed returning `
 | `get_commodity_price` | `/v1/prices/latest` | `(code: str)` → `{ code, price, formatted, currency, unit, type, updated_at }` |
 | `get_commodity_history` | `/v1/prices/{period}` | `(code: str, period: str = "past_week")` → `{ code, period, count, prices[] }` — `prices` slimmed to `{price, at}`, first 60 |
 | `list_fuse_watchlist` | `/v1/prices/latest` ×7 | `()` → `{ watchlist, count, by_theme{} }` — the curated Fuse Energy watchlist (UK/TTF gas, Brent, gasoil, UK/EU carbon, Newcastle coal) with live prices; throttled 1/sec. See [`FUSE_ENERGY_WATCHLIST.md`](FUSE_ENERGY_WATCHLIST.md) |
+| `list_marine_ports` | `/v1/marine-ports` | `(region: str = "", country: str = "", major_ports: bool = False)` → `{ count, ports[] }` — bunker ports with `code, name, country, region, major_port, coordinates, fuel_services[], trading_hours` |
 
 **Design notes**
 - **Bounded output:** the catalog is 469 rows, so `search`/`list` cap at 30 and history slims to `{price, at}` × 60 — keeps tool results inside the model's context window.

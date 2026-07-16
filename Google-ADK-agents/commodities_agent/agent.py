@@ -17,6 +17,7 @@ from .tools import (
     get_commodity_price,
     get_commodity_history,
     list_fuse_watchlist,
+    list_marine_ports,
 )
 
 MODEL = os.getenv("OPENROUTER_MODEL", "meta-llama/llama-3.3-70b-instruct")
@@ -39,6 +40,9 @@ root_agent = LlmAgent(
         "- For a UK/London energy retailer's key benchmarks (Fuse Energy), call "
         "list_fuse_watchlist to get UK/TTF gas, Brent, gasoil, carbon, and coal "
         "prices in one shot.\n"
+        "- For marine/bunker fuel questions — where ships refuel, which grades "
+        "(VLSFO, MGO, HFO) a port offers — call list_marine_ports (optionally "
+        "filter by region, country, or major_ports).\n"
         "Report the price with its unit and currency (e.g. '$75.22 / barrel'), "
         "cite the code you used, and if a tool reports missing data say so "
         "rather than inventing figures."
@@ -49,5 +53,6 @@ root_agent = LlmAgent(
         get_commodity_price,
         get_commodity_history,
         list_fuse_watchlist,
+        list_marine_ports,
     ],
 )
