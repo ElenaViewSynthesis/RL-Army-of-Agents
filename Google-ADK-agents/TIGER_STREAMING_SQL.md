@@ -1,9 +1,10 @@
 # Tiger Cloud (TimescaleDB) — streaming SQL for `commodity_prices`
 
-SQL reference for the commodity price time-series on **Tiger Cloud**
-(TimescaleDB). This is the *numbers* half of the system — Supabase keeps the
-*words* (`agent_responses` + pgvector). Written/read from `a2a_finance/tiger_client.py`
-and `seed_timescale_prices.py`.
+SQL reference for the Tiger Cloud (TimescaleDB) time-series — the *numbers* half
+of the system, while Supabase keeps the *words* (`agent_responses` + pgvector).
+Two hypertables: **`commodity_prices`** (§1–4) and **`insider_trades`** (§5).
+Written/read from `a2a_finance/tiger_client.py` via `seed_timescale_prices.py`
+and `seed_insider_trades.py`.
 
 | Field | Value |
 |-------|-------|
@@ -165,7 +166,96 @@ SELECT add_retention_policy('commodity_prices', INTERVAL '90 days');
 
 ---
 
-## 5. TLS-encrypted database connection
+## 5. Insider trades — second hypertable + daily aggregate
+
+A parallel dataset built the same way: FMP's free `insider-trading/latest` feed
+accumulated into the `insider_trades` hypertable (only **important** trades —
+Form 4 open-market buys/sells ≥ $50k). Written by
+`a2a_finance/tiger_client.save_insider_trades()` via `seed_insider_trades.py`.
+
+### Schema (executed)
+
+```sql
+CREATE TABLE IF NOT EXISTS insider_trades (
+    transaction_date        timestamptz NOT NULL,   -- time dimension (partition)
+    trade_id                text        NOT NULL,   -- dedup hash (client-computed)
+    symbol                  text        NOT NULL,
+    company_cik text, reporting_cik text, reporting_name text, type_of_owner text,
+    transaction_type text, acquisition_disposition text,   -- A = buy, D = sell
+    securities_transacted double precision, price double precision,
+    value double precision, securities_owned double precision,
+    form_type text, security_name text, filing_date date, url text,
+    PRIMARY KEY (transaction_date, trade_id)
+);
+
+SELECT create_hypertable('insider_trades', 'transaction_date', if_not_exists => TRUE);
+
+CREATE INDEX IF NOT EXISTS insider_trades_symbol_ts
+    ON insider_trades (symbol, transaction_date DESC);
+```
+
+### Idempotent ingest — upsert (executed each poll)
+
+```sql
+INSERT INTO insider_trades
+    (trade_id, transaction_date, symbol, company_cik, reporting_cik, reporting_name,
+     type_of_owner, transaction_type, acquisition_disposition, securities_transacted,
+     price, value, securities_owned, form_type, security_name, filing_date, url)
+VALUES (%(trade_id)s, %(transaction_date)s, …)
+ON CONFLICT (transaction_date, trade_id) DO UPDATE SET
+    securities_owned = EXCLUDED.securities_owned,
+    url              = EXCLUDED.url;
+```
+
+### Daily buy/sell continuous aggregate (executed)
+
+Grouped by `acquisition_disposition` (A = buy, D = sell) — avoids `FILTER`/`CASE`,
+which continuous aggregates restrict:
+
+```sql
+CREATE MATERIALIZED VIEW insider_trades_daily
+WITH (timescaledb.continuous) AS
+SELECT symbol, acquisition_disposition,
+       time_bucket('1 day', transaction_date) AS day,
+       count(*)                   AS n_trades,
+       sum(value)                 AS total_value,
+       sum(securities_transacted) AS total_shares
+FROM insider_trades
+GROUP BY symbol, acquisition_disposition, day
+WITH NO DATA;
+
+SELECT add_continuous_aggregate_policy('insider_trades_daily',
+    start_offset      => INTERVAL '7 days',
+    end_offset        => INTERVAL '1 hour',
+    schedule_interval => INTERVAL '1 hour');
+```
+
+### Query patterns
+
+```sql
+-- Daily net insider $ flow per symbol (buy vs sell), from the aggregate.
+SELECT symbol, day,
+       sum(total_value) FILTER (WHERE acquisition_disposition = 'A') AS buy_usd,
+       sum(total_value) FILTER (WHERE acquisition_disposition = 'D') AS sell_usd
+FROM insider_trades_daily
+GROUP BY symbol, day
+ORDER BY day DESC;
+
+-- Biggest single insider trades stored (raw table).
+SELECT symbol, transaction_type, securities_transacted, price,
+       round(value::numeric, 0) AS value, type_of_owner
+FROM insider_trades
+ORDER BY value DESC
+LIMIT 20;
+```
+
+> **Applied:** the `insider_trades` hypertable + `insider_trades_daily` continuous
+> aggregate and its hourly refresh policy exist on the service. Retention on the
+> raw table is optional/unapplied (see §4).
+
+---
+
+## 6. TLS-encrypted database connection
 
 TLS is not a database type. It encrypts network traffic between this application
 and Tiger Cloud so database credentials, SQL queries, and returned data are not
