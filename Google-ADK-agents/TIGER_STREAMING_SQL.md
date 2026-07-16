@@ -146,7 +146,18 @@ FROM commodity_prices
 GROUP BY code, source, day
 WITH NO DATA;
 
--- Refresh policy — keeps the aggregate streaming (hourly, over the last 3 days).
+-- Refresh policy — registered as a background job (e.g. job_id 1002) in
+-- TimescaleDB's scheduler. Every `schedule_interval` (1h) it INCREMENTALLY
+-- materializes daily OHLC buckets in the rolling window
+-- [now - start_offset, now - end_offset] = [now - 3 days, now - 1 hour],
+-- recomputing only the ranges whose raw rows changed since the last run (via the
+-- invalidation log) — not the whole history.
+--   • end_offset '1 hour'  → leave the freshest slice to real-time aggregation
+--                            (computed live at query time, not stored yet).
+--   • start_offset '3 days' → bound how far back each run rescans for
+--                            late-arriving / re-upserted prices.
+-- The raw hypertable stays the source of truth; this materialization is just a
+-- rebuildable cache (CALL refresh_continuous_aggregate(...) to backfill any range).
 SELECT add_continuous_aggregate_policy('commodity_prices_daily',
     start_offset      => INTERVAL '3 days',
     end_offset        => INTERVAL '1 hour',
@@ -224,6 +235,12 @@ FROM insider_trades
 GROUP BY symbol, acquisition_disposition, day
 WITH NO DATA;
 
+-- Refresh policy — background job (e.g. job_id 1003), same mechanics as the
+-- commodity aggregate in §4: hourly, incremental materialization of the window
+-- [now - 7 days, now - 1 hour] via the invalidation log; the last hour + today's
+-- forming bucket stay real-time (computed at query time). The 7-day start_offset
+-- covers late insider filings — Form 4s can land up to ~2 business days after the
+-- trade, and the poller upserts them into already-passed days.
 SELECT add_continuous_aggregate_policy('insider_trades_daily',
     start_offset      => INTERVAL '7 days',
     end_offset        => INTERVAL '1 hour',
