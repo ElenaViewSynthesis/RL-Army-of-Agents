@@ -197,6 +197,43 @@ Other agent entry points do not currently write to Tiger Cloud. To expose Tiger
 administration tools to Codex as well, run `tiger mcp install`, restart Codex,
 and verify the registration with `codex mcp list`.
 
+#### 5. Schedule the daily seed (WSL cron)
+
+`scripts/seed_cron.sh` wraps the seeder for cron and logs to
+`/tmp/tiger_seed.log`. It only needs to keep raw points flowing — the
+`commodity_prices_daily` continuous aggregate refreshes itself hourly.
+
+Make sure the cron daemon is running. On modern WSL (systemd enabled) this also
+makes it persist across restarts:
+
+```bash
+sudo systemctl enable --now cron     # systemd WSL — start now + on every boot
+systemctl status cron                # confirm "active (running)"
+```
+
+On older WSL without systemd, use sysvinit instead (does not persist):
+
+```bash
+sudo service cron start
+```
+
+Install the daily job (20:00 / 8:00pm in the WSL local timezone — cron does not
+use UTC) and verify:
+
+```bash
+chmod +x scripts/seed_cron.sh
+( crontab -l 2>/dev/null; echo "0 20 * * * $(pwd)/scripts/seed_cron.sh" ) | crontab -
+# or install from a file:  crontab /tmp/tiger-seed.crontab
+crontab -l                   # verify the entry
+tail -f /tmp/tiger_seed.log  # watch runs
+```
+
+Set `SEED_NO_FMP=1` in the crontab environment to skip the FMP snapshot
+(OilPrice-only, 11 requests/run). With systemd (`systemctl enable`) the daemon
+survives WSL restarts; on sysvinit-only WSL it does not — re-run
+`sudo service cron start` after a reboot, or use Windows Task Scheduler to invoke
+`wsl bash <path>/scripts/seed_cron.sh`.
+
 ## Run
 
 ```bash
