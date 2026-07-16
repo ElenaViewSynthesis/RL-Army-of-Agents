@@ -8,9 +8,18 @@ and `seed_timescale_prices.py`.
 | Field | Value |
 |-------|-------|
 | Engine | PostgreSQL 18.4 + TimescaleDB 2.28.2 |
+| Hosting | AWS — managed by **Tiger Cloud** |
+| Compute | 8 CPUs (service allocation) |
 | Host / port | `i2t2hp8zb1.v445e4qjbc.tsdb.cloud.timescale.com` : `32445` |
 | Database | `tsdb` (user `tsdbadmin`) |
 | Connection | `TIGER_DATABASE_*` in gitignored `finance_coordinator/.env` (`sslmode=require`) |
+
+**Stack roles:**
+- **Tiger Cloud** hosts the managed database on **AWS**.
+- **TimescaleDB** is the PostgreSQL **extension** that adds hypertables and
+  continuous aggregates.
+- The **hypertable partitions `commodity_prices`** by time (`ts`).
+- **8 CPUs** is the service's compute allocation (server-side; no client change).
 
 Codes are normalized (`WTI`, `BRENT`, `NATGAS`, …); `source` is `oilprice` | `fmp`.
 
