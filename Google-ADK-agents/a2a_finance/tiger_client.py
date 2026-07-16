@@ -152,12 +152,58 @@ def save_prices(rows: Iterable[dict]) -> int:
         payload.append({k: r.get(k) for k in _COLS})
     if not payload:
         return 0
+    return _executemany(_UPSERT, payload)
+
+
+_INSIDER_COLS = (
+    "trade_id", "transaction_date", "symbol", "company_cik", "reporting_cik",
+    "reporting_name", "type_of_owner", "transaction_type", "acquisition_disposition",
+    "securities_transacted", "price", "value", "securities_owned", "form_type",
+    "security_name", "filing_date", "url",
+)
+
+_INSIDER_UPSERT = """
+INSERT INTO insider_trades
+    (trade_id, transaction_date, symbol, company_cik, reporting_cik, reporting_name,
+     type_of_owner, transaction_type, acquisition_disposition, securities_transacted,
+     price, value, securities_owned, form_type, security_name, filing_date, url)
+VALUES
+    (%(trade_id)s, %(transaction_date)s, %(symbol)s, %(company_cik)s, %(reporting_cik)s,
+     %(reporting_name)s, %(type_of_owner)s, %(transaction_type)s, %(acquisition_disposition)s,
+     %(securities_transacted)s, %(price)s, %(value)s, %(securities_owned)s, %(form_type)s,
+     %(security_name)s, %(filing_date)s, %(url)s)
+ON CONFLICT (transaction_date, trade_id) DO UPDATE SET
+    securities_owned = EXCLUDED.securities_owned, url = EXCLUDED.url
+"""
+
+
+def save_insider_trades(rows: Iterable[dict]) -> int:
+    """Upsert insider-trade rows into the hypertable. Returns rows written.
+
+    Idempotent on ``(transaction_date, trade_id)`` — re-polling the same feed
+    upserts rather than duplicating. Each row needs at least ``trade_id``,
+    ``transaction_date``, ``symbol``. No-op if TimescaleDB isn't configured.
+    """
+    if not enabled():
+        return 0
+    payload = []
+    for r in rows:
+        if not r.get("trade_id") or not r.get("transaction_date") or not r.get("symbol"):
+            continue
+        payload.append({k: r.get(k) for k in _INSIDER_COLS})
+    if not payload:
+        return 0
+    return _executemany(_INSIDER_UPSERT, payload)
+
+
+def _executemany(sql: str, payload: list) -> int:
+    """Run a batch upsert; return rows written (0 on failure). Never raises."""
     conn = _get_conn()
     if conn is None:
         return 0
     try:
         with conn.cursor() as cur:
-            cur.executemany(_UPSERT, payload)
+            cur.executemany(sql, payload)
         return len(payload)
     except Exception as e:
         global _conn
