@@ -22,6 +22,23 @@ from .tools import (
 
 MODEL = os.getenv("OPENROUTER_MODEL", "meta-llama/llama-3.3-70b-instruct")
 
+# Base OilPrice tools (free tier). The premium ICE Gas Oil futures group is opt-in
+# via OILPRICE_FUTURES=1 — it lights up when the "Futures Data" entitlement is
+# active, no agent restructuring; without it the tools return a structured
+# futures_data_not_entitled error.
+_tools = [
+    list_commodities,
+    search_commodities,
+    get_commodity_price,
+    get_commodity_history,
+    list_fuse_watchlist,
+    list_marine_ports,
+]
+if os.getenv("OILPRICE_FUTURES", "").lower() in ("1", "true", "yes"):
+    from oilprice_futures import FUTURES_TOOLS
+
+    _tools += FUTURES_TOOLS
+
 root_agent = LlmAgent(
     name="commodities_agent",
     model=OpenRouterLlm(model=MODEL),
@@ -47,12 +64,5 @@ root_agent = LlmAgent(
         "cite the code you used, and if a tool reports missing data say so "
         "rather than inventing figures."
     ),
-    tools=[
-        list_commodities,
-        search_commodities,
-        get_commodity_price,
-        get_commodity_history,
-        list_fuse_watchlist,
-        list_marine_ports,
-    ],
+    tools=_tools,
 )
