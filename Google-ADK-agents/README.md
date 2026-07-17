@@ -362,11 +362,16 @@ LANGFUSE_BASE_URL=https://cloud.langfuse.com   # EU; or us.cloud… / self-hoste
 
 Then run anything — `adk web` / `adk run`, the standalone runners, or the A2A
 demo (`run_demo.py` propagates tracing to each specialist service subprocess) —
-and traces appear in Langfuse. `init_tracing()` is wired (idempotently) into every
-entry point — each discoverable agent, each A2A service, and the run drivers — so
-one global instrumentor is installed per process; short-lived runners call
-`observability.flush()` on exit. See
-[`a2a_finance/observability.py`](a2a_finance/observability.py).
+and traces appear in Langfuse in real time. `init_tracing()` is wired (idempotently,
+**before** the `google.adk` import) into every entry point — all 8 agents, each A2A
+service, and the run drivers; short-lived runners call `observability.flush()` on
+exit. Spans export via an **OTLP exporter** to Langfuse's `/api/public/otel`
+endpoint (with the `x-langfuse-ingestion-version: 4` header for real-time
+ingestion). See [`a2a_finance/observability.py`](a2a_finance/observability.py).
+
+![Langfuse agent traces — nested spans for an agent run](docs/assets/langfuse-agent-traces.png)
+
+*Agent runs, tool calls, and model completions as nested spans in Langfuse.*
 
 ## Run
 
