@@ -75,7 +75,12 @@ def init_tracing() -> bool:
         ).decode()
         exporter = OTLPSpanExporter(
             endpoint=f"{_base_url()}/api/public/otel/v1/traces",
-            headers={"Authorization": f"Basic {auth}"},
+            headers={
+                "Authorization": f"Basic {auth}",
+                # Real-time ingestion into Langfuse Cloud "Fast Preview" (per the
+                # OTEL integration docs) — without it, traces still ingest but lag.
+                "x-langfuse-ingestion-version": "4",
+            },
         )
         # Order-independent: OTel allows the global TracerProvider to be set only
         # once, and google.adk may set/grab it before we run. If a real SDK
