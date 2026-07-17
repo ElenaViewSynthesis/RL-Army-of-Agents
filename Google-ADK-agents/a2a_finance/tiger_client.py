@@ -196,6 +196,43 @@ def save_insider_trades(rows: Iterable[dict]) -> int:
     return _executemany(_INSIDER_UPSERT, payload)
 
 
+_MARINE_COLS = ("snapshot_ts", "code", "name", "country", "region", "major_port",
+                "latitude", "longitude", "fuel_services", "trading_hours")
+
+_MARINE_UPSERT = """
+INSERT INTO marine_ports
+    (snapshot_ts, code, name, country, region, major_port,
+     latitude, longitude, fuel_services, trading_hours)
+VALUES
+    (%(snapshot_ts)s, %(code)s, %(name)s, %(country)s, %(region)s, %(major_port)s,
+     %(latitude)s, %(longitude)s, %(fuel_services)s, %(trading_hours)s)
+ON CONFLICT (code, snapshot_ts) DO UPDATE SET
+    name = EXCLUDED.name, country = EXCLUDED.country, region = EXCLUDED.region,
+    major_port = EXCLUDED.major_port, latitude = EXCLUDED.latitude,
+    longitude = EXCLUDED.longitude, fuel_services = EXCLUDED.fuel_services,
+    trading_hours = EXCLUDED.trading_hours
+"""
+
+
+def save_marine_ports(rows: Iterable[dict]) -> int:
+    """Upsert marine-fuel-port snapshot rows into the columnstore hypertable.
+
+    Each row needs at least ``snapshot_ts``, ``code``. ``fuel_services`` is a
+    Python list (mapped to a Postgres ``text[]``). No-op if TimescaleDB isn't
+    configured. Idempotent on ``(code, snapshot_ts)``.
+    """
+    if not enabled():
+        return 0
+    payload = []
+    for r in rows:
+        if not r.get("snapshot_ts") or not r.get("code"):
+            continue
+        payload.append({k: r.get(k) for k in _MARINE_COLS})
+    if not payload:
+        return 0
+    return _executemany(_MARINE_UPSERT, payload)
+
+
 def _executemany(sql: str, payload: list) -> int:
     """Run a batch upsert; return rows written (0 on failure). Never raises."""
     conn = _get_conn()
