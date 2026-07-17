@@ -64,7 +64,7 @@ cp .env.example finance_coordinator/.env
 #   GEMINI_API_KEY      (Gemini agents)
 #   OPENROUTER_API_KEY  (OpenRouter-backed agents — A2A specialists, commodities)
 #   FMP_API_KEY         (equity market-data tools)
-#   OILPRICE_API_KEY    (commodities agent)
+#   OILPRICE_API_KEY    (commodities + energy-drilling agents; DPR needs the Scale plan)
 ```
 
 > **Busy-traffic timeout:** OpenRouter-backed calls default to a **10-minute** per-request timeout (`OpenRouterLlm.timeout_ms`), since free/queued models can sit in a queue for minutes under load. Override with `OPENROUTER_TIMEOUT_MS`.
@@ -427,6 +427,29 @@ uv run python a2a_finance/run_demo.py MSFT "give me a general read"   # coordina
 ```
 
 Because `RemoteA2aAgent` resolves cards lazily, the coordinator still runs with only the Python specialists if the TS service is down — it just can't route there.
+
+### ⛏️ EIA Productivity — Energy Drilling Agent (premium)
+
+US shale **drilling productivity** and **DUC** (Drilled but Uncompleted) well
+inventories by basin, from the EIA Drilling Productivity Report — via OilPrice's
+`/v1/ei/drilling_productivities/*` endpoints. These require OilPrice's **Scale
+plan**. The 8 tools are wired in full so anyone with a Scale key gets real data;
+on a free/lower tier they return a clear "requires the Scale plan" error (verified
+`HTTP 403`) and the agent reports the gap rather than inventing figures.
+
+ADK-discoverable, runnable four ways:
+
+```bash
+# from Google-ADK-agents/
+uv run adk web                                   # dropdown → energy_drilling_agent
+uv run adk run energy_drilling_agent             # interactive CLI
+uv run python -m energy_drilling_agent.run "How many DUC wells in the Permian?"
+uv run python Energy-Drilling-agent.py "How many DUC wells in the Permian?"   # flat-file launcher
+```
+
+Basins: `permian`, `bakken`, `eagle_ford`, `niobrara`, `appalachia`, `anadarko`,
+`haynesville`. Tools: latest report, summary, DUC wells, by-basin, historical,
+trends, and by-id — see [`energy_drilling_agent/`](energy_drilling_agent/).
 
 ## Next steps
 
