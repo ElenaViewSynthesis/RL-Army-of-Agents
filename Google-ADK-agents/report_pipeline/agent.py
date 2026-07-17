@@ -6,6 +6,11 @@ section to state via ``output_key``; synthesis reads them back and emits the
 final rated note. ADK exposes ``root_agent`` to ``adk web`` / ``adk run``.
 """
 
+# Init tracing BEFORE importing google.adk so ADK's spans land on our provider.
+from a2a_finance.observability import init_tracing
+
+init_tracing()
+
 from google.adk.agents import SequentialAgent
 
 from .steps import (
