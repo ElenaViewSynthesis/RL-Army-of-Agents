@@ -451,6 +451,29 @@ Basins: `permian`, `bakken`, `eagle_ford`, `niobrara`, `appalachia`, `anadarko`,
 `haynesville`. Tools: latest report, summary, DUC wells, by-basin, historical,
 trends, and by-id — see [`energy_drilling_agent/`](energy_drilling_agent/).
 
+### 🛢️ ICE Gas Oil futures — optional tool group (premium)
+
+An **optional** futures tool group ([`oilprice_futures.py`](oilprice_futures.py))
+covering OilPrice's `/v1/futures/ice-gasoil/*` — current contracts, historical,
+OHLC, intraday, calendar spreads, curve, and spread history. Requires OilPrice's
+**"Futures Data"** entitlement.
+
+Opt in with `OILPRICE_FUTURES=1` — the 7 tools attach to the commodities agent
+with **no restructuring**, and light up when the entitlement is active. Without it
+each tool returns a **structured** error (not a crash):
+
+```json
+{ "error": "futures_data_not_entitled",
+  "message": "Futures Data is not included in the current OilPrice API plan." }
+```
+
+`401` / `429` / timeouts / connection failures are normalized to their own error
+codes too. Futures are **not** written to `commodity_prices` (that's spot/index) —
+they need a dedicated contract-level schema (`GASOIL_FUTURES_DDL` → a
+`gasoil_futures` hypertable: contract month, expiry, curve timestamp, OHLC, open
+interest). The free `GASOIL_USD` spot path is unchanged. Mocked tests in
+[`tests/test_futures.py`](tests/test_futures.py) (`uv run pytest`).
+
 ## Next steps
 
 - Add the premium FMP endpoints (SEC filings, ETF/mutual-fund holdings, ownership) as further tools.
