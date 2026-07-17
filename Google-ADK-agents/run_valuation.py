@@ -154,7 +154,13 @@ def main() -> None:
     from dotenv import load_dotenv
     load_dotenv(SCRIPT_DIR / "finance_coordinator" / ".env")
     sys.path.insert(0, str(SCRIPT_DIR))
-    sys.exit(asyncio.run(run(args)))
+    from a2a_finance import observability
+    observability.init_tracing()
+    try:
+        code = asyncio.run(run(args))
+    finally:
+        observability.flush()
+    sys.exit(code)
 
 
 if __name__ == "__main__":

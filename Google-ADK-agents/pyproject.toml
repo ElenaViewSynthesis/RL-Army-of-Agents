@@ -23,6 +23,13 @@ dependencies = [
 recall = ["sentence-transformers>=3.0.0", "torch>=2.2.0"]
 # TimescaleDB (Tiger Cloud) price persistence — psycopg direct Postgres driver.
 timescale = ["psycopg[binary]>=3.2.0"]
+# Langfuse tracing via OTLP: the OpenInference ADK instrumentor + OTel SDK/exporter
+# (spans export to Langfuse's /api/public/otel endpoint — no langfuse SDK needed).
+observability = [
+    "openinference-instrumentation-google-adk>=0.1.0",
+    "opentelemetry-sdk>=1.24.0",
+    "opentelemetry-exporter-otlp-proto-http>=1.24.0",
+]
 
 [dependency-groups]
 dev = [

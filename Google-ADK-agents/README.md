@@ -343,6 +343,31 @@ uv run --extra timescale python seed_marine_ports.py --region Asia --major
 See [`TIGER_STREAMING_SQL.md`](TIGER_STREAMING_SQL.md) §6 for columnstore details
 and query patterns (latest-per-port, fuel-grade lookup).
 
+## Observability — Langfuse tracing
+
+LLM traces (agent runs, tool calls, model completions, token usage) can be sent
+to **[Langfuse](https://langfuse.com)** via the OpenInference Google-ADK
+instrumentor. It's **optional and graceful** — with no Langfuse keys set, agents
+run untraced (`a2a_finance/observability.init_tracing()` no-ops).
+
+```bash
+uv sync --extra observability     # langfuse + openinference-instrumentation-google-adk
+```
+```dotenv
+# finance_coordinator/.env  (keys: Langfuse UI → Settings → API Keys)
+LANGFUSE_PUBLIC_KEY=pk-lf-...
+LANGFUSE_SECRET_KEY=sk-lf-...
+LANGFUSE_BASE_URL=https://cloud.langfuse.com   # EU; or us.cloud… / self-hosted
+```
+
+Then run anything — `adk web` / `adk run`, the standalone runners, or the A2A
+demo (`run_demo.py` propagates tracing to each specialist service subprocess) —
+and traces appear in Langfuse. `init_tracing()` is wired (idempotently) into every
+entry point — each discoverable agent, each A2A service, and the run drivers — so
+one global instrumentor is installed per process; short-lived runners call
+`observability.flush()` on exit. See
+[`a2a_finance/observability.py`](a2a_finance/observability.py).
+
 ## Run
 
 ```bash

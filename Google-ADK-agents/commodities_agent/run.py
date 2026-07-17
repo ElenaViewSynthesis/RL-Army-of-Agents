@@ -32,6 +32,10 @@ async def main() -> int:
     load_dotenv(PROJECT / "finance_coordinator" / ".env")
     sys.path.insert(0, str(PROJECT))
 
+    # Init tracing BEFORE importing google.adk so ADK's spans land on our provider.
+    from a2a_finance import observability
+    observability.init_tracing()
+
     if not os.getenv("OPENROUTER_API_KEY"):
         print("Error: OPENROUTER_API_KEY not set (finance_coordinator/.env)", file=sys.stderr)
         return 1
@@ -68,6 +72,8 @@ async def main() -> int:
     print(final or "(no response)")
     if final:
         storage.save_response("commodities_agent", text=final, run_id=run_id)
+    from a2a_finance import observability
+    observability.flush()  # send buffered Langfuse spans before exit
     return 0
 
 

@@ -59,6 +59,8 @@ async def main() -> int:
 
     print("\n--- ENERGY DRILLING AGENT ---\n")
     print(final or "(no response)")
+    from a2a_finance import observability
+    observability.flush()  # send buffered Langfuse spans before exit
     return 0
 
 

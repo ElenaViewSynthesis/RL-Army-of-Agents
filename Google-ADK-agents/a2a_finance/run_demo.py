@@ -131,6 +131,9 @@ def main() -> None:
         print("Error: OPENROUTER_API_KEY not set (finance_coordinator/.env)", file=sys.stderr)
         sys.exit(1)
 
+    from a2a_finance import observability
+    observability.init_tracing()  # trace the coordinator process (no-op if unset)
+
     if research:
         prompt = f"Write a full research note on {ticker}."
     else:
@@ -161,6 +164,7 @@ def main() -> None:
         print(f"▸ all services up; running {mode}\n", file=sys.stderr)
         asyncio.run(run_coordinator(ticker, question, research=research, run_id=run_id))
     finally:
+        observability.flush()  # send buffered spans before exit
         for s in servers:
             s.terminate()
         for s in servers:

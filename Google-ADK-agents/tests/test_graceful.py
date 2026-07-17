@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import pytest
 
-from a2a_finance import embeddings, storage
+from a2a_finance import embeddings, observability, storage
 
 
 # ── storage: not configured (no SUPABASE_* env) ───────────────────────────────
@@ -127,3 +127,13 @@ def test_save_response_embeds_when_opted_in(enabled_storage, monkeypatch):
 
     store.save_response("agent", subject="NVDA", text="note", run_id="rid-1")
     assert posted["row"]["embedding"] == "[0.5,0.25]"
+
+
+# ── observability: no-op without Langfuse credentials ────────────────────────
+def test_observability_disabled_without_keys(monkeypatch):
+    monkeypatch.delenv("LANGFUSE_PUBLIC_KEY", raising=False)
+    monkeypatch.delenv("LANGFUSE_SECRET_KEY", raising=False)
+    monkeypatch.setattr(observability, "_initialized", False)
+    assert observability.configured() is False
+    assert observability.init_tracing() is False   # no-op; never imports langfuse
+    observability.flush()                          # no-op, must not raise

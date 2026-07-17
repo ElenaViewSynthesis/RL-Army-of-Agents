@@ -5,6 +5,11 @@ routes each request to the right specialist via ADK's LLM-driven delegation
 (``sub_agents``). ADK exposes ``root_agent`` to ``adk web`` / ``adk run``.
 """
 
+# Init tracing BEFORE importing google.adk so ADK's spans land on our provider.
+from a2a_finance.observability import init_tracing
+
+init_tracing()
+
 from google.adk.agents import LlmAgent
 
 from .config import MODEL

@@ -11,6 +11,11 @@ from __future__ import annotations
 
 import os
 
+# Init tracing BEFORE importing google.adk so ADK's spans land on our provider.
+from a2a_finance.observability import init_tracing
+
+init_tracing()
+
 from google.adk.agents import LlmAgent
 from google.adk.a2a.utils.agent_to_a2a import to_a2a
 
