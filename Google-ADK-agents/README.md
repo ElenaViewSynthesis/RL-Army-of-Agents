@@ -307,6 +307,42 @@ GROUP BY symbol, day
 ORDER BY day DESC;
 ```
 
+#### 8. Marine ports (columnstore)
+
+Reference data — bunker fuel ports from OilPrice `/v1/marine-ports` — in the
+`marine_ports` **columnstore** hypertable (the first table here using columnar
+storage). Partitioned on `snapshot_ts`: each seed is a point-in-time snapshot, so
+port capabilities (fuel grades, trading hours) build a compressible history.
+
+Create it once (psql) — the `segmentby`/`orderby` options enable the columnstore,
+and Tiger Cloud auto-adds the compression policy:
+
+```sql
+CREATE TABLE IF NOT EXISTS marine_ports (
+    snapshot_ts   TIMESTAMPTZ NOT NULL,
+    code          TEXT NOT NULL,
+    name TEXT, country TEXT, region TEXT, major_port BOOLEAN,
+    latitude DOUBLE PRECISION, longitude DOUBLE PRECISION,
+    fuel_services TEXT[], trading_hours TEXT,
+    PRIMARY KEY (code, snapshot_ts)
+) WITH (
+    tsdb.hypertable,
+    tsdb.partition_column = 'snapshot_ts',
+    tsdb.segmentby = 'region',
+    tsdb.orderby   = 'snapshot_ts DESC'
+);
+```
+
+Seed it (1 request/run; ports change rarely, so run occasionally):
+
+```bash
+uv run --extra timescale python seed_marine_ports.py                 # all ports
+uv run --extra timescale python seed_marine_ports.py --region Asia --major
+```
+
+See [`TIGER_STREAMING_SQL.md`](TIGER_STREAMING_SQL.md) §6 for columnstore details
+and query patterns (latest-per-port, fuel-grade lookup).
+
 ## Run
 
 ```bash

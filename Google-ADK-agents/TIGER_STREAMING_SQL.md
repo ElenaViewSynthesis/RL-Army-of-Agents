@@ -2,9 +2,10 @@
 
 SQL reference for the Tiger Cloud (TimescaleDB) time-series — the *numbers* half
 of the system, while Supabase keeps the *words* (`agent_responses` + pgvector).
-Two hypertables: **`commodity_prices`** (§1–4) and **`insider_trades`** (§5).
-Written/read from `a2a_finance/tiger_client.py` via `seed_timescale_prices.py`
-and `seed_insider_trades.py`.
+Three hypertables: **`commodity_prices`** (§1–4), **`insider_trades`** (§5), and
+the **`marine_ports`** columnstore (§6). Written/read from
+`a2a_finance/tiger_client.py` via `seed_timescale_prices.py`,
+`seed_insider_trades.py`, and `seed_marine_ports.py`.
 
 | Field | Value |
 |-------|-------|
@@ -272,7 +273,92 @@ LIMIT 20;
 
 ---
 
-## 6. TLS-encrypted database connection
+## 6. Marine ports — columnstore hypertable
+
+Reference/dimension data (bunker fuel ports) from OilPrice `GET /v1/marine-ports`,
+stored as a **columnstore** hypertable — the first table here using TimescaleDB's
+columnar layout (`commodity_prices` / `insider_trades` are plain row hypertables).
+Partitioned on `snapshot_ts`, so each seed run is a point-in-time snapshot and
+port capabilities become a compressible history. Written by
+`a2a_finance/tiger_client.save_marine_ports()` via `seed_marine_ports.py`.
+
+### Schema — columnstore (executed)
+
+```sql
+CREATE TABLE IF NOT EXISTS marine_ports (
+    snapshot_ts   timestamptz NOT NULL,   -- snapshot time (partition)
+    code          text        NOT NULL,   -- port code, e.g. SGSIN
+    name text, country text, region text, -- region: Asia / Europe / Americas / Middle East
+    major_port    boolean,
+    latitude double precision, longitude double precision,
+    fuel_services text[],                  -- {VLSFO, MGO_05S, HFO_380}
+    trading_hours text,
+    PRIMARY KEY (code, snapshot_ts)
+) WITH (
+    tsdb.hypertable,
+    tsdb.partition_column = 'snapshot_ts',
+    tsdb.segmentby = 'region',             -- columnstore grouping key
+    tsdb.orderby   = 'snapshot_ts DESC'    -- columnstore ordering
+);
+
+CREATE INDEX IF NOT EXISTS marine_ports_code_ts
+    ON marine_ports (code, snapshot_ts DESC);
+```
+
+**What "columnstore" means here.** With `tsdb.segmentby` / `tsdb.orderby` set,
+TimescaleDB stores older chunks in a **compressed, columnar** form (Hypercore):
+within a chunk, rows are grouped by the `segmentby` column and each column is
+stored together and compressed. For this snapshot data:
+- **Strong compression** — `region` / `fuel_services` / `trading_hours` repeat
+  across snapshots and compress well.
+- **Fast column scans** — reading one column (e.g. every `fuel_services` in a
+  region) touches only that column, not whole rows.
+- Tiger Cloud auto-adds a **columnstore policy** that compresses chunks as they age.
+
+Trade-off: columnstore rows are cheap to scan but costlier to update in place —
+ideal for append-mostly snapshot/reference data like this.
+
+### Idempotent ingest — upsert (executed each seed)
+
+```sql
+INSERT INTO marine_ports
+    (snapshot_ts, code, name, country, region, major_port,
+     latitude, longitude, fuel_services, trading_hours)
+VALUES (%(snapshot_ts)s, %(code)s, …)
+ON CONFLICT (code, snapshot_ts) DO UPDATE SET
+    name = EXCLUDED.name, country = EXCLUDED.country, region = EXCLUDED.region,
+    major_port = EXCLUDED.major_port, latitude = EXCLUDED.latitude,
+    longitude = EXCLUDED.longitude, fuel_services = EXCLUDED.fuel_services,
+    trading_hours = EXCLUDED.trading_hours;
+```
+
+### Query patterns
+
+```sql
+-- Latest snapshot of every port.
+SELECT DISTINCT ON (code) code, name, region, fuel_services, trading_hours
+FROM marine_ports
+ORDER BY code, snapshot_ts DESC;
+
+-- Ports offering a given fuel grade (array membership).
+SELECT DISTINCT ON (code) code, name, region
+FROM marine_ports
+WHERE 'VLSFO' = ANY(fuel_services)
+ORDER BY code, snapshot_ts DESC;
+
+-- Major bunkering hubs per region (from each port's latest snapshot).
+SELECT region, count(*) FILTER (WHERE major_port) AS major_hubs
+FROM (SELECT DISTINCT ON (code) code, region, major_port
+      FROM marine_ports ORDER BY code, snapshot_ts DESC) latest
+GROUP BY region;
+```
+
+> **Applied:** the `marine_ports` columnstore hypertable + its columnstore
+> (compression) policy exist on the service.
+
+---
+
+## 7. TLS-encrypted database connection
 
 TLS is not a database type. It encrypts network traffic between this application
 and Tiger Cloud so database credentials, SQL queries, and returned data are not
