@@ -99,3 +99,7 @@ LIMIT 20;
 
 You can also open the **oil-petroleum-data** service in the Tiger Cloud Console
 and run the same SQL in its built-in SQL editor — no CLI needed.
+
+![commodity_prices query in the Tiger Cloud Console SQL editor](docs/assets/tiger-cloud-commodity-prices-query.png)
+
+*A `commodity_prices` query run in the Tiger Cloud Console SQL editor.*
