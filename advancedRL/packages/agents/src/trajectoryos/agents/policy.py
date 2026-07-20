@@ -36,6 +36,14 @@ class PolicyTurn(BaseModel):
     token_ids: list[int] | None = None
     rollout_logprobs: list[float] | None = None
     loss_mask: list[int] | None = None
+    context_token_ids: list[int] | None = Field(
+        default=None,
+        description=(
+            "Exact token IDs the policy fed to the engine since the previous turn "
+            "(prompt template, tool observations). Recorded as a loss_mask=0 "
+            "environment event so the trajectory preserves the full token stream."
+        ),
+    )
     input_tokens_used: int = Field(default=0, ge=0)
     output_tokens_used: int = Field(default=0, ge=0)
 

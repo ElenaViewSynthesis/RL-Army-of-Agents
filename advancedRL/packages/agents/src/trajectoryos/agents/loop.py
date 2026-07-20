@@ -68,6 +68,17 @@ def run_episode(
         tracker.add_tokens(
             input_tokens=turn.input_tokens_used, output_tokens=turn.output_tokens_used
         )
+        if turn.context_token_ids:
+            # Tokens the engine ingested (templates/observations): never trainable.
+            events.append(
+                TrajectoryEvent(
+                    event_type=EventType.ENVIRONMENT_OBSERVATION,
+                    role=Role.ENVIRONMENT,
+                    token_ids=turn.context_token_ids,
+                    loss_mask=[0] * len(turn.context_token_ids),
+                    metadata={"kind": "ingested_context"},
+                )
+            )
         policy_event = TrajectoryEvent(
             event_type=EventType.POLICY_OUTPUT,
             role=Role.ASSISTANT,
