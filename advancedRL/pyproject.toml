@@ -10,6 +10,8 @@ dependencies = [
     "trajectoryos-environments",
     "trajectoryos-verifiers",
     "trajectoryos-agents",
+    "trajectoryos-sglang",
+    "trajectoryos-slime",
 ]
 
 [dependency-groups]
@@ -33,6 +35,8 @@ members = [
     "packages/environments",
     "packages/verifiers",
     "packages/agents",
+    "integrations/sglang",
+    "integrations/slime",
 ]
 
 [tool.uv.sources]
@@ -42,6 +46,8 @@ trajectoryos-rewards = { workspace = true }
 trajectoryos-environments = { workspace = true }
 trajectoryos-verifiers = { workspace = true }
 trajectoryos-agents = { workspace = true }
+trajectoryos-sglang = { workspace = true }
+trajectoryos-slime = { workspace = true }
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -59,11 +65,12 @@ select = ["E", "F", "W", "I", "UP", "B", "SIM", "RUF"]
 strict = true
 namespace_packages = true
 explicit_package_bases = true
-mypy_path = "packages/schemas/src,packages/core/src,packages/rewards/src,packages/environments/src,packages/verifiers/src,packages/agents/src"
+mypy_path = "packages/schemas/src,packages/core/src,packages/rewards/src,packages/environments/src,packages/verifiers/src,packages/agents/src,integrations/sglang/src,integrations/slime/src"
 plugins = ["pydantic.mypy"]
 exclude = ["tests/fixtures/"]
 
 [[tool.mypy.overrides]]
-# Optional RNG backends: seeded when installed, absent in the core environment.
-module = ["numpy", "torch"]
+# Optional backends that exist only in specialized environments:
+# numpy/torch (GPU training), slime (RL cluster), transformers (tokenizers).
+module = ["numpy", "torch", "slime.*", "transformers"]
 ignore_missing_imports = true
