@@ -18,8 +18,8 @@ re-tokenizing text. Tool observations, environment responses, templates and user
 |---|-----------|--------|
 | 1 | Repository, schemas, config loading, unit tests | ✅ done |
 | 2 | Local Docker sandbox environment + bug-fix task + verifier + budgets | ✅ done |
-| 3 | SGLang + slime adapter (custom generate fn, token/logprob/mask preservation, Sample conversion, custom RM, smoke test) | ⬜ next |
-| 4 | GRPO baseline (multi-candidate rollouts, eval, metric logging) | ⬜ |
+| 3 | SGLang + slime adapter (custom generate fn, token/logprob/mask preservation, Sample conversion, custom RM, smoke test) | ✅ done |
+| 4 | GRPO baseline (multi-candidate rollouts, eval, metric logging) | ⬜ next |
 | 5 | GSPO experiment (algorithm switch, fixed variables, MoE-ready model adapter) | ⬜ |
 | 6 | Synthetic-data pipeline (Distilabel-style generation → verification → versioned Parquet/JSONL) | ⬜ |
 | 7 | Long-context memory agent (READ / WRITE_MEMORY / UPDATE_MEMORY / RETRIEVE / COMPACT / ANSWER; 32K → 256K) | ⬜ |
@@ -67,6 +67,35 @@ re-tokenizing text. Tool observations, environment responses, templates and user
 - Tests: budget enforcement, sandbox/tool behaviour, end-to-end episode → clean verification,
   reward-hacking rejection; Docker isolation integration tests auto-skip without a daemon
   (run with Docker up: `uv run pytest tests/integration -v`).
+
+## Milestone 3 — delivered
+
+- `integrations/sglang` (`trajectoryos.integrations.sglang`): the single place sampled token
+  IDs enter TrajectoryOS. `SGLangClient` calls the engine's native `/generate` with
+  `input_ids` (never text) and `return_logprob=True`, reading exact sampled IDs + rollout
+  logprobs from `meta_info.output_token_logprobs`. `SGLangToolPolicy` owns the token context:
+  the prompt template and tool observations are tokenized once and reported via
+  `PolicyTurn.context_token_ids` (recorded `loss_mask=0`); sampled completions are reported
+  verbatim (`loss_mask=1`). Text is decoded only to parse `<tool_call>{…}</tool_call>` — never
+  re-tokenized into training targets.
+- `integrations/slime` (`trajectoryos.integrations.slime`): `trajectory_to_sample_data` splits
+  the flattened token stream into prompt/response at the first assistant token so multi-turn
+  observations land inside the response with mask 0; every trainable token must carry a real
+  rollout logprob (missing → hard `SampleConversionError`, never a silent fill). `to_slime_sample`
+  builds a real `slime.utils.types.Sample` in a slime environment. `run_agentic_rollout` composes
+  the tested pieces (episode → clean-sandbox verification → composite reward → sample) so scoring
+  is atomic with generation. `generate.py` / `reward.py` are the thin slime entry points
+  (`--custom-generate-function-path`, `--custom-rm-path`), importing slime/transformers lazily.
+- `packages/agents`: `PolicyTurn.context_token_ids` + `run_episode` now record engine-ingested
+  context as a `loss_mask=0` environment event, preserving the full token stream.
+- `scripts/launch_grpo_qwen3_4b.sh` — runnable slime launch for a real GPU environment
+  (Qwen3-4B-Base, GRPO), with the `ALGO` switch already wired for the M5 GSPO experiment.
+- Tests (all against mocked inference — no server, no GPU, no slime install):
+  `tests/unit/test_sglang_client.py` (token-in/out wire contract via `httpx.MockTransport`),
+  `tests/trajectory_correctness/test_sample_conversion.py` (mask/logprob/status invariants),
+  `tests/trajectory_correctness/test_agentic_rollout_smoke.py` (end-to-end
+  policy → sandbox → clean verification → reward-scored `Sample`, asserting sampled IDs survive
+  verbatim and only they are trainable).
 
 ## Later milestones — key decisions locked in early
 
