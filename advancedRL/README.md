@@ -1,5 +1,10 @@
 # TrajectoryOS
 
+> Open-source post-training and agentic-RL platform built around THUDM/slime. SGLang-backed
+> rollouts with exact token-ID/loss-mask preservation (no re-tokenization), Docker-sandboxed
+> verifiable environments, composable cost-aware rewards, and GRPO/GSPO training — SFT through
+> long-context multi-turn agent RL.
+
 An open-source post-training and agentic-RL platform built around
 [THUDM/slime](https://github.com/THUDM/slime): SFT, GRPO/GSPO, long-context multi-turn agent
 training, synthetic data, verifiable environments, cost-aware routing and deployment.
