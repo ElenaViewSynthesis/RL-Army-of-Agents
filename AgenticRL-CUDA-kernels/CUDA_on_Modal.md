@@ -5,10 +5,10 @@ Modal makes it easy to accelerate your workloads with datacenter-grade NVIDIA GP
 To take advantage of the hardware, you need to use matching software: the CUDA stack.
 This guide explains the components of that stack and how to install them on Modal.
 For more on which GPUs are available on Modal and how to choose a GPU for your use case,
-see [this guide](/docs/guide/gpu). For a deep dive on both the
-[GPU hardware](/gpu-glossary/device-hardware) and [software](/gpu-glossary/device-software)
-and for even more detail on [the CUDA stack](/gpu-glossary/host-software),
-see our [GPU Glossary](/gpu-glossary/readme).
+see [this guide](https://modal.com/docs/guide/gpu). For a deep dive on both the
+[GPU hardware](https://modal.com/gpu-glossary/device-hardware) and [software](https://modal.com/gpu-glossary/device-software)
+and for even more detail on [the CUDA stack](https://modal.com/gpu-glossary/host-software),
+see our [GPU Glossary](https://modal.com/gpu-glossary/readme).
 
 Here's the tl;dr:
 
@@ -23,11 +23,11 @@ Here's the tl;dr:
 
 When someone refers to "installing CUDA" or "using CUDA",
 they are referring not to a library, but to a
-[stack](/gpu-glossary/host-software/cuda-software-platform) with multiple layers.
+[stack](https://modal.com/gpu-glossary/host-software/cuda-software-platform) with multiple layers.
 Your application code (and its dependencies) can interact
 with the stack at different levels.
 
-![The CUDA stack](../../assets/docs/cuda-stack-diagram.png)
+[![The CUDA stack](https://modal.com/_app/immutable/assets/cuda-stack-diagram.BdEpPviG.png)](https://modal.com/docs/guide/cuda#what-is-cuda)
 
 This leads to a lot of confusion. To help clear that up, the following sections explain each component in detail.
 
@@ -48,7 +48,7 @@ To talk to the kernel drivers from our user space programs, we need _user-mode d
 
 Most prominently, that includes:
 
-- the [CUDA Driver API](/gpu-glossary/host-software/cuda-driver-api),
+- the [CUDA Driver API](https://modal.com/gpu-glossary/host-software/cuda-driver-api),
   a [shared object](https://en.wikipedia.org/wiki/Shared_library) called `libcuda.so`.
   This object exposes functions like [`cuMemAlloc`](https://docs.nvidia.com/cuda/archive/12.8.0/cuda-driver-api/group__CUDA__MEM.html#group__CUDA__MEM_1gb82d2a09844a58dd9e744dc31e8aa467),
   for allocating GPU memory.
@@ -73,14 +73,14 @@ def check_nvidia_smi():
 
 ### Level 2: CUDA Toolkit
 
-Wrapping the CUDA Driver API is the [CUDA Runtime API](/gpu-glossary/host-software/cuda-runtime-api), the `libcudart.so` shared library.
+Wrapping the CUDA Driver API is the [CUDA Runtime API](https://modal.com/gpu-glossary/host-software/cuda-runtime-api), the `libcudart.so` shared library.
 This API includes functions like [`cudaLaunchKernel`](https://docs.nvidia.com/cuda/archive/12.8.0/cuda-runtime-api/group__CUDART__HIGHLEVEL.html#group__CUDART__HIGHLEVEL_1g7656391f2e52f569214adbfc19689eb3)
 and is more commonly used in CUDA programs (see [this HackerNews comment](https://news.ycombinator.com/item?id=20616385) for color commentary on why).
 This shared library is _not_ installed by default on Modal.
 
 The CUDA Runtime API is generally installed as part of the larger [NVIDIA CUDA Toolkit](https://docs.nvidia.com/cuda/index.html),
-which includes the [NVIDIA CUDA compiler driver](/gpu-glossary/host-software/nvcc) (`nvcc`) and its toolchain
-and a number of [useful goodies](/gpu-glossary/host-software/cuda-binary-utilities) for writing and debugging CUDA programs (`cuobjdump`, `cudnn`, profilers, etc.).
+which includes the [NVIDIA CUDA compiler driver](https://modal.com/gpu-glossary/host-software/nvcc) (`nvcc`) and its toolchain
+and a number of [useful goodies](https://modal.com/gpu-glossary/host-software/cuda-binary-utilities) for writing and debugging CUDA programs (`cuobjdump`, `cudnn`, profilers, etc.).
 
 Contemporary GPU-accelerated machine learning workloads like LLM inference frequently make use of many components of the CUDA Toolkit,
 such as the run-time compilation library [`nvrtc`](https://docs.nvidia.com/cuda/archive/12.8.0/nvrtc/index.html).
@@ -101,7 +101,7 @@ and [`nvidia-cuda-nvrtc-cu12`](https://pypi.org/project/nvidia-cuda-nvrtc-cu12/)
 These components are listed as dependencies of some popular GPU-accelerated Python libraries, like `torch`.
 
 Because Modal already includes the lower parts of the CUDA stack, you can install these libraries
-with [the `pip_install` method of `modal.Image`](/docs/guide/images#add-python-packages-with-pip_install), just like any other Python library:
+with [the `pip_install` method of `modal.Image`](https://modal.com/docs/guide/images#add-python-packages-with-pip_install), just like any other Python library:
 
 ```python
 image = modal.Image.debian_slim().pip_install("torch")
@@ -182,11 +182,11 @@ but older major versions (`11.*`, `10.*`, etc.) may not be.
 
 ## What next?
 
-For more on accessing and choosing GPUs on Modal, check out [this guide](/docs/guide/gpu).
-To dive deep on GPU internals, check out our [GPU Glossary](/gpu-glossary/readme).
+For more on accessing and choosing GPUs on Modal, check out [this guide](https://modal.com/docs/guide/gpu).
+To dive deep on GPU internals, check out our [GPU Glossary](https://modal.com/gpu-glossary/readme).
 
 To see these installation patterns in action, check out these examples:
 
-- [Fast LLM inference on big GPUs](/docs/examples/llm_inference)
-- [Finetune a character LoRA for your pet](/docs/examples/diffusers_lora_finetune)
-- [Optimized Flux inference](/docs/examples/flux)
+- [Fast LLM inference on big GPUs](https://modal.com/docs/examples/llm_inference)
+- [Finetune a character LoRA for your pet](https://modal.com/docs/examples/diffusers_lora_finetune)
+- [Optimized Flux inference](https://modal.com/docs/examples/flux)

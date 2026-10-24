@@ -1,6 +1,6 @@
 # GPU acceleration
 
-Modal makes it easy to run your code on [GPUs](/gpu-glossary/readme).
+Modal makes it easy to run your code on [GPUs](https://modal.com/gpu-glossary/readme).
 
 Using a GPU requires having a valid payment method on file.
 
@@ -42,7 +42,7 @@ Modal supports the following values for this parameter:
 
 For instance, to use a B200, you can use `@app.function(gpu="B200")`.
 
-Refer to our [pricing page](/pricing) for the latest pricing on each GPU type.
+Refer to our [pricing page](https://modal.com/pricing) for the latest pricing on each GPU type.
 
 ## Specifying GPU count
 
@@ -77,7 +77,7 @@ or the
 ## B300 GPUs
 
 [B300s](https://www.nvidia.com/en-us/data-center/dgx-b300/) are NVIDIA
-Blackwell Ultra GPUs, based on the Blackwell [architecture](/gpu-glossary/device-hardware/streaming-multiprocessor-architecture).
+Blackwell Ultra GPUs, based on the Blackwell [architecture](https://modal.com/gpu-glossary/device-hardware/streaming-multiprocessor-architecture).
 
 To request a B300, set the `gpu` argument to `"B300"`:
 
@@ -93,7 +93,7 @@ are compatible with CUDA 13 before requesting a B300.
 ## B200 GPUs
 
 B200s are [NVIDIA data center GPUs](https://www.nvidia.com/en-us/data-center/dgx-b200/)
-based on the Blackwell [architecture](/gpu-glossary/device-hardware/streaming-multiprocessor-architecture).
+based on the Blackwell [architecture](https://modal.com/gpu-glossary/device-hardware/streaming-multiprocessor-architecture).
 
 To request a B200, set the `gpu` argument to `"B200"`
 
@@ -103,7 +103,7 @@ def run_deepseek():
     ...
 ```
 
-Check out [this example](/docs/examples/llm_inference) to see how you can use B200s to max out vLLM serving performance for LLaMA 3.1-8B.
+Check out [this example](https://modal.com/docs/examples/llm_inference) to see how you can use B200s to max out vLLM serving performance for LLaMA 3.1-8B.
 
 Before you jump for this powerful GPU, make sure you understand where the bottlenecks
 are in your computations. For example, running language models with small batch sizes
@@ -122,21 +122,21 @@ if your code is compatible with both types of GPUs. B300 requires CUDA version
 ## H200 and H100 GPUs
 
 [H200s](https://www.nvidia.com/en-us/data-center/h200/) and [H100s](https://www.nvidia.com/en-us/data-center/h100/) are the previous
-generation of top-of-the-line data center chips from NVIDIA, based on the Hopper [architecture](/gpu-glossary/device-hardware/streaming-multiprocessor-architecture).
+generation of top-of-the-line data center chips from NVIDIA, based on the Hopper [architecture](https://modal.com/gpu-glossary/device-hardware/streaming-multiprocessor-architecture).
 These GPUs have better software support than do Blackwell GPUs (e.g. popular libraries include pre-compiled kernels for Hopper, but not Blackwell),
 and they often get the job done at a competitive cost, so they are a common choice of accelerator, on and off Modal.
 
 All H100 and H200 GPUs on the Modal platform are of the SXM variant, as can be verified by examining the
-[power draw](/docs/guide/gpu-metrics) in the dashboard or with `nvidia-smi`.
+[power draw](https://modal.com/docs/guide/gpu-metrics) in the dashboard or with `nvidia-smi`.
 
 ### Automatic upgrades to H200s
 
 Modal may automatically upgrade a `gpu="H100"` request to run on an H200.
 This automatic upgrade does _not_ change the cost of the GPU.
 
-Kernels [compatible](/gpu-glossary/device-software/compute-capability) with H200s are also compatible with H100s,
+Kernels [compatible](https://modal.com/gpu-glossary/device-software/compute-capability) with H200s are also compatible with H100s,
 so your code will still run, just faster, so long as it doesn't make strict assumptions about memory capacity.
-An H200’s [HBM3e memory](/gpu-glossary/device-hardware/gpu-ram)
+An H200’s [HBM3e memory](https://modal.com/gpu-glossary/device-hardware/gpu-ram)
 has a capacity of 141 GB and a bandwidth of 4.8TB/s, 1.75x larger and 1.4x faster than an NVIDIA H100 with HBM3.
 
 In cases where an automatic upgrade to H200 would not be helpful (for instance, benchmarking) you can pass
@@ -144,10 +144,10 @@ In cases where an automatic upgrade to H200 would not be helpful (for instance, 
 
 ## A100 GPUs
 
-[A100s](https://www.nvidia.com/en-us/data-center/a100/) are based on NVIDIA's Ampere [architecture](/gpu-glossary/device-hardware/streaming-multiprocessor-architecture).
+[A100s](https://www.nvidia.com/en-us/data-center/a100/) are based on NVIDIA's Ampere [architecture](https://modal.com/gpu-glossary/device-hardware/streaming-multiprocessor-architecture).
 Modal offers two versions of the A100: one with 40 GB of RAM and another with 80 GB of RAM.
 
-To request an A100 with 40 GB of [GPU memory](/gpu-glossary/device-hardware/gpu-ram), use `gpu="A100"`:
+To request an A100 with 40 GB of [GPU memory](https://modal.com/gpu-glossary/device-hardware/gpu-ram), use `gpu="A100"`:
 
 ```python
 @app.function(gpu="A100")
@@ -180,7 +180,7 @@ def run_on_80gb():
     ...
 ```
 
-See [this example](/docs/examples/gpu_fallbacks) for more detail.
+See [this example](https://modal.com/docs/examples/gpu_fallbacks) for more detail.
 
 ## Multi GPU training
 
@@ -203,11 +203,11 @@ def run():
 
 ## Examples and more resources
 
-For more information about GPUs in general, check out our [GPU Glossary](/gpu-glossary/readme).
+For more information about GPUs in general, check out our [GPU Glossary](https://modal.com/gpu-glossary/readme).
 
 Or take a look some examples of Modal Apps using GPUs:
 
-- [Fine-tune a character LoRA for your pet](/docs/examples/diffusers_lora_finetune)
-- [Fast LLM inference on big GPUs](/docs/examples/llm_inference)
-- [Stable Diffusion with a CLI, API, and web UI](/docs/examples/text_to_image)
-- [Rendering Blender videos](/docs/examples/blender_video)
+- [Fine-tune a character LoRA for your pet](https://modal.com/docs/examples/diffusers_lora_finetune)
+- [Fast LLM inference on big GPUs](https://modal.com/docs/examples/llm_inference)
+- [Stable Diffusion with a CLI, API, and web UI](https://modal.com/docs/examples/text_to_image)
+- [Rendering Blender videos](https://modal.com/docs/examples/blender_video)
