@@ -2,3 +2,12 @@
 .env
 .env.*
 !.env.example
+
+# Local runtimes, compilation, and test scratch space
+.venv/
+.cache/
+__pycache__/
+*.py[cod]
+build/
+*.so
+artifacts/tmp/
