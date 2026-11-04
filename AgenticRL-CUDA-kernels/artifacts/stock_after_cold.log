@@ -1,0 +1,4 @@
+Compiling 3 files: binding.cpp, kernels/axpby.cu, kernels/axpby_binding.cpp
+Compilation failed.
+Ninja is required to load C++ extensions (pip install ninja to get it)
+[TIME] Compilation took 151.88s

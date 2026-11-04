@@ -1,0 +1,14 @@
+test_decorators_comments_multiline_cuda (tests.test_backend_provenance.BackendTests.test_decorators_comments_multiline_cuda) ... ok
+test_imports_overrides_and_no_execution (tests.test_backend_provenance.BackendTests.test_imports_overrides_and_no_execution) ... ok
+test_protected_upstream_files_are_byte_identical (tests.test_backend_provenance.BackendTests.test_protected_upstream_files_are_byte_identical) ... ok
+test_stock_source_discovery (tests.test_backend_provenance.BackendTests.test_stock_source_discovery) ... ok
+test_classes_and_library_backend_policy (tests.test_backend_provenance.ProvenanceTests.test_classes_and_library_backend_policy) ... ok
+test_cpu_profiling_skips_without_importing_torch (tests.test_backend_provenance.ProvenanceTests.test_cpu_profiling_skips_without_importing_torch) ... ok
+test_hack_unknown_and_empty_fail_closed (tests.test_backend_provenance.ProvenanceTests.test_hack_unknown_and_empty_fail_closed) ... ok
+test_legacy_stdout_format_without_importing_torch (tests.test_backend_provenance.ProvenanceTests.test_legacy_stdout_format_without_importing_torch) ... ok
+test_memory_excluded_from_gate_and_per_kernel_averaging (tests.test_backend_provenance.ProvenanceTests.test_memory_excluded_from_gate_and_per_kernel_averaging) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 2.026s
+
+OK

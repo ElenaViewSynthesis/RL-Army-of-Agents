@@ -1,0 +1,16 @@
+test_cleanup_wait_is_bounded_even_if_kill_cannot_reap (tests.test_rollout_env.ProcessTests.test_cleanup_wait_is_bounded_even_if_kill_cannot_reap) ... ok
+test_crash_isolated_and_concurrent_workdirs (tests.test_rollout_env.ProcessTests.test_crash_isolated_and_concurrent_workdirs) ... ok
+test_real_timeout_kills_grandchild_and_preserves_output (tests.test_rollout_env.ProcessTests.test_real_timeout_kills_grandchild_and_preserves_output) ... ok
+test_task_namespace_kernels_and_trusted_utils (tests.test_rollout_env.ProcessTests.test_task_namespace_kernels_and_trusted_utils) ... ok
+test_cli_without_torch_honors_preset_and_cap (tests.test_rollout_env.RolloutProtocolTests.test_cli_without_torch_honors_preset_and_cap) ... ok
+test_generated_syntax_error_is_a_result_not_a_parent_crash (tests.test_rollout_env.RolloutProtocolTests.test_generated_syntax_error_is_a_result_not_a_parent_crash) ... ok
+test_malformed_profile_missing_workdir_and_unmeasured (tests.test_rollout_env.RolloutProtocolTests.test_malformed_profile_missing_workdir_and_unmeasured) ... ok
+test_max_turns_skips_subprocesses (tests.test_rollout_env.RolloutProtocolTests.test_max_turns_skips_subprocesses) ... ok
+test_provenance_gate_and_overlong_via_entry_point (tests.test_rollout_env.RolloutProtocolTests.test_provenance_gate_and_overlong_via_entry_point) ... ok
+test_stage_failures_and_timeout (tests.test_rollout_env.RolloutProtocolTests.test_stage_failures_and_timeout) ... ok
+test_success_flat_schema_deadline_and_visibility (tests.test_rollout_env.RolloutProtocolTests.test_success_flat_schema_deadline_and_visibility) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 16.481s
+
+OK

@@ -1,0 +1,152 @@
+{
+  "command": "python -m scripts.validate --device cpu --timeout-s 600",
+  "device": "cpu",
+  "versions": {
+    "torch": "2.14.1+cpu",
+    "triton": "3.8.0",
+    "numpy": "2.5.4"
+  },
+  "rollouts": {
+    "triton": {
+      "env/verify_ok": true,
+      "env/t_eager_us": null,
+      "env/t_compile_us": null,
+      "env/t_gen_us": null,
+      "env/speedup_vs_compile": null,
+      "env/provenance": null,
+      "env/wall_s": 354.2665277790511,
+      "env/turns_used": 1,
+      "reward/value": -1.0,
+      "reward/base": -1,
+      "reward/reason": "unmeasured",
+      "reward/overlong_penalty": 0.0,
+      "meta/backend": "triton",
+      "meta/task_id": "triton",
+      "meta/algo": "grpo",
+      "meta/seed": 0,
+      "log/compile_tail": "Compile success: Triton JIT/autotune (no .so)\n[TIME] Compilation took 97.80s\n",
+      "log/stderr_tail": ""
+    },
+    "hack": {
+      "env/verify_ok": true,
+      "env/t_eager_us": null,
+      "env/t_compile_us": null,
+      "env/t_gen_us": null,
+      "env/speedup_vs_compile": null,
+      "env/provenance": null,
+      "env/wall_s": 100.5946872709319,
+      "env/turns_used": 1,
+      "reward/value": -1.0,
+      "reward/base": -1,
+      "reward/reason": "unmeasured",
+      "reward/overlong_penalty": 0.0,
+      "meta/backend": "triton",
+      "meta/task_id": "hack",
+      "meta/algo": "grpo",
+      "meta/seed": 0,
+      "log/compile_tail": "Compile success: Triton JIT/autotune (no .so)\n[TIME] Compilation took 37.68s\n",
+      "log/stderr_tail": ""
+    },
+    "timeout": {
+      "env/verify_ok": false,
+      "env/t_eager_us": null,
+      "env/t_compile_us": null,
+      "env/t_gen_us": null,
+      "env/speedup_vs_compile": null,
+      "env/provenance": null,
+      "env/wall_s": 5.023527810932137,
+      "env/turns_used": 1,
+      "reward/value": -1.0,
+      "reward/base": -1,
+      "reward/reason": "timeout",
+      "reward/overlong_penalty": 0.0,
+      "meta/backend": "triton",
+      "meta/task_id": "sleep",
+      "meta/algo": "grpo",
+      "meta/seed": 0,
+      "log/compile_tail": "",
+      "log/stderr_tail": ""
+    },
+    "max_turns": {
+      "env/verify_ok": false,
+      "env/t_eager_us": null,
+      "env/t_compile_us": null,
+      "env/t_gen_us": null,
+      "env/speedup_vs_compile": null,
+      "env/provenance": null,
+      "env/wall_s": 0.02067887398879975,
+      "env/turns_used": 25,
+      "reward/value": -1.0,
+      "reward/base": -1,
+      "reward/reason": "max_turns",
+      "reward/overlong_penalty": 0.0,
+      "meta/backend": "triton",
+      "meta/task_id": "triton",
+      "meta/algo": "grpo",
+      "meta/seed": 0,
+      "log/compile_tail": "",
+      "log/stderr_tail": ""
+    },
+    "overlong": {
+      "env/verify_ok": true,
+      "env/t_eager_us": null,
+      "env/t_compile_us": null,
+      "env/t_gen_us": null,
+      "env/speedup_vs_compile": null,
+      "env/provenance": null,
+      "env/wall_s": 113.35878508491442,
+      "env/turns_used": 19,
+      "reward/value": -1.0,
+      "reward/base": -1,
+      "reward/reason": "unmeasured",
+      "reward/overlong_penalty": 0.0,
+      "meta/backend": "triton",
+      "meta/task_id": "triton",
+      "meta/algo": "dapo",
+      "meta/seed": 0,
+      "log/compile_tail": "Compile success: Triton JIT/autotune (no .so)\n[TIME] Compilation took 38.18s\n",
+      "log/stderr_tail": ""
+    }
+  },
+  "measured_groups": {},
+  "synthetic_groups_not_gpu_measurements": {
+    "grpo": {
+      "advantages": {
+        "triton": 0.7071064061867464,
+        "cuda": 0.7071064061867464,
+        "hack": -1.414212812373493
+      },
+      "stats": {
+        "adv/frac_dropped": 0.0,
+        "adv/mean": -7.401486830834377e-17,
+        "adv/std": 0.9999994696701954,
+        "reward/mean": 1.6666666666666667,
+        "reward/frac_3": 0.6666666666666666,
+        "reward/frac_provenance_fail": 0.3333333333333333,
+        "reward/frac_max_turns": 0.0,
+        "reward/mean_overlong_penalty": 0.0,
+        "turns/mean": 1.0,
+        "turns/p95": 1.0
+      }
+    },
+    "dapo": {
+      "advantages": {
+        "triton": 0.7071064061867464,
+        "cuda": 0.7071064061867464,
+        "hack": -1.414212812373493
+      },
+      "stats": {
+        "adv/frac_dropped": 0.0,
+        "adv/mean": -7.401486830834377e-17,
+        "adv/std": 0.9999994696701954,
+        "reward/mean": 1.6666666666666667,
+        "reward/frac_3": 0.6666666666666666,
+        "reward/frac_provenance_fail": 0.3333333333333333,
+        "reward/frac_max_turns": 0.0,
+        "reward/mean_overlong_penalty": 0.0,
+        "turns/mean": 1.0,
+        "turns/p95": 1.0
+      }
+    }
+  }
+}

@@ -1,0 +1,2 @@
+{"synthetic_not_gpu_measurement": true, "algo": "grpo", "reward": 3.0, "reward_base": 3, "reason": "faster_than_both", "overlong_penalty": 0.0}
+{"synthetic_not_gpu_measurement": true, "algo": "dapo", "reward": 2.25, "reward_base": 3, "reason": "faster_than_both", "overlong_penalty": 0.75}
