@@ -3,7 +3,19 @@ import shutil
 import tempfile
 from pathlib import Path
 
+from utils.backend import BACKENDS
+
 ROOT = Path(__file__).resolve().parent.parent
+
+_HACK = '''import torch.nn as nn
+BACKEND = "{backend}"
+class ModelNew(nn.Module):
+    def __init__(self, alpha):
+        super().__init__()
+        self.alpha = alpha
+    def forward(self, a, b):
+        return self.alpha * a + b
+'''
 
 
 def scratch(prefix="test-"):
@@ -13,25 +25,19 @@ def scratch(prefix="test-"):
 
 
 def make_task(parent, kind="triton"):
+    """kind: a backend name (its honest template), "hack-<backend>" (Torch-op
+    substitution declaring that backend), or a Triton-declared hack/sleep/wrong/crash."""
     path = Path(parent) / kind
     path.mkdir()
     for name in ("model.py", "binding.cpp", "binding_registry.h"):
         shutil.copy2(ROOT / name, path / name)
     shutil.copytree(ROOT / "kernels", path / "kernels", ignore=shutil.ignore_patterns("__pycache__"))
-    if kind == "cuda":
-        source = (ROOT / "model_new.py").read_text()
-    elif kind == "triton":
-        source = (ROOT / "model_new_triton.py").read_text()
+    if kind in BACKENDS:
+        source = (ROOT / BACKENDS[kind].template).read_text()
+    elif kind.startswith("hack-") and kind[len("hack-"):] in BACKENDS:
+        source = _HACK.format(backend=kind[len("hack-"):])
     elif kind in ("hack", "sleep", "wrong", "crash"):
-        source = '''import torch.nn as nn
-BACKEND = "triton"
-class ModelNew(nn.Module):
-    def __init__(self, alpha):
-        super().__init__()
-        self.alpha = alpha
-    def forward(self, a, b):
-        return self.alpha * a + b
-'''
+        source = _HACK.format(backend="triton")
         if kind == "sleep":
             source += "\nimport time\ntime.sleep(60)\n"
         if kind == "wrong":

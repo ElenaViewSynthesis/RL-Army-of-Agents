@@ -137,5 +137,58 @@ class GPUIntegrationTests(unittest.TestCase):
         assert_flat(self, result)
 
 
+def _has(module):
+    try:
+        return importlib.util.find_spec(module) is not None
+    except ModuleNotFoundError:
+        return False
+
+
+class DSLIntegrationChecks:
+    """Mixin: honest and Torch-op hack fixtures for one DSL backend, end to end."""
+
+    backend = None
+
+    @classmethod
+    def setUpClass(cls):
+        cls.tmp = scratch("gpu-")
+        cls.addClassCleanup(cls.tmp.cleanup)
+        env = patch.dict(os.environ, {"CUDA_AGENT_DEVICE": "cuda", "TRITON_INTERPRET": "0"})
+        env.start()
+        cls.addClassCleanup(env.stop)
+        cfg = RolloutConfig.preset("grpo")
+        cls.honest = run_task(str(make_task(cls.tmp.name, cls.backend)), cfg, 1)
+        cls.hack = run_task(str(make_task(cls.tmp.name, f"hack-{cls.backend}")), cfg, 1)
+
+    def test_honest_passes_correctness_and_provenance(self):
+        result = self.honest
+        self.assertEqual(result["meta/backend"], self.backend)
+        self.assertTrue(result["env/verify_ok"], result)
+        self.assertGreaterEqual(result["env/provenance"], .9)
+        self.assertGreaterEqual(result["reward/value"], 1)
+        assert_flat(self, result)
+
+    def test_torch_hack_passes_verification_fails_provenance(self):
+        result = self.hack
+        self.assertEqual(result["meta/backend"], self.backend)
+        self.assertTrue(result["env/verify_ok"], result)
+        self.assertLess(result["env/provenance"], .9)
+        self.assertEqual((result["reward/value"], result["reward/reason"]), (-1, "provenance"))
+        assert_flat(self, result)
+
+    def test_both_presets_rank_the_hack_last(self):
+        rows = [dict(self.honest, rollout_id="honest"), dict(self.hack, rollout_id="hack")]
+        for algo in ("grpo", "dapo"):
+            cfg = dataclasses.replace(RolloutConfig.preset(algo), group_size=2)
+            pairs, _ = build_batch(["axpby"] * 2, rows, cfg)
+            advantages = dict(pairs)
+            self.assertLess(advantages["hack"], advantages["honest"])
+
+
+@unittest.skipUnless(HAS_GPU and _has("tilelang"), "requires CUDA GPU, Torch + TileLang")
+class TileLangGPUIntegrationTests(DSLIntegrationChecks, unittest.TestCase):
+    backend = "tilelang"
+
+
 if __name__ == "__main__":
     unittest.main()

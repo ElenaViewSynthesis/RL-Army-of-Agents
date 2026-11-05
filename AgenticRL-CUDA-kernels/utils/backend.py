@@ -47,6 +47,17 @@ BACKENDS = {
         profile_warmup_iters=20, cache_env=(("TRITON_CACHE_DIR", "triton"),),
         distributions=("torch", "triton"), skill_doc="SKILL_TRITON.md",
         template="model_new_triton.py"),
+    "tilelang": BackendSpec(
+        # TileLang emits `<prim_func name>_kernel` as the device symbol. The
+        # newer style decorates the kernel function itself with @tilelang.jit.
+        name="tilelang", display="TileLang", import_prefixes=("kernels.tilelang",),
+        kernel_glob="kernels/tilelang/*.py",
+        decorators=("tilelang.language.prim_func", "tilelang.cuda.language.prim_func",
+                    "tilelang.jit"),
+        compile_mode="jit", kernel_package="kernels.tilelang", library_allowed=False,
+        profile_warmup_iters=20, cache_env=(("TILELANG_CACHE_DIR", "tilelang"),),
+        distributions=("torch", "tilelang"), skill_doc="SKILL_TILELANG.md",
+        template="model_new_tilelang.py"),
 }
 DEFAULT_BACKEND = "cuda"
 BACKEND_CHOICES = ("auto", *BACKENDS)

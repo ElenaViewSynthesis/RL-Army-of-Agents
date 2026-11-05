@@ -62,6 +62,44 @@ class BackendTests(unittest.TestCase):
             self.assertEqual(agent_kernel_names(path, "cuda"), ["axpby_kernel", "extra"])
 
 
+class DSLBackendTests(unittest.TestCase):
+    """Source discovery for the DSL backends; needs none of the DSL packages."""
+
+    def check_backend(self, backend, stock_names, alias_source, alias_names):
+        with scratch() as tmp:
+            path = make_task(tmp, backend)
+            self.assertEqual(detect_backend(path), backend)
+            self.assertEqual(agent_kernel_names(path), stock_names)
+            for source in (f"from kernels.{backend} import axpby_forward",
+                           f"import kernels.{backend}.axpby",
+                           f'BACKEND = "{backend}"\nimport cuda_extension'):
+                with self.subTest(source=source):
+                    (path / "model_new.py").write_text(source)
+                    self.assertEqual(detect_backend(path), backend)
+            (path / "model_new.py").write_text(f"import cuda_extension\nimport kernels.{backend}")
+            with self.assertRaises(ValueError):
+                detect_backend(path)
+            (path / f"kernels/{backend}/aliased.py").write_text(alias_source)
+            self.assertEqual(agent_kernel_names(path, backend), sorted(stock_names + alias_names))
+
+    def check_no_library_credit(self, backend, agent_name, symbol):
+        self.assertEqual(classify_kernel(symbol, [agent_name], backend), "agent")
+        for name in ("cublasLtMatmul", "cutlass_gemm", "cudnn_conv", "aten::mul", "unknown"):
+            self.assertEqual(classify_kernel(name, [agent_name], backend), "torch")
+
+    def test_tilelang_detection_and_discovery(self):
+        self.check_backend("tilelang", ["axpby_tilelang"], (
+            "import tilelang\nimport tilelang.language as T\nfrom tilelang import language as L\n"
+            "import tilelang.cuda.language as CT\n"
+            "@T.prim_func\ndef first(): pass\n@L.prim_func\ndef second(): pass\n"
+            "@CT.prim_func\ndef third(): pass\n@tilelang.jit(out_idx=[-1])\ndef fourth(): pass\n"
+            "@T.macro\ndef not_a_kernel(): pass\ndef plain(): pass\n"),
+            ["first", "fourth", "second", "third"])
+
+    def test_tilelang_library_time_not_credited(self):
+        self.check_no_library_credit("tilelang", "axpby_tilelang", "axpby_tilelang_kernel")
+
+
 class ProvenanceTests(unittest.TestCase):
     def test_cpu_profiling_skips_without_importing_torch(self):
         proc = subprocess.run([sys.executable, "-S", "-m", "utils.profiling", "--json"], cwd=ROOT,
