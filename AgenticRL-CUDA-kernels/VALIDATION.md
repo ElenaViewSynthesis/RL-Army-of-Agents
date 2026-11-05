@@ -199,6 +199,50 @@ only the two truthful `bench/*` unavailable keys; no timings were fabricated.
 A benchmark stage that crashes, times out or emits malformed output degrades
 to `bench/available: false` with a reason and never changes the reward.
 
+## DSL backends (TileLang, cuTile, CuTe DSL)
+
+A backend registry (`utils/backend.py`) replaced the hard-coded CUDA/Triton
+branches, and TileLang, cuTile and CuTe DSL backends were added on top of it.
+CUDA and Triton behaviour is unchanged: after the refactor, the full suite and
+the Torch-dependent backend, kernel, benchmark, config and rollout tests passed
+without edits. No DSL package is installed on this host and there is no GPU,
+so **no DSL kernel has run**. Only source discovery, backend detection and
+classification are exercised here.
+
+These runs used an export of the committed tree
+(`git -c core.autocrlf=false archive HEAD`), so uncommitted work elsewhere in
+the folder is excluded:
+
+```bash
+python3 -m unittest discover -v
+# Ran 81 tests in 8.806s
+# OK (skipped=31)
+
+python3 -m unittest -v tests.test_backend_provenance.DSLBackendTests tests.test_dsl_kernels
+# Ran 15 tests in 3.188s
+# OK (skipped=9)
+```
+
+The 31 skips are the 13 earlier GPU/Torch-dependent checks plus 18 DSL tests:
+
+- 9 kernel tests: shapes, tails, dtypes, input validation, and CUDA-graph
+  replay on the current stream.
+- 9 `run_task` integration tests: the honest kernel passes provenance, and the
+  Torch-op hack fails it and ranks last.
+
+Each skips with a reason naming the missing GPU or package (for example
+`requires a CUDA GPU, Torch and tilelang`). On a GPU host with the extras
+installed:
+
+```bash
+python -m unittest -v tests.test_dsl_kernels tests.test_provenance
+python -m scripts.validate --device cuda
+```
+
+`scripts.validate` lists each DSL backend it could not run under
+`unavailable_backends` in `results.json`, with the reason: a missing package,
+or `GPU only (no CPU interpreter)` with `--device cpu`.
+
 ## Scope cuts and Modal implications
 
 The optional fused Level-2 GEMM kernel was deferred in favour of the required

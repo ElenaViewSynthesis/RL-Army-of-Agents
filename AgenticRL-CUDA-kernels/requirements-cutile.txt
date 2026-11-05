@@ -3,3 +3,5 @@
 # The [tileiras] extra bundles the compiler (plus matching nvcc/nvvm); use plain
 # `cuda-tile` instead if a system CUDA Toolkit 13.1+ is on PATH.
 cuda-tile[tileiras]==1.8.0
+# Hopper (sm_90, e.g. H200) support arrived with tileiras / CUDA 13.3.
+nvidia-cuda-tileiras>=13.3

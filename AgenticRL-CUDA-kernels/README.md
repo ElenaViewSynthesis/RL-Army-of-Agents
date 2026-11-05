@@ -1,16 +1,16 @@
 # AgenticRL CUDA Kernels
 
-**A kernel-generation RL environment that scores what the agent actually wrote: CUDA *or* Triton kernels, gated by where the GPU time went.**
+**A kernel-generation RL environment that scores what the agent actually wrote: CUDA C++, Triton, TileLang, cuTile or CuTe DSL kernels, gated by where the GPU time went.**
 
 ![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-3776AB)
 ![PyTorch ≥ 2.3](https://img.shields.io/badge/torch-%E2%89%A52.3-EE4C2C)
 ![Triton ≥ 3.0](https://img.shields.io/badge/triton-%E2%89%A53.0-6E40C9)
-![Tests: 57](https://img.shields.io/badge/tests-57%20%28GPU%20ones%20skip%20without%20CUDA%29-2EA44F)
+![Tests: 81](https://img.shields.io/badge/tests-81%20%28GPU%20ones%20skip%20without%20CUDA%29-2EA44F)
 ![GPU results: not measured](https://img.shields.io/badge/GPU%20results-not%20measured-lightgrey)
 
 This project extends the environment released with [CUDA-Agent](https://github.com/BytedTsinghua-SIA/CUDA-Agent) ([paper](https://arxiv.org/abs/2602.24286)). It adds three things:
 
-1. **A Triton backend** next to the original CUDA C++ path, behind the same compile → verify → profile contract.
+1. **Four kernel backends beyond CUDA C++** (Triton, TileLang, cuTile and CuTe DSL), behind the same compile → verify → profile contract and one backend registry.
 2. **A kernel-provenance gate.** The profiler splits device time into *agent-authored*, *library* (cuBLAS / CUTLASS / cuDNN), *Torch* and *memory* kernels. A rollout only earns a speed reward if at least 90% of compute time is in kernels the agent may claim.
 3. **GRPO / DAPO reward handling.** Group-relative advantages, tied-group filtering and overlong-turn shaping are exposed as config switches, so a critic-free trainer can consume the discrete milestone reward.
 
@@ -123,6 +123,32 @@ For element-wise kernels like axpby, both backends are judged the same way. For 
 
 ---
 
+## TileLang, cuTile and CuTe DSL backends
+
+Three more Python GPU DSLs plug into the same pipeline through the backend registry in `utils/backend.py`. Each one has an axpby example, a `model_new_<backend>.py` template, a policy doc and an optional requirements file. **None of them has run on a GPU yet.** None ships a CPU interpreter either, so this host only tests their source discovery, backend detection and classification.
+
+| | TileLang | cuTile | CuTe DSL |
+|---|---|---|---|
+| **Package** | `tilelang` 0.1.15 (tile-ai, third party) | `cuda-tile` 1.8.0 (NVIDIA CUDA Tile) | `nvidia-cutlass-dsl` 4.8.1 (NVIDIA CUTLASS 4.x) |
+| **Abstraction** | Tile level with an explicit memory hierarchy: `T.copy`, `T.alloc_shared` / `T.alloc_fragment`, `T.gemm`, `T.Pipelined` | Tile level, Triton-like: `ct.load` / `ct.store` / `ct.gather` / `ct.scatter`, `ct.mma`; the `tileiras` compiler maps tiles to threads | Low level: CuTe layouts, tensors, copy and MMA atoms, explicit thread/value layouts |
+| **Authored kernels** | `@T.prim_func` (or `@tilelang.jit`) in `kernels/tilelang/` | `@ct.kernel` in `kernels/cutile/` | `@cute.kernel` in `kernels/cutedsl/`; `@cute.jit` launchers are not credited |
+| **Device symbol** | `<prim_func>_kernel` (per TileLang docs) | Undocumented | `kernel_cutlass_<fn>_…_0` by default |
+| **GPUs** | SM70–SM120 | Compute capability 8.x–12.x (Hopper needs tileiras 13.3+), driver r580+, Python 3.11+ | Ampere and newer |
+| **Example** | `kernels/tilelang/axpby.py`, compiled with `tilelang.compile(target="cuda")` | `kernels/cutile/axpby.py`, launched with `ct.launch` on the current stream | `kernels/cutedsl/axpby.py`, adapted from CUTLASS's elementwise example |
+| **Policy · install** | [SKILL_TILELANG.md](SKILL_TILELANG.md) · `requirements-tilelang.txt` | [SKILL_CUTILE.md](SKILL_CUTILE.md) · `requirements-cutile.txt` | [SKILL_CUTEDSL.md](SKILL_CUTEDSL.md) · `requirements-cutedsl.txt` |
+
+**How they relate.** CuTe DSL and cuTile are separate NVIDIA stacks; cuTile is not built on CuTe. TileLang is independent of both, apart from an experimental `cutedsl` compile target. This project doesn't use that target: its TileLang kernels are pinned to `target="cuda"`.
+
+**Provenance rules for all three:**
+
+- **No library credit.** As with Triton, cuBLAS, CUTLASS and cuDNN time counts against the 90% gate.
+- **CuTe DSL symbols contain "cutlass".** The classifier would normally treat that as library time, but it checks authored names first, so `kernel_cutlass_axpby_cute_kernel_…` counts as agent work. Tests pin that order.
+- **The symbol names above come from documentation, not observed traces.** Record the real profiler names on a GPU before trusting DSL provenance (see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)).
+
+Install a backend's extra on top of `requirements.txt`, for example `uv pip install --python .venv/bin/python -r requirements-tilelang.txt`. The extras may conflict with each other or with your Torch build, so use separate environments if needed. `python -m scripts.validate --device cuda` runs each installed DSL's honest and Torch-op hack fixtures, and records any backend it skipped, with the reason, under `unavailable_backends` in `results.json`.
+
+---
+
 ## Library time: cuBLAS, CUTLASS and cuDNN
 
 `utils/provenance.py` classifies every CUDA device event by name, in this order:
@@ -164,6 +190,18 @@ The upstream timing line (`Torch Baseline: …us, Torch Compile: …us, CUDA Ext
 - **The library bucket can't tell who made the call.** On the CUDA backend, a cuBLAS kernel launched by the agent's extension looks the same as one launched by a stray `torch.matmul` in `model_new.py`.
 - **There is no `triton_` prefix rule.** `torch.compile` (Inductor) generates Triton kernels with that prefix too, so authored Triton kernels are credited only through their `@triton.jit` names.
 - **Policy text and classifier differ on CUTLASS.** The upstream CUDA skill permits cuBLAS (GEMM only) and cuDNN (convolution only). CUTLASS is not on that list, even though `cutlass`-named kernels are counted as library time.
+
+### CuPy and other CUDA libraries
+
+> **High performance with GPU.** CuPy is an open-source array library for GPU-accelerated computing with Python. CuPy utilizes CUDA Toolkit libraries including cuBLAS, cuRAND, cuSOLVER, cuSPARSE, cuFFT, cuDNN and NCCL to make full use of the GPU architecture.
+>
+> — [cupy.dev](https://cupy.dev/)
+
+Calling CuPy from a candidate is calling those vendor libraries, so the provenance gate treats it as library or Torch time, never as authored work:
+
+- **Only three library names are recognised.** The classifier's library bucket matches `cublas`, `cutlass` and `cudnn`. Kernels from cuRAND, cuSOLVER, cuSPARSE, cuFFT or NCCL, and CuPy's own generated elementwise and reduction kernels, fall into "anything else" and count as Torch, even on the CUDA backend.
+- **On every backend except CUDA, all of it counts against the 90% gate,** including cuBLAS and cuDNN.
+- **CuPy is not a dependency of this project.** cuTile's quickstart uses CuPy arrays, but the kernels here take PyTorch tensors.
 
 ---
 
@@ -290,24 +328,27 @@ AgenticRL-CUDA-kernels/
 ├── model.py · model_new.py            # upstream reference model + stock CUDA ModelNew (unchanged)
 ├── binding.cpp · binding_registry.h   # upstream fixed bindings (unchanged)
 ├── model_new_triton.py                # Triton ModelNew template
+├── model_new_<dsl>.py                 # TileLang / cuTile / CuTe DSL templates
 ├── kernels/
 │   ├── axpby.cu · axpby_binding.cpp   # upstream CUDA example (unchanged)
-│   └── triton/axpby.py                # authored, autotuned Triton kernel
+│   ├── triton/axpby.py                # authored, autotuned Triton kernel
+│   └── {tilelang,cutile,cutedsl}/     # DSL axpby examples (GPU only, not yet run)
 ├── utils/
-│   ├── compile.py · compile.sh        # --backend auto|cuda|triton
+│   ├── compile.py · compile.sh        # --backend auto|cuda|triton|tilelang|cutile|cutedsl
 │   ├── verification.py                # 5 random-input checks, atol/rtol 1e-2
 │   ├── profiling.py                   # upstream timing line + --json provenance
 │   ├── benchmark.py · stats.py        # opt-in rotated benchmark; flat bench/* stats
-│   ├── backend.py                     # backend + authored-kernel discovery (AST/regex, no imports)
+│   ├── backend.py                     # backend registry + authored-kernel discovery (AST/regex, no imports)
 │   ├── provenance.py                  # agent / library / torch / memory classifier
 │   ├── reward.py                      # milestone reward, provenance gate, overlong shaping
 │   ├── grpo.py                        # group advantages, tied-group filter, batch stats
 │   ├── config.py                      # RolloutConfig, GRPO/DAPO presets, CLI
 │   └── rollout_env.py                 # run_task(): isolated, deadline-bounded evaluation
 ├── scripts/validate.py                # reproducible fixtures → artifacts/results.json
-├── tests/                             # 57 tests; GPU-only ones skip without CUDA/nvcc
+├── tests/                             # 81 tests; GPU-only ones skip without CUDA or the DSL package
 ├── artifacts/                         # raw logs, environment record, upstream checksums
-├── SKILL.md · SKILL_TRITON.md         # policy instructions for each backend
+├── SKILL*.md                          # policy instructions, one per backend
+├── requirements*.txt                  # torch + triton; optional per-DSL extras
 └── VALIDATION.md · KNOWN_ISSUES.md    # evidence and open gaps
 ```
 

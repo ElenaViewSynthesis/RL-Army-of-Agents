@@ -49,6 +49,35 @@
   `torch.cuda.synchronize()`) or value-dependent control flow in forward.
   Failures set `bench/*/graph_capturable: false` plus `graph_error` and never
   change the reward.
+- **DSL backends are unvalidated on hardware.** The TileLang, cuTile and CuTe DSL
+  kernels have only CPU-side discovery and classification tests here; their GPU
+  kernel and run_task tests skip without a CUDA GPU and the package. None of
+  these DSLs ships a CPU interpreter in its release packages.
+- **DSL device symbol names are partly undocumented.** TileLang names symbols
+  `<prim_func>_kernel` (its docs show `main` -> `main_kernel`); CuTe DSL defaults
+  to `kernel_cutlass_<fn>_<args>_0` (CUTLASS 4.7 docs); cuTile does not document
+  its naming. Attribution assumes each symbol contains the authored function
+  name. Record real `ctx.events()` names on the GPU host before trusting DSL
+  provenance; if a name doesn't match, report it rather than loosening
+  unknown-event handling.
+- **Generic kernel names over-credit provenance (all backends).** The classifier
+  credits any device event whose name contains an authored kernel name as a
+  substring. A kernel named something generic (`kernel`, `add`, or TileLang's
+  conventional `main`) also matches unrelated PyTorch kernels such as
+  `at::native::vectorized_elementwise_kernel` or `remainder_kernel`, so a
+  Torch-op substitution plus a dummy kernel could pass the 90% gate. This
+  predates the DSL backends. Fixing it needs a decision, because either option
+  changes current CUDA/Triton behaviour: anchor matches to each backend's
+  symbol pattern (e.g. CUDA `name<`/`name(`, TileLang `name_kernel`, CuTe DSL
+  `kernel_cutlass_name_`), or refuse to credit generic and very short names.
+- **Optional DSL packages may conflict.** TileLang wheels bundle their own TVM,
+  `nvidia-cutlass-dsl` pulls CUDA 12 runtime libraries by default, and
+  `cuda-tile[tileiras]` pulls nvcc/nvvm 13.x. Install each extra in its own
+  environment if they clash with each other or with the torch CUDA build.
+- **Only TileLang gets a task-local compile cache.** `TILELANG_CACHE_DIR` is set
+  per task like `TRITON_CACHE_DIR`. No cache location is configured for cuTile
+  or CuTe DSL; if they don't cache to disk, each compile, verification and
+  profiling subprocess recompiles, and that counts against the task deadline.
 - **Deferred scope.** No actual training, Modal orchestration, policy weights,
   agent loop, model registry or observability services are added. The optional
   Level-2 GEMM stretch kernel is deferred to prioritise the required pipeline
