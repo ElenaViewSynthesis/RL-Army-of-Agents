@@ -1,0 +1,4 @@
+# Optional CuTe DSL backend (GPU only). Install on top of requirements.txt.
+# The default wheel pulls the CUDA 12 runtime libraries
+# (nvidia-cutlass-dsl-libs-cu12); match the variant to your driver and torch build.
+nvidia-cutlass-dsl==4.8.1

@@ -103,5 +103,10 @@ class CuTileAxpbyTests(AxpbyChecks, unittest.TestCase):
     module = "kernels.cutile"
 
 
+@requires("cutlass.cute")
+class CuTeDSLAxpbyTests(AxpbyChecks, unittest.TestCase):
+    module = "kernels.cutedsl"
+
+
 if __name__ == "__main__":
     unittest.main()

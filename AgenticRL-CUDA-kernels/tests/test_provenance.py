@@ -195,5 +195,10 @@ class CuTileGPUIntegrationTests(DSLIntegrationChecks, unittest.TestCase):
     backend = "cutile"
 
 
+@unittest.skipUnless(HAS_GPU and _has("cutlass.cute"), "requires CUDA GPU, Torch + CuTe DSL (nvidia-cutlass-dsl)")
+class CuTeDSLGPUIntegrationTests(DSLIntegrationChecks, unittest.TestCase):
+    backend = "cutedsl"
+
+
 if __name__ == "__main__":
     unittest.main()

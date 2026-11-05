@@ -111,6 +111,24 @@ class DSLBackendTests(unittest.TestCase):
     def test_cutile_library_time_not_credited(self):
         self.check_no_library_credit("cutile", "axpby_cutile_kernel", "axpby_cutile_kernel")
 
+    def test_cutedsl_detection_and_discovery(self):
+        self.check_backend("cutedsl", ["axpby_cute_kernel"], (
+            "import cutlass\nimport cutlass.cute as cute\nfrom cutlass import cute as cu\n"
+            "from cutlass.cute import kernel\n"
+            "@cute.kernel\ndef first(a): pass\n@cu.kernel\ndef second(a): pass\n"
+            "@kernel\ndef third(a): pass\n@cutlass.cute.kernel\ndef fourth(a): pass\n"
+            "@cute.jit\ndef host_launcher(a): pass\n"),
+            ["first", "fourth", "second", "third"])
+
+    def test_cutedsl_cutlass_named_symbols(self):
+        # Default CuTe DSL symbols embed "cutlass": credited only via the
+        # authored name, never as library time on this backend.
+        symbol = "kernel_cutlass_axpby_cute_kernel_tensorptrf32gmem_0"
+        self.assertEqual(classify_kernel(symbol, ["axpby_cute_kernel"], "cutedsl"), "agent")
+        self.assertEqual(classify_kernel(symbol, [], "cutedsl"), "torch")
+        self.assertEqual(classify_kernel(symbol, [], "cuda"), "library")
+        self.check_no_library_credit("cutedsl", "axpby_cute_kernel", symbol)
+
 
 class ProvenanceTests(unittest.TestCase):
     def test_cpu_profiling_skips_without_importing_torch(self):

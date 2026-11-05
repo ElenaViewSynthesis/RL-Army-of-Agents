@@ -66,6 +66,15 @@ BACKENDS = {
         compile_mode="jit", kernel_package="kernels.cutile", library_allowed=False,
         profile_warmup_iters=20, distributions=("torch", "cuda-tile"),
         skill_doc="SKILL_CUTILE.md", template="model_new_cutile.py"),
+    "cutedsl": BackendSpec(
+        # CUTLASS CuTe DSL. Default device symbols embed "cutlass"
+        # (kernel_cutlass_<fn>_..._0); provenance matches authored names first.
+        # @cute.jit host launchers are not device kernels and are not credited.
+        name="cutedsl", display="CuTe DSL", import_prefixes=("kernels.cutedsl",),
+        kernel_glob="kernels/cutedsl/*.py", decorators=("cutlass.cute.kernel",),
+        compile_mode="jit", kernel_package="kernels.cutedsl", library_allowed=False,
+        profile_warmup_iters=20, distributions=("torch", "nvidia-cutlass-dsl"),
+        skill_doc="SKILL_CUTEDSL.md", template="model_new_cutedsl.py"),
 }
 DEFAULT_BACKEND = "cuda"
 BACKEND_CHOICES = ("auto", *BACKENDS)
