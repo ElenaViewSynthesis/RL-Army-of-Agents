@@ -16,7 +16,7 @@ import tempfile
 import time
 from pathlib import Path
 
-from utils.backend import detect_backend
+from utils.backend import BACKENDS, detect_backend
 from utils.config import RolloutConfig
 from utils.reward import compute_reward
 
@@ -125,7 +125,11 @@ def run_task(workdir: str, cfg: RolloutConfig, turns_used: int | None = None) ->
         (path / ".cache").mkdir(exist_ok=True)
         env = os.environ.copy()
         # Do not touch CUDA_VISIBLE_DEVICES or caller process state.
-        env.setdefault("TRITON_CACHE_DIR", str(path / ".cache" / "triton"))
+        # Task-local JIT caches for every registered backend (torch.compile
+        # itself emits Triton, so these are set whichever backend runs).
+        for spec in BACKENDS.values():
+            for var, subdir in spec.cache_env:
+                env.setdefault(var, str(path / ".cache" / subdir))
         env.setdefault("TORCHINDUCTOR_CACHE_DIR", str(path / ".cache" / "inductor"))
         env["PYTHONDONTWRITEBYTECODE"] = "1"
         deadline = start + cfg.timeout_s

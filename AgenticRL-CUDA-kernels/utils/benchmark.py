@@ -15,7 +15,7 @@ import json
 import time
 
 from utils import stats
-from utils.backend import DEVICE
+from utils.backend import BACKEND_CHOICES, DEVICE
 
 
 def parse_args(argv=None):
@@ -25,7 +25,7 @@ def parse_args(argv=None):
     parser.add_argument("--rounds", type=int, default=6,
                         help="Must be a positive multiple of 3")
     parser.add_argument("--iters-per-round", type=int, default=10)
-    parser.add_argument("--backend", choices=("auto", "cuda", "triton"), default="auto")
+    parser.add_argument("--backend", choices=BACKEND_CHOICES, default="auto")
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--cuda-graphs", action="store_true",
                         help="Also capture and time CUDA-graph replays")

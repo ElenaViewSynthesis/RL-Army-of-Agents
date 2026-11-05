@@ -8,8 +8,12 @@ not a security boundary against a policy deliberately spoofing kernel names.
 import math
 from collections import defaultdict
 
+from utils.backend import BACKENDS
+
 
 def classify_kernel(name, agent_names, backend):
+    # Order matters: authored names are checked before library markers, so a
+    # DSL kernel whose symbol embeds "cutlass" (CuTe DSL) still counts as agent.
     lower = name.lower()
     if "memcpy" in lower or "memset" in lower:
         return "memory"
@@ -18,13 +22,14 @@ def classify_kernel(name, agent_names, backend):
     if "at::native" in lower or "aten" in lower:
         return "torch"
     if any(lib in lower for lib in ("cublas", "cutlass", "cudnn")):
-        return "library" if backend == "cuda" else "torch"
+        spec = BACKENDS.get(backend)
+        return "library" if spec is not None and spec.library_allowed else "torch"
     return "torch"
 
 
 def summarize_events(events, agent_names, backend, iters=1):
     """events are (name, device_time_us) pairs for leaf CUDA events only."""
-    if backend not in ("cuda", "triton") or iters <= 0:
+    if backend not in BACKENDS or iters <= 0:
         raise ValueError("Invalid backend or iteration count")
     totals = {k: 0.0 for k in ("agent", "library", "torch", "memory")}
     kernels = defaultdict(float)

@@ -1,11 +1,80 @@
-"""Backend discovery from source, without importing agent-controlled code."""
+"""Backend registry and discovery from source, without importing agent-controlled code.
+
+Each backend is a BackendSpec: how model_new.py selects it, where its authored
+kernels live, how their names are discovered (AST or regex only; agent code is
+never imported here), whether vendor-library time counts toward provenance,
+and how the trusted harness compiles and warms it up. This module must stay
+importable without Torch.
+"""
 
 import ast
 import os
 import re
+from dataclasses import dataclass
 from pathlib import Path
 
 DEVICE = os.environ.get("CUDA_AGENT_DEVICE", "cuda")
+
+
+@dataclass(frozen=True)
+class BackendSpec:
+    name: str
+    display: str                       # human-readable name for harness messages
+    import_prefixes: tuple[str, ...]   # importing one of these modules selects the backend
+    kernel_glob: str                   # authored sources, relative to the task workdir
+    decorators: tuple[str, ...]        # fully-qualified kernel decorators; () = CUDA regex
+    compile_mode: str                  # "extension" (nvcc -> .so) or "jit" (one forward)
+    kernel_package: str | None         # imported by the JIT compile path
+    library_allowed: bool              # cuBLAS/CUTLASS/cuDNN time counts toward provenance
+    profile_warmup_iters: int
+    cache_env: tuple[tuple[str, str], ...] = ()  # (ENV_VAR, subdirectory of <workdir>/.cache)
+    distributions: tuple[str, ...] = ()          # pip distributions the backend needs
+    skill_doc: str = "SKILL.md"
+    template: str = "model_new.py"
+
+
+BACKENDS = {
+    "cuda": BackendSpec(
+        name="cuda", display="CUDA", import_prefixes=("cuda_extension",),
+        kernel_glob="kernels/*.cu", decorators=(), compile_mode="extension",
+        kernel_package=None, library_allowed=True, profile_warmup_iters=5,
+        distributions=("torch",)),
+    "triton": BackendSpec(
+        # TRITON_CACHE_DIR is set for every backend: torch.compile emits Triton too.
+        name="triton", display="Triton", import_prefixes=("kernels.triton",),
+        kernel_glob="kernels/triton/*.py", decorators=("triton.jit",),
+        compile_mode="jit", kernel_package="kernels.triton", library_allowed=False,
+        profile_warmup_iters=20, cache_env=(("TRITON_CACHE_DIR", "triton"),),
+        distributions=("torch", "triton"), skill_doc="SKILL_TRITON.md",
+        template="model_new_triton.py"),
+}
+DEFAULT_BACKEND = "cuda"
+BACKEND_CHOICES = ("auto", *BACKENDS)
+
+
+def get_spec(backend) -> BackendSpec:
+    try:
+        return BACKENDS[backend]
+    except KeyError:
+        raise ValueError(f"Unsupported backend: {backend}") from None
+
+
+def available_backends() -> dict:
+    """{name: None if its packages are installed, else a reason}. Imports nothing."""
+    from importlib.metadata import PackageNotFoundError, distribution
+
+    def missing(dist):
+        try:
+            distribution(dist)
+            return False
+        except PackageNotFoundError:
+            return True
+
+    result = {}
+    for name, spec in BACKENDS.items():
+        absent = [d for d in spec.distributions if missing(d)]
+        result[name] = f"package not installed: {', '.join(absent)}" if absent else None
+    return result
 
 
 def _tree(workdir):
@@ -21,8 +90,8 @@ def detect_backend(workdir) -> str:
         )
         if any(isinstance(t, ast.Name) and t.id == "BACKEND" for t in targets):
             value = ast.literal_eval(node.value)
-            if value not in ("cuda", "triton"):
-                raise ValueError('BACKEND must be "cuda" or "triton"')
+            if value not in BACKENDS:
+                raise ValueError("BACKEND must be one of: " + ", ".join(f'"{n}"' for n in BACKENDS))
             return value
     found = set()
     for node in ast.walk(tree):
@@ -33,45 +102,85 @@ def detect_backend(workdir) -> str:
             modules += [f"{node.module}.{n.name}" for n in node.names]
         else:
             continue
-        if any(m == "cuda_extension" or m.startswith("cuda_extension.") for m in modules):
-            found.add("cuda")
-        if any(m == "kernels.triton" or m.startswith("kernels.triton.") for m in modules):
-            found.add("triton")
+        for spec in BACKENDS.values():
+            if any(m == p or m.startswith(p + ".") for m in modules for p in spec.import_prefixes):
+                found.add(spec.name)
     if len(found) > 1:
         raise ValueError("Ambiguous backend imports; set module-level BACKEND")
-    return next(iter(found), "cuda")
+    return next(iter(found), DEFAULT_BACKEND)
+
+
+_CUDA_GLOBAL = re.compile(
+    r"__global__\s+(?:__launch_bounds__\s*\([^)]*\)\s*)?"
+    r"(?:[\w:<>]+\s+)+?(\w+)\s*\("
+)
+
+
+def _cuda_globals(paths) -> set[str]:
+    names = set()
+    for path in paths:
+        source = re.sub(r"/\*.*?\*/|//[^\n]*", "", path.read_text(), flags=re.S)
+        names.update(_CUDA_GLOBAL.findall(source))
+    return names
+
+
+def _dotted(expr):
+    """['a', 'b', 'c'] for the expression a.b.c, or None for anything else."""
+    parts = []
+    while isinstance(expr, ast.Attribute):
+        parts.append(expr.attr)
+        expr = expr.value
+    if not isinstance(expr, ast.Name):
+        return None
+    parts.append(expr.id)
+    return parts[::-1]
+
+
+def decorated_functions(source, decorators) -> set[str]:
+    """Names of functions whose decorator resolves to one of `decorators`.
+
+    Top-level `import x.y as z` / `from x import y as z` aliases are resolved,
+    and called decorators (`@jit()`) count. A decorator spelled with the
+    canonical dotted name (e.g. `triton.jit`) counts even without an import.
+    """
+    tree = ast.parse(source)
+    aliases = {}
+    for node in tree.body:
+        if isinstance(node, ast.Import):
+            for n in node.names:
+                if n.asname:
+                    aliases[n.asname] = n.name
+                else:
+                    base = n.name.split(".")[0]
+                    aliases[base] = base
+        elif isinstance(node, ast.ImportFrom) and node.module and not node.level:
+            for n in node.names:
+                aliases[n.asname or n.name] = f"{node.module}.{n.name}"
+    targets = set(decorators)
+    names = set()
+    for node in ast.walk(tree):
+        if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            continue
+        for decorator in node.decorator_list:
+            parts = _dotted(decorator.func if isinstance(decorator, ast.Call) else decorator)
+            if not parts:
+                continue
+            raw = ".".join(parts)
+            resolved = ".".join([aliases.get(parts[0], parts[0]), *parts[1:]])
+            if raw in targets or resolved in targets:
+                names.add(node.name)
+    return names
 
 
 def agent_kernel_names(workdir, backend=None) -> list[str]:
-    """Read authored CUDA globals or Triton jit functions, in stable name order."""
+    """Authored kernel names for a backend, in stable name order."""
     root = Path(workdir)
-    backend = backend or detect_backend(root)
-    names = set()
-    if backend == "cuda":
-        for path in sorted((root / "kernels").glob("*.cu")):
-            source = re.sub(r"/\*.*?\*/|//[^\n]*", "", path.read_text(), flags=re.S)
-            names.update(re.findall(
-                r"__global__\s+(?:__launch_bounds__\s*\([^)]*\)\s*)?"
-                r"(?:[\w:<>]+\s+)+?(\w+)\s*\(", source
-            ))
-    elif backend == "triton":
-        for path in sorted((root / "kernels" / "triton").glob("*.py")):
-            tree = ast.parse(path.read_text())
-            triton_aliases, jit_aliases = {"triton"}, set()
-            for node in tree.body:
-                if isinstance(node, ast.Import):
-                    triton_aliases.update(n.asname or n.name for n in node.names if n.name == "triton")
-                if isinstance(node, ast.ImportFrom) and node.module == "triton":
-                    jit_aliases.update(n.asname or n.name for n in node.names if n.name == "jit")
-            for node in ast.walk(tree):
-                if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                    continue
-                for decorator in node.decorator_list:
-                    fn = decorator.func if isinstance(decorator, ast.Call) else decorator
-                    if (isinstance(fn, ast.Attribute) and fn.attr == "jit"
-                            and isinstance(fn.value, ast.Name) and fn.value.id in triton_aliases
-                            or isinstance(fn, ast.Name) and fn.id in jit_aliases):
-                        names.add(node.name)
+    spec = get_spec(backend or detect_backend(root))
+    paths = sorted(root.glob(spec.kernel_glob))
+    if spec.decorators:
+        names = set()
+        for path in paths:
+            names |= decorated_functions(path.read_text(), spec.decorators)
     else:
-        raise ValueError(f"Unsupported backend: {backend}")
+        names = _cuda_globals(paths)
     return sorted(names)

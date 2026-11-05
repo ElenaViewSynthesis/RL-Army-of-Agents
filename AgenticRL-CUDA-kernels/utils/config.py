@@ -4,6 +4,8 @@ import argparse
 import math
 from dataclasses import asdict, dataclass, field, fields
 
+from utils.backend import BACKEND_CHOICES
+
 
 @dataclass
 class RolloutConfig:
@@ -33,7 +35,7 @@ class RolloutConfig:
     tags: list[str] = field(default_factory=list)
 
     def __post_init__(self):
-        for name, choices in {"backend": ("auto", "cuda", "triton"),
+        for name, choices in {"backend": BACKEND_CHOICES,
                               "algo": ("grpo", "dapo"), "adv_norm": ("std", "none"),
                               "loss_agg": ("seq", "token")}.items():
             if getattr(self, name) not in choices:
@@ -79,7 +81,7 @@ class RolloutConfig:
     @staticmethod
     def add_args(parser):
         """Suppress absent flags so from_args applies the preset before overrides."""
-        choices = {"backend": ("auto", "cuda", "triton"), "algo": ("grpo", "dapo"),
+        choices = {"backend": BACKEND_CHOICES, "algo": ("grpo", "dapo"),
                    "adv_norm": ("std", "none"), "loss_agg": ("seq", "token")}
         defaults = RolloutConfig()
         for f in fields(defaults):

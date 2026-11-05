@@ -5,7 +5,7 @@ import argparse
 import json
 from pathlib import Path
 
-from utils.backend import DEVICE, agent_kernel_names, detect_backend
+from utils.backend import BACKEND_CHOICES, DEVICE, agent_kernel_names, detect_backend, get_spec
 from utils.provenance import summarize_events
 
 
@@ -37,7 +37,7 @@ def parse_args():
     parser.add_argument("--iters", type=int, default=10, help="Benchmark iterations")
     parser.add_argument("--single-run", type=str,
                         help="Run once: torch_baseline,torch_compile,cuda_extension")
-    parser.add_argument("--backend", choices=("auto", "cuda", "triton"), default="auto")
+    parser.add_argument("--backend", choices=BACKEND_CHOICES, default="auto")
     parser.add_argument("--json", action="store_true", help="Append a flat JSON device-time/provenance record")
     parser.add_argument("--seed", type=int, default=0)
     args = parser.parse_args()
@@ -111,7 +111,8 @@ def main():
         targets = [x.strip() for x in args.single_run.split(",") if x.strip()]
         run_single(targets, torch_model, cuda_model, torch_inputs, cuda_inputs)
         return
-    warmup_iters = 20 if backend == "triton" else 5
+    # JIT backends autotune on early calls; that must finish before timing.
+    warmup_iters = get_spec(backend).profile_warmup_iters
     cuda_time, events = benchmark_model(cuda_model, cuda_inputs, warmup_iters, args.iters, True)
     torch_time = benchmark_model(torch_model, torch_inputs, warmup_iters, args.iters)
     compile_time = benchmark_model(torch.compile(torch_model), torch_inputs, warmup_iters, args.iters)

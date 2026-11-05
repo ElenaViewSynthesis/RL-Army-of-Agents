@@ -8,7 +8,7 @@ import sys
 import time
 from pathlib import Path
 
-from utils.backend import DEVICE, detect_backend
+from utils.backend import BACKEND_CHOICES, DEVICE, detect_backend, get_spec
 
 
 def find_sources() -> list[str]:
@@ -68,32 +68,34 @@ def compile_kernels() -> int:
     return 1
 
 
-def compile_triton() -> int:
+def compile_jit(spec) -> int:
+    """JIT backends have no .so: import the kernel package and run one forward
+    so compilation and autotuning happen here, not inside verification."""
     import torch
     from utils.verification import build_inputs, initialize_models
 
-    importlib.import_module('kernels.triton')
+    importlib.import_module(spec.kernel_package)
     _, model = initialize_models()
     _, inputs = build_inputs()
     with torch.no_grad():
         model(*inputs)
     if torch.device(DEVICE).type == 'cuda':
         torch.cuda.synchronize()
-    print('Compile success: Triton JIT/autotune (no .so)')
+    print(f'Compile success: {spec.display} JIT/autotune (no .so)')
     return 0
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--backend', choices=('auto', 'cuda', 'triton'), default='auto')
+    parser.add_argument('--backend', choices=BACKEND_CHOICES, default='auto')
     parser.add_argument('--seed', type=int, default=0)
     args = parser.parse_args()
     start = time.monotonic()
     try:
         import torch
         torch.manual_seed(args.seed)
-        backend = detect_backend(Path.cwd()) if args.backend == 'auto' else args.backend
-        return compile_triton() if backend == 'triton' else compile_kernels()
+        spec = get_spec(detect_backend(Path.cwd()) if args.backend == 'auto' else args.backend)
+        return compile_jit(spec) if spec.compile_mode == 'jit' else compile_kernels()
     except Exception as exc:
         print('Compilation failed.')
         print(f'{type(exc).__name__}: {exc}', file=sys.stderr)
