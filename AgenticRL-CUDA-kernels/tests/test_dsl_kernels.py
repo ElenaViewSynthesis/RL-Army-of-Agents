@@ -98,5 +98,10 @@ class TileLangAxpbyTests(AxpbyChecks, unittest.TestCase):
     module = "kernels.tilelang"
 
 
+@requires("cuda.tile")
+class CuTileAxpbyTests(AxpbyChecks, unittest.TestCase):
+    module = "kernels.cutile"
+
+
 if __name__ == "__main__":
     unittest.main()

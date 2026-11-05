@@ -190,5 +190,10 @@ class TileLangGPUIntegrationTests(DSLIntegrationChecks, unittest.TestCase):
     backend = "tilelang"
 
 
+@unittest.skipUnless(HAS_GPU and _has("cuda.tile"), "requires CUDA GPU, Torch + cuTile (cuda-tile)")
+class CuTileGPUIntegrationTests(DSLIntegrationChecks, unittest.TestCase):
+    backend = "cutile"
+
+
 if __name__ == "__main__":
     unittest.main()

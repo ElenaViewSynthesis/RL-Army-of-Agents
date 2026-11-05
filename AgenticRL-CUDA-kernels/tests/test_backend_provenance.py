@@ -99,6 +99,18 @@ class DSLBackendTests(unittest.TestCase):
     def test_tilelang_library_time_not_credited(self):
         self.check_no_library_credit("tilelang", "axpby_tilelang", "axpby_tilelang_kernel")
 
+    def test_cutile_detection_and_discovery(self):
+        self.check_backend("cutile", ["axpby_cutile_kernel"], (
+            "import cuda.tile as ct\nfrom cuda import tile as tl\nfrom cuda.tile import kernel\n"
+            "import cuda.tile\n"
+            "@ct.kernel\ndef first(a): pass\n@tl.kernel(occupancy=2)\ndef second(a): pass\n"
+            "@kernel\ndef third(a): pass\n@cuda.tile.kernel\ndef fourth(a): pass\n"
+            "def host_wrapper(a): pass\n"),
+            ["first", "fourth", "second", "third"])
+
+    def test_cutile_library_time_not_credited(self):
+        self.check_no_library_credit("cutile", "axpby_cutile_kernel", "axpby_cutile_kernel")
+
 
 class ProvenanceTests(unittest.TestCase):
     def test_cpu_profiling_skips_without_importing_torch(self):

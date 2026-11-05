@@ -58,6 +58,14 @@ BACKENDS = {
         profile_warmup_iters=20, cache_env=(("TILELANG_CACHE_DIR", "tilelang"),),
         distributions=("torch", "tilelang"), skill_doc="SKILL_TILELANG.md",
         template="model_new_tilelang.py"),
+    "cutile": BackendSpec(
+        # NVIDIA CUDA Tile (cuda.tile), compiled by tileiras on first launch.
+        # Its device symbol naming is undocumented; verify on hardware.
+        name="cutile", display="cuTile", import_prefixes=("kernels.cutile",),
+        kernel_glob="kernels/cutile/*.py", decorators=("cuda.tile.kernel",),
+        compile_mode="jit", kernel_package="kernels.cutile", library_allowed=False,
+        profile_warmup_iters=20, distributions=("torch", "cuda-tile"),
+        skill_doc="SKILL_CUTILE.md", template="model_new_cutile.py"),
 }
 DEFAULT_BACKEND = "cuda"
 BACKEND_CHOICES = ("auto", *BACKENDS)
