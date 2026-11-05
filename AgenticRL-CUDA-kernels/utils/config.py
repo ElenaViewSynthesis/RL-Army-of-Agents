@@ -9,6 +9,11 @@ from dataclasses import asdict, dataclass, field, fields
 class RolloutConfig:
     backend: str = "auto"
     iters: int = 10
+    benchmark: bool = False
+    bench_warmup_iters: int = 10
+    bench_rounds: int = 6
+    bench_iters_per_round: int = 10
+    cuda_graphs: bool = False
     timeout_s: float = 180
     provenance_threshold: float = 0.90
     speedup_margin: float = 0.05
@@ -33,10 +38,14 @@ class RolloutConfig:
                               "loss_agg": ("seq", "token")}.items():
             if getattr(self, name) not in choices:
                 raise ValueError(f"{name} must be one of {choices}")
-        for name in ("iters", "max_turns", "max_context_tokens", "group_size"):
+        for name in ("iters", "bench_warmup_iters", "bench_rounds", "bench_iters_per_round",
+                     "max_turns", "max_context_tokens", "group_size"):
             value = getattr(self, name)
             if not isinstance(value, int) or isinstance(value, bool) or value <= 0:
                 raise ValueError(f"{name} must be a positive integer")
+        # Rotation needs each impl in each position equally often.
+        if self.bench_rounds % 3:
+            raise ValueError("bench_rounds must be a multiple of 3")
         for name in ("timeout_s", "provenance_threshold", "speedup_margin",
                      "clip_low", "clip_high", "kl_coef"):
             if not math.isfinite(getattr(self, name)):
@@ -50,8 +59,9 @@ class RolloutConfig:
             raise ValueError("overlong_buffer_turns must be an integer in [0, max_turns]")
         if not 0 <= self.clip_low < 1 or self.clip_high < 0 or self.kl_coef < 0:
             raise ValueError("Invalid clip range or kl_coef")
-        if not isinstance(self.filter_tied_groups, bool):
-            raise ValueError("filter_tied_groups must be bool")
+        for name in ("benchmark", "cuda_graphs", "filter_tied_groups"):
+            if not isinstance(getattr(self, name), bool):
+                raise ValueError(f"{name} must be bool")
         if not isinstance(self.seed, int) or not isinstance(self.run_name, str):
             raise ValueError("seed must be int and run_name must be str")
         if not isinstance(self.tags, list) or not all(isinstance(t, str) for t in self.tags):
@@ -74,7 +84,7 @@ class RolloutConfig:
         defaults = RolloutConfig()
         for f in fields(defaults):
             kwargs = {"default": argparse.SUPPRESS}
-            if f.name == "filter_tied_groups":
+            if isinstance(getattr(defaults, f.name), bool):
                 kwargs["action"] = argparse.BooleanOptionalAction
             elif f.name == "tags":
                 kwargs.update(nargs="*", type=str)

@@ -16,6 +16,9 @@ below 0.95 * torch.compile time while preserving correctness (atol/rtol=1e-2).
   Use tl.dot for GEMM. cuBLAS/cuDNN/CUTLASS time is not allowed library time on Triton.
 - No web tools during the policy rollout, harness edits, profiler tampering,
   kernel-name spoofing, importing the reference forward, or cached answers.
+- ModelNew.forward must enqueue all device work on torch.cuda.current_stream()
+  of the inputs' device, or make that stream wait on side streams before
+  returning; un-joined side-stream work under-reports event latency.
 
 ## Workflow
 
@@ -25,6 +28,8 @@ below 0.95 * torch.compile time while preserving correctness (atol/rtol=1e-2).
 3. Run `python -m utils.verification`: five independent random inputs, 1e-2 tolerances.
 4. Run `python -m utils.profiling --backend triton --json --iters 10`.
    The generated path gets 20 warmups; autotuning must finish before timing.
+   For repeated event/wall statistics outside the profiler, run
+   `python -m utils.benchmark --json`; its bench/* keys are diagnostics only.
 5. Iterate on the bottleneck, then evaluate the complete task:
    `python -m utils.rollout_env . --backend triton --max-turns 20 --turns-used 1`.
    Read the runtime RolloutConfig: your turn budget is **max_turns** (default 20).

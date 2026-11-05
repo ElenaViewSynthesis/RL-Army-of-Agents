@@ -5,7 +5,7 @@
 ![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-3776AB)
 ![PyTorch ≥ 2.3](https://img.shields.io/badge/torch-%E2%89%A52.3-EE4C2C)
 ![Triton ≥ 3.0](https://img.shields.io/badge/triton-%E2%89%A53.0-6E40C9)
-![Tests: 43](https://img.shields.io/badge/tests-43%20%28GPU%20ones%20skip%20without%20CUDA%29-2EA44F)
+![Tests: 57](https://img.shields.io/badge/tests-57%20%28GPU%20ones%20skip%20without%20CUDA%29-2EA44F)
 ![GPU results: not measured](https://img.shields.io/badge/GPU%20results-not%20measured-lightgrey)
 
 This project extends the environment released with [CUDA-Agent](https://github.com/BytedTsinghua-SIA/CUDA-Agent) ([paper](https://arxiv.org/abs/2602.24286)). It adds three things:
@@ -199,6 +199,18 @@ The synthetic honest / honest / hack group below has rewards 3, 3 and −1, and 
 
 ---
 
+## Benchmark mode (opt-in)
+
+`python -m utils.benchmark --json` samples steady-state latency outside the profiler, for `eager`, `compile` and `generated`. Flags: `--warmup-iters` (10), `--rounds` (6, must be a multiple of 3), `--iters-per-round` (10), `--backend`, `--seed`, `--cuda-graphs`. Each impl runs **prepare** (one timed cold call covering compile/JIT/autotune, kept as `bench/<impl>/prepare_s`), then `warmup_iters` untimed calls, then the rotated rounds — never inside the statistics.
+
+Each round reports two per-iteration timings: `event_us_*` (CUDA events on the current stream) and `wall_us_*` (a `torch.cuda.synchronize()`-bracketed host clock, which also includes CPU dispatch). Statistics over rounds are `n`, `median`, `min`, `max`, `p25`, `p75` and `cv` (`bench/<impl>/{event,wall}_us_*` plus `_cv`). `bench/order` records the rotation and `bench/seed` the seed; `bench/device_*` keys identify the GPU. `bench/generated/event_wall_ratio` well below 1 points to un-joined side-stream work (see the stream contract below). With `--cuda-graphs`, each impl is also captured into a `torch.cuda.CUDAGraph` after warmup and replayed in the same rotation (`graph_capturable`, `graph_error`, `graph_replay_ok`, `graph_us_*`, `graph_all_capturable`). Capture failure is reported, never a crash, and graph timings are diagnostics only — the reward still uses `t_*_us` from `utils.profiling`.
+
+**Stream/device contract.** `ModelNew.forward` must enqueue all device work on `torch.cuda.current_stream()` of its inputs' device, or make that stream wait on any side streams before returning. Event timings only cover work ordered on that stream, while the wall timing waits for every stream, so un-joined side-stream work shows up as an event time far below the wall time. The same rule is given to the policy in [SKILL_TRITON.md](SKILL_TRITON.md) and documented in `utils/benchmark.py`.
+
+`RolloutConfig.benchmark` adds a fourth `run_task` stage (after profiling, same deadline) that merges the flat `bench/*` keys into the result; `bench_warmup_iters`/`bench_rounds`/`bench_iters_per_round`/`cuda_graphs` tune it. With the flag off, the stage argv, result keys and reward are byte-for-byte unchanged. On CPU or a missing GPU the record is just `{"bench/available": false, "bench/unavailable_reason": ...}` — no timings are ever fabricated. A benchmark stage that crashes, times out or returns malformed output degrades the same way (`bench/available: false` with the reason); it can never change `env/*` or the reward.
+
+---
+
 ## Quick start
 
 Python 3.10+ on **Linux or WSL2** is required. Process isolation uses POSIX process groups, so the process tests fail on native Windows. The CUDA path also needs `nvcc` and Ninja on `PATH`.
@@ -285,6 +297,7 @@ AgenticRL-CUDA-kernels/
 │   ├── compile.py · compile.sh        # --backend auto|cuda|triton
 │   ├── verification.py                # 5 random-input checks, atol/rtol 1e-2
 │   ├── profiling.py                   # upstream timing line + --json provenance
+│   ├── benchmark.py · stats.py        # opt-in rotated benchmark; flat bench/* stats
 │   ├── backend.py                     # backend + authored-kernel discovery (AST/regex, no imports)
 │   ├── provenance.py                  # agent / library / torch / memory classifier
 │   ├── reward.py                      # milestone reward, provenance gate, overlong shaping
@@ -292,7 +305,7 @@ AgenticRL-CUDA-kernels/
 │   ├── config.py                      # RolloutConfig, GRPO/DAPO presets, CLI
 │   └── rollout_env.py                 # run_task(): isolated, deadline-bounded evaluation
 ├── scripts/validate.py                # reproducible fixtures → artifacts/results.json
-├── tests/                             # 43 tests; GPU-only ones skip without CUDA/nvcc
+├── tests/                             # 57 tests; GPU-only ones skip without CUDA/nvcc
 ├── artifacts/                         # raw logs, environment record, upstream checksums
 ├── SKILL.md · SKILL_TRITON.md         # policy instructions for each backend
 └── VALIDATION.md · KNOWN_ISSUES.md    # evidence and open gaps

@@ -33,7 +33,9 @@ class ConfigTests(unittest.TestCase):
         self.assertEqual(self.parse([]).to_dict(), grpo.to_dict())
 
     def test_every_field_has_a_cli_flag(self):
-        flags = ["--backend", "triton", "--iters", "3", "--timeout-s", "2.5",
+        flags = ["--backend", "triton", "--iters", "3", "--benchmark",
+                 "--bench-warmup-iters", "4", "--bench-rounds", "3",
+                 "--bench-iters-per-round", "2", "--cuda-graphs", "--timeout-s", "2.5",
                  "--provenance-threshold", ".95", "--speedup-margin", ".1",
                  "--max-turns", "30", "--max-context-tokens", "4096", "--algo", "dapo",
                  "--group-size", "3", "--adv-norm", "none", "--filter-tied-groups",
@@ -41,6 +43,11 @@ class ConfigTests(unittest.TestCase):
                  "--loss-agg", "seq", "--kl-coef", ".01", "--seed", "17", "--run-name", "trial",
                  "--tags", "a", "b"]
         cfg = self.parse(flags)
+        self.assertTrue(cfg.benchmark)
+        self.assertTrue(cfg.cuda_graphs)
+        self.assertEqual((cfg.bench_warmup_iters, cfg.bench_rounds,
+                          cfg.bench_iters_per_round), (4, 3, 2))
+        self.assertFalse(self.parse(["--no-benchmark", "--no-cuda-graphs"]).benchmark)
         self.assertEqual(cfg.timeout_s, 2.5)
         self.assertEqual(cfg.tags, ["a", "b"])
         self.assertEqual(cfg.seed, 17)
@@ -51,7 +58,9 @@ class ConfigTests(unittest.TestCase):
         self.assertEqual(cfg.tags, ["a", "b"])
 
     def test_invalid_configs(self):
-        for kwargs in ({"timeout_s": 0}, {"iters": 0}, {"group_size": 0}, {"max_turns": 0},
+        for kwargs in ({"timeout_s": 0}, {"iters": 0}, {"bench_rounds": 4},
+                       {"bench_rounds": 0}, {"bench_warmup_iters": 0},
+                       {"benchmark": "yes"}, {"group_size": 0}, {"max_turns": 0},
                        {"max_context_tokens": 0}, {"provenance_threshold": 1.1}, {"speedup_margin": 1},
                        {"overlong_buffer_turns": 21}, {"timeout_s": float("nan")},
                        {"backend": "other"}, {"adv_norm": "other"}, {"clip_low": 1},
@@ -60,7 +69,8 @@ class ConfigTests(unittest.TestCase):
                 RolloutConfig(**kwargs)
 
     def test_environment_modules_import_without_site_packages(self):
-        code = "from utils import config, reward, grpo, rollout_env; import sys; assert 'torch' not in sys.modules"
+        code = ("from utils import config, reward, grpo, rollout_env, stats, benchmark; "
+                "import sys; assert 'torch' not in sys.modules")
         subprocess.run([sys.executable, "-S", "-c", code], cwd=ROOT, check=True)
 
 

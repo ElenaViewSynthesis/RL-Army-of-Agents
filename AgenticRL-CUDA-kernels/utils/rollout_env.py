@@ -21,11 +21,11 @@ from utils.config import RolloutConfig
 from utils.reward import compute_reward
 
 
-def _stage(module, args, workdir, env, deadline):
+def bootstrap_script(module, args, workdir) -> str:
     # Pin the trusted utils package before putting the task first for model.py,
     # kernels/, and cuda_extension.so. A task need not carry its own utils copy.
     harness = str(Path(__file__).resolve().parent.parent)
-    script = (
+    return (
         "import sys, runpy; "
         f"sys.path.insert(0, {harness!r}); import utils; "
         f"sys.path = [p for p in sys.path if p != {harness!r}]; "
@@ -33,6 +33,10 @@ def _stage(module, args, workdir, env, deadline):
         f"sys.argv = {[module, *args]!r}; "
         f"runpy.run_module({module!r}, run_name='__main__')"
     )
+
+
+def _stage(module, args, workdir, env, deadline):
+    script = bootstrap_script(module, args, workdir)
     remaining = deadline - time.monotonic()
     if remaining <= 0:
         return None, "", "", True
@@ -129,6 +133,13 @@ def run_task(workdir: str, cfg: RolloutConfig, turns_used: int | None = None) ->
                   ("verification", "utils.verification", ["--seed", str(cfg.seed)]),
                   ("profiling", "utils.profiling", ["--backend", backend, "--iters", str(cfg.iters),
                                                     "--seed", str(cfg.seed), "--json"]))
+        if cfg.benchmark:
+            stages += (("benchmark", "utils.benchmark",
+                        ["--backend", backend, "--warmup-iters", str(cfg.bench_warmup_iters),
+                         "--rounds", str(cfg.bench_rounds),
+                         "--iters-per-round", str(cfg.bench_iters_per_round),
+                         "--seed", str(cfg.seed), "--json",
+                         *(["--cuda-graphs"] if cfg.cuda_graphs else [])]),)
         profile = None
         for stage, module, args in stages:
             code, stdout, stderr, timed_out = _stage(module, args, path, env, deadline)
@@ -136,6 +147,25 @@ def run_task(workdir: str, cfg: RolloutConfig, turns_used: int | None = None) ->
                 result["log/compile_tail"] = stdout[-8192:]
             if stderr:
                 result["log/stderr_tail"] = (result["log/stderr_tail"] + f"[{stage}]\n" + stderr)[-8192:]
+            if stage == "benchmark":
+                # Diagnostics only: a failed benchmark stage degrades to an
+                # unavailable bench/* record and never changes the reward.
+                if timed_out:
+                    result.update({"bench/available": False,
+                                   "bench/unavailable_reason": "timeout"})
+                    break
+                if code != 0:
+                    result["log/stderr_tail"] = (result["log/stderr_tail"] + stdout)[-8192:]
+                    result.update({"bench/available": False,
+                                   "bench/unavailable_reason": f"benchmark stage exited {code}"})
+                    continue
+                try:
+                    bench = json.loads(stdout.strip().splitlines()[-1])
+                except ValueError:
+                    bench = {"bench/available": False,
+                             "bench/unavailable_reason": "malformed benchmark output"}
+                result.update({k: v for k, v in bench.items() if k.startswith("bench/")})
+                continue
             if timed_out:
                 return finish("timeout")
             if code != 0:
@@ -162,6 +192,8 @@ def run_task(workdir: str, cfg: RolloutConfig, turns_used: int | None = None) ->
         # Remove invalid measurements before exposing the failure to loggers.
         for field in ("t_eager_us", "t_compile_us", "t_gen_us", "provenance", "speedup_vs_compile"):
             result["env/" + field] = None
+        for key in [k for k in result if k.startswith("bench/")]:
+            del result[key]
         return finish(stage)
 
 

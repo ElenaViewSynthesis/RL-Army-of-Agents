@@ -168,6 +168,37 @@ synthetic event labels are classifier fixtures, not a claimed profiler trace.
   DAPO without the paper's critic. Trainer-owned clipping/loss aggregation are
   exposed as configuration rather than implemented as an invented trainer.
 
+## Step 1: benchmark mode
+
+An opt-in `utils/benchmark.py` (plus `utils/stats.py` and a
+`RolloutConfig.benchmark` stage in `run_task`) was added. With the flag off,
+the profiling argv, the 18-key result set and the reward are byte-for-byte
+unchanged (`git diff HEAD -- utils/profiling.py` is empty). All `bench/*`
+keys are diagnostics: on this host only the CPU unavailable record and the
+pure-Python statistics/rotation paths ran; every GPU latency, device key and
+CUDA-graph result remains **not measured**.
+
+```bash
+python3 -m unittest discover -v
+# Ran 57 tests in 9.284s
+# OK (skipped=13)
+
+PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m unittest -v tests.test_benchmark tests.test_rollout_env.RolloutProtocolTests
+# Ran 21 tests in 6.321s
+# OK (skipped=2)
+
+CUDA_AGENT_DEVICE=cpu TRITON_INTERPRET=1 .venv/bin/python   # direct run_task, benchmark=True, triton fixture
+# "env/verify_ok": true, "reward/reason": "unmeasured",
+# "bench/available": false, "bench/unavailable_reason": "CUDA_AGENT_DEVICE=cpu"
+```
+
+The 13 skips are GPU/CUDA or Torch-dependent checks (GPU provenance, GPU
+benchmark/graph tests, Torch interpreter and Triton-kernel tests under system
+Python). The CPU rollout exercised the real 4th stage subprocess and merged
+only the two truthful `bench/*` unavailable keys; no timings were fabricated.
+A benchmark stage that crashes, times out or emits malformed output degrades
+to `bench/available: false` with a reason and never changes the reward.
+
 ## Scope cuts and Modal implications
 
 The optional fused Level-2 GEMM kernel was deferred in favour of the required

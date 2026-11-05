@@ -34,6 +34,21 @@
   artifacts/rollouts_cold_start.log). Local CPU validation uses `--timeout-s 600`;
   the production default is unchanged. The CUDA attempt also reports missing
   Ninja; a GPU image needs the upstream build tools (Ninja and nvcc).
+- **Benchmark mode unmeasured on this host.** Only the CPU path is exercised
+  here: `bench/available: false` plus statistics/rotation fixtures. Every real
+  `bench/*` latency, device key and CUDA-graph result needs a GPU run. A
+  benchmark stage that crashes, times out or emits malformed output only
+  yields `bench/available: false` with a reason; it never changes the reward.
+- **Event latency excludes un-joined side streams.** `bench/*/event_us_*`
+  covers only work ordered on the entry stream; wall latency brackets
+  `torch.cuda.synchronize()` and includes CPU dispatch and every stream.
+  Candidates launching side streams must join the current stream before
+  returning, or `bench/generated/event_wall_ratio` exposes the gap.
+- **CUDA-graph capture is a diagnostic, not a score.** It requires
+  current-stream launches and no host syncs (`.item()`, `.cpu()`,
+  `torch.cuda.synchronize()`) or value-dependent control flow in forward.
+  Failures set `bench/*/graph_capturable: false` plus `graph_error` and never
+  change the reward.
 - **Deferred scope.** No actual training, Modal orchestration, policy weights,
   agent loop, model registry or observability services are added. The optional
   Level-2 GEMM stretch kernel is deferred to prioritise the required pipeline

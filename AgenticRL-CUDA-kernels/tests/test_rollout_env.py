@@ -48,6 +48,55 @@ class RolloutProtocolTests(unittest.TestCase):
         self.assertEqual(len(result), 18)
         assert_flat(self, result)
 
+    def test_benchmark_stage_opt_in(self):
+        expected_keys = {"env/verify_ok", "env/t_eager_us", "env/t_compile_us",
+                         "env/t_gen_us", "env/speedup_vs_compile", "env/provenance",
+                         "env/wall_s", "env/turns_used", "reward/value", "reward/base",
+                         "reward/reason", "reward/overlong_penalty", "meta/backend",
+                         "meta/task_id", "meta/algo", "meta/seed",
+                         "log/compile_tail", "log/stderr_tail"}
+        with patch("utils.rollout_env._stage", side_effect=self.stages()) as stage:
+            result = run_task(str(self.task), self.cfg)
+        self.assertEqual(stage.call_count, 3)
+        self.assertEqual(set(result), expected_keys)
+        bench_stdout = json.dumps({"bench/available": True,
+                                   "bench/generated/event_us_median": 12.5,
+                                   "bench/device_name": "Fake"})
+        cfg = dataclasses.replace(self.cfg, benchmark=True)
+        stages = self.stages() + [(0, bench_stdout, "", False)]
+        with patch("utils.rollout_env._stage", side_effect=stages) as stage:
+            result = run_task(str(self.task), cfg)
+        self.assertEqual(stage.call_count, 4)
+        self.assertEqual(stage.call_args_list[3].args[1],
+                         ["--backend", "triton", "--warmup-iters", "10",
+                          "--rounds", "6", "--iters-per-round", "10",
+                          "--seed", "0", "--json"])
+        self.assertEqual(set(result), expected_keys | {"bench/available",
+                                                       "bench/generated/event_us_median",
+                                                       "bench/device_name"})
+        self.assertEqual((result["reward/value"], result["reward/base"]), (3, 3))
+        assert_flat(self, result)
+        for outcome, unavailable in (((1, "boom", "err", False), "benchmark stage exited 1"),
+                                     ((None, "", "", True), "timeout"),
+                                     ((0, "not json", "", False), "malformed benchmark output")):
+            stages = self.stages() + [outcome]
+            with self.subTest(unavailable=unavailable), patch(
+                    "utils.rollout_env._stage", side_effect=stages):
+                result = run_task(str(self.task), cfg)
+            # A failed benchmark stage degrades to unavailable, never a reward.
+            self.assertEqual((result["reward/value"], result["reward/base"]), (3, 3))
+            self.assertEqual(result["reward/reason"], "faster_than_both")
+            self.assertFalse(result["bench/available"])
+            self.assertEqual(result["bench/unavailable_reason"], unavailable)
+            if unavailable == "benchmark stage exited 1":
+                self.assertIn("err", result["log/stderr_tail"])
+                self.assertIn("boom", result["log/stderr_tail"])
+            assert_flat(self, result)
+        cfg = dataclasses.replace(self.cfg, benchmark=True, cuda_graphs=True)
+        with patch("utils.rollout_env._stage", side_effect=self.stages() + [(0, bench_stdout, "", False)]) as stage:
+            run_task(str(self.task), cfg)
+        self.assertIn("--cuda-graphs", stage.call_args_list[3].args[1])
+
     def test_provenance_gate_and_overlong_via_entry_point(self):
         with patch("utils.rollout_env._stage", side_effect=self.stages(.1)):
             hack = run_task(str(self.task), self.cfg)
