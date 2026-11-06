@@ -266,9 +266,10 @@ python3 -m unittest discover -v
 # OK (skipped=31)
 ```
 
-`record_kernel_names` was verified against synthetic stage fixtures only; no
-real GPU kernel names have been recorded yet — `artifacts/kernel_names.json`
-is produced by the Modal or bare-host GPU run.
+`record_kernel_names` was verified against synthetic stage fixtures locally;
+the real GPU kernel names it later recorded on an H200 are in
+`artifacts/kernel_names-20261106T185236Z.json` and listed verbatim under
+[First Modal GPU validation](#first-modal-gpu-validation-2026-11-06).
 
 ## DSL backends (TileLang, cuTile, CuTe DSL)
 
@@ -277,8 +278,9 @@ branches, and TileLang, cuTile and CuTe DSL backends were added on top of it.
 CUDA and Triton behaviour is unchanged: after the refactor, the full suite and
 the Torch-dependent backend, kernel, benchmark, config and rollout tests passed
 without edits. No DSL package is installed on this host and there is no GPU,
-so **no DSL kernel has run**. Only source discovery, backend detection and
-classification are exercised here.
+so only source discovery, backend detection and classification are exercised
+**here**; all three DSL kernels have since run on an H200 (Modal run
+`20261106T185236Z`, see below), each with correct output and provenance 1.0.
 
 These runs used an export of the committed tree
 (`git -c core.autocrlf=false archive HEAD`), so uncommitted work elsewhere in

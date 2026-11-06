@@ -3,7 +3,9 @@
 TileLang's release wheels have no CPU interpreter (its LLVM CPU target needs a
 source build), so this kernel runs on CUDA devices only. TileLang names the
 device symbol after the prim_func (`axpby_tilelang` -> `axpby_tilelang_kernel`),
-which is how the provenance profiler credits it. Not yet run on hardware here.
+which is how the provenance profiler credits it. Verified on an H200 (Modal run
+20261106T185236Z, TileLang 0.1.15): correct output, observed symbol
+`axpby_tilelang_kernel`, provenance 1.0.
 """
 
 import functools

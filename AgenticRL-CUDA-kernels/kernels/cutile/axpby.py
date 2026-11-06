@@ -2,7 +2,10 @@
 
 Needs compute capability 8.x-12.x, driver r580+ and Python 3.11+. cuTile has no
 documented CPU interpreter. Kernels compile on first launch, which the harness
-compile stage triggers. Not yet run on hardware here.
+compile stage triggers. Verified on an H200 (Modal run 20261106T185236Z,
+cuda-tile 1.8.0, tileiras 13.3.36): correct output, observed symbol
+`axpby_cutile_kernel_Kt1_A1f32_..._Sf32_I128` (undocumented naming; other
+shapes or versions may differ), provenance 1.0.
 """
 
 import math

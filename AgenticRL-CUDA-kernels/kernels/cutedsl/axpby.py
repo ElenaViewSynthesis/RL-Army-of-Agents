@@ -34,7 +34,10 @@
 Each thread block copies a (1, THREADS * vector) tile through registers under
 an element-wise bounds predicate, so any length works. The default device
 symbol looks like kernel_cutlass_axpby_cute_kernel_..._0; the provenance
-profiler credits it by the @cute.kernel function name. Not yet run on hardware.
+profiler credits it by the @cute.kernel function name. Verified on an H200
+(Modal run 20261106T185236Z, nvidia-cutlass-dsl 4.8.1): correct output,
+observed symbol `kernel_cutlass_axpby_cute_kernel_tensorptrf32gmemo..._0`,
+provenance 1.0.
 """
 
 import cutlass
