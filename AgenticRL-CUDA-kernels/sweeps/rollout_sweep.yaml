@@ -1,0 +1,30 @@
+# W&B sweep over RolloutConfig for one task workdir per agent.
+#   .venv/bin/wandb sweep -e elenamylocuda-gemma -p CUDA-gen sweeps/rollout_sweep.yaml
+# Each agent reads its task directory from $SWEEP_WORKDIR and its GPU from
+# $CUDA_VISIBLE_DEVICES (see scripts/sweep_rollout.sh and
+# WANDB_parallel_sweep_agents.md). Parameter names are RolloutConfig fields;
+# the agent passes them as --kebab-case=value flags. Booleans use
+# ${args_no_boolean_flags} so `benchmark: true` becomes `--benchmark`.
+program: tracking/wandb_log.py
+command:
+  - ${env}
+  - bash
+  - scripts/sweep_rollout.sh
+  - ${args_no_boolean_flags}
+method: grid
+metric:
+  name: reward/value
+  goal: maximize
+parameters:
+  algo:
+    values: [grpo, dapo]
+  seed:
+    values: [0, 1, 2, 3]
+  iters:
+    values: [10, 20]
+  benchmark:
+    value: true
+  bench_rounds:
+    values: [6, 12]
+  timeout_s:
+    value: 180

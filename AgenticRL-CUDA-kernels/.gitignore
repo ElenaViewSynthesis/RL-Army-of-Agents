@@ -11,3 +11,5 @@ __pycache__/
 build/
 *.so
 artifacts/tmp/
+wandb/
+sweep_tasks/
