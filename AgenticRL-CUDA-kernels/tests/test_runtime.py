@@ -59,6 +59,8 @@ class CheckTests(unittest.TestCase):
         self.assertFalse(record["runtime/ok_cuda_backend"])
         self.assertFalse(record["runtime/ok_triton_backend"])
         self.assertFalse(record["runtime/ok_cutile"])
+        self.assertFalse(record["runtime/ok_tilelang"])
+        self.assertFalse(record["runtime/ok_cutedsl"])
         self.assertIn("nvidia-smi", record["runtime/unavailable_reason"])
         assert_flat(self, record)
 
@@ -80,11 +82,15 @@ class CheckTests(unittest.TestCase):
     def test_happy_path_all_profiles(self):
         env = fake_env(smi=HOPPER_SMI, nvcc=NVCC_133, which_paths=("ninja",),
                        packages={"torch": "2.14.1+cu130", "triton": "3.6.0",
-                                 "cuda-tile": "1.8.0", "nvidia-cuda-tileiras": "13.3.52"})
+                                 "cuda-tile": "1.8.0", "nvidia-cuda-tileiras": "13.3.52",
+                                 "tilelang": "0.1.15", "nvidia-cutlass-dsl": "4.8.1",
+                                 "cuda-bindings": "13.0.2"})
         record = runtime.check(**env)
         self.assertTrue(record["runtime/ok_cuda_backend"])
         self.assertTrue(record["runtime/ok_triton_backend"])
         self.assertTrue(record["runtime/ok_cutile"])
+        self.assertTrue(record["runtime/ok_tilelang"])
+        self.assertTrue(record["runtime/ok_cutedsl"])
         self.assertIsNone(record["runtime/unavailable_reason"])
         self.assertTrue(record["runtime/torch_cuda_build"])
         assert_flat(self, record)
@@ -98,10 +104,11 @@ class CLITests(unittest.TestCase):
         record = json.loads(proc.stdout.strip().splitlines()[-1])
         self.assertFalse(record["runtime/ok_cuda_backend"])
         assert_flat(self, record)
-        proc = subprocess.run([sys.executable, "-S", "-m", "utils.runtime",
-                               "--require", "cutile"], cwd=ROOT,
-                              capture_output=True, text=True)
-        self.assertEqual(proc.returncode, 1)
+        for profile in ("cutile", "tilelang"):
+            proc = subprocess.run([sys.executable, "-S", "-m", "utils.runtime",
+                                   "--require", profile], cwd=ROOT,
+                                  capture_output=True, text=True)
+            self.assertEqual(proc.returncode, 1)
 
     def test_import_without_torch(self):
         code = "from utils import runtime; import sys; assert 'torch' not in sys.modules"
