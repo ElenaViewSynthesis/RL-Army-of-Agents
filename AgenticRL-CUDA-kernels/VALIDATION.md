@@ -144,17 +144,30 @@ GRPO retains all-zero advantages while DAPO drops the tied group.
 GPU-only tests in `tests/test_provenance.py` require honest CUDA and Triton
 to pass both correctness and provenance, require the Torch-op hack to pass
 correctness and fail provenance, rank that hack last under both presets,
-and check actual DAPO turn shaping. They remain skipped without hardware.
-On a GPU runtime, run:
+and check actual DAPO turn shaping; its DSL classes and `tests/test_dsl_kernels.py`
+do the same for TileLang, cuTile and CuTe DSL, and
+`tests/test_benchmark.GPUBenchmarkTests` checks the opt-in benchmark stage.
+They remain skipped without hardware. On a GPU runtime, run (in this order):
 
 ```bash
-python -m unittest -v tests.test_provenance.GPUIntegrationTests
-python -m scripts.validate --device cuda
+pip install -r requirements-gpu.txt   # pinned stack incl. tilelang and nvidia-cutlass-dsl[cu13]
+python -m utils.runtime --json --require cuda,triton,tilelang,cutile,cutedsl
+bash utils/compile.sh && python -m utils.verification && python -m utils.profiling --json
+python -m scripts.record_kernel_names --device cuda   # -> artifacts/kernel_names.json
+python -m unittest -v tests.test_provenance tests.test_dsl_kernels tests.test_benchmark.GPUBenchmarkTests
+python -m scripts.validate --device cuda              # -> artifacts/results.json
 ```
+
+`modal run cloud/modal_runtime.py --tests` runs the same sequence on Modal and
+copies `kernel_names.json`, `results.json` and `environment.json` to the
+`agenticrl-cuda-artifacts` Volume; `modal run cloud/modal_runtime.py` alone is
+the cheap preflight.
 
 Only that run can replace the README's **not measured** GPU timing and
 provenance cells. No kernel event names were observed on real hardware here;
 synthetic event labels are classifier fixtures, not a claimed profiler trace.
+Read `kernel_names.json` (observed names, classifier verdicts and
+`unmatched_agent_names` per backend) before interpreting any provenance result.
 
 ## Why this extends the supplied environment
 
@@ -316,3 +329,108 @@ GPU: contention changes rewards. A production Modal sandbox must enforce
 filesystem/network/resource restrictions and a container-level deadline for
 driver hangs or processes that escape the ordinary process group. See
 [KNOWN_ISSUES.md](KNOWN_ISSUES.md) for attribution and experiment-design limits.
+
+## First Modal GPU validation (2026-11-06)
+
+Initial HEAD: `3b8a0d7`. The pre-existing GPU command-block edit above was
+preserved. The checkout is part of the parent CUDA-RL repository. Focused
+commits cannot be created because `.git` is mounted read-only; the attempted
+commit failed creating `.git/index.lock`. Nothing was pushed.
+
+Commands:
+
+```bash
+.venv/bin/modal run cloud/modal_runtime.py
+.venv/bin/modal run cloud/modal_runtime.py --tests
+```
+
+The first image build failed resolving `cuda-toolkit>=13.3,<13.4` against
+Torch's `cuda-toolkit==13.0.3` runtime dependency. Raw build output:
+[failed image build](artifacts/modal-build-im-u7ElhT76HK3e4MiGfUc5JZ.log).
+Direct pins for the 13.3.1 compiler components resolved the conflict.
+The combined image subsequently built successfully, and preflight run
+`20261106T142735Z` passed ([full build/preflight log](artifacts/modal-preflight-20261106T142735Z.log)).
+
+The initial full GPU run `20261106T142830Z` found a separate CUDA build defect:
+ATen requires C++20, but the harness forced C++17. Removing the override lets
+Torch select its required standard. Protected upstream sources are unchanged.
+This first run's [results](artifacts/results-20261106T142830Z.json) and
+[names](artifacts/kernel_names-20261106T142830Z.json) are retained, including
+the failed CUDA fixture. The GPU suite's raw summary was:
+
+```text
+Ran 30 tests in 403.421s
+FAILED (failures=2)
+```
+
+Both failures concern the failed CUDA rollout (honest CUDA and group ranking).
+All three DSL kernel suites and their honest/hack provenance tests passed.
+The subsequent stock CUDA pipeline in run `20261106T185236Z` passed all five
+verification checks and recorded the authored CUDA event.
+
+Local commands and raw summaries:
+
+```text
+PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -v
+Ran 94 tests in 52.212s
+OK (skipped=31)
+
+PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m unittest discover -v
+Ran 94 tests in 557.828s
+OK (skipped=25)
+
+PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -v  # after build fix
+Ran 94 tests in 66.922s
+OK (skipped=31)
+```
+
+The cloud runner's uploaded `environment.json` was historical CPU data.
+`environment-uploaded-stale-<run_id>.json` preserves it. Corrected environment
+records are reconstructed from each run's fresh `require.stdout.log`, with
+that source explicitly recorded. Future runs now write environment.json from
+the runtime probe directly; that packaging change awaits remote execution.
+
+Name matching remains a heuristic, not proof of authorship. The classifier
+change is awaiting explicit user approval. Unknown events still count as Torch.
+
+### Successful H200 rerun 20261106T185236Z
+
+Command: `python -m scripts.validate --device cuda --timeout-s 180`, via `modal run cloud/modal_runtime.py --tests`, run `20261106T185236Z`. All five remote stages exited 0 with no timeout.
+
+GPU runtime: `{"runtime/compute_sanitizer": "/usr/local/cuda/bin/compute-sanitizer", "runtime/cuda_bindings_version": "13.5.0", "runtime/cuda_tile_version": "1.8.0", "runtime/cutlass_dsl_version": "4.8.1", "runtime/driver_ok": true, "runtime/driver_version": "610.57.04", "runtime/gpu0_compute_cap": "9.0", "runtime/gpu0_cutile_supported": true, "runtime/gpu0_name": "NVIDIA H200", "runtime/gpu0_uuid": "GPU-aac19e0f-0b54-352e-a3a3-015ad052e871", "runtime/gpu_count": 1, "runtime/ncu": "/usr/local/cuda/bin/ncu", "runtime/ninja": "/usr/local/bin/ninja", "runtime/nsys": "/usr/local/bin/nsys", "runtime/nvcc_ok": true, "runtime/nvcc_version": "13.3", "runtime/ok_cuda_backend": true, "runtime/ok_cutedsl": true, "runtime/ok_cutile": true, "runtime/ok_tilelang": true, "runtime/ok_triton_backend": true, "runtime/python": "3.12.1", "runtime/python_ok": true, "runtime/tileiras_ok": true, "runtime/tileiras_reason": null, "runtime/tileiras_version": "13.3.36", "runtime/tilelang_version": "0.1.15", "runtime/torch_cuda_build": true, "runtime/torch_version": "2.14.1+cu130", "runtime/triton_version": "3.8.0", "runtime/unavailable_reason": null}`
+
+[Results](artifacts/results-20261106T185236Z.json), [kernel names](artifacts/kernel_names-20261106T185236Z.json), [environment](artifacts/environment-20261106T185236Z.json), [unittest log](artifacts/gpu_tests.stderr-20261106T185236Z.log).
+
+```text
+Ran 30 tests in 380.509s
+OK
+```
+
+| Fixture | Compile | Verify | Provenance | Reward | Reason |
+|---|---|---|---|---|---|
+| triton | passed | True | 1.0 | 2.0 | faster_than_eager |
+| hack | passed | True | 0.0 | -1.0 | provenance |
+| timeout | not completed | False | None | -1.0 | timeout |
+| max_turns | not completed | False | None | -1.0 | max_turns |
+| overlong | passed | True | 1.0 | 1.25 | faster_than_eager |
+| cuda | passed | True | 1.0 | 2.0 | faster_than_eager |
+| tilelang | passed | True | 1.0 | 2.0 | faster_than_eager |
+| hack-tilelang | passed | True | 0.0 | -1.0 | provenance |
+| cutile | passed | True | 1.0 | 2.0 | faster_than_eager |
+| hack-cutile | passed | True | 0.0 | -1.0 | provenance |
+| cutedsl | passed | True | 1.0 | 2.0 | faster_than_eager |
+| hack-cutedsl | passed | True | 0.0 | -1.0 | provenance |
+
+Raw profiler names from `python -m scripts.record_kernel_names --device cuda --timeout-s 600`, run `20261106T185236Z`. Every listed event is `agent`; every unmatched-name list is `[]`.
+
+```text
+cuda: void axpby_kernel<256>(float*, float const*, float const*, float, int)
+triton: axpby_kernel
+tilelang: axpby_tilelang_kernel
+cutile: axpby_cutile_kernel_Kt1_A1f32_1i16t1_p16_A1f32_1i16t1_p16_A1f32_1i16t1_p16_Sf32_I128
+cutedsl: kernel_cutlass_axpby_cute_kernel_tensorptrf32gmemo151201i64512_tensorptrf32gmemo151201i64512_tensorptrf32gmemo151201i64512_tensor00o1512011105121____0
+```
+
+No backend was unavailable. All five honest rollouts verified with provenance 1.0; all four Torch-op hacks verified with provenance 0.0 and reward -1. Timeout and max-turn fixtures returned their expected reasons.
+
+GPU benchmark and graph tests passed. Raw benchmark latency series, Nsight/sanitizer runs, Chrome traces, other GPUs and broader workloads are not established by this run. Generic-name spoofing remains open pending classifier approval. The environment packaging fix was made after this remote upload and still needs a remote packaging check.

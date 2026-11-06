@@ -1,8 +1,25 @@
 # Known issues and remaining validation
 
-- **No GPU or nvcc on this host.** CUDA compilation, real profiler event names,
-  speedups, GPU provenance and GPU end-to-end reward comparisons cannot be
-  measured here. Those integration tests skip explicitly. Unknown names count
+- **First GPU run: CUDA C++ standard mismatch.** Run `20261106T142830Z`
+  reached the H200 and validated the Python backends, but stock CUDA
+  compilation failed with `C++20 or later compatible compiler is required
+  to use ATen.` The harness forced `-std=c++17`, overriding Torch's default.
+  The override is removed; Torch now selects its required standard. The stock
+  pipeline passed compilation and all five checks in run `20261106T185236Z`.
+- **First Modal image build: dependency conflict.** The preflight attempt
+  (`.venv/bin/modal run cloud/modal_runtime.py`, app
+  `ap-vUlPvIT9iLLPF60u2pKDfc`, image `im-u7ElhT76HK3e4MiGfUc5JZ`)
+  failed before GPU allocation: Torch 2.14.1+cu130 requires the
+  `cuda-toolkit` runtime metapackage at 13.0.3, conflicting with the requested
+  `cuda-toolkit[nvcc,nvvm,tileiras]>=13.3,<13.4`. The CUDA 13.3.1 devel
+  base image built successfully. `requirements-gpu.txt` now pins the
+  individual 13.3.1 compiler components (tileiras 13.3.36, nvcc/nvvm/CRT
+  13.3.73, nvJitLink 13.3.33), preserving Torch's runtime dependencies.
+  The rebuild succeeded and preflight `20261106T142735Z` passed on H200.
+- **Local host remains CPU-only; first GPU evidence now exists.** Modal H200
+  runs `20261106T142830Z` and `20261106T185236Z` captured real profiler
+  names. The latter stock CUDA pipeline compiles and verifies after removing
+  the C++17 override. See VALIDATION.md for measured results and raw logs. Unknown names count
   against provenance; no blanket `triton_` fallback is used because Torch
   Inductor generates that prefix too. Inspect real `ctx.events()` names on the
   target GPU before accepting the GPU validation as complete.
@@ -34,9 +51,10 @@
   artifacts/rollouts_cold_start.log). Local CPU validation uses `--timeout-s 600`;
   the production default is unchanged. The CUDA attempt also reports missing
   Ninja; a GPU image needs the upstream build tools (Ninja and nvcc).
-- **Benchmark mode unmeasured on this host.** Only the CPU path is exercised
-  here: `bench/available: false` plus statistics/rotation fixtures. Every real
-  `bench/*` latency, device key and CUDA-graph result needs a GPU run. A
+- **Benchmark latency series were not archived.** H200 run
+  `20261106T185236Z` passed GPU benchmark sampling and CUDA-graph tests
+  (`Ran 30 tests in 380.509s`, `OK` for the combined suite). The tests
+  assert samples and replay behavior but do not export raw latency series. A
   benchmark stage that crashes, times out or emits malformed output only
   yields `bench/available: false` with a reason; it never changes the reward.
 - **Event latency excludes un-joined side streams.** `bench/*/event_us_*`
@@ -56,19 +74,17 @@
 - **pip-installed nvcc is not a CUDA_HOME.** The CUDA backend relies on the
   devel image's `/usr/local/cuda` headers and toolchain; wheels alone are not
   sufficient for `torch.utils.cpp_extension`.
-- **DSL backends are unvalidated on hardware.** The TileLang, cuTile and CuTe DSL
-  kernels have only CPU-side discovery and classification tests here; their GPU
-  kernel and run_task tests skip without a CUDA GPU and the package. None of
-  these DSLs ships a CPU interpreter in its release packages.
-- **DSL device symbol names are partly undocumented.** TileLang names symbols
-  `<prim_func>_kernel` (its docs show `main` -> `main_kernel`); CuTe DSL defaults
-  to `kernel_cutlass_<fn>_<args>_0` (CUTLASS 4.7 docs); cuTile does not document
-  its naming. Attribution assumes each symbol contains the authored function
-  name. Record real `ctx.events()` names on the GPU host before trusting DSL
-  provenance; if a name doesn't match, report it rather than loosening
-  unknown-event handling. `scripts/record_kernel_names.py` saves the observed
-  names and the classifier's verdict per backend
-  (`artifacts/kernel_names.json`); read it before touching the classifier.
+- **DSL hardware validation is limited to the shipped fixtures.** TileLang,
+  cuTile and CuTe DSL executed on Modal H200 in run `20261106T142830Z`: honest
+  fixtures verified with provenance 1.0; Torch-op hacks verified with provenance
+  0.0. This establishes no performance claim for larger workloads or other GPUs.
+- **Kernel names observed; naming remains a heuristic.** Run
+  `20261106T185236Z` captured all five backend symbols (raw records in
+  `artifacts/kernel_names.stdout-20261106T185236Z.log`). cuTile emitted
+  `axpby_cutile_kernel_Kt1_A1f32_1i16t1_p16_A1f32_1i16t1_p16_A1f32_1i16t1_p16_Sf32_I128`;
+  Triton emitted the bare `axpby_kernel`. TileLang and CuTe matched their
+  documented forms. All had empty unmatched-name lists. Other shapes,
+  types and compiler releases may differ; unknown events must still fail closed.
 - **Generic kernel names over-credit provenance (all backends).** The classifier
   credits any device event whose name contains an authored kernel name as a
   substring. A kernel named something generic (`kernel`, `add`, or TileLang's
@@ -83,8 +99,8 @@
   `nvidia-cutlass-dsl` pulls CUDA 12 runtime libraries by default, and
   `cuda-tile[tileiras]` pulls nvcc/nvvm 13.x. Install each extra in its own
   environment if they clash with each other or with the torch CUDA build. The
-  cloud image installs all three together; that combination is unverified
-  until the first Modal build.
+  cloud image installs all three together; the first build required the compiler
+  pin fix above, after which all three executed successfully on H200.
 - **Only TileLang gets a task-local compile cache.** `TILELANG_CACHE_DIR` is set
   per task like `TRITON_CACHE_DIR`. No cache location is configured for cuTile
   or CuTe DSL; if they don't cache to disk, each compile, verification and
@@ -97,3 +113,14 @@
 - **Controlled comparison.** The requested presets also set GRPO kl_coef=0.001
   and DAPO kl_coef=0.0. For a comparison differing only in the four specified
   toggles, explicitly hold `--kl-coef` equal, along with seeds and budgets.
+
+- **Stale cloud environment artifact corrected locally.** The runner originally
+  copied the uploaded local CPU `artifacts/environment.json` into GPU results.
+  Historical copies are preserved as `environment-uploaded-stale-<run_id>.json`.
+  Corrected `environment-<run_id>.json` records are reconstructed from each
+  run's fresh `require.stdout.log`, with source and command recorded. The runner
+  now writes future environment records from that probe; that packaging fix
+  has not yet been exercised remotely.
+- **Commits unavailable in this workspace.** A focused commit attempt failed
+  with `Unable to create .../.git/index.lock: Read-only file system`.
+  Changes and evidence are retained in the working tree; nothing was pushed.

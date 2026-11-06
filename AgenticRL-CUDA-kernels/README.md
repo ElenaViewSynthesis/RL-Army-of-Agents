@@ -5,8 +5,8 @@
 ![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-3776AB)
 ![PyTorch ≥ 2.3](https://img.shields.io/badge/torch-%E2%89%A52.3-EE4C2C)
 ![Triton ≥ 3.0](https://img.shields.io/badge/triton-%E2%89%A53.0-6E40C9)
-![Tests: 81](https://img.shields.io/badge/tests-81%20%28GPU%20ones%20skip%20without%20CUDA%29-2EA44F)
-![GPU results: not measured](https://img.shields.io/badge/GPU%20results-not%20measured-lightgrey)
+![Tests: 94](https://img.shields.io/badge/tests-94-2EA44F)
+![GPU: H200](https://img.shields.io/badge/GPU-H200%20validated-2EA44F)
 
 This project extends the environment released with [CUDA-Agent](https://github.com/BytedTsinghua-SIA/CUDA-Agent) ([paper](https://arxiv.org/abs/2602.24286)). It adds three things:
 
@@ -15,7 +15,13 @@ This project extends the environment released with [CUDA-Agent](https://github.c
 3. **GRPO / DAPO reward handling.** Group-relative advantages, tied-group filtering and overlong-turn shaping are exposed as config switches, so a critic-free trainer can consume the discrete milestone reward.
 
 > [!IMPORTANT]
-> **No GPU timings have been measured yet.** Development ran on a host without an NVIDIA GPU or `nvcc`, so every eager / torch.compile / CUDA / Triton time, every cuBLAS / CUTLASS / cuDNN share and every provenance percentage below reads *not measured*. CPU runs check correctness only and can never earn a positive reward. The commands to fill these cells on a GPU are in [Reproducing on a GPU](#reproducing-on-a-gpu).
+> **First H200 measurements now exist.** Modal runs `20261106T142830Z` and
+> `20261106T185236Z` executed the shipped fixtures. The first found a CUDA C++
+> standard mismatch; the rerun's stock pipeline passes after the build fix.
+> See [VALIDATION.md](VALIDATION.md#first-modal-gpu-validation-2026-11-06) for raw
+> logs, commands, runtime details and limitations. These tiny axpby measurements
+> do not establish performance on broader workloads.
+
 
 ---
 
@@ -125,14 +131,14 @@ For element-wise kernels like axpby, both backends are judged the same way. For 
 
 ## TileLang, cuTile and CuTe DSL backends
 
-Three more Python GPU DSLs plug into the same pipeline through the backend registry in `utils/backend.py`. Each one has an axpby example, a `model_new_<backend>.py` template, a policy doc and an optional requirements file. **None of them has run on a GPU yet.** None ships a CPU interpreter either, so this host only tests their source discovery, backend detection and classification.
+Three more Python GPU DSLs plug into the same pipeline through the backend registry in `utils/backend.py`. Each one has an axpby example, a `model_new_<backend>.py` template, a policy doc and an optional requirements file. **All three executed on Modal H200 in run `20261106T142830Z`.** Honest fixtures passed verification with provenance 1.0; Torch-op hacks passed verification with provenance 0.0. None ships a CPU interpreter.
 
 | | TileLang | cuTile | CuTe DSL |
 |---|---|---|---|
 | **Package** | `tilelang` 0.1.15 (tile-ai, third party) | `cuda-tile` 1.8.0 (NVIDIA CUDA Tile) | `nvidia-cutlass-dsl` 4.8.1 (NVIDIA CUTLASS 4.x) |
 | **Abstraction** | Tile level with an explicit memory hierarchy: `T.copy`, `T.alloc_shared` / `T.alloc_fragment`, `T.gemm`, `T.Pipelined` | Tile level, Triton-like: `ct.load` / `ct.store` / `ct.gather` / `ct.scatter`, `ct.mma`; the `tileiras` compiler maps tiles to threads | Low level: CuTe layouts, tensors, copy and MMA atoms, explicit thread/value layouts |
 | **Authored kernels** | `@T.prim_func` (or `@tilelang.jit`) in `kernels/tilelang/` | `@ct.kernel` in `kernels/cutile/` | `@cute.kernel` in `kernels/cutedsl/`; `@cute.jit` launchers are not credited |
-| **Device symbol** | `<prim_func>_kernel` (per TileLang docs) | Undocumented | `kernel_cutlass_<fn>_…_0` by default |
+| **Device symbol** | `<prim_func>_kernel` (per TileLang docs) | Observed `<name>_Kt1_<typed arguments>` on H200 | `kernel_cutlass_<fn>_…_0` by default |
 | **GPUs** | SM70–SM120 | Compute capability 8.x–12.x (Hopper needs tileiras 13.3+), driver r580+, Python 3.11+ | Ampere and newer |
 | **Example** | `kernels/tilelang/axpby.py`, compiled with `tilelang.compile(target="cuda")` | `kernels/cutile/axpby.py`, launched with `ct.launch` on the current stream | `kernels/cutedsl/axpby.py`, adapted from CUTLASS's elementwise example |
 | **Policy · install** | [SKILL_TILELANG.md](SKILL_TILELANG.md) · `requirements-tilelang.txt` | [SKILL_CUTILE.md](SKILL_CUTILE.md) · `requirements-cutile.txt` | [SKILL_CUTEDSL.md](SKILL_CUTEDSL.md) · `requirements-cutedsl.txt` |
@@ -143,7 +149,7 @@ Three more Python GPU DSLs plug into the same pipeline through the backend regis
 
 - **No library credit.** As with Triton, cuBLAS, CUTLASS and cuDNN time counts against the 90% gate.
 - **CuTe DSL symbols contain "cutlass".** The classifier would normally treat that as library time, but it checks authored names first, so `kernel_cutlass_axpby_cute_kernel_…` counts as agent work. Tests pin that order.
-- **The symbol names above come from documentation, not observed traces.** Record the real profiler names on a GPU before trusting DSL provenance (see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)).
+- **Real symbols are recorded in run `20261106T185236Z`.** See the verbatim names in [VALIDATION.md](VALIDATION.md); other compiler versions and signatures remain unverified.
 
 Install a backend's extra on top of `requirements.txt`, for example `uv pip install --python .venv/bin/python -r requirements-tilelang.txt`. The extras may conflict with each other or with your Torch build, so use separate environments if needed. `python -m scripts.validate --device cuda` runs each installed DSL's honest and Torch-op hack fixtures, and records any backend it skipped, with the reason, under `unavailable_backends` in `results.json`.
 
@@ -209,23 +215,36 @@ Calling CuPy from a candidate is calling those vendor libraries, so the provenan
 
 To use Triton, copy `model_new_triton.py` to a task's `model_new.py` (see [SKILL_TRITON.md](SKILL_TRITON.md)). `--backend auto|cuda|triton` selects compilation. Profiling keeps the upstream timing line and appends per-kernel times and provenance with `--json`; unknown names count as Torch, and memcpy/memset is excluded from the gate denominator.
 
-The case rows come from `python -m scripts.validate --device cpu --timeout-s 600` (raw JSON in [`artifacts/results.json`](artifacts/results.json)). The GPU proof is `python -m unittest -v tests.test_provenance.GPUIntegrationTests`.
+The measured case rows come from the H200 run below; historical CPU evidence remains in `artifacts/results.json`. The GPU command is `python -m unittest -v tests.test_provenance tests.test_dsl_kernels tests.test_benchmark.GPUBenchmarkTests`.
 
-| Case | Eager µs | Compile µs | CUDA µs | Triton µs | Provenance % | Outcome |
-|---|---|---|---|---|---|---|
-| Honest CUDA | not measured | not measured | not measured | — | not measured | GPU test skipped |
-| Honest Triton | not measured | not measured | — | not measured | not measured | CPU correctness; unmeasured reward |
-| Torch hack | not measured | not measured | — | not measured | not measured | CPU correctness; GPU gate test skipped |
-| Timeout | not measured | not measured | — | not measured | not measured | timeout |
-| Max turns | not measured | not measured | — | not measured | not measured | max_turns |
-| Overlong (DAPO) | not measured | not measured | — | not measured | not measured | shaping unit-tested; GPU check skipped |
+Measured by `python -m scripts.validate --device cuda --timeout-s 180`, via `modal run cloud/modal_runtime.py --tests`, run `20261106T185236Z`. Times below are profiler kernel-duration sums, rounded to 4 decimals; name attribution is a heuristic.
+
+| Case | Eager µs | Compile µs | Generated µs | Provenance % | Reward / outcome |
+|---|---|---|---|---|---|
+| triton | 1.6576 | 0.7841 | 0.7936 | 100.0 | 2.0 / faster_than_eager |
+| hack | 1.6608 | 0.7809 | 1.7631 | 0.0 | -1.0 / provenance |
+| timeout | not measured (execution stopped) | not measured (execution stopped) | not measured (execution stopped) | not measured (execution stopped) | -1.0 / timeout |
+| max_turns | not measured (execution stopped) | not measured (execution stopped) | not measured (execution stopped) | not measured (execution stopped) | -1.0 / max_turns |
+| overlong | 1.6479 | 0.7843 | 0.7840 | 100.0 | 1.25 / faster_than_eager |
+| cuda | 1.6414 | 0.8000 | 0.9376 | 100.0 | 2.0 / faster_than_eager |
+| tilelang | 1.6448 | 0.8032 | 0.7905 | 100.0 | 2.0 / faster_than_eager |
+| hack-tilelang | 1.6448 | 0.7968 | 1.7665 | 0.0 | -1.0 / provenance |
+| cutile | 1.6511 | 0.7838 | 0.8479 | 100.0 | 2.0 / faster_than_eager |
+| hack-cutile | 1.6415 | 0.7123 | 1.7700 | 0.0 | -1.0 / provenance |
+| cutedsl | 1.6417 | 0.7996 | 0.9825 | 100.0 | 2.0 / faster_than_eager |
+| hack-cutedsl | 1.6448 | 0.7842 | 1.7729 | 0.0 | -1.0 / provenance |
 
 Device-time breakdown by bucket, from `provenance/*` in `profiling --json`:
 
-| Kernel | Agent share | cuBLAS / CUTLASS / cuDNN share | Torch share | Memory share |
+Measured by `python -m scripts.record_kernel_names --device cuda --timeout-s 600`, run `20261106T185236Z` (via the Modal command above). Fractions below are percentages of total device time.
+
+| Kernel backend | Agent share | Library share | Torch share | Memory share |
 |---|---|---|---|---|
-| axpby, CUDA backend | not measured | not measured | not measured | not measured |
-| axpby, Triton backend | not measured | not measured | not measured | not measured |
+| cuda | 100.0% | 0.0% | 0.0% | 0.0% |
+| triton | 100.0% | 0.0% | 0.0% | 0.0% |
+| tilelang | 100.0% | 0.0% | 0.0% | 0.0% |
+| cutile | 100.0% | 0.0% | 0.0% | 0.0% |
+| cutedsl | 100.0% | 0.0% | 0.0% | 0.0% |
 | Level-2 GEMM | not implemented (deferred) | — | — | — |
 
 The synthetic honest / honest / hack group below has rewards 3, 3 and −1, and also comes from `scripts.validate`. These are arithmetic fixtures, not GPU results.
@@ -251,7 +270,7 @@ Each round reports two per-iteration timings: `event_us_*` (CUDA events on the c
 
 ## GPU runtime (cloud)
 
-**No GPU run has happened yet.** The pinned cloud stack is [requirements-gpu.txt](requirements-gpu.txt): the `nvidia/cuda:13.3.1-devel-ubuntu24.04` image (system nvcc + headers at `/usr/local/cuda`), Python 3.12, `torch==2.14.1+cu130`, `triton`, `ninja`, `cuda-tile==1.8.0` with `cuda-toolkit[tileiras]>=13.3,<13.4`, `tilelang==0.1.15` and `nvidia-cutlass-dsl[cu13]==4.8.1`. Install it with **pip** — uv's first-index strategy cannot resolve the `+cu130` wheel (`UV_INDEX_STRATEGY=unsafe-best-match` also works). Hopper (sm_90: H100/H200) needs tileiras **13.3**, which also matches Modal's CUDA 13.3 driver API.
+**H200 validation completed in run `20261106T185236Z`.** The pinned cloud stack is [requirements-gpu.txt](requirements-gpu.txt): the `nvidia/cuda:13.3.1-devel-ubuntu24.04` image (system nvcc + headers at `/usr/local/cuda`), Python 3.12, `torch==2.14.1+cu130`, `triton`, `ninja`, `cuda-tile==1.8.0` with directly pinned CUDA 13.3.1 compiler components (tileiras `13.3.36`), `tilelang==0.1.15` and `nvidia-cutlass-dsl[cu13]==4.8.1`. Install it with **pip** — uv's first-index strategy cannot resolve the `+cu130` wheel (`UV_INDEX_STRATEGY=unsafe-best-match` also works). Hopper (sm_90: H100/H200) needs tileiras **13.3**, which also matches Modal's CUDA 13.3 driver API.
 
 Preflight on any GPU host: `python -m utils.runtime --json --require cuda,triton,tilelang,cutile,cutedsl` — it prints a flat `runtime/*` record (driver, nvcc, ninja, tileiras, torch/triton/cuda-tile/tilelang/cutlass-dsl versions, GPU UUID) and exits non-zero when a profile is missing; it never imports torch.
 
@@ -312,7 +331,11 @@ On a cold host the first Triton interpreter compile can take minutes, so local C
 These are the only runs that can replace the *not measured* cells above:
 
 ```bash
-python -m unittest -v tests.test_provenance.GPUIntegrationTests
+pip install -r requirements-gpu.txt
+python -m utils.runtime --json --require cuda,triton,tilelang,cutile,cutedsl
+bash utils/compile.sh && python -m utils.verification && python -m utils.profiling --json
+python -m scripts.record_kernel_names --device cuda
+python -m unittest -v tests.test_provenance tests.test_dsl_kernels tests.test_benchmark.GPUBenchmarkTests
 python -m scripts.validate --device cuda
 ```
 
@@ -353,7 +376,7 @@ AgenticRL-CUDA-kernels/
 ├── kernels/
 │   ├── axpby.cu · axpby_binding.cpp   # upstream CUDA example (unchanged)
 │   ├── triton/axpby.py                # authored, autotuned Triton kernel
-│   └── {tilelang,cutile,cutedsl}/     # DSL axpby examples (GPU only, not yet run)
+│   └── {tilelang,cutile,cutedsl}/     # DSL axpby examples (validated on H200)
 ├── utils/
 │   ├── compile.py · compile.sh        # --backend auto|cuda|triton|tilelang|cutile|cutedsl
 │   ├── verification.py                # 5 random-input checks, atol/rtol 1e-2
@@ -366,7 +389,7 @@ AgenticRL-CUDA-kernels/
 │   ├── config.py                      # RolloutConfig, GRPO/DAPO presets, CLI
 │   └── rollout_env.py                 # run_task(): isolated, deadline-bounded evaluation
 ├── scripts/validate.py                # reproducible fixtures → artifacts/results.json
-├── tests/                             # 81 tests; GPU-only ones skip without CUDA or the DSL package
+├── tests/                             # 94 tests; GPU-only ones skip without CUDA or the DSL package
 ├── artifacts/                         # raw logs, environment record, upstream checksums
 ├── SKILL*.md                          # policy instructions, one per backend
 ├── requirements*.txt                  # torch + triton; optional per-DSL extras

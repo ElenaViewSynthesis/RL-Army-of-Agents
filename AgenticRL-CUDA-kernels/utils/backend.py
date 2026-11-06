@@ -60,7 +60,9 @@ BACKENDS = {
         template="model_new_tilelang.py"),
     "cutile": BackendSpec(
         # NVIDIA CUDA Tile (cuda.tile), compiled by tileiras on first launch.
-        # Its device symbol naming is undocumented; verify on hardware.
+        # H200 run 20261106T185236Z captured <name>_Kt1_<typed arguments>
+        # (axpby_cutile_kernel_Kt1_A1f32_..._Sf32_I128). Other shapes/versions
+        # may differ; this is observed evidence, not a vendor naming guarantee.
         name="cutile", display="cuTile", import_prefixes=("kernels.cutile",),
         kernel_glob="kernels/cutile/*.py", decorators=("cuda.tile.kernel",),
         compile_mode="jit", kernel_package="kernels.cutile", library_allowed=False,
