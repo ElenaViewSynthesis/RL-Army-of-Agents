@@ -87,10 +87,18 @@ def gpu_tests(run_id: str) -> dict:
         _run(["python", "-m", "scripts.validate", "--device", "cuda"], "validate", 3600, run_id),
     ]
     out_dir = Path("/artifacts") / run_id
-    for name in ("results.json", "environment.json", "kernel_names.json"):
+    for name in ("results.json", "kernel_names.json"):
         source = Path(REMOTE) / "artifacts" / name
         if source.is_file():
             (out_dir / name).write_bytes(source.read_bytes())
+    # The uploaded artifacts/environment.json may describe local CPU development.
+    # Use the require probe from this container, never that historical snapshot.
+    try:
+        environment = json.loads((out_dir / "require.stdout.log").read_text().strip().splitlines()[-1])
+    except (ValueError, IndexError):
+        environment = {"runtime/available": False, "reason": "require probe emitted no JSON"}
+    (out_dir / "environment.json").write_text(json.dumps(
+        {"run_id": run_id, "command": runs[0]["cmd"], **environment}, indent=2))
     volume.commit()
     return {"run_id": run_id, "runs": runs}
 
