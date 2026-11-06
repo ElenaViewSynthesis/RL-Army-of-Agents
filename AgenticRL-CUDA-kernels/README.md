@@ -289,6 +289,20 @@ On Modal: `modal run cloud/modal_runtime.py` (preflight) or `--tests` (require g
 
 ---
 
+## Experiment tracking (W&B + Weave, opt-in)
+
+Install into the project venv — the system interpreter is PEP 668 "externally managed", so bare `pip install` is refused: `UV_CACHE_DIR="$PWD/.cache/uv" uv pip install --python .venv/bin/python -r requirements-tracking.txt` (or `.venv/bin/pip install -r requirements-tracking.txt`), and run the commands below with `.venv/bin/python`. Export `WANDB_API_KEY` from `.env` (`set -a; . ./.env; set +a` — never commit it). Runs log to project `elenamylocuda-gemma/CUDA-gen`: config = `cfg/*` (RolloutConfig) + `runtime/*` (GPU/driver/toolkit versions) + `versions/*`; metrics = the flat `env/*`, `reward/*`, `meta/*`, `bench/*` keys (`log/*` and `artifact/*` dropped); `rollouts`/`kernels` tables; one `validation-run` artifact per run holding the raw logs. Weave traces `run_task` (inputs: task_id, backend, cfg, model_new.py source + sha256, kernel files; output: full result), `compute_reward`, `build_batch`, and `h200_rollout_replay` for backfilled rollouts.
+
+```bash
+.venv/bin/python -m tracking.wandb_log backfill --all --dry-run   # payloads, no service
+.venv/bin/python -m tracking.wandb_log backfill --all             # the five runs in tracking/h200_runs.json
+.venv/bin/python -m tracking.wandb_log rollout <workdir> --backend triton --turns-used 1
+```
+
+The W&B MCP server (`https://mcp.withwandb.com/mcp`, bearer = `WANDB_API_KEY`) is configured for this repo in `.devin/mcp_config.json`. For hyperparameter sweeps with one `wandb agent` per GPU (`sweeps/rollout_sweep.yaml`, `scripts/sweep_rollout.sh`, `scripts/make_sweep_tasks.py`), see [WANDB_parallel_sweep_agents.md](WANDB_parallel_sweep_agents.md).
+
+---
+
 ## Quick start
 
 Python 3.11+ on **Linux or WSL2** is required. The floor is 3.11 rather than 3.10 so a future cuTile Python backend fits without a second runtime: cuTile supports Python 3.11–3.15, compute capability 8.x–12.x (Hopper H100/H200 is 9.0), NVIDIA driver r580+ and CUDA Toolkit 13.1+, and takes PyTorch tensors as kernel arguments ([prerequisites](https://docs.nvidia.com/cuda/cutile-python/quickstart.html#prerequisites)). Process isolation uses POSIX process groups, so the process tests fail on native Windows. The CUDA path also needs `nvcc` and Ninja on `PATH` (the cloud image provides both).
@@ -388,11 +402,12 @@ AgenticRL-CUDA-kernels/
 │   ├── grpo.py                        # group advantages, tied-group filter, batch stats
 │   ├── config.py                      # RolloutConfig, GRPO/DAPO presets, CLI
 │   └── rollout_env.py                 # run_task(): isolated, deadline-bounded evaluation
-├── scripts/validate.py                # reproducible fixtures → artifacts/results.json
+├── scripts/                           # validate + record_kernel_names (artifacts)
+├── tracking/                          # opt-in W&B + Weave logging, H200 manifest
 ├── tests/                             # 94 tests; GPU-only ones skip without CUDA or the DSL package
 ├── artifacts/                         # raw logs, environment record, upstream checksums
 ├── SKILL*.md                          # policy instructions, one per backend
-├── requirements*.txt                  # torch + triton; optional per-DSL extras
+├── requirements*.txt                  # torch + triton; optional per-DSL/tracking extras
 └── VALIDATION.md · KNOWN_ISSUES.md    # evidence and open gaps
 ```
 

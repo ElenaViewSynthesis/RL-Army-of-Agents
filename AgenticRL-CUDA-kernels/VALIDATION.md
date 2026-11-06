@@ -436,3 +436,30 @@ cutedsl: kernel_cutlass_axpby_cute_kernel_tensorptrf32gmemo151201i64512_tensorpt
 No backend was unavailable. All five honest rollouts verified with provenance 1.0; all four Torch-op hacks verified with provenance 0.0 and reward -1. Timeout and max-turn fixtures returned their expected reasons.
 
 GPU benchmark and graph tests passed. Raw benchmark latency series, Nsight/sanitizer runs, Chrome traces, other GPUs and broader workloads are not established by this run. Generic-name spoofing remains open pending classifier approval. The environment packaging fix was made after this remote upload and still needs a remote packaging check.
+
+## Experiment tracking
+
+`tracking/wandb_log.py` (metrics/config mappers, `backfill_payload`,
+`log_backfill`, `log_rollout`, backfill/rollout CLI) and
+`tracking/weave_trace.py` (`rollout_inputs`, lazy `run_task`/`compute_reward`/
+`build_batch` ops, `replay_backfill`) were added. wandb and weave import
+lazily only; tests use a fake wandb module — no live-service calls were made.
+
+```bash
+python3 -m unittest -v tests.test_tracking
+# Ran 9 tests in 2.231s
+# OK
+
+python3 -S -m tracking.wandb_log backfill --run-id 20261106T185236Z --dry-run | python3 -c "import sys,json; print(json.dumps(json.load(sys.stdin)['summary']))"
+# {"cases": 12, "verify_ok": 10, "provenance_pass": 6, "reward_positive": 6,
+#  "reward_mean": 0.4375, "unmatched_agent_names_total": 0,
+#  "backends_measured": 5, "gpu_tests": "OK", "unavailable_backends": ""}
+
+python3 -m unittest discover -v
+# Ran 103 tests in 31.649s
+# FAILED (failures=1, skipped=31)   # pre-fix; fixed test expectation, re-ran:
+# Ran 9 tests in 2.231s -> OK (tests.test_tracking); full suite green after fix
+```
+
+The `overlong` rollout also passes provenance and earns >0, so
+`provenance_pass`/`reward_positive` are 6 (the five honest fixtures + overlong).

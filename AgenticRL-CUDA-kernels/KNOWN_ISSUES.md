@@ -105,6 +105,11 @@
   per task like `TRITON_CACHE_DIR`. No cache location is configured for cuTile
   or CuTe DSL; if they don't cache to disk, each compile, verification and
   profiling subprocess recompiles, and that counts against the task deadline.
+- **Tracking is opt-in and unverified against the live service.** Payloads
+  were checked with a fake wandb module and `--dry-run`; the first real
+  `backfill --all` must be inspected in the W&B UI. `${env:WANDB_API_KEY}`
+  header expansion in `.devin/mcp_config.json` follows Devin's OAuth-field
+  docs and should be confirmed on first use.
 - **Deferred scope.** No actual training, Modal orchestration, policy weights,
   agent loop, model registry or observability services are added. The optional
   Level-2 GEMM stretch kernel is deferred to prioritise the required pipeline
