@@ -50,7 +50,8 @@ def compile_kernels() -> int:
             build_directory=str(build_dir),
             verbose=False,
             with_cuda=True,
-            extra_cflags=['-O3', '-std=c++17'],
+            # Let Torch select its required standard (C++20 in Torch 2.14).
+            extra_cflags=['-O3'],
             extra_cuda_cflags=['-O3', '--use_fast_math'],
         )
     except Exception as exc:
