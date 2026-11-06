@@ -1,0 +1,11 @@
+Compiling 3 files: binding.cpp, kernels/axpby.cu, kernels/axpby_binding.cpp
+Compile success: cuda_extension.so
+[TIME] Compilation took 14.72s
+[PASS] check 1/5
+[PASS] check 2/5
+[PASS] check 3/5
+[PASS] check 4/5
+[PASS] check 5/5
+[PASS] verify success
+Torch Baseline: 1.639us, Torch Compile: 0.803us, CUDA Extension: 0.938us
+{"t_gen_us": 0.9377999999999929, "provenance": 1.0, "provenance/agent": 1.0, "provenance/library": 0.0, "provenance/torch": 0.0, "provenance/memory": 0.0, "kernel_us/void axpby_kernel<256>(float*, float const*, float const*, float, int)": 0.9377999999999929, "timing_measured": true, "t_eager_us": 1.638599999999974, "t_compile_us": 0.8031999999999926}

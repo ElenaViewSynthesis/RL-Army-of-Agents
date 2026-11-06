@@ -1,0 +1,104 @@
+test_decorators_comments_multiline_cuda (tests.test_backend_provenance.BackendTests.test_decorators_comments_multiline_cuda) ... ok
+test_imports_overrides_and_no_execution (tests.test_backend_provenance.BackendTests.test_imports_overrides_and_no_execution) ... ok
+test_protected_upstream_files_are_byte_identical (tests.test_backend_provenance.BackendTests.test_protected_upstream_files_are_byte_identical) ... ok
+test_stock_source_discovery (tests.test_backend_provenance.BackendTests.test_stock_source_discovery) ... ok
+test_cutedsl_cutlass_named_symbols (tests.test_backend_provenance.DSLBackendTests.test_cutedsl_cutlass_named_symbols) ... ok
+test_cutedsl_detection_and_discovery (tests.test_backend_provenance.DSLBackendTests.test_cutedsl_detection_and_discovery) ... ok
+test_cutile_detection_and_discovery (tests.test_backend_provenance.DSLBackendTests.test_cutile_detection_and_discovery) ... ok
+test_cutile_library_time_not_credited (tests.test_backend_provenance.DSLBackendTests.test_cutile_library_time_not_credited) ... ok
+test_tilelang_detection_and_discovery (tests.test_backend_provenance.DSLBackendTests.test_tilelang_detection_and_discovery) ... ok
+test_tilelang_library_time_not_credited (tests.test_backend_provenance.DSLBackendTests.test_tilelang_library_time_not_credited) ... ok
+test_classes_and_library_backend_policy (tests.test_backend_provenance.ProvenanceTests.test_classes_and_library_backend_policy) ... ok
+test_cpu_profiling_skips_without_importing_torch (tests.test_backend_provenance.ProvenanceTests.test_cpu_profiling_skips_without_importing_torch) ... ok
+test_hack_unknown_and_empty_fail_closed (tests.test_backend_provenance.ProvenanceTests.test_hack_unknown_and_empty_fail_closed) ... ok
+test_legacy_stdout_format_without_importing_torch (tests.test_backend_provenance.ProvenanceTests.test_legacy_stdout_format_without_importing_torch) ... ok
+test_memory_excluded_from_gate_and_per_kernel_averaging (tests.test_backend_provenance.ProvenanceTests.test_memory_excluded_from_gate_and_per_kernel_averaging) ... ok
+test_cpu_skip_line_without_json_flag (tests.test_benchmark.CLITests.test_cpu_skip_line_without_json_flag) ... ok
+test_cpu_unavailable_without_torch (tests.test_benchmark.CLITests.test_cpu_unavailable_without_torch) ... ok
+test_cuda_graphs_still_unavailable_on_cpu (tests.test_benchmark.CLITests.test_cuda_graphs_still_unavailable_on_cpu) ... ok
+test_modules_import_without_torch (tests.test_benchmark.CLITests.test_modules_import_without_torch) ... ok
+test_rounds_must_be_a_positive_multiple_of_three (tests.test_benchmark.CLITests.test_rounds_must_be_a_positive_multiple_of_three) ... ok
+test_bench_samples_order_and_flatness (tests.test_benchmark.GPUBenchmarkTests.test_bench_samples_order_and_flatness) ... skipped 'requires a CUDA GPU; benchmark samples never ran here'
+test_cuda_graphs_capture_replay_and_item_hack (tests.test_benchmark.GPUBenchmarkTests.test_cuda_graphs_capture_replay_and_item_hack) ... skipped 'requires a CUDA GPU; benchmark samples never ran here'
+test_round_order_balanced_over_six (tests.test_benchmark.StatsTests.test_round_order_balanced_over_six) ... ok
+test_summarize_bench_flat_no_graphs (tests.test_benchmark.StatsTests.test_summarize_bench_flat_no_graphs) ... ok
+test_summarize_bench_graph_keys_only_when_present (tests.test_benchmark.StatsTests.test_summarize_bench_graph_keys_only_when_present) ... ok
+test_summarize_bench_zero_wall_and_bad_length (tests.test_benchmark.StatsTests.test_summarize_bench_zero_wall_and_bad_length) ... ok
+test_summarize_known_values (tests.test_benchmark.StatsTests.test_summarize_known_values) ... ok
+test_summarize_prefix_and_rejection (tests.test_benchmark.StatsTests.test_summarize_prefix_and_rejection) ... ok
+test_environment_modules_import_without_site_packages (tests.test_config_reward_grpo.ConfigTests.test_environment_modules_import_without_site_packages) ... ok
+test_every_field_has_a_cli_flag (tests.test_config_reward_grpo.ConfigTests.test_every_field_has_a_cli_flag) ... ok
+test_invalid_configs (tests.test_config_reward_grpo.ConfigTests.test_invalid_configs) ... ok
+test_presets_and_independent_overrides (tests.test_config_reward_grpo.ConfigTests.test_presets_and_independent_overrides) ... ok
+test_identical_groups_under_both_presets (tests.test_config_reward_grpo.GroupTests.test_identical_groups_under_both_presets) ... ok
+test_multiple_groups_same_task_and_stats (tests.test_config_reward_grpo.GroupTests.test_multiple_groups_same_task_and_stats) ... ok
+test_normalization_filter_and_empty (tests.test_config_reward_grpo.GroupTests.test_normalization_filter_and_empty) ... ok
+test_reject_partial_and_invalid_groups (tests.test_config_reward_grpo.GroupTests.test_reject_partial_and_invalid_groups) ... ok
+test_configurable_margin (tests.test_config_reward_grpo.RewardTests.test_configurable_margin) ... ok
+test_gates_and_missing_measurements (tests.test_config_reward_grpo.RewardTests.test_gates_and_missing_measurements) ... ok
+test_milestone_exact_boundaries (tests.test_config_reward_grpo.RewardTests.test_milestone_exact_boundaries) ... ok
+test_turn_caps_and_dapo_shaping (tests.test_config_reward_grpo.RewardTests.test_turn_caps_and_dapo_shaping) ... ok
+test_graph_capture_replays_on_current_stream (tests.test_dsl_kernels.CuTeDSLAxpbyTests.test_graph_capture_replays_on_current_stream) ... skipped 'requires a CUDA GPU, Torch and cutlass.cute'
+test_invalid_inputs_rejected (tests.test_dsl_kernels.CuTeDSLAxpbyTests.test_invalid_inputs_rejected) ... skipped 'requires a CUDA GPU, Torch and cutlass.cute'
+test_shapes_tails_dtypes_and_inputs_unchanged (tests.test_dsl_kernels.CuTeDSLAxpbyTests.test_shapes_tails_dtypes_and_inputs_unchanged) ... skipped 'requires a CUDA GPU, Torch and cutlass.cute'
+test_graph_capture_replays_on_current_stream (tests.test_dsl_kernels.CuTileAxpbyTests.test_graph_capture_replays_on_current_stream) ... skipped 'requires a CUDA GPU, Torch and cuda.tile'
+test_invalid_inputs_rejected (tests.test_dsl_kernels.CuTileAxpbyTests.test_invalid_inputs_rejected) ... skipped 'requires a CUDA GPU, Torch and cuda.tile'
+test_shapes_tails_dtypes_and_inputs_unchanged (tests.test_dsl_kernels.CuTileAxpbyTests.test_shapes_tails_dtypes_and_inputs_unchanged) ... skipped 'requires a CUDA GPU, Torch and cuda.tile'
+test_graph_capture_replays_on_current_stream (tests.test_dsl_kernels.TileLangAxpbyTests.test_graph_capture_replays_on_current_stream) ... skipped 'requires a CUDA GPU, Torch and tilelang'
+test_invalid_inputs_rejected (tests.test_dsl_kernels.TileLangAxpbyTests.test_invalid_inputs_rejected) ... skipped 'requires a CUDA GPU, Torch and tilelang'
+test_shapes_tails_dtypes_and_inputs_unchanged (tests.test_dsl_kernels.TileLangAxpbyTests.test_shapes_tails_dtypes_and_inputs_unchanged) ... skipped 'requires a CUDA GPU, Torch and tilelang'
+test_honest_interpreter_correctness_no_fabricated_provenance (tests.test_provenance.CPUIntegrationTests.test_honest_interpreter_correctness_no_fabricated_provenance) ... ok
+test_incorrect_output_and_crash_fail_safely (tests.test_provenance.CPUIntegrationTests.test_incorrect_output_and_crash_fail_safely) ... ok
+test_max_turns_through_run_task (tests.test_provenance.CPUIntegrationTests.test_max_turns_through_run_task) ... ok
+test_timeout_five_seconds_through_run_task (tests.test_provenance.CPUIntegrationTests.test_timeout_five_seconds_through_run_task) ... ok
+test_torch_hack_passes_verification_but_cpu_cannot_attribute (tests.test_provenance.CPUIntegrationTests.test_torch_hack_passes_verification_but_cpu_cannot_attribute) ... ok
+test_both_presets_rank_the_hack_last (tests.test_provenance.CuTeDSLGPUIntegrationTests.test_both_presets_rank_the_hack_last) ... skipped 'requires CUDA GPU, Torch + CuTe DSL (nvidia-cutlass-dsl)'
+test_honest_passes_correctness_and_provenance (tests.test_provenance.CuTeDSLGPUIntegrationTests.test_honest_passes_correctness_and_provenance) ... skipped 'requires CUDA GPU, Torch + CuTe DSL (nvidia-cutlass-dsl)'
+test_torch_hack_passes_verification_fails_provenance (tests.test_provenance.CuTeDSLGPUIntegrationTests.test_torch_hack_passes_verification_fails_provenance) ... skipped 'requires CUDA GPU, Torch + CuTe DSL (nvidia-cutlass-dsl)'
+test_both_presets_rank_the_hack_last (tests.test_provenance.CuTileGPUIntegrationTests.test_both_presets_rank_the_hack_last) ... skipped 'requires CUDA GPU, Torch + cuTile (cuda-tile)'
+test_honest_passes_correctness_and_provenance (tests.test_provenance.CuTileGPUIntegrationTests.test_honest_passes_correctness_and_provenance) ... skipped 'requires CUDA GPU, Torch + cuTile (cuda-tile)'
+test_torch_hack_passes_verification_fails_provenance (tests.test_provenance.CuTileGPUIntegrationTests.test_torch_hack_passes_verification_fails_provenance) ... skipped 'requires CUDA GPU, Torch + cuTile (cuda-tile)'
+test_both_presets_rank_the_hack_last (tests.test_provenance.GPUIntegrationTests.test_both_presets_rank_the_hack_last) ... skipped 'requires CUDA GPU, nvcc, Torch + Triton'
+test_dapo_overlong_base_unchanged (tests.test_provenance.GPUIntegrationTests.test_dapo_overlong_base_unchanged) ... skipped 'requires CUDA GPU, nvcc, Torch + Triton'
+test_honest_cuda (tests.test_provenance.GPUIntegrationTests.test_honest_cuda) ... skipped 'requires CUDA GPU, nvcc, Torch + Triton'
+test_honest_triton (tests.test_provenance.GPUIntegrationTests.test_honest_triton) ... skipped 'requires CUDA GPU, nvcc, Torch + Triton'
+test_torch_hack_passes_verification_fails_provenance (tests.test_provenance.GPUIntegrationTests.test_torch_hack_passes_verification_fails_provenance) ... skipped 'requires CUDA GPU, nvcc, Torch + Triton'
+test_both_presets_rank_the_hack_last (tests.test_provenance.TileLangGPUIntegrationTests.test_both_presets_rank_the_hack_last) ... skipped 'requires CUDA GPU, Torch + TileLang'
+test_honest_passes_correctness_and_provenance (tests.test_provenance.TileLangGPUIntegrationTests.test_honest_passes_correctness_and_provenance) ... skipped 'requires CUDA GPU, Torch + TileLang'
+test_torch_hack_passes_verification_fails_provenance (tests.test_provenance.TileLangGPUIntegrationTests.test_torch_hack_passes_verification_fails_provenance) ... skipped 'requires CUDA GPU, Torch + TileLang'
+test_cpu_null_record_is_unmeasured (tests.test_record_kernel_names.RecordTests.test_cpu_null_record_is_unmeasured) ... {"backend": "triton", "measured": false, "reason": "CPU (no device events)"}
+ok
+test_measured_classes_and_unmatched (tests.test_record_kernel_names.RecordTests.test_measured_classes_and_unmatched) ... {"backend": "triton", "measured": true, "agent_kernel_names": ["axpby_kernel"], "t_gen_us": 50.0, "provenance": 0.9, "provenance/agent": 0.8, "provenance/library": 0.0, "provenance/torch": 0.1, "provenance/memory": 0.1, "kernels": {"axpby_kernel_0d1d2d": {"us": 5.0, "class": "agent"}, "at::native::vectorized_elementwise_kernel": {"us": 1.0, "class": "torch"}}, "unmatched_agent_names": []}
+ok
+test_unavailable_backend_skips_stages (tests.test_record_kernel_names.RecordTests.test_unavailable_backend_skips_stages) ... {"backend": "cuda", "unavailable": "package not installed: fake"}
+ok
+test_unknown_kernel_counts_against_authored (tests.test_record_kernel_names.RecordTests.test_unknown_kernel_counts_against_authored) ... {"backend": "triton", "measured": true, "agent_kernel_names": ["axpby_kernel"], "t_gen_us": 50.0, "provenance": 0.9, "provenance/agent": 0.8, "provenance/library": 0.0, "provenance/torch": 0.1, "provenance/memory": 0.1, "kernels": {"mystery_kernel": {"us": 2.0, "class": "torch"}}, "unmatched_agent_names": ["axpby_kernel"]}
+ok
+test_cleanup_wait_is_bounded_even_if_kill_cannot_reap (tests.test_rollout_env.ProcessTests.test_cleanup_wait_is_bounded_even_if_kill_cannot_reap) ... ok
+test_crash_isolated_and_concurrent_workdirs (tests.test_rollout_env.ProcessTests.test_crash_isolated_and_concurrent_workdirs) ... ok
+test_real_timeout_kills_grandchild_and_preserves_output (tests.test_rollout_env.ProcessTests.test_real_timeout_kills_grandchild_and_preserves_output) ... ok
+test_task_namespace_kernels_and_trusted_utils (tests.test_rollout_env.ProcessTests.test_task_namespace_kernels_and_trusted_utils) ... ok
+test_benchmark_stage_opt_in (tests.test_rollout_env.RolloutProtocolTests.test_benchmark_stage_opt_in) ... ok
+test_cli_without_torch_honors_preset_and_cap (tests.test_rollout_env.RolloutProtocolTests.test_cli_without_torch_honors_preset_and_cap) ... ok
+test_generated_syntax_error_is_a_result_not_a_parent_crash (tests.test_rollout_env.RolloutProtocolTests.test_generated_syntax_error_is_a_result_not_a_parent_crash) ... ok
+test_malformed_profile_missing_workdir_and_unmeasured (tests.test_rollout_env.RolloutProtocolTests.test_malformed_profile_missing_workdir_and_unmeasured) ... ok
+test_max_turns_skips_subprocesses (tests.test_rollout_env.RolloutProtocolTests.test_max_turns_skips_subprocesses) ... ok
+test_provenance_gate_and_overlong_via_entry_point (tests.test_rollout_env.RolloutProtocolTests.test_provenance_gate_and_overlong_via_entry_point) ... ok
+test_stage_failures_and_timeout (tests.test_rollout_env.RolloutProtocolTests.test_stage_failures_and_timeout) ... ok
+test_success_flat_schema_deadline_and_visibility (tests.test_rollout_env.RolloutProtocolTests.test_success_flat_schema_deadline_and_visibility) ... ok
+test_import_without_torch (tests.test_runtime.CLITests.test_import_without_torch) ... ok
+test_json_line_and_require_exit_codes (tests.test_runtime.CLITests.test_json_line_and_require_exit_codes) ... ok
+test_ampere_accepts_tileiras_131 (tests.test_runtime.CheckTests.test_ampere_accepts_tileiras_131) ... ok
+test_everything_missing (tests.test_runtime.CheckTests.test_everything_missing) ... ok
+test_happy_path_all_profiles (tests.test_runtime.CheckTests.test_happy_path_all_profiles) ... ok
+test_hopper_needs_tileiras_133 (tests.test_runtime.CheckTests.test_hopper_needs_tileiras_133) ... ok
+test_parse_nvcc_version (tests.test_runtime.ParseTests.test_parse_nvcc_version) ... ok
+test_parse_nvidia_smi (tests.test_runtime.ParseTests.test_parse_nvidia_smi) ... ok
+test_version_tuple (tests.test_runtime.ParseTests.test_version_tuple) ... ok
+test_interpreter_shapes_masking_dtypes_and_validation (tests.test_triton_kernel.TritonKernelTests.test_interpreter_shapes_masking_dtypes_and_validation) ... CPU interpreter: scalar/empty/tail/matrix shapes, 3 dtypes, 4 alphas passed
+ok
+
+----------------------------------------------------------------------
+Ran 94 tests in 557.828s
+
+OK (skipped=25)
