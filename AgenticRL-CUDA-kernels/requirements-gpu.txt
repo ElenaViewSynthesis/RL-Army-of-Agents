@@ -10,3 +10,7 @@ ninja>=1.11
 # Hopper (sm_90: H100/H200) needs tileiras 13.3+; 13.3 also matches Modal's CUDA 13.3 driver API.
 cuda-tile==1.8.0
 cuda-toolkit[nvcc,nvvm,tileiras]>=13.3,<13.4
+# TileLang and CuTe DSL backends. [cu13] matches the torch+cu130 build and pulls in
+# cuda-bindings, which kernels/cutedsl imports.
+tilelang==0.1.15
+nvidia-cutlass-dsl[cu13]==4.8.1
