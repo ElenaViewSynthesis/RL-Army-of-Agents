@@ -1,0 +1,72 @@
+{
+  "_comment": "The five Modal invocations of cloud/modal_runtime.py on 2026-11-06 (H200, app agenticrl-cuda-kernels). Order is chronological. Only the two full runs carry rollout metrics; the others are build/preflight evidence. Every path is relative to AgenticRL-CUDA-kernels/.",
+  "runs": [
+    {
+      "run_id": "build-im-u7ElhT76HK3e4MiGfUc5JZ",
+      "kind": "image-build",
+      "status": "failed",
+      "gpu": "H200",
+      "notes": "First image build failed: pip could not resolve cuda-toolkit[nvcc,nvvm,tileiras]>=13.3,<13.4 against torch's cuda-toolkit==13.0.3 runtime pin. Fixed by pinning the 13.3.x nvidia-cuda-* components directly in requirements-gpu.txt.",
+      "files": ["artifacts/modal-build-im-u7ElhT76HK3e4MiGfUc5JZ.log"]
+    },
+    {
+      "run_id": "20261106T142735Z",
+      "kind": "preflight",
+      "status": "finished",
+      "gpu": "H200",
+      "notes": "Preflight only (modal run cloud/modal_runtime.py). Image im-aBtUChfr0yrsAWxSpfC4WL built; all five runtime profiles ok: driver 610.57.04, nvcc 13.3, tileiras 13.3.36, torch 2.14.1+cu130, triton 3.8.0, tilelang 0.1.15, cuda-tile 1.8.0, nvidia-cutlass-dsl 4.8.1.",
+      "files": ["artifacts/modal-preflight-20261106T142735Z.log"]
+    },
+    {
+      "run_id": "20261106T142830Z",
+      "kind": "gpu-tests",
+      "status": "failed",
+      "gpu": "H200",
+      "notes": "First full run (--tests). Triton, TileLang, cuTile and CuTe DSL honest fixtures passed with provenance 1.0 and every Torch-op hack failed provenance; the stock CUDA build failed because utils/compile.py forced -std=c++17 while Torch 2.14 requires C++20. GPU suite: Ran 30 tests, FAILED (failures=2), both from the failed CUDA rollout. The uploaded environment.json was a stale local CPU record (kept as environment-uploaded-stale-20261106T142830Z.json); the corrected record was reconstructed from require.stdout.",
+      "files": [
+        "artifacts/results-20261106T142830Z.json",
+        "artifacts/kernel_names-20261106T142830Z.json",
+        "artifacts/environment-20261106T142830Z.json",
+        "artifacts/environment-uploaded-stale-20261106T142830Z.json",
+        "artifacts/preflight.stdout-20261106T142830Z.log",
+        "artifacts/require.stdout-20261106T142830Z.log",
+        "artifacts/stock_pipeline.stdout-20261106T142830Z.log",
+        "artifacts/kernel_names.stdout-20261106T142830Z.log",
+        "artifacts/gpu_tests.stdout-20261106T142830Z.log",
+        "artifacts/gpu_tests.stderr-20261106T142830Z.log",
+        "artifacts/validate.stdout-20261106T142830Z.log",
+        "artifacts/validate.stderr-20261106T142830Z.log"
+      ]
+    },
+    {
+      "run_id": "preflight-rebuild-aborted",
+      "kind": "preflight",
+      "status": "aborted",
+      "gpu": "H200",
+      "notes": "Preflight after the compile fix; Modal aborted the image build locally with 'modal-preflight-rebuild.log was modified during build process' because the log was being written inside the directory being uploaded. No GPU code ran. (Lesson: write Modal session logs outside the mounted folder or add them to the add_local_dir ignore list.)",
+      "files": ["artifacts/modal-preflight-rebuild.log"]
+    },
+    {
+      "run_id": "20261106T185236Z",
+      "kind": "gpu-tests",
+      "status": "finished",
+      "gpu": "H200",
+      "notes": "Successful rerun (--tests) after the C++ standard fix. All five remote stages exited 0. Stock CUDA pipeline passed; record_kernel_names captured the device symbols for cuda, triton, tilelang, cutile and cutedsl, all classified agent with no unmatched authored names; GPU suite: Ran 30 tests in 380.509s, OK; scripts.validate: five honest fixtures verified at provenance 1.0 (reward 2, faster_than_eager), four Torch-op hacks verified at provenance 0.0 (reward -1), timeout/max_turns as expected, DAPO overlong reward 1.25.",
+      "files": [
+        "artifacts/results-20261106T185236Z.json",
+        "artifacts/kernel_names-20261106T185236Z.json",
+        "artifacts/environment-20261106T185236Z.json",
+        "artifacts/environment-uploaded-stale-20261106T185236Z.json",
+        "artifacts/preflight.stdout-20261106T185236Z.log",
+        "artifacts/require.stdout-20261106T185236Z.log",
+        "artifacts/stock_pipeline.stdout-20261106T185236Z.log",
+        "artifacts/kernel_names.stdout-20261106T185236Z.log",
+        "artifacts/gpu_tests.stdout-20261106T185236Z.log",
+        "artifacts/gpu_tests.stderr-20261106T185236Z.log",
+        "artifacts/validate.stdout-20261106T185236Z.log",
+        "artifacts/validate.stderr-20261106T185236Z.log",
+        "artifacts/modal-session-20261106T185236Z.log"
+      ]
+    }
+  ]
+}
