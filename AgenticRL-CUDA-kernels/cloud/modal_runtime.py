@@ -1,10 +1,12 @@
 """Modal cloud-GPU runtime for the AgenticRL CUDA kernels environment.
 
 `modal run cloud/modal_runtime.py` runs the runtime preflight on a GPU host.
-`modal run cloud/modal_runtime.py --tests` additionally runs the GPU test
-suites and scripts.validate. MODAL_GPU selects the GPU (default "H200").
-Outputs land in the Modal Volume `agenticrl-cuda-artifacts` mounted at
-/artifacts, under a UTC run_id directory.
+`modal run cloud/modal_runtime.py --tests` additionally runs, in order: the
+--require profile gate (recorded, not fatal), the stock pipeline,
+scripts.record_kernel_names, the GPU unittest suites, and scripts.validate.
+MODAL_GPU selects the GPU (default "H200"). Outputs land in the Modal Volume
+`agenticrl-cuda-artifacts` mounted at /artifacts, under a UTC run_id
+directory.
 """
 
 import json
@@ -70,17 +72,22 @@ def preflight(run_id: str) -> dict:
 @app.function(gpu=GPU, timeout=5400, volumes={"/artifacts": volume})
 def gpu_tests(run_id: str) -> dict:
     runs = [
-        _run(["python", "-m", "utils.runtime", "--json", "--require", "cuda,triton"],
-             "require", 300, run_id),
+        # A non-zero exit here is recorded, not fatal: it names the DSL the
+        # image failed to provide while the other suites still run.
+        _run(["python", "-m", "utils.runtime", "--json", "--require",
+              "cuda,triton,tilelang,cutile,cutedsl"], "require", 300, run_id),
         _run(["bash", "-c",
               "bash utils/compile.sh && python -m utils.verification && "
               "python -m utils.profiling --json"], "stock_pipeline", 1800, run_id),
-        _run(["python", "-m", "unittest", "-v", "tests.test_provenance.GPUIntegrationTests",
-              "tests.test_benchmark.GPUBenchmarkTests"], "gpu_tests", 3600, run_id),
+        _run(["python", "-m", "scripts.record_kernel_names", "--device", "cuda"],
+             "kernel_names", 1800, run_id),
+        _run(["python", "-m", "unittest", "-v", "tests.test_provenance",
+              "tests.test_dsl_kernels", "tests.test_benchmark.GPUBenchmarkTests"],
+             "gpu_tests", 3600, run_id),
         _run(["python", "-m", "scripts.validate", "--device", "cuda"], "validate", 3600, run_id),
     ]
     out_dir = Path("/artifacts") / run_id
-    for name in ("results.json", "environment.json"):
+    for name in ("results.json", "environment.json", "kernel_names.json"):
         source = Path(REMOTE) / "artifacts" / name
         if source.is_file():
             (out_dir / name).write_bytes(source.read_bytes())
