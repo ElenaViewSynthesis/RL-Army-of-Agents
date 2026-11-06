@@ -1,0 +1,12 @@
+# Cloud GPU runtime (Linux x86_64, NVIDIA driver r580+, CUDA 13.3 driver API, Python 3.11+).
+# Local CPU development keeps using requirements.txt. Install with pip (uv's first-index
+# strategy cannot resolve the +cu130 wheel): pip install -r requirements-gpu.txt
+--extra-index-url https://download.pytorch.org/whl/cu130
+torch==2.14.1+cu130
+triton>=3.0
+numpy>=1.26
+ninja>=1.11
+# cuTile Python: Python 3.11+, compute capability 8.x-12.x, driver r580+.
+# Hopper (sm_90: H100/H200) needs tileiras 13.3+; 13.3 also matches Modal's CUDA 13.3 driver API.
+cuda-tile==1.8.0
+cuda-toolkit[nvcc,nvvm,tileiras]>=13.3,<13.4
