@@ -9,7 +9,13 @@ ninja>=1.11
 # cuTile Python: Python 3.11+, compute capability 8.x-12.x, driver r580+.
 # Hopper (sm_90: H100/H200) needs tileiras 13.3+; 13.3 also matches Modal's CUDA 13.3 driver API.
 cuda-tile==1.8.0
-cuda-toolkit[nvcc,nvvm,tileiras]>=13.3,<13.4
+# Torch pins the cuda-toolkit runtime metapackage to 13.0.3. Install the
+# 13.3.1 compiler components directly, without conflicting with that pin.
+nvidia-cuda-tileiras==13.3.36
+nvidia-cuda-nvcc==13.3.73
+nvidia-cuda-crt==13.3.73
+nvidia-nvvm==13.3.73
+nvidia-nvjitlink==13.3.33
 # TileLang and CuTe DSL backends. [cu13] matches the torch+cu130 build and pulls in
 # cuda-bindings, which kernels/cutedsl imports.
 tilelang==0.1.15
