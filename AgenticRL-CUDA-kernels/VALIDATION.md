@@ -199,6 +199,34 @@ only the two truthful `bench/*` unavailable keys; no timings were fabricated.
 A benchmark stage that crashes, times out or emits malformed output degrades
 to `bench/available: false` with a reason and never changes the reward.
 
+## GPU runtime pin
+
+The cloud-GPU runtime was pinned as `requirements-gpu.txt` (pip-installable;
+uv's first-index strategy cannot resolve the `+cu130` wheel), a torch-free
+preflight `utils/runtime.py`, and `cloud/modal_runtime.py` targeting
+`nvidia/cuda:13.3.1-devel-ubuntu24.04` + Python 3.12 + `torch==2.14.1+cu130`
++ `cuda-tile==1.8.0`/`tileiras>=13.3,<13.4`. **No GPU or Modal execution was
+performed** — all results below are local, torch-free checks and injected
+fixtures; Modal API use was verified by importing the module only.
+
+```bash
+python3 -m unittest -v tests.test_runtime
+# Ran 9 tests in 1.194s
+# OK
+
+UV_CACHE_DIR="$PWD/.cache/uv" uv pip install --python .venv/bin/python modal   # modal==1.6.3
+.venv/bin/python -c "import importlib.util,sys; spec=importlib.util.spec_from_file_location('m','cloud/modal_runtime.py'); m=importlib.util.module_from_spec(spec); spec.loader.exec_module(m); print(type(m.image), type(m.app))"
+# <class 'modal.image.Image'> <class 'modal.app.App'>
+
+python3 -m unittest discover -v
+# Ran 90 tests in 37.982s
+# OK (skipped=31)
+```
+
+`python -m utils.runtime --json --require cutile` on this host exits 1 with an
+unavailable reason, and `--json` prints a flat record with all `ok_*` False —
+the preflight reports, never fabricates. `modal run` was never invoked.
+
 ## DSL backends (TileLang, cuTile, CuTe DSL)
 
 A backend registry (`utils/backend.py`) replaced the hard-coded CUDA/Triton

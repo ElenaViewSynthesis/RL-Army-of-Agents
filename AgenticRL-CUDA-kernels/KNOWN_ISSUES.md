@@ -49,6 +49,13 @@
   `torch.cuda.synchronize()`) or value-dependent control flow in forward.
   Failures set `bench/*/graph_capturable: false` plus `graph_error` and never
   change the reward.
+- **Hopper needs tileiras 13.3+.** The cuTile PyPI README states a lower floor;
+  sm_90 support arrived with tileiras/CTK 13.3 (cuTile 1.4.0 notes), so the
+  pin is `>=13.3,<13.4`. Modal's driver API is CUDA 13.3, which also bounds the
+  container toolkit version.
+- **pip-installed nvcc is not a CUDA_HOME.** The CUDA backend relies on the
+  devel image's `/usr/local/cuda` headers and toolchain; wheels alone are not
+  sufficient for `torch.utils.cpp_extension`.
 - **DSL backends are unvalidated on hardware.** The TileLang, cuTile and CuTe DSL
   kernels have only CPU-side discovery and classification tests here; their GPU
   kernel and run_task tests skip without a CUDA GPU and the package. None of

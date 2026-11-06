@@ -2,7 +2,7 @@
 
 **A kernel-generation RL environment that scores what the agent actually wrote: CUDA C++, Triton, TileLang, cuTile or CuTe DSL kernels, gated by where the GPU time went.**
 
-![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-3776AB)
+![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-3776AB)
 ![PyTorch ≥ 2.3](https://img.shields.io/badge/torch-%E2%89%A52.3-EE4C2C)
 ![Triton ≥ 3.0](https://img.shields.io/badge/triton-%E2%89%A53.0-6E40C9)
 ![Tests: 81](https://img.shields.io/badge/tests-81%20%28GPU%20ones%20skip%20without%20CUDA%29-2EA44F)
@@ -249,9 +249,29 @@ Each round reports two per-iteration timings: `event_us_*` (CUDA events on the c
 
 ---
 
+## GPU runtime (cloud)
+
+**No GPU run has happened yet.** The pinned cloud stack is [requirements-gpu.txt](requirements-gpu.txt): the `nvidia/cuda:13.3.1-devel-ubuntu24.04` image (system nvcc + headers at `/usr/local/cuda`), Python 3.12, `torch==2.14.1+cu130`, `triton`, `ninja`, `cuda-tile==1.8.0` with `cuda-toolkit[tileiras]>=13.3,<13.4`. Install it with **pip** — uv's first-index strategy cannot resolve the `+cu130` wheel (`UV_INDEX_STRATEGY=unsafe-best-match` also works). Hopper (sm_90: H100/H200) needs tileiras **13.3**, which also matches Modal's CUDA 13.3 driver API.
+
+Preflight on any GPU host: `python -m utils.runtime --json --require cuda,triton` — it prints a flat `runtime/*` record (driver, nvcc, ninja, tileiras, torch/triton/cuda-tile versions, GPU UUID) and exits non-zero when a profile is missing; it never imports torch.
+
+On a bare GPU host:
+
+```bash
+python -m venv .venv && . .venv/bin/activate
+pip install -r requirements-gpu.txt
+python -m utils.runtime --json --require cuda,triton
+python -m unittest -v tests.test_provenance.GPUIntegrationTests tests.test_benchmark.GPUBenchmarkTests
+python -m scripts.validate --device cuda
+```
+
+On Modal: `modal run cloud/modal_runtime.py` (preflight) or `--tests` (GPU suites + validate); `MODAL_GPU` selects the GPU (default H200). Logs and `results.json`/`environment.json` land in the `agenticrl-cuda-artifacts` Volume under `/artifacts/<run_id>/`.
+
+---
+
 ## Quick start
 
-Python 3.10+ on **Linux or WSL2** is required. Process isolation uses POSIX process groups, so the process tests fail on native Windows. The CUDA path also needs `nvcc` and Ninja on `PATH`.
+Python 3.11+ on **Linux or WSL2** is required. The floor is 3.11 rather than 3.10 so a future cuTile Python backend fits without a second runtime: cuTile supports Python 3.11–3.15, compute capability 8.x–12.x (Hopper H100/H200 is 9.0), NVIDIA driver r580+ and CUDA Toolkit 13.1+, and takes PyTorch tensors as kernel arguments ([prerequisites](https://docs.nvidia.com/cuda/cutile-python/quickstart.html#prerequisites)). Process isolation uses POSIX process groups, so the process tests fail on native Windows. The CUDA path also needs `nvcc` and Ninja on `PATH` (the cloud image provides both).
 
 ```bash
 export UV_CACHE_DIR="$PWD/.cache/uv"
