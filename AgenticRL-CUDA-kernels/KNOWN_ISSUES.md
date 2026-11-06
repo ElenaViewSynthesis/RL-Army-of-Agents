@@ -66,7 +66,9 @@
   its naming. Attribution assumes each symbol contains the authored function
   name. Record real `ctx.events()` names on the GPU host before trusting DSL
   provenance; if a name doesn't match, report it rather than loosening
-  unknown-event handling.
+  unknown-event handling. `scripts/record_kernel_names.py` saves the observed
+  names and the classifier's verdict per backend
+  (`artifacts/kernel_names.json`); read it before touching the classifier.
 - **Generic kernel names over-credit provenance (all backends).** The classifier
   credits any device event whose name contains an authored kernel name as a
   substring. A kernel named something generic (`kernel`, `add`, or TileLang's
@@ -80,7 +82,9 @@
 - **Optional DSL packages may conflict.** TileLang wheels bundle their own TVM,
   `nvidia-cutlass-dsl` pulls CUDA 12 runtime libraries by default, and
   `cuda-tile[tileiras]` pulls nvcc/nvvm 13.x. Install each extra in its own
-  environment if they clash with each other or with the torch CUDA build.
+  environment if they clash with each other or with the torch CUDA build. The
+  cloud image installs all three together; that combination is unverified
+  until the first Modal build.
 - **Only TileLang gets a task-local compile cache.** `TILELANG_CACHE_DIR` is set
   per task like `TRITON_CACHE_DIR`. No cache location is configured for cuTile
   or CuTe DSL; if they don't cache to disk, each compile, verification and

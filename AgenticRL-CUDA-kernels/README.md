@@ -251,21 +251,22 @@ Each round reports two per-iteration timings: `event_us_*` (CUDA events on the c
 
 ## GPU runtime (cloud)
 
-**No GPU run has happened yet.** The pinned cloud stack is [requirements-gpu.txt](requirements-gpu.txt): the `nvidia/cuda:13.3.1-devel-ubuntu24.04` image (system nvcc + headers at `/usr/local/cuda`), Python 3.12, `torch==2.14.1+cu130`, `triton`, `ninja`, `cuda-tile==1.8.0` with `cuda-toolkit[tileiras]>=13.3,<13.4`. Install it with **pip** — uv's first-index strategy cannot resolve the `+cu130` wheel (`UV_INDEX_STRATEGY=unsafe-best-match` also works). Hopper (sm_90: H100/H200) needs tileiras **13.3**, which also matches Modal's CUDA 13.3 driver API.
+**No GPU run has happened yet.** The pinned cloud stack is [requirements-gpu.txt](requirements-gpu.txt): the `nvidia/cuda:13.3.1-devel-ubuntu24.04` image (system nvcc + headers at `/usr/local/cuda`), Python 3.12, `torch==2.14.1+cu130`, `triton`, `ninja`, `cuda-tile==1.8.0` with `cuda-toolkit[tileiras]>=13.3,<13.4`, `tilelang==0.1.15` and `nvidia-cutlass-dsl[cu13]==4.8.1`. Install it with **pip** — uv's first-index strategy cannot resolve the `+cu130` wheel (`UV_INDEX_STRATEGY=unsafe-best-match` also works). Hopper (sm_90: H100/H200) needs tileiras **13.3**, which also matches Modal's CUDA 13.3 driver API.
 
-Preflight on any GPU host: `python -m utils.runtime --json --require cuda,triton` — it prints a flat `runtime/*` record (driver, nvcc, ninja, tileiras, torch/triton/cuda-tile versions, GPU UUID) and exits non-zero when a profile is missing; it never imports torch.
+Preflight on any GPU host: `python -m utils.runtime --json --require cuda,triton,tilelang,cutile,cutedsl` — it prints a flat `runtime/*` record (driver, nvcc, ninja, tileiras, torch/triton/cuda-tile/tilelang/cutlass-dsl versions, GPU UUID) and exits non-zero when a profile is missing; it never imports torch.
 
 On a bare GPU host:
 
 ```bash
 python -m venv .venv && . .venv/bin/activate
 pip install -r requirements-gpu.txt
-python -m utils.runtime --json --require cuda,triton
-python -m unittest -v tests.test_provenance.GPUIntegrationTests tests.test_benchmark.GPUBenchmarkTests
+python -m utils.runtime --json --require cuda,triton,tilelang,cutile,cutedsl
+python -m scripts.record_kernel_names --device cuda
+python -m unittest -v tests.test_provenance tests.test_dsl_kernels tests.test_benchmark.GPUBenchmarkTests
 python -m scripts.validate --device cuda
 ```
 
-On Modal: `modal run cloud/modal_runtime.py` (preflight) or `--tests` (GPU suites + validate); `MODAL_GPU` selects the GPU (default H200). Logs and `results.json`/`environment.json` land in the `agenticrl-cuda-artifacts` Volume under `/artifacts/<run_id>/`.
+On Modal: `modal run cloud/modal_runtime.py` (preflight) or `--tests` (require gate, stock pipeline, `record_kernel_names`, GPU suites, validate); `MODAL_GPU` selects the GPU (default H200). Logs and `results.json`/`environment.json`/`kernel_names.json` land in the `agenticrl-cuda-artifacts` Volume under `/artifacts/<run_id>/`.
 
 ---
 

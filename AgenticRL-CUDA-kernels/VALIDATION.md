@@ -227,6 +227,36 @@ python3 -m unittest discover -v
 unavailable reason, and `--json` prints a flat record with all `ok_*` False —
 the preflight reports, never fabricates. `modal run` was never invoked.
 
+The pin was then extended with `tilelang==0.1.15` and
+`nvidia-cutlass-dsl[cu13]==4.8.1` (the `[cu13]` extra pulls the cu13 libs plus
+`cuda-bindings`, which `kernels/cutedsl` imports), `runtime/ok_tilelang` and
+`runtime/ok_cutedsl` preflight profiles, and
+`scripts/record_kernel_names.py`, which stages compile + profiling per
+backend like `run_task` and maps every `kernel_us/*` event through
+`classify_kernel`. Cloud `gpu_tests` now runs the require gate (recorded, not
+fatal), the stock pipeline, `record_kernel_names`, the GPU suites and
+validate, and copies `kernel_names.json` to the artifacts volume.
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m unittest -v tests.test_runtime tests.test_record_kernel_names
+# Ran 13 tests in 4.319s
+# OK
+
+.venv/bin/python -c "import importlib.util; spec=importlib.util.spec_from_file_location('m','cloud/modal_runtime.py'); m=importlib.util.module_from_spec(spec); spec.loader.exec_module(m); print('ok')"
+# ok
+
+python3 -S -c "from utils import runtime; import scripts.record_kernel_names; import sys; assert 'torch' not in sys.modules"
+# (exit 0; torch-free)
+
+python3 -m unittest discover -v
+# Ran 94 tests in 21.066s
+# OK (skipped=31)
+```
+
+`record_kernel_names` was verified against synthetic stage fixtures only; no
+real GPU kernel names have been recorded yet — `artifacts/kernel_names.json`
+is produced by the Modal or bare-host GPU run.
+
 ## DSL backends (TileLang, cuTile, CuTe DSL)
 
 A backend registry (`utils/backend.py`) replaced the hard-coded CUDA/Triton
