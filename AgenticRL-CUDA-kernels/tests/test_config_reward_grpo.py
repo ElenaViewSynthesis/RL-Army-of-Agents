@@ -69,7 +69,7 @@ class ConfigTests(unittest.TestCase):
                 RolloutConfig(**kwargs)
 
     def test_environment_modules_import_without_site_packages(self):
-        code = ("from utils import config, reward, grpo, rollout_env, stats, benchmark; "
+        code = ("from utils import config, reward, grpo, rollout_env, stats, benchmark, runtime; "
                 "import sys; assert 'torch' not in sys.modules")
         subprocess.run([sys.executable, "-S", "-c", code], cwd=ROOT, check=True)
 
