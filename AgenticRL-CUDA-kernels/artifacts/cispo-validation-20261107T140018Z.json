@@ -1,0 +1,44 @@
+{
+  "run_id": "20261107T140018Z",
+  "command": ".venv/bin/modal run cloud/modal_runtime.py --tests",
+  "gpu_suite_summary": "Ran 31 tests in 503.305s\n\nOK",
+  "preset_rank_checks": [
+    "test_every_preset_ranks_the_hack_last (tests.test_provenance.CuTeDSLGPUIntegrationTests.test_every_preset_ranks_the_hack_last) ... ok",
+    "test_every_preset_ranks_the_hack_last (tests.test_provenance.CuTileGPUIntegrationTests.test_every_preset_ranks_the_hack_last) ... ok",
+    "test_every_preset_ranks_the_hack_last (tests.test_provenance.GPUIntegrationTests.test_every_preset_ranks_the_hack_last) ... ok",
+    "test_every_preset_ranks_the_hack_last (tests.test_provenance.TileLangGPUIntegrationTests.test_every_preset_ranks_the_hack_last) ... ok"
+  ],
+  "cispo_measured_group": {
+    "advantages": {
+      "triton": 0.7071062811869011,
+      "cuda": 0.7071062811869011,
+      "hack": -1.4142125623738022
+    },
+    "stats": {
+      "adv/frac_dropped": 0.0,
+      "adv/mean": 0.0,
+      "adv/std": 0.9999992928937188,
+      "reward/mean": 1.0,
+      "reward/frac_3": 0.0,
+      "reward/frac_provenance_fail": 0.3333333333333333,
+      "reward/frac_max_turns": 0.0,
+      "reward/mean_overlong_penalty": 0.0,
+      "turns/mean": 1.0,
+      "turns/p95": 1.0
+    }
+  },
+  "honest_provenance": {
+    "cuda": 1.0,
+    "triton": 1.0,
+    "tilelang": 1.0,
+    "cutile": 1.0,
+    "cutedsl": 1.0
+  },
+  "environment_matches_require_probe": true,
+  "source_sha256": {
+    "tests/test_provenance.py": "fc868640562aa94f057fec8a38e9d1a1d83c3aedc1459e2adfd66f6a825599f3",
+    "utils/config.py": "96c29818264c68a6cea7c7627843d5b25809cf8d99cfcfe481fb83386b829a67",
+    "utils/grpo.py": "57c2d630355c17765aa102e744673b4d038bf70a7a6eb13f8e0a9526b4b40728",
+    "scripts/validate.py": "4ad3cdceaea6333772aeca08e11a9df1a849e3476c0eab1e7ee3aabe27a5bf9c"
+  }
+}
