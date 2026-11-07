@@ -1,0 +1,79 @@
+{
+  "run_id": "20261106T231526Z",
+  "command": ".venv/bin/modal run cloud/modal_runtime.py --tests",
+  "environment_matches_require_probe": true,
+  "gpu_suite_raw_summary": "Ran 31 tests in 472.152s\nOK",
+  "honest_provenance": {
+    "cuda": 1.0,
+    "triton": 1.0,
+    "tilelang": 1.0,
+    "cutile": 1.0,
+    "cutedsl": 1.0
+  },
+  "ordinary_hacks": {
+    "hack": {
+      "env/verify_ok": true,
+      "env/provenance": 0.0,
+      "reward/value": -1.0
+    },
+    "hack-tilelang": {
+      "env/verify_ok": true,
+      "env/provenance": 0.0,
+      "reward/value": -1.0
+    },
+    "hack-cutile": {
+      "env/verify_ok": true,
+      "env/provenance": 0.0,
+      "reward/value": -1.0
+    },
+    "hack-cutedsl": {
+      "env/verify_ok": true,
+      "env/provenance": 0.0,
+      "reward/value": -1.0
+    }
+  },
+  "dummy_kernel_spoofs": [
+    {
+      "case": "generic-spoof-cuda",
+      "env/verify_ok": true,
+      "env/provenance": 0.0,
+      "reward/value": -1.0,
+      "reward/reason": "provenance"
+    },
+    {
+      "case": "generic-spoof-triton",
+      "env/verify_ok": true,
+      "env/provenance": 0.0,
+      "reward/value": -1.0,
+      "reward/reason": "provenance"
+    },
+    {
+      "case": "generic-spoof-tilelang",
+      "env/verify_ok": true,
+      "env/provenance": 0.0,
+      "reward/value": -1.0,
+      "reward/reason": "provenance"
+    },
+    {
+      "case": "generic-spoof-cutile",
+      "env/verify_ok": true,
+      "env/provenance": 0.0,
+      "reward/value": -1.0,
+      "reward/reason": "provenance"
+    },
+    {
+      "case": "generic-spoof-cutedsl",
+      "env/verify_ok": true,
+      "env/provenance": 0.0,
+      "reward/value": -1.0,
+      "reward/reason": "provenance"
+    }
+  ],
+  "source_sha256": {
+    "utils/backend.py": "fd21adab2129498e19a2cf73a2383b60263581c26c00115bde142b0c0c1e8d31",
+    "utils/provenance.py": "ebba860ed3e6c59dfa93baee4767c2f725e1f7ac2859d08f2b18caab09bc08aa",
+    "tests/test_symbol_provenance.py": "4e21c85ce85e94467d2ee1942d703af80d193658fd3e49b745ef724886691739",
+    "tests/test_provenance.py": "e80971113267d03355cacf9c5df81ff32b4fd12bf5363251d4dee86483ccd53f",
+    "tests/support.py": "a730341354535cefa8dd7343a4db6dc1dd81369c5d95141867665ba2e8440484"
+  }
+}

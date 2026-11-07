@@ -1,0 +1,101 @@
+{
+  "command": "python -m scripts.record_kernel_names --device cuda --timeout-s 600",
+  "device": "cuda",
+  "backends": {
+    "cuda": {
+      "measured": true,
+      "agent_kernel_names": [
+        "axpby_kernel"
+      ],
+      "t_gen_us": 0.917899999999986,
+      "provenance": 1.0,
+      "provenance/agent": 1.0,
+      "provenance/library": 0.0,
+      "provenance/torch": 0.0,
+      "provenance/memory": 0.0,
+      "kernels": {
+        "void axpby_kernel<256>(float*, float const*, float const*, float, int)": {
+          "us": 0.917899999999986,
+          "class": "agent"
+        }
+      },
+      "unmatched_agent_names": []
+    },
+    "triton": {
+      "measured": true,
+      "agent_kernel_names": [
+        "axpby_kernel"
+      ],
+      "t_gen_us": 0.7970000000000482,
+      "provenance": 1.0,
+      "provenance/agent": 1.0,
+      "provenance/library": 0.0,
+      "provenance/torch": 0.0,
+      "provenance/memory": 0.0,
+      "kernels": {
+        "axpby_kernel": {
+          "us": 0.7970000000000482,
+          "class": "agent"
+        }
+      },
+      "unmatched_agent_names": []
+    },
+    "tilelang": {
+      "measured": true,
+      "agent_kernel_names": [
+        "axpby_tilelang"
+      ],
+      "t_gen_us": 0.7840000000000372,
+      "provenance": 1.0,
+      "provenance/agent": 1.0,
+      "provenance/library": 0.0,
+      "provenance/torch": 0.0,
+      "provenance/memory": 0.0,
+      "kernels": {
+        "axpby_tilelang_kernel": {
+          "us": 0.7840000000000372,
+          "class": "agent"
+        }
+      },
+      "unmatched_agent_names": []
+    },
+    "cutile": {
+      "measured": true,
+      "agent_kernel_names": [
+        "axpby_cutile_kernel"
+      ],
+      "t_gen_us": 0.8343000000000756,
+      "provenance": 1.0,
+      "provenance/agent": 1.0,
+      "provenance/library": 0.0,
+      "provenance/torch": 0.0,
+      "provenance/memory": 0.0,
+      "kernels": {
+        "axpby_cutile_kernel_Kt1_A1f32_1i16t1_p16_A1f32_1i16t1_p16_A1f32_1i16t1_p16_Sf32_I128": {
+          "us": 0.8343000000000756,
+          "class": "agent"
+        }
+      },
+      "unmatched_agent_names": []
+    },
+    "cutedsl": {
+      "measured": true,
+      "agent_kernel_names": [
+        "axpby_cute_kernel"
+      ],
+      "t_gen_us": 0.9161000000000057,
+      "provenance": 1.0,
+      "provenance/agent": 1.0,
+      "provenance/library": 0.0,
+      "provenance/torch": 0.0,
+      "provenance/memory": 0.0,
+      "kernels": {
+        "kernel_cutlass_axpby_cute_kernel_tensorptrf32gmemo151201i64512_tensorptrf32gmemo151201i64512_tensorptrf32gmemo151201i64512_tensor00o1512011105121____0": {
+          "us": 0.9161000000000057,
+          "class": "agent"
+        }
+      },
+      "unmatched_agent_names": []
+    }
+  }
+}

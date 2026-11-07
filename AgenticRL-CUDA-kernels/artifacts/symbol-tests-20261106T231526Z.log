@@ -1,0 +1,13 @@
+test_all_rejected_names_are_removed_from_source_discovery (tests.test_symbol_provenance.SymbolProvenanceTests.test_all_rejected_names_are_removed_from_source_discovery) ... ok
+test_captured_symbols (tests.test_symbol_provenance.SymbolProvenanceTests.test_captured_symbols) ... ok
+test_captured_symbols_under_other_backends_discovered_names (tests.test_symbol_provenance.SymbolProvenanceTests.test_captured_symbols_under_other_backends_discovered_names) ... ok
+test_discovery_rejects_generic_dummy_on_all_backends (tests.test_symbol_provenance.SymbolProvenanceTests.test_discovery_rejects_generic_dummy_on_all_backends) ... ok
+test_generic_names_rejected_even_when_pattern_matches (tests.test_symbol_provenance.SymbolProvenanceTests.test_generic_names_rejected_even_when_pattern_matches) ... ok
+test_library_memory_and_unknown_on_all_backends (tests.test_symbol_provenance.SymbolProvenanceTests.test_library_memory_and_unknown_on_all_backends) ... ok
+test_regex_escapes_authored_names_and_boundaries (tests.test_symbol_provenance.SymbolProvenanceTests.test_regex_escapes_authored_names_and_boundaries) ... ok
+test_torch_namespace_spoofs_fail_on_every_backend (tests.test_symbol_provenance.SymbolProvenanceTests.test_torch_namespace_spoofs_fail_on_every_backend) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 7.093s
+
+OK
