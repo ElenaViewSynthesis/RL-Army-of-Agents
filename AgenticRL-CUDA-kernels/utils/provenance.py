@@ -12,6 +12,10 @@ from collections import defaultdict
 from utils.backend import BACKENDS, creditable_kernel_name
 
 
+# Change this identifier whenever attribution semantics change.
+PROVENANCE_RULESET = "anchored-namespaces-generic-v1"
+
+
 def classify_kernel(name, agent_names, backend):
     # Namespace rejection precedes authored matching; "cutlass" must follow it
     # so CuTe DSL's authored device symbols retain credit.

@@ -31,8 +31,10 @@ def ops():
         def _run(inputs: dict) -> dict:
             # cfg stays a plain dict in the trace; traces keep the full
             # result, including log/* stage tails.
-            return run_task(inputs["workdir"], RolloutConfig(**inputs["cfg"]),
-                            inputs["turns_used"])
+            profile = {}
+            result = run_task(inputs["workdir"], RolloutConfig(**inputs["cfg"]),
+                              inputs["turns_used"], profile_out=profile)
+            return {"result": result, "profile": profile}
 
         _OPS.update(run_task=weave.op(name="run_task")(_run),
                     compute_reward=weave.op(name="compute_reward")(compute_reward),
@@ -66,10 +68,14 @@ def rollout_inputs(workdir, cfg, turns_used):
                                    if p.is_file() and "__pycache__" not in p.parts)}
 
 
-def traced_run_task(workdir, cfg, turns_used=None):
+def traced_run_task(workdir, cfg, turns_used=None, *, profile_out=None):
     inputs = rollout_inputs(workdir, cfg, turns_used)
     inputs["workdir"] = str(workdir)
-    return ops()["run_task"](inputs)
+    record = ops()["run_task"](inputs)
+    if profile_out is not None:
+        profile_out.clear()
+        profile_out.update(record["profile"])
+    return record["result"]
 
 
 def replay_backfill(payload, weave_module=None):

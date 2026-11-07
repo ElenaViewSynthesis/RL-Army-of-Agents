@@ -16,7 +16,8 @@ from pathlib import Path
 import utils.rollout_env
 from tests.support import make_task, scratch
 from utils.backend import BACKENDS, agent_kernel_names, available_backends
-from utils.provenance import classify_kernel
+from utils.provenance import PROVENANCE_RULESET, classify_kernel
+from utils.config import RolloutConfig
 
 
 def parse_args(argv=None):
@@ -33,6 +34,7 @@ def parse_args(argv=None):
 
 def record_backend(name, timeout_s):
     """compile + profiling on the honest fixture; stage failures become data."""
+    cfg = RolloutConfig(backend=name, timeout_s=timeout_s)
     with scratch("kernels-") as tmp:
         task = make_task(tmp, name)
         (task / ".cache").mkdir(exist_ok=True)
@@ -44,14 +46,14 @@ def record_backend(name, timeout_s):
         env["PYTHONDONTWRITEBYTECODE"] = "1"
         deadline = time.monotonic() + timeout_s
         code, _, stderr, timed_out = utils.rollout_env._stage(
-            "utils.compile", ["--backend", name, "--seed", "0"], task, env, deadline)
+            "utils.compile", ["--backend", cfg.backend, "--seed", str(cfg.seed)], task, env, deadline)
         if timed_out:
             return {"measured": False, "reason": "timeout"}
         if code != 0:
             return {"measured": False, "reason": "compile failed", "stderr_tail": stderr}
         code, stdout, stderr, timed_out = utils.rollout_env._stage(
             "utils.profiling",
-            ["--backend", name, "--iters", "10", "--seed", "0", "--json"],
+            ["--backend", cfg.backend, "--iters", str(cfg.iters), "--seed", str(cfg.seed), "--json"],
             task, env, deadline)
         if timed_out:
             return {"measured": False, "reason": "timeout"}
@@ -94,6 +96,10 @@ def main(argv=None):
     payload = {"command": f"python -m scripts.record_kernel_names --device {args.device}"
                           f" --timeout-s {args.timeout_s:g}"
                           + (f" --backends {args.backends}" if args.backends else ""),
+               "config": RolloutConfig(timeout_s=args.timeout_s).to_dict(),
+               "case_configs": {n: RolloutConfig(backend=n, timeout_s=args.timeout_s).to_dict() for n in names},
+               "config_scope": "compile and profiling only; reward and verification not evaluated",
+               "provenance_rules": PROVENANCE_RULESET,
                "device": args.device, "backends": results}
     output = Path(args.output)
     output.parent.mkdir(parents=True, exist_ok=True)
