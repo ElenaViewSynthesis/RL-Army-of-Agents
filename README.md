@@ -51,6 +51,8 @@ Chat agent over live EDGAR data — latest 8-Ks, any form type (10-K, 10-Q, 13D,
 - **`autonomous-coding-agent-harness/`** — evaluation harness for autonomous coding agents.
 - **`langchain-deep-agents/`** — LangChain-based deep-research agent experiments.
 - **`london-venues-finder/`** — a lightweight applied-agent demo.
+- **`AgenticRL-CUDA-kernels/`** — a provenance-gated RL environment for GPU kernels: the policy writes **Triton** (`@triton.jit`), **TileLang** (`@T.prim_func`) and **cuTile** (`@ct.kernel`) kernels (plus CUDA C++ and CuTe DSL), with GEMM matmuls authored as `tl.dot` / `T.gemm` / `ct.mma` tiles. The shipped, H200-validated examples are element-wise axpby; a GEMM kernel is not yet implemented.
+  - Device time is split into agent / library / Torch / memory. **cuBLAS, cuDNN and CUTLASS time** counts as library time toward the 90% gate only on the CUDA backend, and against it on Triton, TileLang, cuTile and CuTe DSL. **CUTLASS element-wise kernels written in CuTe DSL** (symbols `kernel_cutlass_<fn>_…`) are still credited as agent-authored work.
 
 > **New agents require zero code.** Drop a `.md` definition into `agents/` and it is auto-registered at server startup and appears in the chat UI dropdown.
 
