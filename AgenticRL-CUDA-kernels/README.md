@@ -2,6 +2,8 @@
 
 **A kernel-generation RL environment that scores what the agent actually wrote: CUDA C++, Triton, TileLang, cuTile or CuTe DSL kernels, gated by where the GPU time went.**
 
+*In one line:* a **provenance-gated GPU kernel RL environment** — a policy writes a kernel in CUDA C++, Triton, TileLang, cuTile or CuTe DSL; the harness compiles, verifies and profiles it on the GPU, credits only device time spent in kernels the agent authored (not cuBLAS/Torch fallbacks), and turns that into a GRPO/DAPO-ready reward.
+
 ![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-3776AB)
 ![PyTorch ≥ 2.3](https://img.shields.io/badge/torch-%E2%89%A52.3-EE4C2C)
 ![Triton ≥ 3.0](https://img.shields.io/badge/triton-%E2%89%A53.0-6E40C9)
