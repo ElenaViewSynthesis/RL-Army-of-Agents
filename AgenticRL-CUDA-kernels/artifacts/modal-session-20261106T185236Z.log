@@ -1,11 +1,11 @@
 ✓ Initialized. View run at 
-https://modal.com/apps/elenamylocuda/main/ap-EBlr2ygpxa1DLRix3qYmhU
+https://modal.com/apps/<workspace>/main/ap-EBlr2ygpxa1DLRix3qYmhU
 ✓ Created objects.
 ├── ✓ Uploaded 
-│   /mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/cloud/mo
+│   <repo>/AgenticRL-CUDA-kernels/cloud/mo
 │   dal_runtime.py
 ├── ✓ Uploaded 
-│   /mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels
+│   <repo>/AgenticRL-CUDA-kernels
 ├── ✓ Created Function preflight.
 └── ✓ Created Function gpu_tests.
 {
@@ -85,4 +85,4 @@ https://modal.com/apps/elenamylocuda/main/ap-EBlr2ygpxa1DLRix3qYmhU
 }
 Stopping app - local entrypoint completed.
 ✓ App completed. View run at 
-https://modal.com/apps/elenamylocuda/main/ap-EBlr2ygpxa1DLRix3qYmhU
+https://modal.com/apps/<workspace>/main/ap-EBlr2ygpxa1DLRix3qYmhU

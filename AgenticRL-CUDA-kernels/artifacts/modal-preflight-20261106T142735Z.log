@@ -1,5 +1,5 @@
 ✓ Initialized. View run at 
-https://modal.com/apps/elenamylocuda/main/ap-kc56GC9W9x91EiZva7ENr6
+https://modal.com/apps/<workspace>/main/ap-kc56GC9W9x91EiZva7ENr6
 Building image im-EMVmgKSnLeN3N3myGG35CV
 
 => Step 0: FROM base
@@ -224,10 +224,10 @@ Built image im-aBtUChfr0yrsAWxSpfC4WL in 3.91s
 
 ✓ Created objects.
 ├── ✓ Uploaded 
-│   /mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/cloud/mo
+│   <repo>/AgenticRL-CUDA-kernels/cloud/mo
 │   dal_runtime.py
 ├── ✓ Uploaded 
-│   /mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels
+│   <repo>/AgenticRL-CUDA-kernels
 ├── ✓ Created Function preflight.
 └── ✓ Created Function gpu_tests.
 {
@@ -267,4 +267,4 @@ Built image im-aBtUChfr0yrsAWxSpfC4WL in 3.91s
 }
 Stopping app - local entrypoint completed.
 ✓ App completed. View run at 
-https://modal.com/apps/elenamylocuda/main/ap-kc56GC9W9x91EiZva7ENr6
+https://modal.com/apps/<workspace>/main/ap-kc56GC9W9x91EiZva7ENr6
