@@ -293,15 +293,62 @@ On Modal: `modal run cloud/modal_runtime.py` (preflight) or `--tests` (require g
 
 ## Experiment tracking (W&B + Weave, opt-in)
 
-Install into the project venv — the system interpreter is PEP 668 "externally managed", so bare `pip install` is refused: `UV_CACHE_DIR="$PWD/.cache/uv" uv pip install --python .venv/bin/python -r requirements-tracking.txt` (or `.venv/bin/pip install -r requirements-tracking.txt`), and run the commands below with `.venv/bin/python`. Export `WANDB_API_KEY`, `WANDB_ENTITY` and `WANDB_PROJECT` from `.env` (`set -a; . ./.env; set +a`; see `.env.example`; never commit `.env`). The entity/project live only in `.env`, never in code; runs log to `$WANDB_ENTITY/$WANDB_PROJECT`: config = `cfg/*` (RolloutConfig) + `runtime/*` (GPU/driver/toolkit versions) + `versions/*`; metrics = the flat `env/*`, `reward/*`, `meta/*`, `bench/*` keys (`log/*` and `artifact/*` dropped); `rollouts`/`kernels` tables; one `validation-run` artifact per run holding the raw logs. Weave traces `run_task` (inputs: task_id, backend, cfg, model_new.py source + sha256, kernel files; output: full result), `compute_reward`, `build_batch`, and `h200_rollout_replay` for backfilled rollouts.
+The tracking contract is [ADR 0002](Architecture-decision/0002-wandb-tracking-contract.md).
+Validation uses one W&B run per GPU invocation: per-case `env/*`, `reward/*`,
+`meta/*` and optional `bench/*` values live only in the `rollouts` table.
+The explicit summary contains aggregate counts and `reward_mean`, never the
+last case's provenance or reward. Kernel events live in `kernels`; raw files
+are versioned artifacts. `define_metric(..., summary="none")` disables automatic
+last-value summaries. Resuming a backfill clears old per-case summary keys;
+existing remote history is retained. This task's dry-run does not modify W&B.
+
+Config contains all `cfg/*`, available `runtime/*` and package versions, source
+command and `meta/provenance_rules`. New validation artifacts persist base,
+per-case and grouping configs, candidate SHA-256 and the classifier ID. Old
+artifacts such as `20261106T185236Z` lack those fields: availability flags are
+false and values remain unknown; today's defaults are never substituted.
+
+Training has one run per `(algo, seed)`, grouped by algorithm. Call
+`tracking.wandb_log.log_batch(task_ids, results, cfg, step=iteration, ...)` for
+a complete same-task group. Reuse the returned run across iterations. It logs the existing `build_batch` `adv/*`,
+`reward/*` and `turns/*` statistics once per iteration. Backfill logs measured
+comparison groups as `batch/<algo>/<stat>` at snapshot iteration 0. Synthetic
+arithmetic fixtures remain in labelled artifacts. Standalone `log_rollout`
+records a case table and aggregate summary; it does not invent batch stats.
+The sweep objective is aggregate `reward_mean`.
+
+`run_task` still returns its original default keys. An optional `profile_out={}`
+argument captures the same-pass raw profile; pass it to the logger as `profile`
+(or aligned `profiles` for `log_batch`). This supplies `env/provenance_agent`,
+`env/provenance_library`, `env/provenance_torch`, `env/provenance_memory` in the
+tracking table, plus the raw `kernel_us/*` evidence artifact. Missing profiles
+produce nulls; a separate backend name-recording pass cannot fill case shares.
+The CLI captures profiles automatically. Candidate model SHA-256 is a table
+column as well as a Weave input; live evidence artifacts include sources and
+records. Config remains constant within a live run.
+
+Stage `log/*` tails are excluded from scalar history, tables and summaries.
+They remain in optional Weave traces and original raw evidence files. Weave
+records inputs, candidate source/hash, full result and raw profile, and wraps
+`compute_reward`, `build_batch` and historical replay. SDKs remain lazy imports
+in `tracking/`; evaluator utilities import neither SDK. `bench/*` and kernel
+breakdowns are diagnostics and never replace the profiler reward timings.
+Trainer entropy, IS clipping, collapse, trajectory and eval-cohort metrics have
+reserved names in the ADR and remain un-emitted until their definitions exist.
+
+Install with `.venv/bin/pip install -r requirements-tracking.txt` (or the local
+uv workflow). Set W&B credentials/entity/project through the environment;
+never commit credentials. No service is contacted by dry-run or tracking tests.
 
 ```bash
-.venv/bin/python -m tracking.wandb_log backfill --all --dry-run   # payloads, no service
-.venv/bin/python -m tracking.wandb_log backfill --all             # the five runs in tracking/h200_runs.json
+.venv/bin/python -m tracking.wandb_log backfill --run-id 20261106T185236Z --dry-run
+.venv/bin/python -m tracking.wandb_log backfill --all --dry-run
 .venv/bin/python -m tracking.wandb_log rollout <workdir> --backend triton --turns-used 1
 ```
 
-The W&B MCP server (`https://mcp.withwandb.com/mcp`, bearer = `WANDB_API_KEY`) is configured for this repo in `.devin/mcp_config.json`. For hyperparameter sweeps with one `wandb agent` per GPU (`sweeps/rollout_sweep.yaml`, `scripts/sweep_rollout.sh`, `scripts/make_sweep_tasks.py`), see [WANDB_parallel_sweep_agents.md](WANDB_parallel_sweep_agents.md).
+The manifest is `tracking/h200_runs.json`; explicitly running backfill without
+`--dry-run` uploads the selected runs. For sweeps, see
+[WANDB_parallel_sweep_agents.md](WANDB_parallel_sweep_agents.md).
 
 ---
 
@@ -428,6 +475,7 @@ Full evidence, raw command output and what each test establishes are in [VALIDAT
 
 - [Triton_provenance_GRPO_task.md](Triton_provenance_GRPO_task.md): the task brief this implementation follows
 - [CUDA_on_Modal.md](CUDA_on_Modal.md) · [GPU-acceler.md](GPU-acceler.md): the CUDA stack on Modal and GPU-accelerated libraries
+- [WANDB_parallel_sweep_agents.md](WANDB_parallel_sweep_agents.md): running parallel `wandb agent` sweeps on a multi-GPU host — `scripts/sweep.sh`, one agent per `CUDA_VISIBLE_DEVICES` with its own task workdir, sweep config in `sweeps/rollout_sweep.yaml`
 - CISPO sources: [MiniMax-M1 (arXiv:2506.13585)](https://arxiv.org/html/2506.13585v1) — defines the clipped, stop-gradient IS weight `clip(r, 1-ε_low, 1+ε_high)`, sets ε_low "to a large value" (no lower bound) and tunes only ε_high without publishing its value · [ms-swift CISPO docs](https://swift.readthedocs.io/en/v4.4/Instruction/GRPO/AdvancedResearch/CISPO.html) — `--loss_type cispo --epsilon_high 5.0`, i.e. `min(r, 5.0)`, citing ScaleRL for the value · [ScaleRL (arXiv:2510.13786)](https://arxiv.org/html/2510.13786) — adopts CISPO with the lower clip fixed at 0 and reports it "largely insensitive" to the upper clip (§A.17.2). In this repo's `1 + clip_high` convention the cap 5.0 is `clip_high=4.0`; override with `--clip-high`.
 - Upstream: [BytedTsinghua-SIA/CUDA-Agent](https://github.com/BytedTsinghua-SIA/CUDA-Agent) at commit `473025c` (checksums in [artifacts/upstream.json](artifacts/upstream.json))
 

@@ -600,3 +600,211 @@ The packaged environment record matches this container's fresh require probe.
 [kernel names](artifacts/kernel_names-20261107T140018Z.json),
 [environment](artifacts/environment-20261107T140018Z.json),
 [structured CISPO validation](artifacts/cispo-validation-20261107T140018Z.json).
+
+
+## W&B tracking contract (2026-11-07)
+
+Decision and machine-checked inventory:
+[0002-wandb-tracking-contract.md](Architecture-decision/0002-wandb-tracking-contract.md).
+Validation uses per-case tables and aggregate-only summaries. Training iterations
+log build_batch statistics. New artifacts persist full base/case/group configs,
+raw same-pass profiles, candidate SHA-256 and classifier identity. The default
+18 evaluator result keys, profiler stdout/timing meaning and reward rules are
+unchanged. No wandb/weave imports were added to utils; python -S import checks
+passed. Existing protected sources and SKILL.md remain byte-identical.
+
+Raw tests (fake SDKs and synthetic stage fixtures; no additional GPU run):
+
+```text
+PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -v
+Ran 122 tests in 37.571s
+OK (skipped=32)
+
+PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m unittest discover -v
+Ran 122 tests in 291.174s
+OK (skipped=26)
+
+PYTHONDONTWRITEBYTECODE=1 python3 -m unittest -v tests.test_tracking
+Ran 18 tests in 12.998s
+OK
+```
+
+Logs: [system suite](artifacts/wandb-contract-tests-system.log),
+[CPU/interpreter suite](artifacts/wandb-contract-tests-venv.log),
+[focused tracking tests](artifacts/wandb-contract-tests-tracking.log).
+
+Requested dry-run command:
+
+```bash
+python3 -m tracking.wandb_log backfill --run-id 20261106T185236Z --dry-run
+```
+
+[Full payload](artifacts/wandb-contract-payload-20261106T185236Z.json) and
+[config, summary and key sets](artifacts/wandb-contract-dry-run-20261106T185236Z.json).
+The printed key sets and values are:
+
+```json
+{
+  "config_keys": [
+    "meta/provenance_rules",
+    "runtime/compute_sanitizer",
+    "runtime/cuda_bindings_version",
+    "runtime/cuda_tile_version",
+    "runtime/cutlass_dsl_version",
+    "runtime/driver_ok",
+    "runtime/driver_version",
+    "runtime/gpu0_compute_cap",
+    "runtime/gpu0_cutile_supported",
+    "runtime/gpu0_name",
+    "runtime/gpu0_uuid",
+    "runtime/gpu_count",
+    "runtime/ncu",
+    "runtime/ninja",
+    "runtime/nsys",
+    "runtime/nvcc_ok",
+    "runtime/nvcc_version",
+    "runtime/ok_cuda_backend",
+    "runtime/ok_cutedsl",
+    "runtime/ok_cutile",
+    "runtime/ok_tilelang",
+    "runtime/ok_triton_backend",
+    "runtime/python",
+    "runtime/python_ok",
+    "runtime/tileiras_ok",
+    "runtime/tileiras_reason",
+    "runtime/tileiras_version",
+    "runtime/tilelang_version",
+    "runtime/torch_cuda_build",
+    "runtime/torch_version",
+    "runtime/triton_version",
+    "runtime/unavailable_reason",
+    "source_command",
+    "tracking/candidates_available",
+    "tracking/config_available",
+    "tracking/contract",
+    "tracking/group_configs",
+    "tracking/rules_available",
+    "tracking/shares_available",
+    "versions/cuda-tile",
+    "versions/numpy",
+    "versions/nvidia-cutlass-dsl",
+    "versions/tilelang",
+    "versions/torch",
+    "versions/triton"
+  ],
+  "summary_keys": [
+    "backends_measured",
+    "cases",
+    "gpu_tests",
+    "provenance_pass",
+    "reward_mean",
+    "reward_positive",
+    "unavailable_backends",
+    "unmatched_agent_names_total",
+    "verify_ok"
+  ],
+  "metric_keys": [
+    "batch/dapo/adv/frac_dropped",
+    "batch/dapo/adv/mean",
+    "batch/dapo/adv/std",
+    "batch/dapo/reward/frac_3",
+    "batch/dapo/reward/frac_max_turns",
+    "batch/dapo/reward/frac_provenance_fail",
+    "batch/dapo/reward/mean",
+    "batch/dapo/reward/mean_overlong_penalty",
+    "batch/dapo/turns/mean",
+    "batch/dapo/turns/p95",
+    "batch/grpo/adv/frac_dropped",
+    "batch/grpo/adv/mean",
+    "batch/grpo/adv/std",
+    "batch/grpo/reward/frac_3",
+    "batch/grpo/reward/frac_max_turns",
+    "batch/grpo/reward/frac_provenance_fail",
+    "batch/grpo/reward/mean",
+    "batch/grpo/reward/mean_overlong_penalty",
+    "batch/grpo/turns/mean",
+    "batch/grpo/turns/p95",
+    "iteration"
+  ],
+  "config": {
+    "runtime/python": "3.12.1",
+    "runtime/python_ok": true,
+    "runtime/gpu_count": 1,
+    "runtime/gpu0_name": "NVIDIA H200",
+    "runtime/gpu0_compute_cap": "9.0",
+    "runtime/gpu0_uuid": "GPU-aac19e0f-0b54-352e-a3a3-015ad052e871",
+    "runtime/driver_version": "610.57.04",
+    "runtime/driver_ok": true,
+    "runtime/gpu0_cutile_supported": true,
+    "runtime/nvcc_version": "13.3",
+    "runtime/nvcc_ok": true,
+    "runtime/ninja": "/usr/local/bin/ninja",
+    "runtime/tileiras_version": "13.3.36",
+    "runtime/tileiras_ok": true,
+    "runtime/tileiras_reason": null,
+    "runtime/cuda_tile_version": "1.8.0",
+    "runtime/torch_version": "2.14.1+cu130",
+    "runtime/torch_cuda_build": true,
+    "runtime/triton_version": "3.8.0",
+    "runtime/tilelang_version": "0.1.15",
+    "runtime/cutlass_dsl_version": "4.8.1",
+    "runtime/cuda_bindings_version": "13.5.0",
+    "runtime/nsys": "/usr/local/bin/nsys",
+    "runtime/ncu": "/usr/local/cuda/bin/ncu",
+    "runtime/compute_sanitizer": "/usr/local/cuda/bin/compute-sanitizer",
+    "runtime/ok_cuda_backend": true,
+    "runtime/ok_triton_backend": true,
+    "runtime/ok_cutile": true,
+    "runtime/ok_tilelang": true,
+    "runtime/ok_cutedsl": true,
+    "runtime/unavailable_reason": null,
+    "versions/torch": "2.14.1+cu130",
+    "versions/triton": "3.8.0",
+    "versions/numpy": "2.5.4",
+    "versions/tilelang": "0.1.15",
+    "versions/cuda-tile": "1.8.0",
+    "versions/nvidia-cutlass-dsl": "4.8.1",
+    "source_command": "python -m scripts.validate --device cuda --timeout-s 180",
+    "meta/provenance_rules": null,
+    "tracking/config_available": false,
+    "tracking/rules_available": false,
+    "tracking/group_configs": null,
+    "tracking/contract": "wandb-contract-v1",
+    "tracking/shares_available": false,
+    "tracking/candidates_available": false
+  },
+  "summary": {
+    "cases": 12,
+    "verify_ok": 10,
+    "provenance_pass": 6,
+    "reward_positive": 6,
+    "reward_mean": 0.4375,
+    "unmatched_agent_names_total": 0,
+    "backends_measured": 5,
+    "gpu_tests": "OK",
+    "unavailable_backends": ""
+  }
+}
+```
+
+The historical run has no persisted full config, same-pass case shares,
+candidate hashes or classifier ID. Those values remain unknown and availability
+flags are false. No historical files were rewritten using current defaults.
+The dry-run has 45 config keys, 9 aggregate summary keys and 21 history keys:
+20 algo-qualified build_batch stats plus iteration. It contains no per-case
+scalar metrics. The source run predates CISPO, so it has only GRPO/DAPO measured
+groups; CISPO metrics are emitted when a source actually contains that group.
+
+No live W&B or Weave run was created or modified. The existing remote page can
+be updated by explicitly executing the reviewed backfill without --dry-run;
+old history remains, stale per-case summary fields are deleted, and corrected
+aggregate/table data are logged. Fake-SDK tests check this migration behavior;
+remote summary deletion was not exercised in this task. New artifact writers
+were checked with synthetic stages, not a new GPU validation run.
+
+Trainer-owned metric names are reserved, not populated. Token/trajectory
+masking, entropy/IS denominators, collapse detection and eval cohort/weighting
+must be decided with the trainer owner before those metrics are emitted.
+
+Commit attempt failed: `Unable to create .../.git/index.lock: Read-only file
+system`. Nothing was pushed.
