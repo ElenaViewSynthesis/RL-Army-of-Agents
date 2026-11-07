@@ -27,6 +27,7 @@ class BackendSpec:
     kernel_package: str | None         # imported by the JIT compile path
     library_allowed: bool              # cuBLAS/CUTLASS/cuDNN time counts toward provenance
     profile_warmup_iters: int
+    symbol_pattern: str               # regex template; {name} is escaped before matching
     cache_env: tuple[tuple[str, str], ...] = ()  # (ENV_VAR, subdirectory of <workdir>/.cache)
     distributions: tuple[str, ...] = ()          # pip distributions the backend needs
     skill_doc: str = "SKILL.md"
@@ -35,12 +36,14 @@ class BackendSpec:
 
 BACKENDS = {
     "cuda": BackendSpec(
+        symbol_pattern=r"(^|[\s:]){name}\s*[<(]",
         name="cuda", display="CUDA", import_prefixes=("cuda_extension",),
         kernel_glob="kernels/*.cu", decorators=(), compile_mode="extension",
         kernel_package=None, library_allowed=True, profile_warmup_iters=5,
         distributions=("torch",)),
     "triton": BackendSpec(
         # TRITON_CACHE_DIR is set for every backend: torch.compile emits Triton too.
+        symbol_pattern=r"^{name}(_\d\w*)?$",
         name="triton", display="Triton", import_prefixes=("kernels.triton",),
         kernel_glob="kernels/triton/*.py", decorators=("triton.jit",),
         compile_mode="jit", kernel_package="kernels.triton", library_allowed=False,
@@ -50,6 +53,7 @@ BACKENDS = {
     "tilelang": BackendSpec(
         # TileLang emits `<prim_func name>_kernel` as the device symbol. The
         # newer style decorates the kernel function itself with @tilelang.jit.
+        symbol_pattern=r"^{name}(_kernel)?$",
         name="tilelang", display="TileLang", import_prefixes=("kernels.tilelang",),
         kernel_glob="kernels/tilelang/*.py",
         decorators=("tilelang.language.prim_func", "tilelang.cuda.language.prim_func",
@@ -63,6 +67,7 @@ BACKENDS = {
         # H200 run 20261106T185236Z captured <name>_Kt1_<typed arguments>
         # (axpby_cutile_kernel_Kt1_A1f32_..._Sf32_I128). Other shapes/versions
         # may differ; this is observed evidence, not a vendor naming guarantee.
+        symbol_pattern=r"^{name}_Kt\d+_",
         name="cutile", display="cuTile", import_prefixes=("kernels.cutile",),
         kernel_glob="kernels/cutile/*.py", decorators=("cuda.tile.kernel",),
         compile_mode="jit", kernel_package="kernels.cutile", library_allowed=False,
@@ -72,6 +77,7 @@ BACKENDS = {
         # CUTLASS CuTe DSL. Default device symbols embed "cutlass"
         # (kernel_cutlass_<fn>_..._0); provenance matches authored names first.
         # @cute.jit host launchers are not device kernels and are not credited.
+        symbol_pattern=r"^kernel_cutlass_{name}_",
         name="cutedsl", display="CuTe DSL", import_prefixes=("kernels.cutedsl",),
         kernel_glob="kernels/cutedsl/*.py", decorators=("cutlass.cute.kernel",),
         compile_mode="jit", kernel_package="kernels.cutedsl", library_allowed=False,
@@ -202,6 +208,17 @@ def decorated_functions(source, decorators) -> set[str]:
     return names
 
 
+GENERIC_KERNEL_NAMES = frozenset({
+    "kernel", "main", "add", "sub", "mul", "div", "sum", "copy", "fill",
+    "forward", "fused", "elementwise", "vectorized", "triton", "aten", "native",
+})
+
+
+def creditable_kernel_name(name):
+    """Source discovery and event attribution share the same naming policy."""
+    return len(name) >= 4 and name not in GENERIC_KERNEL_NAMES
+
+
 def agent_kernel_names(workdir, backend=None) -> list[str]:
     """Authored kernel names for a backend, in stable name order."""
     root = Path(workdir)
@@ -213,4 +230,4 @@ def agent_kernel_names(workdir, backend=None) -> list[str]:
             names |= decorated_functions(path.read_text(), spec.decorators)
     else:
         names = _cuda_globals(paths)
-    return sorted(names)
+    return sorted(name for name in names if creditable_kernel_name(name))

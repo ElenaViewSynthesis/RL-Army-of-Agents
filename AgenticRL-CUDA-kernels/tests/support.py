@@ -61,3 +61,27 @@ def mock_rollout(reward=3.0, reason="faster_than_both", turns=1, penalty=0.0, ri
     if rid is not None:
         row["rollout_id"] = rid
     return row
+
+
+def make_spoof_task(parent, backend):
+    """Launch a copied honest kernel renamed `kernel`, then return Torch ops.
+
+    Only scratch copies are edited; root protected upstream files stay intact.
+    """
+    import re
+    from utils.backend import agent_kernel_names
+
+    task = make_task(parent, backend)
+    spec = BACKENDS[backend]
+    names = agent_kernel_names(task, backend)
+    for path in task.glob(spec.kernel_glob):
+        source = path.read_text()
+        for name in names:
+            source = re.sub(r"\b" + re.escape(name) + r"\b", "kernel", source)
+        path.write_text(source)
+    path = task / "model_new.py"
+    source = path.read_text()
+    source = source.replace("        return ", "        ")
+    source = source.rstrip() + "\n        return self.alpha * a + b\n"
+    path.write_text(source)
+    return task

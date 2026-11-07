@@ -109,7 +109,7 @@ class DSLBackendTests(unittest.TestCase):
             ["first", "fourth", "second", "third"])
 
     def test_cutile_library_time_not_credited(self):
-        self.check_no_library_credit("cutile", "axpby_cutile_kernel", "axpby_cutile_kernel")
+        self.check_no_library_credit("cutile", "axpby_cutile_kernel", "axpby_cutile_kernel_Kt1_A1f32")
 
     def test_cutedsl_detection_and_discovery(self):
         self.check_backend("cutedsl", ["axpby_cute_kernel"], (
@@ -152,9 +152,9 @@ class ProvenanceTests(unittest.TestCase):
         self.assertEqual(output.getvalue(), "Torch Baseline: 10.000us, Torch Compile: 8.000us, CUDA Extension: 5.000us\n")
 
     def test_classes_and_library_backend_policy(self):
+        self.assertEqual(classify_kernel("void axpby_kernel<256>(float*)", ["axpby_kernel"], "cuda"), "agent")
+        self.assertEqual(classify_kernel("axpby_kernel_0d1d2d", ["axpby_kernel"], "triton"), "agent")
         for backend in ("cuda", "triton"):
-            self.assertEqual(classify_kernel("void axpby_kernel<256>(float*)", ["axpby_kernel"], backend), "agent")
-            self.assertEqual(classify_kernel("axpby_kernel_0d1d2d", ["axpby_kernel"], backend), "agent")
             for name in ("at::native::vectorized_elementwise_kernel", "aten::mul", "triton_poi_fused_mul_add_0", "unknown"):
                 self.assertEqual(classify_kernel(name, ["axpby_kernel"], backend), "torch")
             for name in ("cublasLtMatmul", "cutlass_gemm", "cudnn_conv"):
@@ -164,11 +164,12 @@ class ProvenanceTests(unittest.TestCase):
 
     def test_memory_excluded_from_gate_and_per_kernel_averaging(self):
         events = [("axpby_kernel", 90), ("cublas_gemm", 5), ("aten::add", 5), ("Memcpy DtoD", 900)]
-        cuda = summarize_events(events, ["axpby_kernel"], "cuda", iters=10)
+        cuda = summarize_events([("void axpby_kernel<256>(float*)", 90), *events[1:]],
+                                ["axpby_kernel"], "cuda", iters=10)
         triton = summarize_events(events, ["axpby_kernel"], "triton", iters=10)
         self.assertAlmostEqual(cuda["provenance"], .95)
         self.assertAlmostEqual(triton["provenance"], .9)
-        self.assertEqual(cuda["kernel_us/axpby_kernel"], 9)
+        self.assertEqual(cuda["kernel_us/void axpby_kernel<256>(float*)"], 9)
         self.assertEqual(cuda["t_gen_us"], 100)
         self.assertAlmostEqual(sum(cuda["provenance/" + k] for k in ("agent", "library", "torch", "memory")), 1)
         assert_flat(self, cuda)

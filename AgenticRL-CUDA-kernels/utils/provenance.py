@@ -6,21 +6,27 @@ not a security boundary against a policy deliberately spoofing kernel names.
 """
 
 import math
+import re
 from collections import defaultdict
 
-from utils.backend import BACKENDS
+from utils.backend import BACKENDS, creditable_kernel_name
 
 
 def classify_kernel(name, agent_names, backend):
-    # Order matters: authored names are checked before library markers, so a
-    # DSL kernel whose symbol embeds "cutlass" (CuTe DSL) still counts as agent.
+    # Namespace rejection precedes authored matching; "cutlass" must follow it
+    # so CuTe DSL's authored device symbols retain credit.
     lower = name.lower()
     if "memcpy" in lower or "memset" in lower:
         return "memory"
-    if any(agent_name in name for agent_name in agent_names):
-        return "agent"
-    if "at::native" in lower or "aten" in lower:
+    if (any(marker in lower for marker in ("at::native", "aten::", "c10::"))
+            or re.search(r"^triton_(poi|per|red|tem)_fused", lower)):
         return "torch"
+    spec = BACKENDS.get(backend)
+    if spec is not None and any(
+            creditable_kernel_name(agent_name)
+            and re.search(spec.symbol_pattern.format(name=re.escape(agent_name)), name)
+            for agent_name in agent_names):
+        return "agent"
     if any(lib in lower for lib in ("cublas", "cutlass", "cudnn")):
         spec = BACKENDS.get(backend)
         return "library" if spec is not None and spec.library_allowed else "torch"

@@ -200,5 +200,27 @@ class CuTeDSLGPUIntegrationTests(DSLIntegrationChecks, unittest.TestCase):
     backend = "cutedsl"
 
 
+@unittest.skipUnless(HAS_GPU, "requires CUDA GPU and Torch")
+class GenericNameGPUIntegrationTests(unittest.TestCase):
+    def test_launched_dummy_kernel_plus_torch_ops_fails_every_backend(self):
+        import json
+        from utils.backend import BACKENDS, agent_kernel_names, available_backends
+        from tests.support import make_spoof_task
+        missing = available_backends()
+        with scratch("generic-spoof-") as tmp:
+            for backend in BACKENDS:
+                with self.subTest(backend=backend):
+                    if missing[backend] or (backend == "cuda" and not shutil.which("nvcc")):
+                        self.skipTest(missing[backend] or "requires nvcc")
+                    task = make_spoof_task(tmp, backend)
+                    self.assertEqual(agent_kernel_names(task, backend), [])
+                    with patch.dict(os.environ, {"CUDA_AGENT_DEVICE": "cuda", "TRITON_INTERPRET": "0"}):
+                        result = run_task(str(task), RolloutConfig.preset("grpo"))
+                    print(json.dumps({"case": "generic-spoof-" + backend, **result}), flush=True)
+                    self.assertTrue(result["env/verify_ok"], result)
+                    self.assertLess(result["env/provenance"], .9, result)
+                    self.assertEqual((result["reward/value"], result["reward/reason"]), (-1, "provenance"))
+
+
 if __name__ == "__main__":
     unittest.main()
