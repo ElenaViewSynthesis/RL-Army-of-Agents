@@ -575,3 +575,28 @@ was needed for this run. Benchmark and CUDA-graph tests passed. Reward modules,
 timing fields, upstream stdout and default rollout schema remain unchanged.
 Protected root files and upstream SKILL.md remain byte-identical. No Nsight,
 sanitizer or broader workload validation is claimed.
+
+
+## CISPO GPU batch-ranking validation: 20261107T140018Z
+
+Command: `.venv/bin/modal run cloud/modal_runtime.py --tests`.
+The GPU suite's `test_every_preset_ranks_the_hack_last` checks iterate over
+`ALGOS = ("grpo", "dapo", "cispo")`; the shared CUDA/Triton group and all
+three DSL groups passed. These checks call `build_batch` on measured rollout
+rewards; this is not a trainer/optimizer implementation test.
+
+```text
+Ran 31 tests in 503.305s
+
+OK
+```
+
+Measured CISPO group: `{"advantages": {"cuda": 0.7071062811869011, "hack": -1.4142125623738022, "triton": 0.7071062811869011}, "stats": {"adv/frac_dropped": 0.0, "adv/mean": 0.0, "adv/std": 0.9999992928937188, "reward/frac_3": 0.0, "reward/frac_max_turns": 0.0, "reward/frac_provenance_fail": 0.3333333333333333, "reward/mean": 1.0, "reward/mean_overlong_penalty": 0.0, "turns/mean": 1.0, "turns/p95": 1.0}}`.
+All five honest backends recorded provenance 1.0 and empty unmatched-name lists.
+The packaged environment record matches this container's fresh require probe.
+
+[GPU suite log](artifacts/gpu_tests.stderr-20261107T140018Z.log),
+[results](artifacts/results-20261107T140018Z.json),
+[kernel names](artifacts/kernel_names-20261107T140018Z.json),
+[environment](artifacts/environment-20261107T140018Z.json),
+[structured CISPO validation](artifacts/cispo-validation-20261107T140018Z.json).
