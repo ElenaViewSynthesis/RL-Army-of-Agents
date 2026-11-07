@@ -7,7 +7,7 @@
 ![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-3776AB)
 ![PyTorch ≥ 2.3](https://img.shields.io/badge/torch-%E2%89%A52.3-EE4C2C)
 ![Triton ≥ 3.0](https://img.shields.io/badge/triton-%E2%89%A53.0-6E40C9)
-![Tests: 94](https://img.shields.io/badge/tests-94-2EA44F)
+![Tests: 114](https://img.shields.io/badge/tests-114-2EA44F)
 ![GPU: H200](https://img.shields.io/badge/GPU-H200%20validated-2EA44F)
 
 This project extends the environment released with [CUDA-Agent](https://github.com/BytedTsinghua-SIA/CUDA-Agent) ([paper](https://arxiv.org/abs/2602.24286)). It adds three things:
@@ -406,7 +406,7 @@ AgenticRL-CUDA-kernels/
 │   └── rollout_env.py                 # run_task(): isolated, deadline-bounded evaluation
 ├── scripts/                           # validate + record_kernel_names (artifacts)
 ├── tracking/                          # opt-in W&B + Weave logging, H200 manifest
-├── tests/                             # 94 tests; GPU-only ones skip without CUDA or the DSL package
+├── tests/                             # 114 tests; GPU-only ones skip without CUDA or the DSL package
 ├── artifacts/                         # raw logs, environment record, upstream checksums
 ├── SKILL*.md                          # policy instructions, one per backend
 ├── requirements*.txt                  # torch + triton; optional per-DSL/tracking extras
@@ -432,3 +432,10 @@ Kernel naming now requires ≥4 characters and rejection of generic names in bot
 source discovery and classification. See [VALIDATION.md](VALIDATION.md#approved-symbol-rules-evidence-run-20261106t185236z) for the exact backend patterns,
 namespace precedence and limits, and [SKILL_CUDA.md](SKILL_CUDA.md) for the CUDA
 naming supplement to protected upstream SKILL.md.
+
+Approved classifier confirmation: `modal run cloud/modal_runtime.py --tests`,
+run `20261106T231526Z`, passed `Ran 31 tests in 472.152s` / `OK`. All five
+honest fixtures retained 100% provenance; all five launched dummy `kernel`
+plus Torch-op fixtures verified but received 0% provenance and reward -1.
+The fresh environment artifact packaging was also verified remotely.
+See VALIDATION.md for raw artifacts and remaining attribution limits.

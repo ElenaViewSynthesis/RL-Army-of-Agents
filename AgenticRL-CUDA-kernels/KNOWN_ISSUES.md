@@ -85,16 +85,18 @@
   Triton emitted the bare `axpby_kernel`. TileLang and CuTe matched their
   documented forms. All had empty unmatched-name lists. Other shapes,
   types and compiler releases may differ; unknown events must still fail closed.
-- **Generic kernel names over-credit provenance (all backends).** The classifier
-  credits any device event whose name contains an authored kernel name as a
-  substring. A kernel named something generic (`kernel`, `add`, or TileLang's
-  conventional `main`) also matches unrelated PyTorch kernels such as
-  `at::native::vectorized_elementwise_kernel` or `remainder_kernel`, so a
-  Torch-op substitution plus a dummy kernel could pass the 90% gate. This
-  predates the DSL backends. Fixing it needs a decision, because either option
-  changes current CUDA/Triton behaviour: anchor matches to each backend's
-  symbol pattern (e.g. CUDA `name<`/`name(`, TileLang `name_kernel`, CuTe DSL
-  `kernel_cutlass_name_`), or refuse to credit generic and very short names.
+- **Generic-name over-credit fixed with anchored attribution.** Authored names
+  must have at least four characters and avoid the shared generic-name denylist.
+  Both discovery and classification enforce this. Memory is handled first;
+  Torch/Inductor namespace markers precede backend-specific authored matching;
+  library markers follow it. Rules and captured symbols from run
+  `20261106T185236Z` are in VALIDATION.md. Unknown events still count as Torch.
+  Run `20261106T231526Z` confirmed all honest fixtures at 100% and all five
+  launched dummy-kernel spoofs at 0% (reward -1); the GPU suite passed 31 tests.
+  Attribution remains name-based, not proof of authorship. CUDA's library
+  policy still credits `cutlass` markers even for an unmatched CuTe symbol.
+  The exact approved Triton and TileLang patterns overlap on bare names if
+  given the same authored name; each rollout uses its own backend's discovery.
 - **Optional DSL packages may conflict.** TileLang wheels bundle their own TVM,
   `nvidia-cutlass-dsl` pulls CUDA 12 runtime libraries by default, and
   `cuda-tile[tileiras]` pulls nvcc/nvvm 13.x. Install each extra in its own
@@ -124,8 +126,9 @@
   Historical copies are preserved as `environment-uploaded-stale-<run_id>.json`.
   Corrected `environment-<run_id>.json` records are reconstructed from each
   run's fresh `require.stdout.log`, with source and command recorded. The runner
-  now writes future environment records from that probe; that packaging fix
-  has not yet been exercised remotely.
+  now writes environment records from that probe. Run `20261106T231526Z`
+  remotely verified the fix: every packaged runtime field matches the fresh
+  require probe, and the run_id matches.
 - **Commits unavailable in this workspace.** A focused commit attempt failed
   with `Unable to create .../.git/index.lock: Read-only file system`.
   Changes and evidence are retained in the working tree; nothing was pushed.

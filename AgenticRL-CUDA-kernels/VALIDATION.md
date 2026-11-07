@@ -512,3 +512,66 @@ the optional TileLang suffix pattern when supplied as a TileLang authored name.
 These follow the explicit patterns and existing library policy. Name matching is
 not proof of authorship. The CUDA naming supplement is SKILL_CUDA.md; protected
 upstream SKILL.md remains byte-identical.
+
+
+Local verification after the approved rule change:
+
+```text
+PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -v
+Ran 114 tests in 36.312s
+OK (skipped=32)
+
+PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m unittest discover -v
+Ran 114 tests in 487.574s
+OK (skipped=26)
+
+PYTHONDONTWRITEBYTECODE=1 python3 -m unittest -v tests.test_symbol_provenance
+Ran 8 tests in 7.093s
+OK
+```
+
+Raw logs: `artifacts/local-tests-20261106T231526Z.log`,
+`artifacts/local-venv-tests-20261106T231526Z.log`, and
+`artifacts/symbol-tests-20261106T231526Z.log`. The current repository also has
+tracking tests added since the earlier 94-test evidence; these were retained.
+Three synthetic expectations were updated for the approved behavior: backend
+separation for CUDA/Triton names, the CUDA event in the memory-denominator test,
+and the cuTile `_Kt1_` symbol requirement. Root protected-file checks pass.
+
+
+### Approved classifier GPU confirmation: 20261106T231526Z
+
+Command: `.venv/bin/modal run cloud/modal_runtime.py --tests`.
+The existing pinned combined image was reused successfully. All five stages
+(require probe, stock pipeline, name recorder, GPU suites, validate) exited 0
+without timeout. Raw summary:
+
+```text
+python -m unittest -v tests.test_provenance tests.test_dsl_kernels tests.test_benchmark.GPUBenchmarkTests
+Ran 31 tests in 472.152s
+OK
+```
+
+[Structured summary](artifacts/validation-summary-20261106T231526Z.json), [results](artifacts/results-20261106T231526Z.json), [names](artifacts/kernel_names-20261106T231526Z.json), [fresh environment](artifacts/environment-20261106T231526Z.json), [GPU suite stdout](artifacts/gpu_tests.stdout-20261106T231526Z.log), [GPU suite stderr](artifacts/gpu_tests.stderr-20261106T231526Z.log), [session](artifacts/modal-session-20261106T231526Z.log).
+
+| Backend | Honest compile / verify | Honest provenance | Dummy `kernel` + Torch verify | Spoof provenance | Spoof reward |
+|---|---|---|---|---|---|
+| cuda | passed | 100% | passed | 0% | -1 |
+| triton | passed | 100% | passed | 0% | -1 |
+| tilelang | passed | 100% | passed | 0% | -1 |
+| cutile | passed | 100% | passed | 0% | -1 |
+| cutedsl | passed | 100% | passed | 0% | -1 |
+
+All honest name lists have `unmatched_agent_names == []`. The raw symbols are
+identical to the five captured names from `20261106T185236Z` pinned above.
+The ordinary Triton/DSL hacks also verified with provenance 0% and reward -1.
+
+Runtime record: `{"runtime/compute_sanitizer": "/usr/local/cuda/bin/compute-sanitizer", "runtime/cuda_bindings_version": "13.5.0", "runtime/cuda_tile_version": "1.8.0", "runtime/cutlass_dsl_version": "4.8.1", "runtime/driver_ok": true, "runtime/driver_version": "610.57.04", "runtime/gpu0_compute_cap": "9.0", "runtime/gpu0_cutile_supported": true, "runtime/gpu0_name": "NVIDIA H200", "runtime/gpu0_uuid": "GPU-68d3501d-8cc4-50f9-05b3-e2649e189bbd", "runtime/gpu_count": 1, "runtime/ncu": "/usr/local/cuda/bin/ncu", "runtime/ninja": "/usr/local/bin/ninja", "runtime/nsys": "/usr/local/bin/nsys", "runtime/nvcc_ok": true, "runtime/nvcc_version": "13.3", "runtime/ok_cuda_backend": true, "runtime/ok_cutedsl": true, "runtime/ok_cutile": true, "runtime/ok_tilelang": true, "runtime/ok_triton_backend": true, "runtime/python": "3.12.1", "runtime/python_ok": true, "runtime/tileiras_ok": true, "runtime/tileiras_reason": null, "runtime/tileiras_version": "13.3.36", "runtime/tilelang_version": "0.1.15", "runtime/torch_cuda_build": true, "runtime/torch_version": "2.14.1+cu130", "runtime/triton_version": "3.8.0", "runtime/unavailable_reason": null}`.
+
+The downloaded environment.json contains the matching run_id and every field
+from this container's fresh require probe, including H200 name and GPU UUID.
+This remotely verifies the environment packaging fix; no local reconstruction
+was needed for this run. Benchmark and CUDA-graph tests passed. Reward modules,
+timing fields, upstream stdout and default rollout schema remain unchanged.
+Protected root files and upstream SKILL.md remain byte-identical. No Nsight,
+sanitizer or broader workload validation is claimed.
