@@ -13,3 +13,5 @@ build/
 artifacts/tmp/
 wandb/
 sweep_tasks/
+sweep_agent_gpu*.log
+.sweep_id

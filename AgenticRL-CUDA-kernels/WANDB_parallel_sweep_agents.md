@@ -31,10 +31,24 @@ kept for completeness.
 
 ## Runbook: parallel agents on a multi-GPU host
 
+Scripted version — `scripts/sweep.sh` wraps steps 0–4 below, reads
+`WANDB_ENTITY`/`WANDB_PROJECT`/`WANDB_API_KEY` from `.env`, saves the sweep ID
+to `.sweep_id` (gitignored) and starts one tmux agent per GPU:
+
+```bash
+scripts/sweep.sh setup                  # 0. install, load .env, preflight, list GPUs
+scripts/sweep.sh tasks triton 0 1       # 1. one workdir per GPU (omit indices = all GPUs)
+scripts/sweep.sh init                   # 2. wandb sweep → .sweep_id
+scripts/sweep.sh agents 16              # 3. tmux session agent<N> per GPU, 16 runs each
+scripts/sweep.sh status | pause | resume | stop
+scripts/sweep.sh all triton 16          # 0-3 in one go
+```
+
 Files involved: `sweeps/rollout_sweep.yaml` (sweep definition — parameters
 are `RolloutConfig` fields), `scripts/sweep_rollout.sh` (what each agent
 executes; reads `SWEEP_WORKDIR` and `CUDA_VISIBLE_DEVICES` from the agent's
-shell), `scripts/make_sweep_tasks.py` (one isolated task workdir per GPU).
+shell), `scripts/make_sweep_tasks.py` (one isolated task workdir per GPU),
+`scripts/sweep.sh` (the orchestration above). The manual steps follow.
 Verified locally end to end with `WANDB_MODE=offline` on the CPU interpreter;
 the GPU-host run has not happened yet.
 
