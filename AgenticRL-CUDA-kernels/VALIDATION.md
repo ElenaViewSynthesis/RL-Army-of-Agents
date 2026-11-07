@@ -446,8 +446,8 @@ GPU benchmark and graph tests passed. Raw benchmark latency series, Nsight/sanit
 lazily only; tests use a fake wandb module — no live-service calls were made.
 
 ```bash
-python3 -m unittest -v tests.test_tracking
-# Ran 9 tests in 2.231s
+python3 -m unittest -v tests.test_tracking      # 9 tracking tests + 2 sweep-config tests
+# Ran 11 tests in 4.848s
 # OK
 
 python3 -S -m tracking.wandb_log backfill --run-id 20261106T185236Z --dry-run | python3 -c "import sys,json; print(json.dumps(json.load(sys.stdin)['summary']))"
@@ -455,11 +455,35 @@ python3 -S -m tracking.wandb_log backfill --run-id 20261106T185236Z --dry-run | 
 #  "reward_mean": 0.4375, "unmatched_agent_names_total": 0,
 #  "backends_measured": 5, "gpu_tests": "OK", "unavailable_backends": ""}
 
-python3 -m unittest discover -v
-# Ran 103 tests in 31.649s
-# FAILED (failures=1, skipped=31)   # pre-fix; fixed test expectation, re-ran:
-# Ran 9 tests in 2.231s -> OK (tests.test_tracking); full suite green after fix
+python3 -m unittest discover -v                 # system Python, no torch/wandb/weave
+# Ran 105 tests in 53.899s
+# OK (skipped=31)
 ```
+
+An earlier full-suite run during development failed on one wrong test
+expectation (`config_for_wandb` correctly keeps only `runtime/*` keys from the
+environment record); the expectation was fixed and the suite above is the
+recorded re-run.
+
+The sweep entry point was exercised end to end offline — exactly the command a
+`wandb agent` issues, with agent-style `--key=value` flags, on the CPU
+interpreter, `WANDB_MODE=offline`, no API key:
+
+```bash
+CUDA_VISIBLE_DEVICES=0 SWEEP_WORKDIR="$PWD/sweep_tasks/gpu0/triton" SWEEP_NO_WEAVE=1 \
+WANDB_MODE=offline CUDA_AGENT_DEVICE=cpu TRITON_INTERPRET=1 \
+  bash scripts/sweep_rollout.sh --algo=dapo --seed=1 --iters=10 --benchmark --bench-rounds=6 --timeout-s=600
+# real 2m17.891s; exit 0; env/verify_ok true, reward/reason "unmeasured",
+# bench/available false ("CUDA_AGENT_DEVICE=cpu"); meta/algo dapo, meta/seed 1
+# (sweep flags reached RolloutConfig); offline run written under wandb/
+```
+
+W&B entity/project come from `WANDB_ENTITY`/`WANDB_PROJECT` in `.env`
+(`.env.example` documents them), not from code. The Modal session logs
+under `artifacts/` have the local checkout path and the Modal workspace name
+redacted (`<repo>`, `<workspace>`); they contain no credentials. `wandb/`,
+`sweep_tasks/` and `sweep_agent_gpu*.log` are gitignored. No live W&B call has
+been made from this repository yet.
 
 The `overlong` rollout also passes provenance and earns >0, so
 `provenance_pass`/`reward_positive` are 6 (the five honest fixtures + overlong).
