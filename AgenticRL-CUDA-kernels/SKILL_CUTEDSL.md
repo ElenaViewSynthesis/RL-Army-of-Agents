@@ -48,7 +48,7 @@ Accelerate model.py using kernels you author in CuTe DSL (CUTLASS 4.x,
    `python -m utils.rollout_env . --backend cutedsl --max-turns 20 --turns-used 1`.
    Read the runtime RolloutConfig: your turn budget is **max_turns** (default 20).
    Exceeding it zeroes eligibility for positive reward: the numeric reward is -1,
-   reason max_turns. DAPO may subtract up to 1 within its buffer below that cap.
+   reason max_turns. DAPO and CISPO may subtract up to 1 within their buffer below that cap.
    The agent loop must enforce max_context_tokens; the environment enforces timeout_s.
 
 ## Optimisation checklist
@@ -72,7 +72,7 @@ checked by the trusted profiler; names must reflect actual authored kernels.
 CPU or unmeasured runs cannot earn a performance reward. Correctness/provenance
 failure returns -1; otherwise the base reward is 3 for >5% faster than both eager
 and compile, 2 for eager only, and 1 otherwise. GRPO keeps tied groups; DAPO
-filters them by default. Always use the supplied RolloutConfig: these switches
+and CISPO filter them by default. Always use the supplied RolloutConfig: these switches
 and thresholds may be overridden.
 
 ## Kernel naming and attribution

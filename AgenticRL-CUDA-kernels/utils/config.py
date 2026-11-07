@@ -6,6 +6,8 @@ from dataclasses import asdict, dataclass, field, fields
 
 from utils.backend import BACKEND_CHOICES
 
+ALGOS = ("grpo", "dapo", "cispo")
+
 
 @dataclass
 class RolloutConfig:
@@ -36,7 +38,7 @@ class RolloutConfig:
 
     def __post_init__(self):
         for name, choices in {"backend": BACKEND_CHOICES,
-                              "algo": ("grpo", "dapo"), "adv_norm": ("std", "none"),
+                              "algo": ALGOS, "adv_norm": ("std", "none"),
                               "loss_agg": ("seq", "token")}.items():
             if getattr(self, name) not in choices:
                 raise ValueError(f"{name} must be one of {choices}")
@@ -59,7 +61,11 @@ class RolloutConfig:
         if (not isinstance(self.overlong_buffer_turns, int)
                 or not 0 <= self.overlong_buffer_turns <= self.max_turns):
             raise ValueError("overlong_buffer_turns must be an integer in [0, max_turns]")
-        if not 0 <= self.clip_low < 1 or self.clip_high < 0 or self.kl_coef < 0:
+        # GRPO/DAPO clip the PPO ratio to [1 - clip_low, 1 + clip_high]. CISPO
+        # clips the detached importance-sampling weight to the same bounds;
+        # clip_low=1 (lower bound 0) means no lower bound, as in MiniMax-M1.
+        low_ok = (0 <= self.clip_low <= 1) if self.algo == "cispo" else (0 <= self.clip_low < 1)
+        if not low_ok or self.clip_high < 0 or self.kl_coef < 0:
             raise ValueError("Invalid clip range or kl_coef")
         for name in ("benchmark", "cuda_graphs", "filter_tied_groups"):
             if not isinstance(getattr(self, name), bool):
@@ -76,12 +82,20 @@ class RolloutConfig:
         if algo == "dapo":
             return cls(algo=algo, clip_high=0.28, filter_tied_groups=True,
                        loss_agg="token", overlong_buffer_turns=4)
+        if algo == "cispo":
+            # MiniMax-M1 (arXiv:2506.13585): GRPO group advantages, token-level
+            # loss over the group, no KL, DAPO dynamic sampling and length
+            # penalty. IS weight clipped to [0, 5]: no lower bound; the paper
+            # gives no upper value, so 1 + 4.0 follows ms-swift's ScaleRL-based
+            # example (epsilon_high 5.0, an absolute cap).
+            return cls(algo=algo, clip_low=1.0, clip_high=4.0, filter_tied_groups=True,
+                       loss_agg="token", overlong_buffer_turns=4)
         raise ValueError(f"Unknown algorithm: {algo}")
 
     @staticmethod
     def add_args(parser):
         """Suppress absent flags so from_args applies the preset before overrides."""
-        choices = {"backend": BACKEND_CHOICES, "algo": ("grpo", "dapo"),
+        choices = {"backend": BACKEND_CHOICES, "algo": ALGOS,
                    "adv_norm": ("std", "none"), "loss_agg": ("seq", "token")}
         defaults = RolloutConfig()
         for f in fields(defaults):

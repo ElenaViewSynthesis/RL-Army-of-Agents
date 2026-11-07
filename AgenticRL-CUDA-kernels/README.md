@@ -7,14 +7,14 @@
 ![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-3776AB)
 ![PyTorch ≥ 2.3](https://img.shields.io/badge/torch-%E2%89%A52.3-EE4C2C)
 ![Triton ≥ 3.0](https://img.shields.io/badge/triton-%E2%89%A53.0-6E40C9)
-![Tests: 114](https://img.shields.io/badge/tests-114-2EA44F)
+![Tests: 115](https://img.shields.io/badge/tests-115-2EA44F)
 ![GPU: H200](https://img.shields.io/badge/GPU-H200%20validated-2EA44F)
 
 This project extends the environment released with [CUDA-Agent](https://github.com/BytedTsinghua-SIA/CUDA-Agent) ([paper](https://arxiv.org/abs/2602.24286)). It adds three things:
 
 1. **Four kernel backends beyond CUDA C++** (Triton, TileLang, cuTile and CuTe DSL), behind the same compile → verify → profile contract and one backend registry.
 2. **A kernel-provenance gate.** The profiler splits device time into *agent-authored*, *library* (cuBLAS / CUTLASS / cuDNN), *Torch* and *memory* kernels. A rollout only earns a speed reward if at least 90% of compute time is in kernels the agent may claim.
-3. **GRPO / DAPO reward handling.** Group-relative advantages, tied-group filtering and overlong-turn shaping are exposed as config switches, so a critic-free trainer can consume the discrete milestone reward.
+3. **GRPO / DAPO / CISPO reward handling.** Group-relative advantages, tied-group filtering and overlong-turn shaping are exposed as config switches, so a critic-free trainer can consume the discrete milestone reward.
 
 > [!IMPORTANT]
 > **First H200 measurements now exist.** Modal runs `20261106T142830Z` and
@@ -45,7 +45,7 @@ flowchart LR
     E --> F["profiling<br/>torch.profiler CUDA events"]
     F --> G["provenance<br/>agent / library / torch / memory"]
     G --> H["milestone reward<br/>-1 / 1 / 2 / 3"]
-    H --> I["GRPO / DAPO<br/>group advantages"]
+    H --> I["GRPO / DAPO / CISPO<br/>group advantages"]
 ```
 
 `run_task(workdir, cfg, turns_used)` runs compile, verification and profiling as **separate child processes** under one wall-clock deadline (default 180 s). A crashing or hanging kernel therefore cannot take the trainer down. The result is a flat, JSON-safe dict ready for `wandb.log`.
@@ -58,7 +58,7 @@ flowchart LR
 | Provenance below 90% | −1 | `provenance` |
 | Wrong output · crash · deadline · turn cap · no GPU timing | −1 | `correctness` · `compile` / `verification` / `profiling` · `timeout` · `max_turns` · `unmeasured` |
 
-Under the DAPO preset, a rollout that finishes inside the last `overlong_buffer_turns` before `max_turns` loses up to 1 point (linear). The base reward never changes.
+Under the DAPO and CISPO presets, a rollout that finishes inside the last `overlong_buffer_turns` before `max_turns` loses up to 1 point (linear). The base reward never changes.
 
 ---
 
@@ -359,21 +359,23 @@ The GPU tests require honest CUDA and Triton to pass correctness *and* provenanc
 
 ---
 
-## Configuration: GRPO vs DAPO
+## Configuration: GRPO, DAPO and CISPO
 
-`RolloutConfig` (`utils/config.py`) is pure Python and never imports Torch. Every field is a `--kebab-case` flag, and presets are applied *before* overrides, so `--algo dapo --clip-high 0.3` changes one knob only.
+`RolloutConfig` (`utils/config.py`) is pure Python and never imports Torch. Every field is a `--kebab-case` flag, and presets are applied *before* overrides, so `--algo dapo --clip-high 0.3` changes one knob only. `utils.config.ALGOS` lists the presets.
 
-| Toggle | GRPO preset | DAPO preset | Owned by |
-|---|---|---|---|
-| Clip range (`clip_low` / `clip_high`) | 0.2 / 0.2 | 0.2 / 0.28 | trainer |
-| Loss aggregation (`loss_agg`) | `seq` | `token` | trainer |
-| Tied-group filtering (`filter_tied_groups`) | keep (zero advantage) | drop | **environment** |
-| Overlong shaping (`overlong_buffer_turns`) | 0 (hard cutoff) | 4 (linear penalty) | **environment** |
-| `kl_coef` | 0.001 | 0.0 | trainer |
+| Toggle | GRPO preset | DAPO preset | CISPO preset | Owned by |
+|---|---|---|---|---|
+| Clip range (`clip_low` / `clip_high`) | 0.2 / 0.2 | 0.2 / 0.28 | 1.0 / 4.0 (IS weight in [0, 5]) | trainer |
+| Loss aggregation (`loss_agg`) | `seq` | `token` | `token` | trainer |
+| Tied-group filtering (`filter_tied_groups`) | keep (zero advantage) | drop | drop | **environment** |
+| Overlong shaping (`overlong_buffer_turns`) | 0 (hard cutoff) | 4 (linear penalty) | 4 (linear penalty) | **environment** |
+| `kl_coef` | 0.001 | 0.0 | 0.0 | trainer |
+
+**CISPO** ([MiniMax-M1](https://arxiv.org/abs/2506.13585)) uses GRPO's group-relative advantages but replaces PPO's clipped surrogate with a policy-gradient loss weighted by a *clipped, stop-gradient importance-sampling weight*: `sg(clip(r, 1 - clip_low, 1 + clip_high)) · Â · log π`, averaged over all tokens in the group. Every token keeps a gradient, including the rare high-ratio tokens that PPO clipping would drop. For CISPO, `clip_low` may be 1.0, meaning no lower bound, as in the paper; GRPO and DAPO still require `clip_low < 1`. The paper gives no value for the upper bound, so `clip_high=4.0` (cap 5) follows ms-swift's [CISPO example](https://swift.readthedocs.io/en/v4.4/Instruction/GRPO/AdvancedResearch/CISPO.html), which cites [ScaleRL](https://arxiv.org/abs/2510.13786). Following the paper, the preset also uses DAPO's dynamic sampling (tied-group filtering) and overlong penalty, with no KL term. This environment computes CISPO's advantages, filtering and reward shaping; the trainer applies the loss and the IS clip.
 
 Other defaults: `provenance_threshold=0.90`, `speedup_margin=0.05`, `max_turns=20`, `max_context_tokens=32768`, `timeout_s=180`, `group_size=8`.
 
-> For a controlled comparison that differs only in the four toggles, hold `--kl-coef`, seeds and budgets equal across both runs.
+> For a controlled comparison that differs only in the preset toggles, hold `--kl-coef`, seeds and budgets equal across runs.
 
 **Phase 2: Modal rollouts.** Call `utils.rollout_env.run_task(workdir, cfg, turns_used)` with `RolloutConfig.from_args(...)`. Recommended first-run flags: `--max-turns 20 --max-context-tokens 32768 --timeout-s 180 --group-size 8`. The agent loop enforces turns and context. The environment also checks the turn count and enforces the shared wall-clock deadline. CPU runs, or runs without GPU measurements, return null fields and reason `unmeasured`, never a positive reward.
 
@@ -402,11 +404,11 @@ AgenticRL-CUDA-kernels/
 │   ├── provenance.py                  # agent / library / torch / memory classifier
 │   ├── reward.py                      # milestone reward, provenance gate, overlong shaping
 │   ├── grpo.py                        # group advantages, tied-group filter, batch stats
-│   ├── config.py                      # RolloutConfig, GRPO/DAPO presets, CLI
+│   ├── config.py                      # RolloutConfig, GRPO/DAPO/CISPO presets, CLI
 │   └── rollout_env.py                 # run_task(): isolated, deadline-bounded evaluation
 ├── scripts/                           # validate + record_kernel_names (artifacts)
 ├── tracking/                          # opt-in W&B + Weave logging, H200 manifest
-├── tests/                             # 114 tests; GPU-only ones skip without CUDA or the DSL package
+├── tests/                             # 115 tests; GPU-only ones skip without CUDA or the DSL package
 ├── artifacts/                         # raw logs, environment record, upstream checksums
 ├── SKILL*.md                          # policy instructions, one per backend
 ├── requirements*.txt                  # torch + triton; optional per-DSL/tracking extras

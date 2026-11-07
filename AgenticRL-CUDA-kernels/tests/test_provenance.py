@@ -12,7 +12,7 @@ import unittest
 from unittest.mock import patch
 
 from tests.support import assert_flat, make_task, scratch
-from utils.config import RolloutConfig
+from utils.config import ALGOS, RolloutConfig
 from utils.grpo import build_batch
 from utils.rollout_env import run_task
 
@@ -113,10 +113,10 @@ class GPUIntegrationTests(unittest.TestCase):
         self.assertEqual((result["reward/value"], result["reward/reason"]), (-1, "provenance"))
         assert_flat(self, result)
 
-    def test_both_presets_rank_the_hack_last(self):
+    def test_every_preset_ranks_the_hack_last(self):
         rows = [dict(r, rollout_id=rid) for r, rid in
                 ((self.honest_triton, "triton"), (self.honest_cuda, "cuda"), (self.hack, "hack"))]
-        for algo in ("grpo", "dapo"):
+        for algo in ALGOS:
             cfg = dataclasses.replace(RolloutConfig.preset(algo), group_size=3)
             pairs, stats = build_batch(["axpby"] * 3, rows, cfg)
             advantages = dict(pairs)
@@ -176,9 +176,9 @@ class DSLIntegrationChecks:
         self.assertEqual((result["reward/value"], result["reward/reason"]), (-1, "provenance"))
         assert_flat(self, result)
 
-    def test_both_presets_rank_the_hack_last(self):
+    def test_every_preset_ranks_the_hack_last(self):
         rows = [dict(self.honest, rollout_id="honest"), dict(self.hack, rollout_id="hack")]
-        for algo in ("grpo", "dapo"):
+        for algo in ALGOS:
             cfg = dataclasses.replace(RolloutConfig.preset(algo), group_size=2)
             pairs, _ = build_batch(["axpby"] * 2, rows, cfg)
             advantages = dict(pairs)

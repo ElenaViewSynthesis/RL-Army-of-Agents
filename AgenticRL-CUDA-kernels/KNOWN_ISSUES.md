@@ -118,7 +118,7 @@
   and correctness/timeout tests. Context length is a shared config field for
   the future loop, not something the task evaluator can observe or enforce.
 - **Controlled comparison.** The requested presets also set GRPO kl_coef=0.001
-  and DAPO kl_coef=0.0. For a comparison differing only in the four specified
+  and DAPO and CISPO kl_coef=0.0. For a comparison differing only in the preset
   toggles, explicitly hold `--kl-coef` equal, along with seeds and budgets.
 
 - **Stale cloud environment artifact corrected locally.** The runner originally

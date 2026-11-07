@@ -17,7 +17,7 @@ metric:
   goal: maximize
 parameters:
   algo:
-    values: [grpo, dapo]
+    values: [grpo, dapo, cispo]
   seed:
     values: [0, 1, 2, 3]
   iters:

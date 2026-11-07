@@ -6,7 +6,7 @@ import sys
 import unittest
 
 from tests.support import ROOT, assert_flat, mock_rollout
-from utils.config import RolloutConfig
+from utils.config import ALGOS, RolloutConfig
 from utils.grpo import build_batch, filter_groups, group_advantages
 from utils.reward import compute_reward
 
@@ -31,6 +31,19 @@ class ConfigTests(unittest.TestCase):
                          (.3, False, "seq", 0))
         self.assertEqual(cfg.adv_norm, "none")
         self.assertEqual(self.parse([]).to_dict(), grpo.to_dict())
+
+    def test_cispo_preset_and_is_weight_bounds(self):
+        cispo = RolloutConfig.preset("cispo")
+        # IS weight clipped to [1 - 1.0, 1 + 4.0] = [0, 5]: no lower bound.
+        self.assertEqual((cispo.clip_low, cispo.clip_high, cispo.loss_agg, cispo.kl_coef), (1, 4, "token", 0))
+        self.assertEqual((cispo.adv_norm, cispo.filter_tied_groups, cispo.overlong_buffer_turns), ("std", True, 4))
+        self.assertEqual(self.parse(["--algo", "cispo"]).to_dict(), cispo.to_dict())
+        self.assertEqual(self.parse(["--algo", "cispo", "--clip-high", "1.0"]).clip_high, 1)
+        RolloutConfig(algo="cispo", clip_low=0.2)
+        for kwargs in ({"algo": "cispo", "clip_low": 1.01}, {"algo": "cispo", "clip_low": -.1},
+                       {"algo": "grpo", "clip_low": 1}, {"algo": "dapo", "clip_low": 1}):
+            with self.subTest(kwargs=kwargs), self.assertRaises(ValueError):
+                RolloutConfig(**kwargs)
 
     def test_every_field_has_a_cli_flag(self):
         flags = ["--backend", "triton", "--iters", "3", "--benchmark",
@@ -122,15 +135,15 @@ class RewardTests(unittest.TestCase):
 
 
 class GroupTests(unittest.TestCase):
-    def test_identical_groups_under_both_presets(self):
+    def test_identical_groups_under_every_preset(self):
         rows = ([mock_rollout(1) for _ in range(3)] +
                 [mock_rollout(3), mock_rollout(1), mock_rollout(-1, "provenance")])
-        for algo in ("grpo", "dapo"):
+        for algo in ALGOS:
             cfg = dataclasses.replace(RolloutConfig.preset(algo), group_size=3)
             pairs, stats = build_batch(["tied"] * 3 + ["mixed"] * 3, rows, cfg)
             assert_flat(self, stats)
             advantages = dict(pairs)
-            if algo == "grpo":
+            if not cfg.filter_tied_groups:  # GRPO keeps tied groups; DAPO and CISPO drop them
                 self.assertEqual([advantages[str(i)] for i in range(3)], [0, 0, 0])
                 self.assertEqual(stats["adv/frac_dropped"], 0)
             else:

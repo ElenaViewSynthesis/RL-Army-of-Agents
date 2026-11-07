@@ -102,7 +102,7 @@ class RolloutProtocolTests(unittest.TestCase):
             hack = run_task(str(self.task), self.cfg)
         self.assertTrue(hack["env/verify_ok"])
         self.assertEqual((hack["reward/value"], hack["reward/reason"]), (-1, "provenance"))
-        for algo, penalty in (("grpo", 0), ("dapo", .75)):
+        for algo, penalty in (("grpo", 0), ("dapo", .75), ("cispo", .75)):
             with patch("utils.rollout_env._stage", side_effect=self.stages()):
                 result = run_task(str(self.task), RolloutConfig.preset(algo), 19)
             self.assertEqual(result["reward/base"], 3)

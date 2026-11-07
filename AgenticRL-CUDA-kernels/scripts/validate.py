@@ -12,7 +12,7 @@ import os
 
 from tests.support import ROOT, make_task, scratch
 from utils.backend import available_backends
-from utils.config import RolloutConfig
+from utils.config import ALGOS, RolloutConfig
 from utils.grpo import build_batch
 from utils.reward import compute_reward
 from utils.rollout_env import run_task
@@ -61,7 +61,7 @@ def main():
         synthetic.append({"rollout_id": rid, "reward/value": reward["reward"],
                           "reward/reason": reward["reason"], "env/turns_used": 1})
     demo, measured = {}, {}
-    for algo in ("grpo", "dapo"):
+    for algo in ALGOS:
         config = dataclasses.replace(RolloutConfig.preset(algo), group_size=3)
         pairs, stats = build_batch(["axpby"] * 3, synthetic, config)
         demo[algo] = {"advantages": dict(pairs), "stats": stats}
