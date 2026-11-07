@@ -1,5 +1,5 @@
 # W&B sweep over RolloutConfig for one task workdir per agent.
-#   .venv/bin/wandb sweep -e elenamylocuda-gemma -p CUDA-gen sweeps/rollout_sweep.yaml
+#   .venv/bin/wandb sweep -e "$WANDB_ENTITY" -p "$WANDB_PROJECT" sweeps/rollout_sweep.yaml
 # Each agent reads its task directory from $SWEEP_WORKDIR and its GPU from
 # $CUDA_VISIBLE_DEVICES (see scripts/sweep_rollout.sh and
 # WANDB_parallel_sweep_agents.md). Parameter names are RolloutConfig fields;

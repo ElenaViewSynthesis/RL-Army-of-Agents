@@ -8,13 +8,22 @@ import argparse
 import importlib
 import importlib.util
 import json
+import os
 import re
 import sys
 from pathlib import Path
 
-ENTITY = "elenamylocuda-gemma"
-PROJECT = "CUDA-gen"
+# W&B's own variables; wandb.init reads them too. No entity → the API key's
+# default entity. Set both in .env (see .env.example), never in code.
+ENTITY = os.environ.get("WANDB_ENTITY") or None
+PROJECT = os.environ.get("WANDB_PROJECT", "CUDA-gen")
 MANIFEST = Path(__file__).with_name("h200_runs.json")
+
+
+def weave_project(entity=None, project=None):
+    """'entity/project' for weave.init, or just 'project' without an entity."""
+    entity, project = entity or ENTITY, project or PROJECT
+    return f"{entity}/{project}" if entity else project
 
 _DROP_PREFIXES = ("log/", "artifact/")
 
@@ -196,7 +205,7 @@ def main(argv=None):
         if not args.no_weave:
             from tracking import weave_trace
             # Ops record only after weave.init; same entity/project as wandb.
-            weave_trace.init(f"{args.entity}/{args.project}")
+            weave_trace.init(weave_project(args.entity, args.project))
         for payload in payloads:
             if not args.no_weave:
                 weave_trace.replay_backfill(payload)

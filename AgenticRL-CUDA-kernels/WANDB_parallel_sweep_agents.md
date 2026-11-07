@@ -1,6 +1,8 @@
 # Parallel sweep agents (W&B) — multi-GPU focus
 
-Reference copy of the W&B "Parallelize agents" page, kept next to the other
+Reference copy of the W&B "Parallelize agents" page
+(source: <https://docs.coreweave.com/products/wandb/sweeps/parallelize-agents>,
+fetched 2026-11-06), kept next to the other
 runtime guides (`CUDA_on_Modal.md`, `GPU-acceler.md`). The multi-GPU
 procedure is the one that matters for this project; the multi-CPU tabs are
 kept for completeness.
@@ -20,7 +22,7 @@ kept for completeness.
   `RolloutConfig` field already has a `--kebab-case` flag, so sweep parameters
   map 1:1 onto `cfg/*` (e.g. `--algo`, `--group-size`, `--provenance-threshold`,
   `--bench-rounds`). Each agent run logs the flat `env/*`, `reward/*`, `meta/*`,
-  `bench/*` keys to project `elenamylocuda-gemma/CUDA-gen`.
+  `bench/*` keys to the W&B project named by `WANDB_ENTITY`/`WANDB_PROJECT` in `.env`.
 - On a Modal host, `MODAL_GPU="H200:2"` (or more) gives one container with
   several GPUs; launch one agent per index inside it exactly as below. The
   sweep must be initialised first (`wandb sweep <config.yaml>` → `[SWEEP-ID]`).
@@ -40,7 +42,7 @@ the GPU-host run has not happened yet.
 # 0. One-time setup on the GPU host (same for Modal "H200:2" containers)
 cd AgenticRL-CUDA-kernels
 pip install -r requirements-gpu.txt -r requirements-tracking.txt   # bare host; in the repo venv use .venv/bin/pip
-set -a && . ./.env && set +a                                         # exports WANDB_API_KEY (never commit .env)
+set -a && . ./.env && set +a   # WANDB_API_KEY, WANDB_ENTITY, WANDB_PROJECT (see .env.example; never commit .env)
 .venv/bin/python -m utils.runtime --json --require cuda,triton       # preflight: driver, nvcc, GPU UUIDs
 nvidia-smi --query-gpu=index,name,uuid --format=csv                  # the indices you will pin below
 
@@ -50,20 +52,20 @@ nvidia-smi --query-gpu=index,name,uuid --format=csv                  # the indic
 #           export CUDA_VISIBLE_DEVICES=1 SWEEP_WORKDIR=.../sweep_tasks/gpu1/triton
 
 # 2. Initialise the sweep once; copy the SWEEP-ID it prints
-.venv/bin/wandb sweep -e elenamylocuda-gemma -p CUDA-gen sweeps/rollout_sweep.yaml
+.venv/bin/wandb sweep -e "$WANDB_ENTITY" -p "$WANDB_PROJECT" sweeps/rollout_sweep.yaml
 
 # 3. One agent per GPU, each in its own terminal (or tmux pane), pinned with
 #    CUDA_VISIBLE_DEVICES and pointed at its own workdir. --count bounds the
 #    runs per agent; SWEEP_TURNS_USED feeds the turn-based shaping.
 # terminal A
 export CUDA_VISIBLE_DEVICES=0 SWEEP_WORKDIR="$PWD/sweep_tasks/gpu0/triton" SWEEP_TURNS_USED=1
-.venv/bin/wandb agent --count 16 elenamylocuda-gemma/CUDA-gen/[SWEEP-ID]
+.venv/bin/wandb agent --count 16 "$WANDB_ENTITY/$WANDB_PROJECT/[SWEEP-ID]"
 # terminal B
 export CUDA_VISIBLE_DEVICES=1 SWEEP_WORKDIR="$PWD/sweep_tasks/gpu1/triton" SWEEP_TURNS_USED=1
-.venv/bin/wandb agent --count 16 elenamylocuda-gemma/CUDA-gen/[SWEEP-ID]
+.venv/bin/wandb agent --count 16 "$WANDB_ENTITY/$WANDB_PROJECT/[SWEEP-ID]"
 
 # 3b. Same thing from one shell with tmux (N = number of GPUs)
-SWEEP=elenamylocuda-gemma/CUDA-gen/[SWEEP-ID]
+SWEEP="$WANDB_ENTITY/$WANDB_PROJECT/[SWEEP-ID]"
 for g in 0 1; do
   tmux new-session -d -s "agent$g" \
     "export CUDA_VISIBLE_DEVICES=$g SWEEP_WORKDIR=$PWD/sweep_tasks/gpu$g/triton SWEEP_TURNS_USED=1; \
@@ -72,9 +74,9 @@ done
 tmux ls                      # attach with: tmux attach -t agent0
 
 # 4. Manage the sweep
-.venv/bin/wandb sweep --pause  elenamylocuda-gemma/CUDA-gen/[SWEEP-ID]
-.venv/bin/wandb sweep --resume elenamylocuda-gemma/CUDA-gen/[SWEEP-ID]
-.venv/bin/wandb sweep --stop   elenamylocuda-gemma/CUDA-gen/[SWEEP-ID]   # agents exit after their current run
+.venv/bin/wandb sweep --pause  "$WANDB_ENTITY/$WANDB_PROJECT/[SWEEP-ID]"
+.venv/bin/wandb sweep --resume "$WANDB_ENTITY/$WANDB_PROJECT/[SWEEP-ID]"
+.venv/bin/wandb sweep --stop   "$WANDB_ENTITY/$WANDB_PROJECT/[SWEEP-ID]"   # agents exit after their current run
 
 # Dry run of exactly what an agent executes (no W&B account needed):
 CUDA_VISIBLE_DEVICES=0 SWEEP_WORKDIR="$PWD/sweep_tasks/gpu0/triton" SWEEP_NO_WEAVE=1 WANDB_MODE=offline \

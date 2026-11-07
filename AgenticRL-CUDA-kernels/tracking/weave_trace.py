@@ -8,15 +8,15 @@ import hashlib
 import importlib
 from pathlib import Path
 
-from tracking.wandb_log import ENTITY, PROJECT
+from tracking.wandb_log import weave_project
 from utils.backend import detect_backend
 
 _OPS = {}
 
 
-def init(project=f"{ENTITY}/{PROJECT}"):
+def init(project=None):
     import weave
-    return weave.init(project)
+    return weave.init(project or weave_project())
 
 
 def ops():
