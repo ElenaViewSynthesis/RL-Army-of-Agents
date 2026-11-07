@@ -13,7 +13,7 @@ command:
   - ${args_no_boolean_flags}
 method: grid
 metric:
-  name: reward/value
+  name: reward_mean
   goal: maximize
 parameters:
   algo:

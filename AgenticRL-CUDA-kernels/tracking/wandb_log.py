@@ -1,43 +1,43 @@
-"""Opt-in W&B logging for rollouts and the H200 artifact backfill.
+"""Opt-in W&B tables, aggregate summaries and iteration-level batch metrics.
 
-wandb is imported lazily inside functions only; this module stays importable
-(and testable with fakes) without wandb, weave or torch installed.
+No SDK or Torch imports until explicitly logging; dry-run payloads need no SDK.
+See Architecture-decision/0002-wandb-tracking-contract.md.
 """
-
 import argparse
+import hashlib
 import importlib
-import importlib.util
 import json
 import os
 import re
 import sys
+import tempfile
+import weakref
 from pathlib import Path
 
-# W&B's own variables; wandb.init reads them too. No entity → the API key's
-# default entity. Set both in .env (see .env.example), never in code.
+from utils.provenance import PROVENANCE_RULESET
+
 ENTITY = os.environ.get("WANDB_ENTITY") or None
 PROJECT = os.environ.get("WANDB_PROJECT", "CUDA-gen")
 MANIFEST = Path(__file__).with_name("h200_runs.json")
+SHARES = ("agent", "library", "torch", "memory")
+BATCH_KEYS = ("adv/frac_dropped", "adv/mean", "adv/std", "reward/mean", "reward/frac_3",
+              "reward/frac_provenance_fail", "reward/frac_max_turns",
+              "reward/mean_overlong_penalty", "turns/mean", "turns/p95")
 
 
 def weave_project(entity=None, project=None):
-    """'entity/project' for weave.init, or just 'project' without an entity."""
     entity, project = entity or ENTITY, project or PROJECT
     return f"{entity}/{project}" if entity else project
 
-_DROP_PREFIXES = ("log/", "artifact/")
-
 
 def metrics_for_wandb(result):
-    """Flat run_task metrics minus log/artifact tails."""
-    return {k: v for k, v in result.items() if not k.startswith(_DROP_PREFIXES)}
+    """Only batch aggregate scalars belong in metric history, never case results."""
+    return {k: v for k, v in result.items() if k in BATCH_KEYS}
 
 
 def config_for_wandb(cfg_dict, environment=None, **extra):
-    """cfg/* RolloutConfig + runtime/* preflight keys + flat extras."""
     config = {f"cfg/{k}": v for k, v in cfg_dict.items()}
-    if environment:
-        config.update({k: v for k, v in environment.items() if k.startswith("runtime/")})
+    config.update({k: v for k, v in (environment or {}).items() if k.startswith("runtime/")})
     config.update(extra)
     return config
 
@@ -47,34 +47,29 @@ def _read(artifacts_dir, name, run_id):
     return json.loads(path.read_text()) if path.is_file() else None
 
 
-def _case_row(case, r):
-    return {"case": case, "backend": r.get("meta/backend"),
-            "verify_ok": r.get("env/verify_ok"),
-            "provenance": r.get("env/provenance"),
-            "t_eager_us": r.get("env/t_eager_us"),
-            "t_compile_us": r.get("env/t_compile_us"),
-            "t_gen_us": r.get("env/t_gen_us"),
-            "speedup_vs_compile": r.get("env/speedup_vs_compile"),
-            "reward": r.get("reward/value"), "reward_base": r.get("reward/base"),
-            "reason": r.get("reward/reason"),
-            "overlong_penalty": r.get("reward/overlong_penalty"),
-            "wall_s": r.get("env/wall_s"), "turns_used": r.get("env/turns_used")}
+def _case_row(case, result, profile=None, candidate_sha256=None, rules=None, cfg=None):
+    row = {k: v for k, v in result.items() if not k.startswith(("log/", "artifact/"))}
+    row.update(case=case, **{"meta/model_new_sha256": candidate_sha256,
+                            "meta/provenance_rules": rules,
+                            "case_config": json.dumps(cfg, sort_keys=True) if cfg else None,
+                            "timing_measured": (profile or {}).get("timing_measured")})
+    # Never borrow shares from another fixture or from the separate name-recorder pass.
+    for bucket in SHARES:
+        row["env/provenance_" + bucket] = (profile or {}).get("provenance/" + bucket)
+    return row
 
 
 def _kernel_rows(kernel_names):
     rows = []
     for backend, rec in (kernel_names or {}).get("backends", {}).items():
-        if not rec.get("measured"):
-            rows.append({"backend": backend, "event": None, "us": None, "class": None,
-                         "measured": False,
-                         "reason": rec.get("reason") or rec.get("unavailable"),
-                         "unmatched": ""})
-            continue
         unmatched = ",".join(rec.get("unmatched_agent_names") or [])
+        if not rec.get("measured") or not rec.get("kernels"):
+            rows.append({"backend": backend, "event": None, "us": None, "class": None,
+                         "measured": bool(rec.get("measured")),
+                         "reason": rec.get("reason") or rec.get("unavailable"), "unmatched": unmatched})
         for event, k in rec.get("kernels", {}).items():
-            rows.append({"backend": backend, "event": event, "us": k["us"],
-                         "class": k["class"], "measured": True, "reason": None,
-                         "unmatched": unmatched})
+            rows.append({"backend": backend, "event": event, "us": k["us"], "class": k["class"],
+                         "measured": True, "reason": None, "unmatched": unmatched})
     return rows
 
 
@@ -86,77 +81,97 @@ def _gpu_tests_status(path):
     return matches[-1] if matches else None
 
 
-def _summary(rollouts, kernels, kernel_names, results, gpu_stderr):
-    rewards = [r["reward"] for r in rollouts if r["reward"] is not None]
-    return {"cases": len(rollouts),
-            "verify_ok": sum(bool(r["verify_ok"]) for r in rollouts),
-            "provenance_pass": sum(r["provenance"] is not None and r["provenance"] >= 0.9
-                                   for r in rollouts),
-            "reward_positive": sum(r["reward"] is not None and r["reward"] > 0
-                                   for r in rollouts),
+def _summary(rollouts, kernel_names=None, results=None, gpu_stderr=None):
+    rewards = [r["reward/value"] for r in rollouts if r.get("reward/value") is not None]
+    thresholds = [(json.loads(r["case_config"]).get("provenance_threshold")
+                   if r.get("case_config") else None) for r in rollouts]
+    # Historical gate threshold is not recoverable from current defaults. The
+    # milestone reason proves passage/failure, so counts use that recorded result.
+    passed = sum((r.get("env/provenance") >= t if t is not None and r.get("env/provenance") is not None
+                  else r.get("reward/reason") in ("correct", "faster_than_eager", "faster_than_both"))
+                 for r, t in zip(rollouts, thresholds))
+    return {"cases": len(rollouts), "verify_ok": sum(bool(r.get("env/verify_ok")) for r in rollouts),
+            "provenance_pass": passed,
+            "reward_positive": sum(r > 0 for r in rewards),
             "reward_mean": sum(rewards) / len(rewards) if rewards else None,
-            "unmatched_agent_names_total": sum(
-                len(rec.get("unmatched_agent_names") or [])
-                for rec in (kernel_names or {}).get("backends", {}).values()),
-            "backends_measured": sum(bool(rec.get("measured"))
-                                     for rec in (kernel_names or {}).get("backends", {}).values()),
-            "gpu_tests": _gpu_tests_status(gpu_stderr),
+            "unmatched_agent_names_total": sum(len(r.get("unmatched_agent_names") or [])
+                for r in (kernel_names or {}).get("backends", {}).values()),
+            "backends_measured": sum(bool(r.get("measured")) for r in (kernel_names or {}).get("backends", {}).values()),
+            "gpu_tests": _gpu_tests_status(gpu_stderr) if gpu_stderr else None,
             "unavailable_backends": ",".join(sorted((results or {}).get("unavailable_backends") or {}))}
 
 
 def backfill_payload(run_id, artifacts_dir, manifest=None):
-    """Pure payload assembly for one manifest run; raises ValueError if unknown."""
     artifacts_dir = Path(artifacts_dir)
     manifest = manifest or json.loads(MANIFEST.read_text())
     entry = next((r for r in manifest["runs"] if r["run_id"] == run_id), None)
     if entry is None:
         raise ValueError(f"run_id not in manifest: {run_id}")
-    results = _read(artifacts_dir, "results", run_id)
-    kernel_names = _read(artifacts_dir, "kernel_names", run_id)
+    results = _read(artifacts_dir, "results", run_id) or {}
+    names = _read(artifacts_dir, "kernel_names", run_id) or {}
     environment = _read(artifacts_dir, "environment", run_id)
-    versions = (results or {}).get("versions") or {}
-    config = config_for_wandb({}, environment,
-                              **{f"versions/{k}": v for k, v in versions.items()},
-                              source_command=(results or {}).get("command"))
-    rollout_map = (results or {}).get("rollouts", {})
-    rollouts = [_case_row(c, r) for c, r in rollout_map.items()]
-    kernels = _kernel_rows(kernel_names)
-    files = [str(artifacts_dir / Path(f).name) for f in entry.get("files", [])
-             if (artifacts_dir / Path(f).name).is_file()]
-    json.dumps(files, allow_nan=False)
-    return {"run_id": run_id, "name": run_id, "kind": entry["kind"],
-            "status": entry["status"],
-            "tags": [entry["kind"], entry["status"], "h200", "backfill"],
-            "notes": entry.get("notes", ""), "config": config,
-            "rollouts": rollouts, "kernels": kernels,
-            "metrics_by_case": {c: metrics_for_wandb(r) for c, r in rollout_map.items()},
-            "summary": _summary(rollouts, kernels, kernel_names, results,
-                                artifacts_dir / f"gpu_tests.stderr-{run_id}.log"),
-            "files": files}
+    cfg = results.get("config") or {}
+    # An old artifact's classifier is unknown; never label it with today's rules.
+    rules = results.get("provenance_rules") or names.get("provenance_rules")
+    config = config_for_wandb(cfg, environment,
+        **{f"versions/{k}": v for k, v in results.get("versions", {}).items()},
+        source_command=results.get("command"), **{"meta/provenance_rules": rules,
+        "tracking/config_available": bool(cfg), "tracking/rules_available": rules is not None,
+        "tracking/group_configs": results.get("group_configs"),
+        "tracking/contract": "wandb-contract-v1"})
+    rollout_map = results.get("rollouts", {})
+    rows = [_case_row(c, r, results.get("profiles", {}).get(c),
+        results.get("candidate_sha256", {}).get(c), rules, results.get("case_configs", {}).get(c))
+        for c, r in rollout_map.items()]
+    config["tracking/shares_available"] = any(r.get("env/provenance") is not None for r in rows) and all(
+        all(r["env/provenance_" + b] is not None for b in SHARES)
+        for r in rows if r.get("env/provenance") is not None)
+    config["tracking/candidates_available"] = bool(rows) and all(r["meta/model_new_sha256"] for r in rows)
+    metrics = {f"batch/{algo}/{k}": v for algo, group in results.get("measured_groups", {}).items()
+               for k, v in metrics_for_wandb(group["stats"]).items()}
+    return {"run_id": run_id, "name": run_id, "kind": entry["kind"], "status": entry["status"],
+            "tags": [entry["kind"], entry["status"], "h200", "backfill"], "notes": entry.get("notes", ""),
+            "config": config, "rollouts": rows, "kernels": _kernel_rows(names),
+            "metrics_by_case": rollout_map,  # Weave replay only, including stage tails.
+            "metric_keys": sorted(["iteration", *metrics]), "metrics": metrics,
+            "summary": _summary(rows, names, results, artifacts_dir / f"gpu_tests.stderr-{run_id}.log"),
+            "files": [str(artifacts_dir / Path(f).name) for f in entry.get("files", [])
+                      if (artifacts_dir / Path(f).name).is_file()]}
 
 
 def _table(wandb, rows, fallback_columns):
-    columns = list(rows[0]) if rows else fallback_columns
-    return wandb.Table(columns=columns,
-                     data=[[row.get(c) for c in columns] for row in rows])
+    columns = list(dict.fromkeys(k for row in rows for k in row)) if rows else fallback_columns
+    return wandb.Table(columns=columns, data=[[row.get(c) for c in columns] for row in rows])
+
+
+def define_metrics(run):
+    run.define_metric("iteration", summary="none")
+    run.define_metric("*", step_metric="iteration", summary="none")
+
+
+def _clear_case_summary(run):
+    # A resumed old backfill may still contain last-case summary values.
+    for key in list(run.summary.keys()):
+        if key == "case" or key.startswith(("env/", "meta/", "bench/", "log/", "artifact/")) or key in (
+                "reward/value", "reward/base", "reward/reason", "reward/overlong_penalty"):
+            del run.summary[key]
 
 
 def log_backfill(payload, entity=ENTITY, project=PROJECT, wandb_module=None):
-    """Log one backfill payload as a W&B run; returns the run url or id."""
     wandb = wandb_module or importlib.import_module("wandb")
     run = wandb.init(entity=entity, project=project,
-                     id=f"h200-{payload['run_id']}".replace("/", "-")[:64],
-                     name=payload["name"], job_type=payload["kind"],
-                     tags=payload["tags"], notes=payload["notes"],
-                     config=payload["config"], resume="allow")
-    for i, (case, metrics) in enumerate(payload["metrics_by_case"].items()):
-        run.log({**metrics, "case": case}, step=i)
-    run.log({"rollouts": _table(wandb, payload["rollouts"], ["case"]),
+        id=f"h200-{payload['run_id']}".replace("/", "-")[:64], name=payload["name"],
+        job_type=payload["kind"], tags=payload["tags"], notes=payload["notes"],
+        config=payload["config"], resume="allow")
+    define_metrics(run)
+    _clear_case_summary(run)
+    # A validation invocation is one snapshot (iteration 0), not N training steps.
+    run.log({"iteration": 0, **payload["metrics"],
+             "rollouts": _table(wandb, payload["rollouts"], ["case"]),
              "kernels": _table(wandb, payload["kernels"], ["backend"])})
     run.summary.update(payload["summary"])
     artifact = wandb.Artifact(name=f"h200-{payload['run_id']}".replace("/", "-")[:64],
-                              type="validation-run",
-                              metadata={"kind": payload["kind"], "status": payload["status"]})
+        type="validation-run", metadata={"kind": payload["kind"], "status": payload["status"]})
     for path in payload["files"]:
         artifact.add_file(path)
     run.log_artifact(artifact)
@@ -164,14 +179,93 @@ def log_backfill(payload, entity=ENTITY, project=PROJECT, wandb_module=None):
     return getattr(run, "url", run.id)
 
 
-def log_rollout(result, cfg, run=None, wandb_module=None):
-    """Log one run_task result's flat metrics to the given or a new run."""
-    wandb = wandb_module or importlib.import_module("wandb")
+# Live-run rows and config, keyed by the run object. wandb's Run.__setattr__
+# rejects unknown attributes, so this state cannot be stored on the run.
+_LIVE = weakref.WeakKeyDictionary()
+
+
+def _live_run(cfg, run, wandb, environment):
     if run is None:
-        run = wandb.init(entity=ENTITY, project=PROJECT,
-                         config=config_for_wandb(cfg.to_dict()))
-    run.log(metrics_for_wandb(result))
+        if environment is None:
+            from utils.runtime import check
+            environment = check()
+        run = wandb.init(entity=ENTITY, project=PROJECT, name=cfg.run_name or None,
+            group=cfg.algo, tags=cfg.tags, config=config_for_wandb(cfg.to_dict(), environment,
+            **{"meta/provenance_rules": PROVENANCE_RULESET, "tracking/contract": "wandb-contract-v1"}))
+    state = _LIVE.get(run)
+    if state is None:
+        define_metrics(run)
+        state = _LIVE[run] = {"rows": [], "config": cfg.to_dict()}
+    if state["config"] != cfg.to_dict():
+        raise ValueError("Live runs require constant RolloutConfig; start a new run for changed config")
     return run
+
+
+def _rows(run):
+    return _LIVE[run]["rows"]
+
+
+def _live_evidence(run, wandb, results, profiles, cfg, workdirs, step):
+    """Attach raw records and candidate sources; stage tails stay out of metrics."""
+    artifact = wandb.Artifact(name=f"rollout-{run.id}-{step}-{len(_rows(run))}",
+                              type="rollout-evidence", metadata={"provenance_rules": PROVENANCE_RULESET})
+    with tempfile.TemporaryDirectory(prefix="kernel-evidence-") as tmp:
+        path = Path(tmp) / "records.json"
+        path.write_text(json.dumps({"config": cfg.to_dict(), "results": results,
+                                    "profiles": profiles, "provenance_rules": PROVENANCE_RULESET},
+                                   allow_nan=False))
+        artifact.add_file(str(path))
+        for i, workdir in enumerate(workdirs or []):
+            root = Path(workdir)
+            paths = [root / n for n in ("model.py", "model_new.py", "binding.cpp", "binding_registry.h")]
+            paths += sorted((root / "kernels").rglob("*"))
+            for source in paths:
+                if source.is_file() and source.suffix in (".py", ".cu", ".cpp", ".h"):
+                    artifact.add_file(str(source), name=f"case-{i}/{source.relative_to(root)}")
+        trusted = Path(__file__).resolve().parent.parent
+        for source in sorted((trusted / "utils").glob("*.py")) + sorted(trusted.glob("requirements*.txt")):
+            artifact.add_file(str(source), name=f"harness/{source.relative_to(trusted)}")
+        run.log_artifact(artifact)
+
+
+def log_rollout(result, cfg, run=None, wandb_module=None, *, profile=None, workdir=None,
+                environment=None, step=0, candidate_sha256=None):
+    """Append a case to a table; standalone evaluation has no batch advantages."""
+    wandb = wandb_module or importlib.import_module("wandb")
+    run = _live_run(cfg, run, wandb, environment)
+    candidate = Path(workdir) / "model_new.py" if workdir else None
+    sha = candidate_sha256 or (hashlib.sha256(candidate.read_bytes()).hexdigest() if candidate and candidate.is_file() else None)
+    row = _case_row(str(len(_rows(run))), result, profile, sha,
+                    PROVENANCE_RULESET, cfg.to_dict())
+    _rows(run).append(row)
+    _clear_case_summary(run)
+    run.log({"iteration": step, "rollouts": _table(wandb, _rows(run), ["case"])})
+    run.summary.update(_summary(_rows(run)))
+    _live_evidence(run, wandb, [result], [profile], cfg, [workdir] if workdir else None, step)
+    return run
+
+
+def log_batch(task_ids, results, cfg, *, step, run=None, profiles=None, workdirs=None,
+              environment=None, wandb_module=None):
+    """Live training hook: one same-algorithm run, one batch-stat point per iteration."""
+    from utils.grpo import build_batch
+    results = list(results)
+    pairs, stats = build_batch(task_ids, results, cfg)
+    wandb = wandb_module or importlib.import_module("wandb")
+    run = _live_run(cfg, run, wandb, environment)
+    for i, result in enumerate(results):
+        # Accumulate rows without emitting per-rollout metric steps.
+        candidate = Path(workdirs[i]) / "model_new.py" if workdirs else None
+        sha = hashlib.sha256(candidate.read_bytes()).hexdigest() if candidate and candidate.is_file() else None
+        row = _case_row(str(len(_rows(run))), result,
+                        profiles[i] if profiles else None, sha, PROVENANCE_RULESET, cfg.to_dict())
+        _rows(run).append(row)
+    run.log({"iteration": step, **metrics_for_wandb(stats),
+             "rollouts": _table(wandb, _rows(run), ["case"])})
+    _clear_case_summary(run)
+    run.summary.update(_summary(_rows(run)))
+    _live_evidence(run, wandb, results, profiles, cfg, workdirs, step)
+    return run, pairs, stats
 
 
 def main(argv=None):
@@ -212,13 +306,16 @@ def main(argv=None):
             print(log_backfill(payload, args.entity, args.project))
         return
     cfg = RolloutConfig.from_args(args)
+    profile = {}
+    candidate = Path(args.workdir) / "model_new.py"
+    candidate_sha256 = hashlib.sha256(candidate.read_bytes()).hexdigest() if candidate.is_file() else None
     if args.no_weave:
-        result = run_task(args.workdir, cfg, args.turns_used)
+        result = run_task(args.workdir, cfg, args.turns_used, profile_out=profile)
     else:
         from tracking import weave_trace
         weave_trace.init()
-        result = weave_trace.traced_run_task(args.workdir, cfg, args.turns_used)
-    log_rollout(result, cfg).finish()
+        result = weave_trace.traced_run_task(args.workdir, cfg, args.turns_used, profile_out=profile)
+    log_rollout(result, cfg, profile=profile, workdir=args.workdir, candidate_sha256=candidate_sha256).finish()
     print(json.dumps(result, allow_nan=False))
 
 
