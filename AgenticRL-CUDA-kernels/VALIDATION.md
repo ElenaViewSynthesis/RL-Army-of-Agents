@@ -393,7 +393,7 @@ that source explicitly recorded. Future runs now write environment.json from
 the runtime probe directly; that packaging change awaits remote execution.
 
 Name matching remains a heuristic, not proof of authorship. The classifier
-change is awaiting explicit user approval. Unknown events still count as Torch.
+change was approved and is implemented below. Unknown events still count as Torch.
 
 ### Successful H200 rerun 20261106T185236Z
 
@@ -435,7 +435,7 @@ cutedsl: kernel_cutlass_axpby_cute_kernel_tensorptrf32gmemo151201i64512_tensorpt
 
 No backend was unavailable. All five honest rollouts verified with provenance 1.0; all four Torch-op hacks verified with provenance 0.0 and reward -1. Timeout and max-turn fixtures returned their expected reasons.
 
-GPU benchmark and graph tests passed. Raw benchmark latency series, Nsight/sanitizer runs, Chrome traces, other GPUs and broader workloads are not established by this run. Generic-name spoofing remains open pending classifier approval. The environment packaging fix was made after this remote upload and still needs a remote packaging check.
+GPU benchmark and graph tests passed. Raw benchmark latency series, Nsight/sanitizer runs, Chrome traces, other GPUs and broader workloads are not established by this run. Generic-name spoofing is addressed by the approved classifier rules below. The environment packaging fix was made after this remote upload and still needs a remote packaging check.
 
 ## Experiment tracking
 
@@ -487,3 +487,28 @@ been made from this repository yet.
 
 The `overlong` rollout also passes provenance and earns >0, so
 `provenance_pass`/`reward_positive` are 6 (the five honest fixtures + overlong).
+
+## Approved symbol rules (evidence: run 20261106T185236Z)
+
+| Backend | `symbol_pattern` (`re.search`) |
+|---|---|
+| cuda | `(^\|[\s:]){name}\s*[<(]` |
+| triton | `^{name}(_\d\w*)?$` |
+| tilelang | `^{name}(_kernel)?$` |
+| cutile | `^{name}_Kt\d+_` |
+| cutedsl | `^kernel_cutlass_{name}_` |
+
+`{name}` is substituted using `re.escape`. Both source discovery and classification
+reject names shorter than four characters and the shared denylist in
+`utils/backend.py`. Order: memory → Torch/Inductor namespace markers → anchored
+authored match → allowed-library markers → Torch. Captured names above are pinned
+in `tests/test_symbol_provenance.py`. Tests cover generic, namespace and Inductor
+spoofs; a GPU fixture launches a scratch kernel renamed `kernel` on each backend
+before returning the Torch-op result. Root protected sources are untouched.
+
+The exact approved rules have two cross-backend exceptions: a CuTe symbol counts
+as CUDA library time because it contains `cutlass`; a bare Triton name can match
+the optional TileLang suffix pattern when supplied as a TileLang authored name.
+These follow the explicit patterns and existing library policy. Name matching is
+not proof of authorship. The CUDA naming supplement is SKILL_CUDA.md; protected
+upstream SKILL.md remains byte-identical.

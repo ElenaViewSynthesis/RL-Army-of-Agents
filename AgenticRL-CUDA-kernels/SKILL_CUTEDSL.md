@@ -74,3 +74,18 @@ failure returns -1; otherwise the base reward is 3 for >5% faster than both eage
 and compile, 2 for eager only, and 1 otherwise. GRPO keeps tied groups; DAPO
 filters them by default. Always use the supplied RolloutConfig: these switches
 and thresholds may be overridden.
+
+## Kernel naming and attribution
+
+Authored names must have at least four characters and must not be any of:
+`add`, `aten`, `copy`, `div`, `elementwise`, `fill`, `forward`, `fused`, `kernel`, `main`, `mul`, `native`, `sub`, `sum`, `triton`, `vectorized`. Rejected names are excluded
+from source discovery and cannot receive agent credit.
+
+The profiler uses `re.search` with the backend pattern `^kernel_cutlass_{name}_`,
+substituting `re.escape(authored_name)` for `{name}`. Patterns are based on
+H200 run `20261106T185236Z`. Memory events are excluded first; Torch namespace
+markers (`at::native`, `aten::`, `c10::`) and Inductor names matching
+`^triton_(poi|per|red|tem)_fused` always count as Torch before authored matching.
+Unknown events count as Torch. CuTe symbols containing `cutlass` are checked
+for authored matches before library markers. Matching remains name-based,
+not proof of authorship.

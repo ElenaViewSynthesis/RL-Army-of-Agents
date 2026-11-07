@@ -161,12 +161,12 @@ Install a backend's extra on top of `requirements.txt`, for example `uv pip inst
 
 `utils/provenance.py` classifies every CUDA device event by name, in this order:
 
-| Event name contains | CUDA backend | Triton backend |
+| Event rule (checked in order) | CUDA backend | Triton backend |
 |---|---|---|
-| An authored kernel name (`__global__` or `@triton.jit`) | **agent** ✅ | **agent** ✅ |
-| `aten` or `at::native` | torch ❌ | torch ❌ |
-| `cublas`, `cutlass` or `cudnn` | **library** ✅ | torch ❌ |
 | `memcpy` or `memset` | memory (excluded) | memory (excluded) |
+| Torch/Inductor namespace marker | torch ❌ | torch ❌ |
+| Backend-anchored, non-generic authored name | **agent** ✅ | **agent** ✅ |
+| `cublas`, `cutlass` or `cudnn` | **library** ✅ | torch ❌ |
 | Anything else | torch ❌ | torch ❌ |
 
 ```text
@@ -427,3 +427,8 @@ Full evidence, raw command output and what each test establishes are in [VALIDAT
 - [Triton_provenance_GRPO_task.md](Triton_provenance_GRPO_task.md): the task brief this implementation follows
 - [CUDA_on_Modal.md](CUDA_on_Modal.md) · [GPU-acceler.md](GPU-acceler.md): the CUDA stack on Modal and GPU-accelerated libraries
 - Upstream: [BytedTsinghua-SIA/CUDA-Agent](https://github.com/BytedTsinghua-SIA/CUDA-Agent) at commit `473025c` (checksums in [artifacts/upstream.json](artifacts/upstream.json))
+
+Kernel naming now requires ≥4 characters and rejection of generic names in both
+source discovery and classification. See [VALIDATION.md](VALIDATION.md#approved-symbol-rules-evidence-run-20261106t185236z) for the exact backend patterns,
+namespace precedence and limits, and [SKILL_CUDA.md](SKILL_CUDA.md) for the CUDA
+naming supplement to protected upstream SKILL.md.
