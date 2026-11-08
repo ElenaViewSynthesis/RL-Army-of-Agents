@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "run_id": "20261108T230513Z-9d48f02a",
+  "backend": "triton",
+  "measured": true,
+  "reason": null,
+  "iters": 10,
+  "ruleset": "anchored-namespaces-generic-v1",
+  "notes": [
+    "Diagnostic pass only: profiler instrumentation perturbs timings, which never feed the reward.",
+    "Kernel classes are name-based heuristics, not proof of authorship; unknown names count as torch.",
+    "Workdir files are writable by the candidate; this report is not a trusted reward input."
+  ],
+  "kernels": [
+    {
+      "name": "axpby_kernel",
+      "calls": 10,
+      "total_us": 8.319999999999709,
+      "mean_us": 0.8319999999999709,
+      "per_iter_us": 0.8319999999999709,
+      "class": "agent"
+    }
+  ]
+}

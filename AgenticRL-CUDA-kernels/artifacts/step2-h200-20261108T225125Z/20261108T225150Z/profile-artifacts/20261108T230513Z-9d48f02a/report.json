@@ -1,0 +1,294 @@
+{
+  "schema_version": 1,
+  "run_id": "20261108T230513Z-9d48f02a",
+  "started_at": "2026-11-08T23:05:47Z",
+  "finished_at": "2026-11-08T23:05:51Z",
+  "task_id": "triton",
+  "backend": "triton",
+  "notes": [
+    "Diagnostic pass only: profiler instrumentation perturbs timings, which never feed the reward.",
+    "Kernel classes are name-based heuristics, not proof of authorship; unknown names count as torch.",
+    "Workdir files are writable by the candidate; this report is not a trusted reward input."
+  ],
+  "inputs": [
+    {
+      "shape": [
+        1,
+        128
+      ],
+      "dtype": "torch.float32"
+    },
+    {
+      "shape": [
+        1,
+        128
+      ],
+      "dtype": "torch.float32"
+    }
+  ],
+  "inputs_reason": null,
+  "gpu": {
+    "index": 0,
+    "name": "NVIDIA H200",
+    "compute_capability": "9.0",
+    "total_memory_bytes": 150101688320,
+    "uuid": "72d90e64-bfbe-9401-3368-84d8f71e16d1"
+  },
+  "gpu_reason": null,
+  "software": {
+    "python": "3.12.1",
+    "torch": "2.14.1+cu130",
+    "cuda_runtime": "13.0",
+    "triton": "3.8.0",
+    "driver": "610.57.04",
+    "driver_reason": null
+  },
+  "source_sha256": {
+    "task/model.py": "f92e69573f45f2043b0d2c63032b554653a8b935dddf71f5d7fb6c3190926ecf",
+    "task/model_new.py": "403a4cd1e4189f2ab26a385b0e7176f6ff7f161cd20028dfe72ad96377e192ec",
+    "task/kernels/__init__.py": "fa8709e0f841861e590a1400e7bf811752982f12aa6de0b19102d917d614c1a4",
+    "task/kernels/axpby.cu": "44a6b0ac7d98319e3d3aafc1fa3cb65e57375a4e2b0aac2c6d1028de292380f8",
+    "task/kernels/axpby_binding.cpp": "90b24e3495c73a5884fb1d61384dab6a5ddd97ee74510692e3792822d3f0a3c9",
+    "task/kernels/cutedsl/__init__.py": "7ab6d9e0244065e9e92298a72ba9f7870d075ac2bae338ba2c9b5269c3c275a0",
+    "task/kernels/cutedsl/axpby.py": "571a7424b67cf69b61d3ddce0ae03e46c4bf04f5306c8980b8921a4cdad8e86d",
+    "task/kernels/cutile/__init__.py": "aff46b86128129df6bb4ba68e0c7114b509e87ffe24d0acdc24fab40d0540447",
+    "task/kernels/cutile/axpby.py": "703fe686e1505391b5bc6bec3c391b10e625fa8cf67a8adf1f1fee4275814bf2",
+    "task/kernels/tilelang/__init__.py": "14411c6067edaf71cb45bff191310d8caddf55a6d1fb01aca6a841221638386b",
+    "task/kernels/tilelang/axpby.py": "28b54345b5ff2278ed091b4dc9257ff85e6fa001e3585c13c645a6f48ce563f4",
+    "task/kernels/triton/__init__.py": "15c1c4579dfce367a2bd82c9e531493a99ec2242d57d3ba2f28b8945e40fb48a",
+    "task/kernels/triton/axpby.py": "b97f0fc14e9763778d1f9c5f8deb8c520380059816c3da295d506b4fa2e04492",
+    "harness/utils/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "harness/utils/artifact_report.py": "fa3a5f7a78b921396ca0c130b6d809d6c970260d4bf0a70a8cc9ce2263483d64",
+    "harness/utils/backend.py": "e55b2a1372b6a1acfe5a62eb498929aa8ebb61a840293b39addae63b4b03081d",
+    "harness/utils/benchmark.py": "d0255dd8afde1fa6e0e7b2d92a7d995c57d67287227b7bf60ef61ecd6237dea1",
+    "harness/utils/compile.py": "27051da7b8db0b82fbfb7ad4a431d011f7127a02013635c7fa957c5dae2e3a84",
+    "harness/utils/compile.sh": "15c9aea50627d529c34e20cc8c6c64f09686b13a79c26066f821c9ef6d97900d",
+    "harness/utils/config.py": "f48c55dc085d4a973bede96a355e5fdabb3c9878b0559d688aafde464475bcf0",
+    "harness/utils/diagnose.py": "3cf6586cc422d14fbf0c0e900b328ced50bca1e35c9bc3b31940a5c43df510d6",
+    "harness/utils/diagnostic_fault.py": "f3e51fcab71093c7e91ab13ad35c2a45fe1e3374f62651d4df3c00419e95d073",
+    "harness/utils/diagnostic_review.py": "ad1d5c11ff8bb42cc7843abbba07a17b4927f9e7f3e86da9c1bea0ffd8ecbfa5",
+    "harness/utils/diagnostic_worker.py": "5d8296416019e770c1e3710387c4341159b656c52317dd1164c7bdf193f7f171",
+    "harness/utils/grpo.py": "57c2d630355c17765aa102e744673b4d038bf70a7a6eb13f8e0a9526b4b40728",
+    "harness/utils/profile_artifacts.py": "03b7f432310b6bc845bc24c99e13f0a2782144136eeb03d7634ad27bfdd7d04f",
+    "harness/utils/profile_diagnostic.py": "858dde2a825bc7e8aa960466e82f7306dc40d237efbb3c91e40fe214a80874f0",
+    "harness/utils/profiling.py": "ecc3a4960cee5e95bf005e42b14820f14c49a98593fa321a12ade85fa13fa034",
+    "harness/utils/provenance.py": "6e39c2c575667a8ddd8dc503449790f9fa787f7693b8f89a30bf7427f89b11d6",
+    "harness/utils/reward.py": "d1c70f6949d8ca6d0d67637aeb88e0db68c526398d1bde6dd582c2ffd26ddd82",
+    "harness/utils/rollout_env.py": "cd6a5d42c3494d229db1720f3969e940bd2dfdf5d580c33400b71877e14b6f0f",
+    "harness/utils/runtime.py": "35b724c9fa6231d679c2a631016c149ad5d00f70ce880000e92e6cb27de0370a",
+    "harness/utils/stats.py": "d5765d00fcac5ce5b1012560758279b3ccfb57be2331a7e1d084d8a7294c5b2d",
+    "harness/utils/verification.py": "47bb2ad47dfedff0c78f4fdd0de6baeff7a0a7c114d9c1694a2041001997f906"
+  },
+  "capture": {
+    "session": "generated",
+    "iters": 10,
+    "warmup_iters": 20,
+    "activities": [
+      "CPU",
+      "CUDA"
+    ],
+    "record_shapes": true,
+    "profile_memory": true,
+    "primer_event_counts": [
+      0,
+      0
+    ],
+    "cuda_events": 10,
+    "cpu_events": 43,
+    "reason": null
+  },
+  "provenance": {
+    "ruleset": "anchored-namespaces-generic-v1",
+    "totals_us": {
+      "agent": 8.319999999999709,
+      "library": 0.0,
+      "torch": 0.0,
+      "memory": 0.0
+    },
+    "shares": {
+      "agent": 1.0,
+      "library": 0.0,
+      "torch": 0.0,
+      "memory": 0.0
+    },
+    "provenance": 1.0
+  },
+  "benchmark": {
+    "enabled": true,
+    "summary": {
+      "bench/available": true,
+      "bench/device_index": 0,
+      "bench/device_name": "NVIDIA H200",
+      "bench/device_capability": "9.0",
+      "bench/device_uuid": "72d90e64-bfbe-9401-3368-84d8f71e16d1",
+      "bench/warmup_iters": 10,
+      "bench/rounds": 6,
+      "bench/iters_per_round": 10,
+      "bench/seed": 0,
+      "bench/order": "eager,compile,generated|compile,generated,eager|generated,eager,compile|eager,compile,generated|compile,generated,eager|generated,eager,compile",
+      "bench/eager/event_cv": 0.17780829117502397,
+      "bench/eager/event_us_n": 6,
+      "bench/eager/event_us_median": 21.878400444984436,
+      "bench/eager/event_us_min": 21.055999398231506,
+      "bench/eager/event_us_max": 31.782400608062744,
+      "bench/eager/event_us_p25": 21.195199713110924,
+      "bench/eager/event_us_p75": 22.566400095820427,
+      "bench/eager/wall_cv": 0.16859725607926876,
+      "bench/eager/wall_us_n": 6,
+      "bench/eager/wall_us_median": 23.172950005800885,
+      "bench/eager/wall_us_min": 22.302499996840197,
+      "bench/eager/wall_us_max": 33.0637000047318,
+      "bench/eager/wall_us_p25": 22.470500002214067,
+      "bench/eager/wall_us_p75": 23.895724999078993,
+      "bench/eager/prepare_s": 0.14594031199999336,
+      "bench/eager/warmup_iters": 10,
+      "bench/compile/event_cv": 0.14162520458512748,
+      "bench/compile/event_us_n": 6,
+      "bench/compile/event_us_median": 72.86880016326904,
+      "bench/compile/event_us_min": 69.12000179290771,
+      "bench/compile/event_us_max": 98.81920218467712,
+      "bench/compile/event_us_p25": 72.29199856519699,
+      "bench/compile/event_us_p75": 75.64879953861237,
+      "bench/compile/wall_cv": 0.1368766369015346,
+      "bench/compile/wall_us_n": 6,
+      "bench/compile/wall_us_median": 74.29449999563076,
+      "bench/compile/wall_us_min": 72.46149999673435,
+      "bench/compile/wall_us_max": 100.56099999928847,
+      "bench/compile/wall_us_p25": 73.6779999982673,
+      "bench/compile/wall_us_p75": 77.0642499958285,
+      "bench/compile/prepare_s": 1.739194307000048,
+      "bench/compile/warmup_iters": 10,
+      "bench/generated/event_cv": 0.038308751684777036,
+      "bench/generated/event_us_n": 6,
+      "bench/generated/event_us_median": 61.372801661491394,
+      "bench/generated/event_us_min": 58.00639986991882,
+      "bench/generated/event_us_max": 64.39039707183838,
+      "bench/generated/event_us_p25": 59.21359956264496,
+      "bench/generated/event_us_p75": 61.70080155134201,
+      "bench/generated/wall_cv": 0.038508915690089886,
+      "bench/generated/wall_us_n": 6,
+      "bench/generated/wall_us_median": 62.789800000473406,
+      "bench/generated/wall_us_min": 59.36919999385282,
+      "bench/generated/wall_us_max": 65.90030000097613,
+      "bench/generated/wall_us_p25": 60.53540000436897,
+      "bench/generated/wall_us_p75": 63.097724998328886,
+      "bench/generated/prepare_s": 0.3195710390000386,
+      "bench/generated/warmup_iters": 10,
+      "bench/generated/event_wall_ratio": 0.9774326667871003
+    },
+    "raw": {
+      "samples": {
+        "eager": {
+          "event_us": [
+            31.782400608062744,
+            22.18240052461624,
+            21.06879949569702,
+            21.57440036535263,
+            22.69439995288849,
+            21.055999398231506
+          ],
+          "wall_us": [
+            33.0637000047318,
+            23.51540000518071,
+            22.302499996840197,
+            22.83050000642106,
+            24.022499997045088,
+            22.350500000811735
+          ],
+          "prepare_s": 0.14594031199999336,
+          "warmup_iters": 10
+        },
+        "compile": {
+          "event_us": [
+            98.81920218467712,
+            72.27839827537537,
+            76.39679908752441,
+            72.33279943466187,
+            69.12000179290771,
+            73.40480089187622
+          ],
+          "wall_us": [
+            100.56099999928847,
+            73.6695000000509,
+            77.79049999498966,
+            73.70349999291648,
+            72.46149999673435,
+            74.88549999834504
+          ],
+          "prepare_s": 1.739194307000048,
+          "warmup_iters": 10
+        },
+        "generated": {
+          "event_us": [
+            64.39039707183838,
+            61.609601974487305,
+            61.13600134849548,
+            61.73120141029358,
+            58.57279896736145,
+            58.00639986991882
+          ],
+          "wall_us": [
+            65.90030000097613,
+            63.00630000168894,
+            62.57329999925787,
+            63.12819999720887,
+            59.856100006072666,
+            59.36919999385282
+          ],
+          "prepare_s": 0.3195710390000386,
+          "warmup_iters": 10
+        }
+      },
+      "order": [
+        "eager,compile,generated",
+        "compile,generated,eager",
+        "generated,eager,compile",
+        "eager,compile,generated",
+        "compile,generated,eager",
+        "generated,eager,compile"
+      ]
+    },
+    "command_args": {
+      "json": true,
+      "warmup_iters": 10,
+      "rounds": 6,
+      "iters_per_round": 10,
+      "backend": "triton",
+      "seed": 0,
+      "cuda_graphs": false,
+      "samples_json": "/root/AgenticRL-CUDA-kernels/artifacts/tmp/test-54160jf5/triton/.artifacts/20261108T230513Z-9d48f02a/benchmark-samples.json"
+    }
+  },
+  "capabilities": {
+    "nvidia-smi": {
+      "available": true,
+      "path": "/usr/bin/nvidia-smi"
+    },
+    "nvcc": {
+      "available": true,
+      "path": "/usr/local/cuda/bin/nvcc"
+    },
+    "ninja": {
+      "available": true,
+      "path": "/usr/local/bin/ninja"
+    },
+    "nsys": {
+      "available": true,
+      "path": "/usr/local/bin/nsys"
+    },
+    "ncu": {
+      "available": true,
+      "path": "/usr/local/cuda/bin/ncu"
+    },
+    "compute-sanitizer": {
+      "available": true,
+      "path": "/usr/local/cuda/bin/compute-sanitizer"
+    },
+    "cupti": {
+      "available": true,
+      "cuda_events": 10
+    }
+  },
+  "trace": "/root/AgenticRL-CUDA-kernels/artifacts/tmp/test-54160jf5/triton/.artifacts/20261108T230513Z-9d48f02a/trace.json",
+  "trace_reason": null
+}

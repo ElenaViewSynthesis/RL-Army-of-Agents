@@ -139,7 +139,7 @@ Add it behind an opt-in flag, e.g. `RolloutConfig.cuda_graphs: bool = False` (CL
 
 **Done when** both local suites are green, the default behaviour is byte-for-byte unchanged, and the docs explain both timings and the stream contract.
 
-## Step 2: Actionable profiling artifacts *(priority: first; implemented and CPU-validated, GPU path not yet run — see KNOWN_ISSUES.md)*
+## Step 2: Actionable profiling artifacts *(priority: first; implemented, CPU-validated and H200-validated for the Triton fixture in run 20261108T225150Z — see VALIDATION.md)*
 
 **Goal:** answer "which operators and kernels run, and where are the copies, allocations and launch gaps?", and keep the details instead of discarding them.
 

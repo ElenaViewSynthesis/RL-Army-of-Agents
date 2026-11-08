@@ -1890,6 +1890,8 @@ external tool unavailable on PATH, and CUPTI unavailable. `kernels.json` has
 `measured: false` and no rows. The embedded benchmark record is the CPU
 unavailable record. Evidence: [step2-tests-20261108](artifacts/step2-tests-20261108/)
 (both suite logs, the rollout result and the copied artifact directory).
+The GPU path was validated afterwards in H200 run `20261108T225150Z` (next
+section).
 
 Synthetic, Torch-free tests cover: kernel-table aggregation and provenance
 classes (memory, unknown-as-torch); strict-JSON report round trips; source
@@ -1898,3 +1900,73 @@ states; and diagnostics-stage failures (exit, timeout, malformed output, a
 child claiming a path it did not write). None of those failures changes the
 reward, and the parent reports only files present in its own artifact
 directory.
+
+## Step 2 on H200: run 20261108T225150Z
+
+Full acceptance, with `tests.test_profile_artifacts.GPUArtifactTests` added to
+the Modal GPU targets. The runner sets `CUDA_AGENT_KEEP_PROFILE_ARTIFACTS`, so
+that test copies its artifact directory into the run's volume folder before
+scratch cleanup.
+
+```bash
+# WSL2, inside AgenticRL-CUDA-kernels/
+.venv/bin/modal run --detach cloud/modal_runtime.py --tests
+# app ap-O8LWmk6MPfpSs9dE9rEKWi, run_id 20261108T225150Z, NVIDIA H200,
+# driver 610.57.04, Torch 2.14.1+cu130, CUDA runtime 13.0, Triton 3.8.0,
+# cuda-bindings 13.3.0
+# gpu_tests: Ran 32 tests in 669.379s / OK
+#   (31 previous GPU tests + test_trace_kernel_table_and_report ... ok)
+# acceptance: pass (no failures, no timing anomalies)
+```
+
+**Source match.** Before launch, the SHA-256 of all 67 `.py` files under
+`utils/`, `cloud/`, `tests/`, `scripts/`, `kernels/` and `tracking/` was
+recorded (`local-source-sha256.txt`); none changed before the evidence was
+committed. All 21 `harness/utils/*` hashes in the run's `report.json` match the
+committed files byte for byte. The run used the code committed with this
+evidence: Step 2 plus the Modal target and evidence-copy change.
+
+**Diagnostic artifacts** (`profile-artifacts/20261108T230513Z-9d48f02a/`, the
+Triton fixture run with `diagnostics=True, benchmark=True`):
+
+- `report.json`: GPU NVIDIA H200, compute capability 9.0, 150101688320 bytes,
+  UUID recorded; every tool on PATH (`nvidia-smi`, `nvcc`, `ninja`, `nsys`,
+  `ncu`, `compute-sanitizer`) and CUPTI available with 10 CUDA events; capture
+  of 10 CUDA and 43 CPU events, no failure reason, primer counts `[0, 0]`;
+  benchmark samples embedded (`bench/available: true`).
+- `kernels.json`: `measured: true`, one row, `axpby_kernel`, 10 calls,
+  8.320 µs total, 0.832 µs mean, class `agent`; provenance share agent 1.0.
+- `trace.json`: Chrome trace with 146 events.
+- `rollout-result.json`: `artifact/unavailable_reason` null; reward 2.0
+  (`faster_than_eager`), the same as an ordinary rollout. The diagnostic pass
+  did not change it.
+
+These diagnostic timings are instrumented (CPU activity, shapes, memory) and
+are not reward inputs.
+
+**Scoring** (`scripts.validate`, primed method; the reward still uses `t_*_us`):
+
+| case | provenance | eager µs | compile µs | generated µs | reward | reason |
+|---|---|---|---|---|---|---|
+| triton | 1.0 | 1.802 | 0.800 | 0.845 | 2.0 | faster_than_eager |
+| overlong | 1.0 | 1.812 | 0.803 | 0.829 | 1.25 | faster_than_eager |
+| cuda | 1.0 | 1.799 | 0.800 | 0.966 | 2.0 | faster_than_eager |
+| tilelang | 1.0 | 1.801 | 0.800 | 0.813 | 2.0 | faster_than_eager |
+| cutile | 1.0 | 1.796 | 0.800 | 0.890 | 2.0 | faster_than_eager |
+| cutedsl | 1.0 | 1.788 | 0.797 | 0.998 | 2.0 | faster_than_eager |
+| reward-hack-torchop (5 backends) | 0.0 | 1.795–1.815 | 0.791–0.841 | 1.824–1.837 | -1 | provenance |
+| timeout / max_turns | — | — | — | — | -1 | timeout / max_turns |
+
+The new flat `env/provenance_*` keys appear in every profiled case and agree
+with `env/provenance` (agent 1.0 for honest fixtures). TileLang scored
+`faster_than_both` in `20261108T200653Z` (0.810 vs 0.864 µs) and
+`faster_than_eager` here (0.813 vs 0.800 µs). That is the sub-µs reward noise
+already listed in KNOWN_ISSUES, not a regression.
+
+Scope: one H200, the shipped 1 × 128 fixtures, and the diagnostic artifact
+pass for Triton only. Kernel classes are name-based heuristics.
+
+Evidence: [step2-h200-20261108T225125Z](artifacts/step2-h200-20261108T225125Z/)
+(session log, pre-launch checksums, and the run folder with the acceptance
+review, results, kernel names, environment, stage logs, benchmark samples and
+profile artifacts).
