@@ -64,6 +64,22 @@ class RecordTests(unittest.TestCase):
         self.assertEqual(triton["kernels"]["mystery_kernel"]["class"], "torch")
         self.assertEqual(triton["unmatched_agent_names"], ["axpby_kernel"])
 
+    def test_substring_only_is_unmatched(self):
+        profile = {k:v for k,v in PROFILE.items() if not k.startswith("kernel_us/")}
+        profile["kernel_us/prefix_axpby_kernel_suffix"] = 5.0
+        with scratch() as tmp:
+            payload = run_main(profile, "--backends", "triton", "--output", str(Path(tmp)/"k.json"))
+        row = payload["backends"]["triton"]
+        self.assertEqual(row["unmatched_agent_names"], ["axpby_kernel"])
+        self.assertEqual(row["kernels"]["prefix_axpby_kernel_suffix"]["class"], "torch")
+
+    def test_empty_capture_reason_and_raw_evidence(self):
+        profile = dict(CPU_NULL, timing_reason="empty_profile:eager", **{"profile/eager_events":0})
+        with scratch() as tmp:
+            payload = run_main(profile, "--backends", "triton", "--output", str(Path(tmp)/"k.json"))
+        self.assertEqual(payload["backends"]["triton"]["reason"], "empty_profile:eager")
+        self.assertEqual(payload["backends"]["triton"]["profile"], profile)
+
     def test_cpu_null_record_is_unmeasured(self):
         with scratch() as tmp:
             out = Path(tmp) / "k.json"

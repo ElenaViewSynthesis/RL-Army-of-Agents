@@ -64,18 +64,19 @@ def record_backend(name, timeout_s):
         except (ValueError, IndexError):
             return {"measured": False, "reason": "malformed profile output"}
         if not profile.get("timing_measured"):
-            return {"measured": False, "reason": "CPU (no device events)"}
+            return {"measured": False, "reason": profile.get("timing_reason") or "CPU (no device events)",
+                    **({"profile": profile} if profile.get("timing_reason") else {})}
         names = agent_kernel_names(task, name)
         kernels = {key[len("kernel_us/"):]: {"us": us,
                                             "class": classify_kernel(key[len("kernel_us/"):], names, name)}
                    for key, us in profile.items() if key.startswith("kernel_us/")}
-        return {"measured": True, "agent_kernel_names": names,
+        return {"measured": True, "agent_kernel_names": names, "profile": profile,
                 "t_gen_us": profile["t_gen_us"], "provenance": profile["provenance"],
                 **{f"provenance/{k}": profile[f"provenance/{k}"]
                    for k in ("agent", "library", "torch", "memory")},
                 "kernels": kernels,
                 "unmatched_agent_names": [n for n in names
-                                          if not any(n in e for e in kernels)]}
+                                          if not any(classify_kernel(e, [n], name) == "agent" for e in kernels)]}
 
 
 def main(argv=None):
