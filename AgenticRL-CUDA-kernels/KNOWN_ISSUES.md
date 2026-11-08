@@ -74,8 +74,15 @@
   supply rollout rewards. Diagnostic Run A (`20261108T091114Z` plus
   `20261108T103454Z`) captured 193 traced trials, 100 of them CuTe DSL, with no
   empty session: it did not reproduce the fault, and the cause remains
-  unconfirmed. Run B (untraced full validation, repeated) is still needed
-  before relying on sweep rewards. See VALIDATION.md and
+  unconfirmed. Untraced full runs `20261108T140200Z` and `20261108T153803Z`
+  subsequently passed acceptance; the latter validates the approved conditioned
+  method, not the earlier measurement method. Nonpositive/non-finite durations
+  now also fail closed while retaining per-session samples. Neither pass proves
+  the historical fault fixed. The explicitly requested fresh repeat
+  `20261108T164430Z` also passed all five backends and the 31-test GPU suite,
+  validating the unchanged conditioned scorer's nonempty-capture path.
+  Its new evidence and source hashes are retained under
+  `artifacts/fresh-gpu-20261108T164430Z/`. See VALIDATION.md and
   `artifacts/acceptance-review-20261108T014026Z.json`.
   Diagnosis runs `20261108T091114Z` (interrupted) and `20261108T103454Z`
   produced 193 complete trials, including 100 CuTe DSL trials split 50/50 by
@@ -85,7 +92,15 @@
   at 1.73–1.77 µs (medians) when profiled first and 1.60–1.65 µs in the
   production generated-first order, across all five backends. At sub-2 µs sizes
   this can move `faster_than_eager` decisions near the margin. The cause is
-  unexplained; the order is unchanged.
+  unexplained at the low level; the model order is unchanged. Controls
+  `20261108T142102Z` show that one empty/eager primer reverses the effect and
+  all-model warmup does not remove it. Extension controls `20261108T144950Z`
+  reduce median eager order shifts to 0.15% (Triton) and 0.32% (CuTe DSL) with
+  two intentional empty captures. With explicit approval, production now uses
+  this conditioning before model timing, recording
+  `cuda-leaf-sum-two-empty-prime-v1`; full run `20261108T153803Z` passes.
+  This is a bounded mitigation, not a universal stability or CUPTI root-cause
+  claim. Historical timings remain unchanged and are not equivalent measurements.
 - **Event latency excludes un-joined side streams.** `bench/*/event_us_*`
   covers only work ordered on the entry stream; wall latency brackets
   `torch.cuda.synchronize()` and includes CPU dispatch and every stream.
@@ -145,16 +160,17 @@
   failures were reported on Windows (POSIX `os.killpg`, backslash paths and no
   `bash`); this Linux/WSL session has not reproduced them on native Windows.
   Use Linux/WSL2. These tests are retained to enforce process cleanup here.
-- **Tracking is opt-in and unverified against the live service.** Payloads
-  were checked with fake SDKs, `--dry-run`, and a real `wandb==0.31.0` offline
-  smoke using explicitly synthetic records. Real-SDK config, tables, summaries
-  and staged evidence passed locally; this is not live W&B/Weave validation.
-  The first approved online backfill must be inspected in the W&B UI.
-  `${env:WANDB_API_KEY}`
-  header expansion in `.devin/mcp_config.json` follows Devin's OAuth-field
-  docs and should be confirmed on first use.
-- **Deferred scope.** No actual training, Modal orchestration, policy weights,
-  agent loop, model registry or observability services are added. The optional
+- **Tracking remains opt-in; live SDK validation and approved backfill passed.**
+  New run `tracking-check-df6b74c7f55f4490` passed W&B/Weave readback and user
+  UI inspection. Its historical source remains partial, including CuTe DSL's
+  zero baseline. Five approved manifest entries were then migrated: current
+  summaries, latest tables/config flags, raw bytes and Weave outputs passed
+  readback. Legacy metric history and missing historical metadata were preserved.
+  Evidence: `artifacts/tracking-live-check-20261108T142009Z/report.json` and
+  `artifacts/tracking-backfill-20261108T144457Z/report.json`.
+  This validates SDK paths, not the separate MCP header expansion.
+- **Deferred scope.** No actual training, optimizer, policy weights,
+  agent loop or model registry is added. The optional
   Level-2 GEMM stretch kernel is deferred to prioritise the required pipeline
   and correctness/timeout tests. Context length is a shared config field for
   the future loop, not something the task evaluator can observe or enforce.
@@ -171,7 +187,7 @@
   remotely verified the fix: every packaged runtime field matches the fresh
   require probe, and the run_id matches.
 
-- **Long synchronous Modal call lost authentication.** Diagnostic run
+- **Historical Modal JWT expiry — unknown/non-blocking.** Diagnostic run
   `20261108T091114Z` (Modal SDK 1.6.3) ended with `AuthError: Jwt is expired`
   in `AttemptAwait`. The app stopped with 53 complete trial records (20 CUDA,
   20 Triton, 13 TileLang); none had an empty capture, and CuTe DSL had not run.
@@ -180,8 +196,33 @@
   use `modal run --detach` for long diagnostics. This follows
   [Modal's invocation guidance](https://modal.com/docs/guide/function-invocation-methods)
   and [long-job example](https://github.com/modal-labs/modal-examples/blob/main/06_gpu_and_ml/long-training.py).
-  The underlying authentication failure is not yet explained; it is separate
-  from an empty GPU profiler capture. No profiler retry was added.
+  It is separate from an empty GPU profiler capture, and no profiler retry was
+  added. Preflight also uses spawn-only polling. The stdlib-importable
+  `python -m cloud.modal_job --call-id fc-...` resumes the same call without
+  importing the runner or allocating another job; Modal 1.6.3 requires hydration.
+  Recovery was exercised on calls for `20261108T140200Z` and `20261108T142102Z`.
+  Only literal builtin polling timeouts retry; other errors emit the call ID
+  and recovery command, then propagate. The cause of the historical rejection
+  remains unknown: the investigation is paused, not solved, and is not a
+  current validation or release blocker. The archive identifies neither the
+  rejected JWT nor a refresh failure; public call-history queries are
+  unsupported, so attribution would need vendor validation/refresh records.
+  Reopen vendor forensics only if a JWT/authentication failure recurs or the
+  verified durable spawn/poll/reattach path is affected. Evidence and retained
+  questions: `artifacts/modal-jwt-investigation-20261108T174201Z/` and
+  VALIDATION.md.
+
+- **Modal 1.6.3 SDK expired-cache fallback defect — open/reproduced.**
+  `_AuthTokenManager._try_refresh_token` falls back to a cached token after a
+  non-auth refresh failure even when that token is expired. Seven synthetic,
+  real-SDK control-flow checks passed offline; this proves the defect exists,
+  not that the historical job encountered it. Synchronous `AttemptAwait`
+  normally refreshes header metadata between polls and also carries a separate
+  attempt token. Evidence:
+  `artifacts/modal-jwt-investigation-20261108T174201Z/reproduce.py`,
+  `reproduction.json` and `reproduction.log`. This is local tracking only: no
+  upstream issue has been filed or fixed, and there is no confirmed link to the
+  historical JWT incident. No SDK patch or dependency upgrade was applied.
 
 - **Generated artifacts interrupted a Modal image upload.** The first full
   acceptance attempt after diagnosis failed before GPU execution because a

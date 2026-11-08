@@ -1312,3 +1312,359 @@ OK
 Ran 26 tests in 43.615s
 OK
 ```
+
+## Final scoped issue-resolution evidence — 2026-11-08
+
+Scope remains axpby evaluation/validation, not training or attribution redesign.
+No reward threshold, speed margin, provenance rule or protected fixture changed.
+The checkout advanced concurrently; claims below apply to frozen source snapshots,
+not arbitrary subsequent working-tree edits.
+
+### Invalid captures and profiler-position controls
+
+Nonempty captures containing zero, negative, NaN or infinite CUDA durations
+previously could remain `timing_measured=true`. Regression evidence:
+`artifacts/issue-profiler-red-20261108T140409Z.log`. They now fail closed with
+null session timing, an explicit reason and retained per-session samples.
+Empty captures remain failures without retry; diagnostic profiles cannot reward.
+
+Exact control commands (from this directory):
+
+```bash
+MODAL_GPU=H200 WANDB_MODE=offline PYTHONDONTWRITEBYTECODE=1 .venv/bin/modal run --detach cloud/modal_runtime.py --diagnose-order-test --backends triton,cutedsl --repeat 4
+MODAL_GPU=H200 WANDB_MODE=offline PYTHONDONTWRITEBYTECODE=1 .venv/bin/modal run --detach cloud/modal_runtime.py --diagnose-order-test --backends triton,cutedsl --repeat 4 --order-preparations double-empty-prime,triple-empty-prime
+```
+
+Run `20261108T142102Z`: 64 sequential fresh-process untraced profiles, comparing
+none/empty-prime/eager-prime/warmup-all in both orders, four repeats per cell.
+No invalid/empty measured session. Without priming, median eager-first shifts
+were +7.15% (Triton) and +7.35% (CuTe DSL); all-model warmup retained the effect.
+One empty/eager primer reversed the direction instead of fixing it.
+
+Run `20261108T144950Z`: 32 further profiles with two/three empty primers, again
+four repeats per cell. No invalid/empty measured session. Two-primer median
+eager-first shifts were +0.1525% and +0.3244%. Three primers were not uniformly
+better: Triton had a +1.68% median shift with wider paired variation.
+Shift means `median(eager-first) / median(generated-first) - 1`; no trials were
+discarded. Detailed paired ratios, timings and limits are frozen in:
+
+- `artifacts/issue-order-20261108T142102Z/analysis.json`
+- `artifacts/issue-order-20261108T144950Z/analysis.json`
+
+Each directory includes `order/records.json`, progress, stage/session logs and
+the original source copies. Prelaunch normalized hashes and exact commands are
+in `artifacts/issue-order-source-snapshot-20261108T142039Z.json` and
+`artifacts/issue-order-source-snapshot-20261108T144932Z.json`.
+The evidence supports a capture-position mitigation, not a low-level CUPTI
+mechanism or a claim that the historical intermittent-empty fault is fixed.
+
+After explicit user approval, two intentional empty contexts now precede any
+production model warmup/timing. They are not failed model samples or retries.
+The method is `cuda-leaf-sum-two-empty-prime-v1`, with
+`profile/primer_event_counts` retained in raw artifacts and the method projected
+to tracking rows. Experimental unprimed calls are always diagnostic. See the
+approved follow-up in ADR 0003. Historical timings/rewards remain untouched and
+must not be pooled across methods as equivalent observations.
+
+### Two untraced full H200 passes
+
+Both invocations used exactly:
+
+```bash
+MODAL_GPU=H200 WANDB_MODE=offline PYTHONDONTWRITEBYTECODE=1 .venv/bin/modal run --detach cloud/modal_runtime.py --tests
+```
+
+- `20261108T140200Z`: first untraced acceptance pass, before final conditioning;
+  GPU suite `Ran 31 tests in 498.003s / OK`. Evidence:
+  `artifacts/issue-gpu-20261108T140200Z/`.
+- `20261108T153803Z`: final approved conditioned method;
+  GPU suite `Ran 31 tests in 503.798s / OK`. Automatic acceptance is `pass`,
+  with no failures or timing anomalies. All five honest backends verify with
+  provenance 1.0 and positive rewards; all five Torch-op substitutes verify
+  but have provenance 0.0 and reward -1, reason `provenance`. All five
+  name-recorder backends are measured with empty unmatched-name lists.
+  Thirteen rollout cases include eleven actual profiles; each records the
+  approved method, `[0, 0]` conditioning counts, positive timings and
+  `profile/diagnostic=false`. Timeout and max-turn cases remain unmeasured.
+
+Final evidence: `artifacts/issue-gpu-20261108T153803Z/`, including automatic
+review, `results.json`, `kernel_names.json`, benchmark samples and stage logs.
+`source-snapshot.json` records the exact command, UTC and normalized hashes
+of thirteen relevant evaluator/orchestrator files. `source/` contains byte copies
+frozen before launch, not reread after completion. The snapshot is also retained
+at `artifacts/issue-gpu-final-source-20261108T153741Z/`.
+
+Final device/runtime (saved in `environment.json` and matching require probe):
+NVIDIA H200, CC 9.0, UUID `GPU-895d985b-b393-513c-49c7-b06bb3d4cce9`;
+driver 610.57.04; nvcc 13.3; Python 3.12.1; Torch 2.14.1+cu130;
+Triton 3.8.0; TileLang 0.1.15; cuTile 1.8.0; Cutlass DSL 4.8.1.
+Name-based attribution remains a heuristic, not proof of authorship.
+
+### Durable Modal recovery
+
+Both preflight and long stages use one spawn followed by `get(timeout=30)`.
+Only literal builtin polling timeouts retry. Other errors propagate with the
+call ID and recovery command; measurements are never resubmitted automatically.
+The reattachment CLI imports no runner and allocates no app/GPU:
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m cloud.modal_job --call-id fc-01M6XQESC4W4G2AHWGKJ9RK5KW
+```
+
+This exact existing call for run `20261108T140200Z` survived local-waiter loss.
+An initial real-SDK reattachment exposed an unhydrated FunctionCall; the helper
+now hydrates before reading its ID. Recovery subsequently completed for that
+call and for `fc-01M6XRHPD7TYF4FM82NDST496S` (`20261108T142102Z`), without
+respawning. Their session logs preserve the initial error and successful result.
+Final full-run call: `fc-01M6XWYMWB8YJMPF7XQ3GKSTYN`, completed normally.
+The historical synchronous `AttemptAwait` JWT-expiry cause remains unconfirmed.
+
+### Live W&B/Weave and approved historical migration
+
+The approved new validation upload used:
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m scripts.smoke_tracking_live --source-run-id 20261108T014026Z --artifacts artifacts --output artifacts/tracking-live-check-20261108T142009Z --entity elenamylocuda-gemma --project CUDA-gen --execute
+```
+
+Credentials were supplied privately from the environment. This created only
+new run `tracking-check-df6b74c7f55f4490`, tagged as a tracking-validation replay
+of `partial_acceptance_invalid_baseline`; it did not relabel the historical
+source as passing. The first readback checker assumed table references were in
+summary. Real `summary="none"` keeps them in history instead; the checker was
+corrected, not the logged measurements. Read-only recovery reused frozen
+identity/payload without creating another run:
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m scripts.smoke_tracking_live --review-only --output artifacts/tracking-live-check-20261108T142009Z
+```
+
+Live API assertions passed: 24 cfg fields; 12 rollout and 5 kernel rows;
+exactly one `iteration=0` aggregate snapshot; aggregate-only scalar summary;
+six source files byte-verified against the uploaded artifact; and twelve
+matching Weave replay calls selected by the validation marker. The CuTe DSL
+zero eager time and reward -1 remain present in table/trace. The user opened
+the W&B and Weave UI and explicitly confirmed the presentation.
+Proof: `artifacts/tracking-live-check-20261108T142009Z/report.json`.
+
+After that inspection the user explicitly approved the five existing manifest
+entries. Their payloads and raw files were frozen in
+`artifacts/tracking-backfill-20261108T144457Z/` before upload. Lead-authored SDK
+execution applied `wandb_log.log_backfill(payload, "elenamylocuda-gemma",
+"CUDA-gen")` and `weave_trace.replay_backfill(payload)` to each frozen payload,
+with unique per-source Weave validation markers. All five deterministic
+`h200-*` runs already existed and were resumed:
+
+| Source run | W&B state after migration | Matching new Weave replays |
+|---|---|---|
+| `build-im-u7ElhT76HK3e4MiGfUc5JZ` | failed | 0 |
+| `20261106T142735Z` | finished | 0 |
+| `20261106T142830Z` | failed | 12 |
+| `preflight-rebuild-aborted` | failed (source status remains aborted) | 0 |
+| `20261106T185236Z` | finished | 12 |
+
+Readback checked states, all supplied config/availability fields, explicit
+summary scalars, latest table/aggregate snapshot, raw artifact hashes and exact
+Weave outputs. Legacy case-level metric history was preserved, not erased;
+stale case summary scalars were cleared. All five historical config/rules
+availability flags remain false: current defaults, classifier IDs, shares and
+source hashes were not invented. Frozen before-state, uploaded progress,
+downloaded tables/artifacts and final proof:
+`artifacts/tracking-backfill-20261108T144457Z/report.json`.
+
+### Final local gate and remaining uncertainty
+
+```text
+PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -v
+Ran 148 tests in 78.603s
+OK (skipped=32)
+
+PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m unittest discover -v
+Ran 148 tests in 406.475s
+OK (skipped=26)
+```
+
+Logs: `artifacts/issue-final-suite-system-20261108T145912Z.log` and
+`artifacts/issue-final-suite-venv-20261108T150042Z.log`; exact skips identify
+missing local GPU/optional package surfaces. The venv exercised CPU interpreter
+paths. Protected model/binding/kernel files and `SKILL.md` remain byte-identical
+to the upstream manifest. Deferred trainer/optimizer/agent loop, GEMM and stronger
+attribution remain deferred. Follow-up is still required to reproduce the
+historical intermittent empty capture and establish the underlying profiler and
+Modal JWT mechanisms; successful guarded/conditioned runs are not that proof.
+
+## Profile-order recovery and requested fresh GPU repeat — 2026-11-08
+
+The requested stopped profile-order waiter corresponds to `20261108T142102Z`:
+its detached job had completed despite losing its local waiter. A fresh download
+was made without rerunning measurements or allocating another app/GPU:
+
+```bash
+.venv/bin/modal volume get agenticrl-cuda-artifacts '20261108T142102Z/' artifacts/profile-order-download-check-20261108T162024Z/20261108T142102Z
+```
+
+The destination was pre-created. Receipt:
+`artifacts/profile-order-download-check-20261108T162024Z/receipt.json`.
+All 266 remote files match their existing local counterparts byte-for-byte;
+there are no missing local files or mismatches. The newly downloaded
+`order/records.json` and `order/progress.jsonl` match their receipt hashes.
+The frozen analysis still describes 64 diagnostic-only trials; it was not
+recomputed, regraded or promoted to reward evidence. The separate 32-control
+run `20261108T144950Z` also remains downloaded with its frozen analysis.
+
+Before another GPU allocation, all thirteen evaluator/orchestrator hashes from
+`20261108T153803Z` were compared with current sources and matched. After being
+informed that no newer scorer change existed, the user explicitly requested a
+fresh H200 validation anyway. This is an intentional replication, not an
+automatic retry or evidence that the older snapshot was untested.
+
+Exact invocation:
+
+```bash
+MODAL_GPU=H200 WANDB_MODE=offline PYTHONDONTWRITEBYTECODE=1 .venv/bin/modal run --detach cloud/modal_runtime.py --tests
+```
+
+New run: `20261108T164430Z`; preflight call
+`fc-01M6Y0R72VYPC1HD97FVD25GRW`, validation call
+`fc-01M6Y0RD15842XBVFN2N2HTKPM`. The launcher completed normally, without a
+resubmission. All stages completed and automatic acceptance is `pass`, with
+no failures or timing anomalies. Raw GPU suite result:
+
+```text
+Ran 31 tests in 502.412s
+
+OK
+```
+
+Evidence: `artifacts/fresh-gpu-20261108T164430Z/`. Its `source-snapshot.json`
+records HEAD, command, UTC, and raw/CRLF-normalized hashes of 76 files covering
+evaluator, runner, tests, kernel/model/binding sources, policies, requirements
+and the upstream manifest. Byte copies were frozen before launch. Every copied
+file matches its recorded hashes; all thirteen prior GPU-snapshot evaluator
+hashes still match, and protected upstream bytes match the upstream manifest.
+HEAD alone is not the source identity: the snapshot also captures local edits.
+The standalone source bundle is
+`artifacts/fresh-gpu-source-20261108T164346Z/`.
+
+Lead review is frozen in `artifacts/fresh-gpu-20261108T164430Z/review.json`:
+13 rollout cases include 11 actual measured profiles, each with positive
+timings, `cuda-leaf-sum-two-empty-prime-v1`, `[0, 0]` primer counts and
+`profile/diagnostic=false`. CUDA-event sample counts match their counters;
+finite nonnegative samples sum to the recorded times using each case's actual
+iteration count, and those times match rollout results. All five honest
+backends verify with provenance 1.0 and positive rewards. All five Torch-op
+substitutes verify but have provenance 0.0 and reward -1 for `provenance`;
+timeout/max-turn rejections remain intact. All five name-recorder backends are
+measured with no unmatched authored names.
+
+Device: NVIDIA H200, UUID `GPU-c3b87b33-97bc-e90a-f89f-c1b18b4b8d9d`;
+the saved environment matches the fresh require probe. Full package/runtime
+identity, stage logs, raw results, benchmark samples and session log are
+retained in the new run directory. No online tracking writes were performed.
+
+This real GPU pass exercises valid nonempty captures and their new evidence
+fields. Invalid-duration cases remain synthetic unit regressions, not claimed
+hardware faults. The original intermittent-empty and JWT-expiry mechanisms
+remain unconfirmed; no thresholds, attribution rules or kernel code changed.
+
+## Historical Modal JWT investigation — 2026-11-08
+
+**Conclusion: an SDK defect is reproduced; the historical trigger is not yet
+established.** Do not relabel the old failure as a confirmed refresh outage.
+
+The archived `artifacts/modal-timing-session-20261108T091114Z.log` is byte-identical
+to the original `/tmp/modal-timing-diagnostic-session.log` (SHA-256
+`a51d4ec042b887263a7b9dc8684811125eab10d568b50a416e205534531905d6`).
+The failing frame is Modal 1.6.3 `_functions.py:486`, inside `AttemptAwait`,
+after `get_input_plane_metadata` at line 485. This is not a traceback from
+`AuthTokenGet` itself.
+
+The SDK request has two relevant channels: refreshed `x-modal-auth-token`
+metadata and the separate `AttemptAwaitRequest.attempt_token`. The latter is
+retained across polling iterations unless an execution retry obtains another.
+The server's bare `AuthError: Jwt is expired` does not identify which token
+failed. No per-request expiry/refresh telemetry is present in the saved log.
+Its warning that logs may not be continuous also prevents treating missing
+warnings as definitive proof that refresh succeeded.
+
+### Offline real-SDK reproduction
+
+Exact command, using only synthetic tokens, a controlled clock and fake RPCs:
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 .venv/bin/python artifacts/modal-jwt-investigation-20261108T174201Z/reproduce.py --output artifacts/modal-jwt-investigation-20261108T174201Z/reproduction.json
+```
+
+Exit 0; seven checks passed. Results and stdout:
+`artifacts/modal-jwt-investigation-20261108T174201Z/reproduction.json` and
+`reproduction.log`. Five installed SDK source hashes match their package
+RECORD entries; this was unmodified Modal 1.6.3 on Python 3.13.9.
+
+Confirmed defect: `_AuthTokenManager._try_refresh_token` catches a non-auth
+refresh exception and returns the old token whenever one exists, without
+rechecking expiry. In the synthetic case, a token expiring at virtual time
+1100 is returned at virtual time 1101 after refresh raises a transient error,
+instead of propagating that error. No real JWT, refresh outage, server validation
+or GPU job was used in this reproduction.
+
+Controls establish the boundaries:
+
+- Without a cached token, fetch failure propagates.
+- A still-valid cached token can safely survive a proactive refresh failure.
+- Authentication denial propagates instead of falling back.
+- A successful refresh replaces an expired token.
+- Actual `_InputPlaneInvocation.run_function` refreshes expired header metadata
+  between polling calls; the claim that a long `.remote()` simply never refreshes
+  authentication is false.
+- A synthetic `AttemptAwait` rejection propagates even with locally valid
+  metadata. That check reproduces error handling, not a server-side cause.
+
+### Historical correlation and required vendor evidence
+
+Read-only, lead-authored queries obtained lifecycle/layout metadata for app
+`ap-XsRx6dMlnPhtSbg3H7haXL`:
+
+- Created: `2026-11-08T09:10:55.497248+00:00`.
+- Stopped: `2026-11-08T09:28:33.279679+00:00` (includes failure cleanup, not an
+  exact JWT-rejection timestamp).
+- `diagnose_timing` function: `fu-TLXga06VoZAjM7XDA6uNER`.
+
+`AppGetObjects` and the function's `FunctionCallList` returned
+`UnimplementedError`; `AppGetLayout` succeeded. Saved responses:
+`historical-app-metadata.json` and `historical-app-layout.json` in the investigation
+directory. These were metadata reads, not job submissions.
+
+To finish attribution, Modal needs to inspect the failed `AttemptAwait` before
+that app stopped and report:
+
+1. Whether validation rejected the header JWT or the attempt token.
+2. Its expiry and server validation time, plus the request's `requested_at`
+   timestamp (to discriminate clock skew). Raw token strings are not needed.
+3. `AuthTokenGet` refresh timestamps/statuses preceding that request, and any
+   transport retries that reused metadata.
+4. If it was the attempt token, its mint/expiry policy for this invocation.
+5. A request/trace correlation ID and the backend validation reason.
+
+The expired-cache defect is a supported candidate, not a historical verdict.
+No SDK monkey-patch, dependency upgrade, credential change, measurement retry,
+GPU allocation or support message was performed. Durable spawn/poll and recovery
+remain the verified operational path while historical attribution awaits the
+discriminating vendor records.
+
+### Disposition: historical cause paused, SDK defect tracked separately (2026-11-08)
+
+User decision: keep the historical `20261108T091114Z` JWT rejection marked
+unknown and non-blocking, and track the reproducible Modal 1.6.3 SDK
+expired-cache fallback defect separately.
+
+- Historical cause: paused, not solved. It is not a current validation or
+  release blocker.
+- SDK defect: open and reproduced offline (seven synthetic, real-SDK
+  control-flow cases; see reproduction artifacts above). It is tracked
+  locally only — no upstream issue has been filed or fixed, and no link to
+  the historical incident is confirmed.
+- Escalation triggers — either suffices: a JWT/authentication failure recurs,
+  or the verified durable spawn/poll/reattach path is affected.
+- The five vendor evidence questions in the previous section are retained for
+  that possible future escalation. They are not an outstanding vendor request
+  and are not a validation gate.

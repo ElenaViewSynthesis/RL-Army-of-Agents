@@ -33,6 +33,20 @@ This project extends the environment released with [CUDA-Agent](https://github.c
 > are pinned. Concurrent profiler extensions saved after upload remain
 > **GPU-unverified**; the badges describe the validated snapshot. Historical
 > [partial acceptance](VALIDATION.md#fresh-h200-run-20261108t014026z) is preserved.
+>
+> **Conditioned snapshot `20261108T153803Z` also passes:** 31 GPU tests, all five
+> honest backends and all five Torch-op rejection fixtures. Following explicit
+> approval, two intentional empty profiler captures precede model timing
+> (`cuda-leaf-sum-two-empty-prime-v1`); no model capture is retried. Controls
+> reduced the eager order shift to 0.15%/0.32% for Triton/CuTe DSL, but the
+> historical intermittent-empty root cause remains unconfirmed. Do not pool
+> historical and conditioned timings as equivalent measurements.
+> The final scoped issue-resolution section of [VALIDATION.md](VALIDATION.md)
+> pins sources, commands, live W&B/Weave evidence and remaining limits.
+> A separately requested fresh repeat, `20261108T164430Z`, passes the same
+> 31-test GPU suite on the unchanged scorer. Its
+> [review and 76-file frozen source snapshot](artifacts/fresh-gpu-20261108T164430Z)
+> retain the new validation independently of earlier measurements.
 
 
 ---
