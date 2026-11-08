@@ -1,0 +1,151 @@
+test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples (tests.test_profiling.CaptureTests.test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples) ... 
+  test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples (tests.test_profiling.CaptureTests.test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples) (session='gen', duration=0.0) ... FAIL
+  test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples (tests.test_profiling.CaptureTests.test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples) (session='gen', duration=-1.0) ... ERROR
+  test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples (tests.test_profiling.CaptureTests.test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples) (session='gen', duration=nan) ... ERROR
+  test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples (tests.test_profiling.CaptureTests.test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples) (session='gen', duration=inf) ... ERROR
+  test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples (tests.test_profiling.CaptureTests.test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples) (session='eager', duration=0.0) ... FAIL
+  test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples (tests.test_profiling.CaptureTests.test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples) (session='eager', duration=-1.0) ... FAIL
+  test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples (tests.test_profiling.CaptureTests.test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples) (session='eager', duration=nan) ... FAIL
+  test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples (tests.test_profiling.CaptureTests.test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples) (session='eager', duration=inf) ... FAIL
+  test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples (tests.test_profiling.CaptureTests.test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples) (session='compile', duration=0.0) ... FAIL
+  test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples (tests.test_profiling.CaptureTests.test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples) (session='compile', duration=-1.0) ... FAIL
+  test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples (tests.test_profiling.CaptureTests.test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples) (session='compile', duration=nan) ... FAIL
+  test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples (tests.test_profiling.CaptureTests.test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples) (session='compile', duration=inf) ... FAIL
+test_valid_samples_preserve_cuda_events_only (tests.test_profiling.CaptureTests.test_valid_samples_preserve_cuda_events_only) ... ERROR
+
+======================================================================
+ERROR: test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples (tests.test_profiling.CaptureTests.test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples) (session='gen', duration=-1.0)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/tests/test_profiling.py", line 109, in test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples
+    profile = self.capture(events)
+              ^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/tests/test_profiling.py", line 43, in capture
+    return profile_models({s: lambda: None for s in ('gen','eager','compile')},
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/utils/profiling.py", line 82, in profile_models
+    summary = summarize_events(captures["gen"][1], agent_names, backend, iters)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/utils/provenance.py", line 48, in summarize_events
+    raise ValueError("Profiler duration must be finite and non-negative")
+ValueError: Profiler duration must be finite and non-negative
+
+======================================================================
+ERROR: test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples (tests.test_profiling.CaptureTests.test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples) (session='gen', duration=nan)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/tests/test_profiling.py", line 109, in test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples
+    profile = self.capture(events)
+              ^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/tests/test_profiling.py", line 43, in capture
+    return profile_models({s: lambda: None for s in ('gen','eager','compile')},
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/utils/profiling.py", line 82, in profile_models
+    summary = summarize_events(captures["gen"][1], agent_names, backend, iters)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/utils/provenance.py", line 48, in summarize_events
+    raise ValueError("Profiler duration must be finite and non-negative")
+ValueError: Profiler duration must be finite and non-negative
+
+======================================================================
+ERROR: test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples (tests.test_profiling.CaptureTests.test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples) (session='gen', duration=inf)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/tests/test_profiling.py", line 109, in test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples
+    profile = self.capture(events)
+              ^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/tests/test_profiling.py", line 43, in capture
+    return profile_models({s: lambda: None for s in ('gen','eager','compile')},
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/utils/profiling.py", line 82, in profile_models
+    summary = summarize_events(captures["gen"][1], agent_names, backend, iters)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/utils/provenance.py", line 48, in summarize_events
+    raise ValueError("Profiler duration must be finite and non-negative")
+ValueError: Profiler duration must be finite and non-negative
+
+======================================================================
+ERROR: test_valid_samples_preserve_cuda_events_only (tests.test_profiling.CaptureTests.test_valid_samples_preserve_cuda_events_only)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/tests/test_profiling.py", line 136, in test_valid_samples_preserve_cuda_events_only
+    self.assertEqual(json.loads(profile['profile/' + session + '_kernel_samples']),
+                                ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyError: 'profile/gen_kernel_samples'
+
+======================================================================
+FAIL: test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples (tests.test_profiling.CaptureTests.test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples) (session='gen', duration=0.0)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/tests/test_profiling.py", line 110, in test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples
+    self.assertFalse(profile['timing_measured'])
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples (tests.test_profiling.CaptureTests.test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples) (session='eager', duration=0.0)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/tests/test_profiling.py", line 110, in test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples
+    self.assertFalse(profile['timing_measured'])
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples (tests.test_profiling.CaptureTests.test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples) (session='eager', duration=-1.0)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/tests/test_profiling.py", line 110, in test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples
+    self.assertFalse(profile['timing_measured'])
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples (tests.test_profiling.CaptureTests.test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples) (session='eager', duration=nan)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/tests/test_profiling.py", line 110, in test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples
+    self.assertFalse(profile['timing_measured'])
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples (tests.test_profiling.CaptureTests.test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples) (session='eager', duration=inf)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/tests/test_profiling.py", line 110, in test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples
+    self.assertFalse(profile['timing_measured'])
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples (tests.test_profiling.CaptureTests.test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples) (session='compile', duration=0.0)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/tests/test_profiling.py", line 110, in test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples
+    self.assertFalse(profile['timing_measured'])
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples (tests.test_profiling.CaptureTests.test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples) (session='compile', duration=-1.0)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/tests/test_profiling.py", line 110, in test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples
+    self.assertFalse(profile['timing_measured'])
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples (tests.test_profiling.CaptureTests.test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples) (session='compile', duration=nan)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/tests/test_profiling.py", line 110, in test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples
+    self.assertFalse(profile['timing_measured'])
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples (tests.test_profiling.CaptureTests.test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples) (session='compile', duration=inf)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/tests/test_profiling.py", line 110, in test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples
+    self.assertFalse(profile['timing_measured'])
+AssertionError: True is not false
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.460s
+
+FAILED (failures=9, errors=4)

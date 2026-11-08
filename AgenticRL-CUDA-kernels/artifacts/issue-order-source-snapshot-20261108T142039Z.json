@@ -1,0 +1,16 @@
+{
+  "created_utc": "2026-11-08T14:20:39Z",
+  "command": "MODAL_GPU=H200 WANDB_MODE=offline PYTHONDONTWRITEBYTECODE=1 .venv/bin/modal run --detach cloud/modal_runtime.py --diagnose-order-test --backends triton,cutedsl --repeat 4",
+  "sha256_crlf_normalized": {
+    "cloud/modal_runtime.py": "f1e7d2877f74382b4c0132c5e4eb146beac5c3655ed2d1eecbe7fd36ae83c8dc",
+    "cloud/modal_job.py": "16f1fd72a3a022e4615c17b3b41e3b8e5cc2e8039ae2958f4414dd0d5b3eed60",
+    "cloud/acceptance.py": "cc0184260cf7daf1df9fb5e91f4884c3a6e7fa462fe51fd03e3a371178978e2e",
+    "scripts/diagnose_profile_order.py": "14860593a66b72149ce49817bc257fc45deaa99b3cfec4274c0db8d01f9e0353",
+    "utils/profile_diagnostic.py": "2c7b8eecbcaa957e7fbb975b2716c57f7f71c9159de680ec29229520c3bdc5fc",
+    "utils/profiling.py": "d8d65d0d336812c588b34c05a7f0741bca9641e8a3947a10e6c8465ef4cb4d0c",
+    "utils/backend.py": "ec69b3bf269934f6caa4116b950016b310f2799977b6b15ea99eeaecdb8e50ea",
+    "utils/verification.py": "47bb2ad47dfedff0c78f4fdd0de6baeff7a0a7c114d9c1694a2041001997f906",
+    "utils/rollout_env.py": "52cd74f9c2a66666933a096ccdcbf24fb98de77605afe4ffad870232091a0b47",
+    "tests/support.py": "326fc49d03f32d5c53a44625784d58591be217d0f81bb02214925b028a00753b"
+  }
+}

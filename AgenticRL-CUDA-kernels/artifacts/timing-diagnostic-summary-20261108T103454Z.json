@@ -1,0 +1,166 @@
+{
+  "repetitions": 140,
+  "failures": 0,
+  "empty_captures": 0,
+  "backends": {
+    "cutedsl": {
+      "repetitions": 100,
+      "order_counts": {
+        "gen,eager,compile": 50,
+        "eager,compile,gen": 50
+      },
+      "measured": 100,
+      "unique_cache_roots": 100,
+      "session_counts": {
+        "eager": {
+          "min": 20,
+          "max": 20,
+          "zero": 0
+        },
+        "compile": {
+          "min": 10,
+          "max": 10,
+          "zero": 0
+        },
+        "gen": {
+          "min": 10,
+          "max": 10,
+          "zero": 0
+        }
+      },
+      "eager_us": {
+        "gen,eager,compile": {
+          "n": 50,
+          "min": 1.5809000000000197,
+          "median": 1.597149999999965,
+          "max": 1.6626999999999499
+        },
+        "eager,compile,gen": {
+          "n": 50,
+          "min": 1.66099999999999,
+          "median": 1.737600000000043,
+          "max": 1.7870000000000459
+        }
+      },
+      "process_wall_s": {
+        "profiling": {
+          "n": 100,
+          "min": 8.75303256799998,
+          "median": 9.947056850000024,
+          "max": 18.56523964600001
+        }
+      },
+      "kernel_names": [
+        "kernel_cutlass_axpby_cute_kernel_tensorptrf32gmemo151201i64512_tensorptrf32gmemo151201i64512_tensorptrf32gmemo151201i64512_tensor00o1512011105121____0"
+      ]
+    },
+    "cutile": {
+      "repetitions": 20,
+      "order_counts": {
+        "gen,eager,compile": 10,
+        "eager,compile,gen": 10
+      },
+      "measured": 20,
+      "unique_cache_roots": 20,
+      "session_counts": {
+        "eager": {
+          "min": 20,
+          "max": 20,
+          "zero": 0
+        },
+        "compile": {
+          "min": 10,
+          "max": 10,
+          "zero": 0
+        },
+        "gen": {
+          "min": 10,
+          "max": 10,
+          "zero": 0
+        }
+      },
+      "eager_us": {
+        "gen,eager,compile": {
+          "n": 10,
+          "min": 1.5912999999999555,
+          "median": 1.6014500000000453,
+          "max": 1.754000000000019
+        },
+        "eager,compile,gen": {
+          "n": 10,
+          "min": 1.5720000000000027,
+          "median": 1.7329499999999824,
+          "max": 1.7440000000000055
+        }
+      },
+      "process_wall_s": {
+        "profiling": {
+          "n": 20,
+          "min": 8.651567261999844,
+          "median": 9.33055790200001,
+          "max": 12.337877994999872
+        }
+      },
+      "kernel_names": [
+        "axpby_cutile_kernel_Kt1_A1f32_1i16t1_p16_A1f32_1i16t1_p16_A1f32_1i16t1_p16_Sf32_I128"
+      ]
+    },
+    "tilelang": {
+      "repetitions": 20,
+      "order_counts": {
+        "gen,eager,compile": 10,
+        "eager,compile,gen": 10
+      },
+      "measured": 20,
+      "unique_cache_roots": 20,
+      "session_counts": {
+        "eager": {
+          "min": 20,
+          "max": 20,
+          "zero": 0
+        },
+        "compile": {
+          "min": 10,
+          "max": 10,
+          "zero": 0
+        },
+        "gen": {
+          "min": 10,
+          "max": 10,
+          "zero": 0
+        }
+      },
+      "eager_us": {
+        "gen,eager,compile": {
+          "n": 10,
+          "min": 1.583999999999969,
+          "median": 1.6015999999999964,
+          "max": 1.7383999999999333
+        },
+        "eager,compile,gen": {
+          "n": 10,
+          "min": 1.7274999999999636,
+          "median": 1.7376999999999954,
+          "max": 1.7434999999999719
+        }
+      },
+      "process_wall_s": {
+        "profiling": {
+          "n": 20,
+          "min": 11.468126311999868,
+          "median": 19.19861783300007,
+          "max": 23.31446422099998
+        }
+      },
+      "kernel_names": [
+        "axpby_tilelang_kernel"
+      ]
+    }
+  },
+  "traces": 420,
+  "trace_events": {},
+  "trace_integrity": {
+    "parsed": 420,
+    "count_mismatches": []
+  }
+}

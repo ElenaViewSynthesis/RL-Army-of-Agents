@@ -1,0 +1,125 @@
+Note that running a local entrypoint in detached mode only keeps the last triggered Modal function alive after the parent process has been killed or disconnected.
+✓ Initialized. View run at 
+https://modal.com/apps/elenamylocuda/main/ap-xwKDWVheL0jTyzmK56RsZO
+✓ Created objects.
+├── ✓ Uploaded 
+│   /mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/cloud/mo
+│   dal_runtime.py
+├── ✓ Uploaded 
+│   /mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels
+├── ✓ Created Function preflight.
+├── ✓ Created Function gpu_tests.
+└── ✓ Created Function diagnose_timing.
+{
+  "runtime/python": "3.12.1",
+  "runtime/python_ok": true,
+  "runtime/gpu_count": 1,
+  "runtime/gpu0_name": "NVIDIA H200",
+  "runtime/gpu0_compute_cap": "9.0",
+  "runtime/gpu0_uuid": "GPU-3837826e-171f-5ac1-0f75-4d85609936bf",
+  "runtime/driver_version": "610.57.04",
+  "runtime/driver_ok": true,
+  "runtime/gpu0_cutile_supported": true,
+  "runtime/nvcc_version": "13.3",
+  "runtime/nvcc_ok": true,
+  "runtime/ninja": "/usr/local/bin/ninja",
+  "runtime/tileiras_version": "13.3.36",
+  "runtime/tileiras_ok": true,
+  "runtime/tileiras_reason": null,
+  "runtime/cuda_tile_version": "1.8.0",
+  "runtime/torch_version": "2.14.1+cu130",
+  "runtime/torch_cuda_build": true,
+  "runtime/triton_version": "3.8.0",
+  "runtime/tilelang_version": "0.1.15",
+  "runtime/cutlass_dsl_version": "4.8.1",
+  "runtime/cuda_bindings_version": "13.5.0",
+  "runtime/nsys": "/usr/local/bin/nsys",
+  "runtime/ncu": "/usr/local/cuda/bin/ncu",
+  "runtime/compute_sanitizer": "/usr/local/cuda/bin/compute-sanitizer",
+  "runtime/ok_cuda_backend": true,
+  "runtime/ok_triton_backend": true,
+  "runtime/ok_cutile": true,
+  "runtime/ok_tilelang": true,
+  "runtime/ok_cutedsl": true,
+  "runtime/unavailable_reason": null,
+  "nvidia_smi": "Sun Nov  8 10:34:59 2026       \n+-----------------------------------------------------------------------------------------+\n| NVIDIA-SMI 610.57.04              KMD Version: 610.57.04     CUDA UMD Version: 13.3     |\n+-----------------------------------------+------------------------+----------------------+\n| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n|                                         |                        |               MIG M. |\n|=========================================+========================+======================|\n|   0  NVIDIA H200                    On  |   00000000:72:00.0 Off |                    0 |\n| N/A   44C    P0             80W /  700W |       4MiB / 143771MiB |      0%      Default |\n|                                         |                        |             Disabled |\n+-----------------------------------------+------------------------+----------------------+\n\n+-----------------------------------------------------------------------------------------+\n| Processes:                                                                              |\n|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |\n|        ID   ID                                                               Usage      |\n|=========================================================================================|\n|  No running processes found                                                             |\n+-----------------------------------------------------------------------------------------+\n",
+  "run_id": "20261108T103454Z"
+}
+{"function_call_id": "fc-01M6XBKJPN0QG0WB9FS7EYYB6X"}
+{"run_id": "20261108T103454Z", "completed": 2, "backend": "cutedsl", "repeat": 1, "reason": null}
+{"run_id": "20261108T103454Z", "completed": 5, "backend": "cutedsl", "repeat": 4, "reason": null}
+{"run_id": "20261108T103454Z", "completed": 7, "backend": "cutedsl", "repeat": 6, "reason": null}
+{"run_id": "20261108T103454Z", "completed": 10, "backend": "cutedsl", "repeat": 9, "reason": null}
+{"run_id": "20261108T103454Z", "completed": 13, "backend": "cutedsl", "repeat": 12, "reason": null}
+{"run_id": "20261108T103454Z", "completed": 16, "backend": "cutedsl", "repeat": 15, "reason": null}
+{"run_id": "20261108T103454Z", "completed": 19, "backend": "cutedsl", "repeat": 18, "reason": null}
+{"run_id": "20261108T103454Z", "completed": 21, "backend": "cutedsl", "repeat": 20, "reason": null}
+{"run_id": "20261108T103454Z", "completed": 23, "backend": "cutedsl", "repeat": 22, "reason": null}
+{"run_id": "20261108T103454Z", "completed": 25, "backend": "cutedsl", "repeat": 24, "reason": null}
+{"run_id": "20261108T103454Z", "completed": 27, "backend": "cutedsl", "repeat": 26, "reason": null}
+{"run_id": "20261108T103454Z", "completed": 28, "backend": "cutedsl", "repeat": 27, "reason": null}
+{"run_id": "20261108T103454Z", "completed": 32, "backend": "cutedsl", "repeat": 31, "reason": null}
+{"run_id": "20261108T103454Z", "completed": 35, "backend": "cutedsl", "repeat": 34, "reason": null}
+{"run_id": "20261108T103454Z", "completed": 37, "backend": "cutedsl", "repeat": 36, "reason": null}
+{"run_id": "20261108T103454Z", "completed": 40, "backend": "cutedsl", "repeat": 39, "reason": null}
+{"run_id": "20261108T103454Z", "completed": 44, "backend": "cutedsl", "repeat": 43, "reason": null}
+{"run_id": "20261108T103454Z", "completed": 46, "backend": "cutedsl", "repeat": 45, "reason": null}
+{"run_id": "20261108T103454Z", "completed": 49, "backend": "cutedsl", "repeat": 48, "reason": null}
+{"run_id": "20261108T103454Z", "completed": 52, "backend": "cutedsl", "repeat": 51, "reason": null}
+{"run_id": "20261108T103454Z", "completed": 54, "backend": "cutedsl", "repeat": 53, "reason": null}
+{"run_id": "20261108T103454Z", "completed": 56, "backend": "cutedsl", "repeat": 55, "reason": null}
+{"run_id": "20261108T103454Z", "completed": 59, "backend": "cutedsl", "repeat": 58, "reason": null}
+{"run_id": "20261108T103454Z", "completed": 62, "backend": "cutedsl", "repeat": 61, "reason": null}
+{"run_id": "20261108T103454Z", "completed": 65, "backend": "cutedsl", "repeat": 64, "reason": null}
+{"run_id": "20261108T103454Z", "completed": 69, "backend": "cutedsl", "repeat": 68, "reason": null}
+{"run_id": "20261108T103454Z", "completed": 72, "backend": "cutedsl", "repeat": 71, "reason": null}
+{"run_id": "20261108T103454Z", "completed": 75, "backend": "cutedsl", "repeat": 74, "reason": null}
+{"run_id": "20261108T103454Z", "completed": 78, "backend": "cutedsl", "repeat": 77, "reason": null}
+{"run_id": "20261108T103454Z", "completed": 81, "backend": "cutedsl", "repeat": 80, "reason": null}
+{"run_id": "20261108T103454Z", "completed": 84, "backend": "cutedsl", "repeat": 83, "reason": null}
+{"run_id": "20261108T103454Z", "completed": 87, "backend": "cutedsl", "repeat": 86, "reason": null}
+{"run_id": "20261108T103454Z", "completed": 90, "backend": "cutedsl", "repeat": 89, "reason": null}
+{"run_id": "20261108T103454Z", "completed": 93, "backend": "cutedsl", "repeat": 92, "reason": null}
+{"run_id": "20261108T103454Z", "completed": 96, "backend": "cutedsl", "repeat": 95, "reason": null}
+{"run_id": "20261108T103454Z", "completed": 99, "backend": "cutedsl", "repeat": 98, "reason": null}
+{"run_id": "20261108T103454Z", "completed": 102, "backend": "cutile", "repeat": 1, "reason": null}
+{"run_id": "20261108T103454Z", "completed": 106, "backend": "cutile", "repeat": 5, "reason": null}
+{"run_id": "20261108T103454Z", "completed": 109, "backend": "cutile", "repeat": 8, "reason": null}
+{"run_id": "20261108T103454Z", "completed": 112, "backend": "cutile", "repeat": 11, "reason": null}
+{"run_id": "20261108T103454Z", "completed": 116, "backend": "cutile", "repeat": 15, "reason": null}
+{"run_id": "20261108T103454Z", "completed": 118, "backend": "cutile", "repeat": 17, "reason": null}
+{"run_id": "20261108T103454Z", "completed": 120, "backend": "cutile", "repeat": 19, "reason": null}
+{"run_id": "20261108T103454Z", "completed": 122, "backend": "tilelang", "repeat": 1, "reason": null}
+{"run_id": "20261108T103454Z", "completed": 124, "backend": "tilelang", "repeat": 3, "reason": null}
+{"run_id": "20261108T103454Z", "completed": 125, "backend": "tilelang", "repeat": 4, "reason": null}
+{"run_id": "20261108T103454Z", "completed": 127, "backend": "tilelang", "repeat": 6, "reason": null}
+{"run_id": "20261108T103454Z", "completed": 128, "backend": "tilelang", "repeat": 7, "reason": null}
+{"run_id": "20261108T103454Z", "completed": 130, "backend": "tilelang", "repeat": 9, "reason": null}
+{"run_id": "20261108T103454Z", "completed": 131, "backend": "tilelang", "repeat": 10, "reason": null}
+{"run_id": "20261108T103454Z", "completed": 133, "backend": "tilelang", "repeat": 12, "reason": null}
+{"run_id": "20261108T103454Z", "completed": 135, "backend": "tilelang", "repeat": 14, "reason": null}
+{"run_id": "20261108T103454Z", "completed": 136, "backend": "tilelang", "repeat": 15, "reason": null}
+{"run_id": "20261108T103454Z", "completed": 138, "backend": "tilelang", "repeat": 17, "reason": null}
+{
+  "run_id": "20261108T103454Z",
+  "runs": [
+    {
+      "cmd": "python -m utils.runtime --json --require cutedsl,cutile,tilelang",
+      "returncode": 0,
+      "timed_out": false,
+      "wall_s": 0.169307828,
+      "stdout_tail": "{\"runtime/python\": \"3.12.1\", \"runtime/python_ok\": true, \"runtime/gpu_count\": 1, \"runtime/gpu0_name\": \"NVIDIA H200\", \"runtime/gpu0_compute_cap\": \"9.0\", \"runtime/gpu0_uuid\": \"GPU-a8fdfbd1-6e5d-fc61-d1ea-04f2904ec8e0\", \"runtime/driver_version\": \"610.57.04\", \"runtime/driver_ok\": true, \"runtime/gpu0_cutile_supported\": true, \"runtime/nvcc_version\": \"13.3\", \"runtime/nvcc_ok\": true, \"runtime/ninja\": \"/usr/local/bin/ninja\", \"runtime/tileiras_version\": \"13.3.36\", \"runtime/tileiras_ok\": true, \"runtime/tileiras_reason\": null, \"runtime/cuda_tile_version\": \"1.8.0\", \"runtime/torch_version\": \"2.14.1+cu130\", \"runtime/torch_cuda_build\": true, \"runtime/triton_version\": \"3.8.0\", \"runtime/tilelang_version\": \"0.1.15\", \"runtime/cutlass_dsl_version\": \"4.8.1\", \"runtime/cuda_bindings_version\": \"13.5.0\", \"runtime/nsys\": \"/usr/local/bin/nsys\", \"runtime/ncu\": \"/usr/local/cuda/bin/ncu\", \"runtime/compute_sanitizer\": \"/usr/local/cuda/bin/compute-sanitizer\", \"runtime/ok_cuda_backend\": true, \"runtime/ok_triton_backend\": true, \"runtime/ok_cutile\": true, \"runtime/ok_tilelang\": true, \"runtime/ok_cutedsl\": true, \"runtime/unavailable_reason\": null}\n",
+      "stderr_tail": ""
+    },
+    {
+      "cmd": "python -m scripts.diagnose_timing --output-dir /artifacts/20261108T103454Z/timing --backends cutedsl,cutile,tilelang",
+      "returncode": 0,
+      "timed_out": false,
+      "wall_s": 1646.788031731,
+      "stdout_tail": "{\"backend\": \"cutedsl\", \"repeat\": 0, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 1, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 2, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 3, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 4, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 5, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 6, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 7, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 8, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 9, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 10, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 11, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 12, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 13, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 14, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 15, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 16, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 17, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 18, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 19, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 20, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 21, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 22, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 23, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 24, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 25, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 26, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 27, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 28, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 29, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 30, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 31, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 32, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 33, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 34, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 35, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 36, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 37, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 38, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 39, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 40, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 41, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 42, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 43, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 44, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 45, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 46, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 47, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 48, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 49, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 50, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 51, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 52, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 53, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 54, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 55, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 56, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 57, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 58, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 59, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 60, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 61, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 62, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 63, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 64, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 65, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 66, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 67, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 68, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 69, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 70, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 71, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 72, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 73, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 74, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 75, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 76, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 77, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 78, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 79, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 80, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 81, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 82, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 83, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 84, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 85, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 86, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 87, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 88, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 89, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 90, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 91, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 92, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 93, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 94, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 95, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 96, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 97, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 98, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutedsl\", \"repeat\": 99, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutile\", \"repeat\": 0, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutile\", \"repeat\": 1, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutile\", \"repeat\": 2, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutile\", \"repeat\": 3, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutile\", \"repeat\": 4, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutile\", \"repeat\": 5, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutile\", \"repeat\": 6, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutile\", \"repeat\": 7, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutile\", \"repeat\": 8, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutile\", \"repeat\": 9, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutile\", \"repeat\": 10, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutile\", \"repeat\": 11, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutile\", \"repeat\": 12, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutile\", \"repeat\": 13, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutile\", \"repeat\": 14, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutile\", \"repeat\": 15, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutile\", \"repeat\": 16, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutile\", \"repeat\": 17, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutile\", \"repeat\": 18, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"cutile\", \"repeat\": 19, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"tilelang\", \"repeat\": 0, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"tilelang\", \"repeat\": 1, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"tilelang\", \"repeat\": 2, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"tilelang\", \"repeat\": 3, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"tilelang\", \"repeat\": 4, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"tilelang\", \"repeat\": 5, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"tilelang\", \"repeat\": 6, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"tilelang\", \"repeat\": 7, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"tilelang\", \"repeat\": 8, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"tilelang\", \"repeat\": 9, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"tilelang\", \"repeat\": 10, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"tilelang\", \"repeat\": 11, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"tilelang\", \"repeat\": 12, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"tilelang\", \"repeat\": 13, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"tilelang\", \"repeat\": 14, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"tilelang\", \"repeat\": 15, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"tilelang\", \"repeat\": 16, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"tilelang\", \"repeat\": 17, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"tilelang\", \"repeat\": 18, \"timing_measured\": true, \"reason\": null}\n{\"backend\": \"tilelang\", \"repeat\": 19, \"timing_measured\": true, \"reason\": null}\n",
+      "stderr_tail": ""
+    }
+  ]
+}
+✓ App completed. View run at 
+https://modal.com/apps/elenamylocuda/main/ap-xwKDWVheL0jTyzmK56RsZO
