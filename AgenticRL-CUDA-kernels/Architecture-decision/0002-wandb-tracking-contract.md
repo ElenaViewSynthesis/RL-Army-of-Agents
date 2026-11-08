@@ -123,6 +123,7 @@ saves the sampler output (enabled in the Modal test runner).
 | `cfg:cfg/bench_rounds` | config | cfg | int | 1 | never | config | environment |
 | `cfg:cfg/bench_iters_per_round` | config | cfg | int | 1 | never | config | environment |
 | `cfg:cfg/cuda_graphs` | config | cfg | bool | 1 | never | config | environment |
+| `cfg:cfg/diagnostics` | config | cfg | bool | 1 | never | config | environment |
 | `cfg:cfg/timeout_s` | config | cfg | float | s | never | config | environment |
 | `cfg:cfg/provenance_threshold` | config | cfg | float | 1 | never | reward/config | environment |
 | `cfg:cfg/speedup_margin` | config | cfg | float | 1 | never | reward/config | environment |
@@ -145,6 +146,10 @@ saves the sampler output (enabled in the Modal test runner).
 | `result:env/t_compile_us` | table | env | float | us | CPU/failure | reward/input | environment |
 | `result:env/t_gen_us` | table | env | float | us | CPU/failure | reward/input | environment |
 | `result:env/provenance` | table | env | float | fraction | CPU/failure | reward/input | environment |
+| `result:env/provenance_agent` | table | env | float | fraction of total device time | CPU/failure/unmeasured | diagnostic | environment |
+| `result:env/provenance_library` | table | env | float | fraction of total device time | CPU/failure/unmeasured | diagnostic | environment |
+| `result:env/provenance_torch` | table | env | float | fraction of total device time | CPU/failure/unmeasured | diagnostic | environment |
+| `result:env/provenance_memory` | table | env | float | fraction of total device time | CPU/failure/unmeasured | diagnostic | environment |
 | `result:env/speedup_vs_compile` | table | env | float | ratio | CPU/failure | derived reward diagnostic | environment |
 | `result:env/wall_s` | table | env | float | s | never | deadline diagnostic | environment |
 | `result:env/turns_used` | table | env | int | turns | caller omitted | reward/input | environment |
@@ -384,7 +389,9 @@ saves the sampler output (enabled in the Modal test runner).
 | `results:config/bench_iters_per_round` | config | config | int | 1 | historical artifact did not persist it | config | environment |
 | `results:case_configs/*/bench_iters_per_round` | table | case_configs | int | 1 | historical artifact did not persist it | config | environment |
 | `results:config/cuda_graphs` | config | config | bool | 1 | historical artifact did not persist it | config | environment |
+| `results:config/diagnostics` | config | config | bool | 1 | historical artifact did not persist it | config | environment |
 | `results:case_configs/*/cuda_graphs` | table | case_configs | bool | 1 | historical artifact did not persist it | config | environment |
+| `results:case_configs/*/diagnostics` | table | case_configs | bool | 1 | historical artifact did not persist it | config | environment |
 | `results:config/timeout_s` | config | config | float | s | historical artifact did not persist it | config | environment |
 | `results:case_configs/*/timeout_s` | table | case_configs | float | s | historical artifact did not persist it | config | environment |
 | `results:config/provenance_threshold` | config | config | float | 1 | historical artifact did not persist it | config | environment |
@@ -436,7 +443,9 @@ saves the sampler output (enabled in the Modal test runner).
 | `names:config/bench_iters_per_round` | config | config | int | 1 | historical artifact did not persist it | config | environment |
 | `names:case_configs/*/bench_iters_per_round` | table | case_configs | int | 1 | historical artifact did not persist it | config | environment |
 | `names:config/cuda_graphs` | config | config | bool | 1 | historical artifact did not persist it | config | environment |
+| `names:config/diagnostics` | config | config | bool | 1 | historical artifact did not persist it | config | environment |
 | `names:case_configs/*/cuda_graphs` | table | case_configs | bool | 1 | historical artifact did not persist it | config | environment |
+| `names:case_configs/*/diagnostics` | table | case_configs | bool | 1 | historical artifact did not persist it | config | environment |
 | `names:config/timeout_s` | config | config | float | s | historical artifact did not persist it | config | environment |
 | `names:case_configs/*/timeout_s` | table | case_configs | float | s | historical artifact did not persist it | config | environment |
 | `names:config/provenance_threshold` | config | config | float | 1 | historical artifact did not persist it | config | environment |
@@ -478,6 +487,7 @@ saves the sampler output (enabled in the Modal test runner).
 | `results:group_configs/*/bench_rounds` | config | group_configs | int | 1 | historical artifact did not persist it | diagnostic | environment |
 | `results:group_configs/*/bench_iters_per_round` | config | group_configs | int | 1 | historical artifact did not persist it | diagnostic | environment |
 | `results:group_configs/*/cuda_graphs` | config | group_configs | bool | 1 | historical artifact did not persist it | diagnostic | environment |
+| `results:group_configs/*/diagnostics` | config | group_configs | bool | 1 | historical artifact did not persist it | diagnostic | environment |
 | `results:group_configs/*/timeout_s` | config | group_configs | float | s | historical artifact did not persist it | diagnostic | environment |
 | `results:group_configs/*/provenance_threshold` | config | group_configs | float | 1 | historical artifact did not persist it | diagnostic | environment |
 | `results:group_configs/*/speedup_margin` | config | group_configs | float | 1 | historical artifact did not persist it | diagnostic | environment |

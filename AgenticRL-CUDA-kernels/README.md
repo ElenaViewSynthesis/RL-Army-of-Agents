@@ -292,6 +292,22 @@ Each round reports two per-iteration timings: `event_us_*` (CUDA events on the c
 
 `RolloutConfig.benchmark` adds a fourth `run_task` stage (after profiling, same deadline) that merges the flat `bench/*` keys into the result; `bench_warmup_iters`/`bench_rounds`/`bench_iters_per_round`/`cuda_graphs` tune it. With the flag off, the stage argv, result keys and reward are byte-for-byte unchanged. On CPU or a missing GPU the record is just `{"bench/available": false, "bench/unavailable_reason": ...}` — no timings are ever fabricated. A benchmark stage that crashes, times out or returns malformed output degrades the same way (`bench/available: false` with the reason); it can never change `env/*` or the reward.
 
+## Diagnostic profiling artifacts (opt-in)
+
+`RolloutConfig.diagnostics` (CLI `--diagnostics`, default off) adds a final `run_task` stage, `python -m utils.profile_artifacts`. It runs its **own** profiler pass over the generated model only (CPU + CUDA activities, recorded shapes, memory events, after the same two-capture priming and per-backend warmup as the reward profiler). It never reuses or replaces the reward measurement or the benchmark. It writes `<workdir>/.artifacts/<run_id>/` (`run_id` is `YYYYMMDDTHHMMSSZ-<8 hex>`):
+
+| File | Contents |
+|---|---|
+| `trace.json` | Chrome CPU + CUDA timeline from `export_chrome_trace` (operators, kernels, copies, allocations, launch gaps). **GPU only**; never written on CPU. |
+| `kernels.json` | Per-kernel `name`, `calls`, `total_us`, `mean_us`, `per_iter_us` and `class` (`utils/provenance.py` rules, unchanged), largest first, plus `measured` / `reason`. Aggregation is Torch-free (`utils/artifact_report.py`). |
+| `report.json` | `schema_version`, `run_id`, timestamps, task id, backend, `get_inputs()` shapes/dtypes, GPU metadata (name, capability, memory, UUID), software (driver, CUDA runtime, Torch, Triton, Python), SHA-256 of `model.py`, `model_new.py`, every workdir `kernels/` file and the trusted `utils/` harness, the capture settings, provenance totals and shares, the benchmark config/raw samples/statistics (including CUDA-graph status) when `--benchmark` is also on, and a capability report for `nvidia-smi`, `nvcc`, `ninja`, `nsys`, `ncu`, `compute-sanitizer` and CUPTI. |
+
+With diagnostics on, the result gains `artifact/report`, `artifact/trace`, `artifact/kernels` (path strings, or `null`) and `artifact/unavailable_reason` (`null` when everything was captured; otherwise e.g. `CUDA_AGENT_DEVICE=cpu`, `timeout`, `diagnostics stage exited 1`, or `not run` when an earlier stage ended the rollout). The parent only reports the files it expects in its own artifact directory, never paths the child prints. On CPU the stage writes a truthful report (`gpu: null`, `trace: null`, no timings) and `kernels.json` with `measured: false`. With `--benchmark` as well, the benchmark stage also gets `--samples-json <artifact dir>/benchmark-samples.json`, which the report embeds.
+
+Rules: diagnostics timings are perturbed by instrumentation and never feed the reward; a failed, slow or malformed diagnostics stage never changes `env/*` or the reward; the reward never reads `.artifacts/` (the candidate can write to its workdir); kernel classes are name-based heuristics, not proof of authorship. With the flag off, the stage argv and reward are unchanged.
+
+Separately, every result now carries `env/provenance_agent`, `env/provenance_library`, `env/provenance_torch` and `env/provenance_memory`: the reward profiler's shares of total device time, `null` when unmeasured (CPU, empty capture, failure). They are copies of the existing `provenance/*` profile fields and do not change `env/provenance` or the reward.
+
 ---
 
 ## GPU runtime (cloud)
@@ -409,7 +425,7 @@ The CLI captures profiles automatically. Candidate model SHA-256 is a table
 column as well as a Weave input; live evidence artifacts include sources and
 records. Config remains constant within a live run.
 
-Stage `log/*` tails are excluded from scalar history, tables and summaries.
+Stage `log/*` tails and `artifact/*` paths are excluded from scalar history, tables and summaries.
 They remain in optional Weave traces and original raw evidence files. Weave
 records inputs, candidate source/hash, full result and raw profile, and wraps
 `compute_reward`, `build_batch` and historical replay. SDKs remain lazy imports
@@ -508,7 +524,7 @@ Other defaults: `provenance_threshold=0.90`, `speedup_margin=0.05`, `max_turns=2
 
 **Phase 2: Modal rollouts.** Call `utils.rollout_env.run_task(workdir, cfg, turns_used)` with `RolloutConfig.from_args(...)`. Recommended first-run flags: `--max-turns 20 --max-context-tokens 32768 --timeout-s 180 --group-size 8`. The agent loop enforces turns and context. The environment also checks the turn count and enforces the shared wall-clock deadline. CPU runs, or runs without GPU measurements, return null fields and reason `unmeasured`, never a positive reward.
 
-**Phase 3: tracking.** The W&B namespaces are `env/`, `reward/`, `adv/`, `turns/` and `meta/`; drop `log/*` before logging. `RolloutConfig.to_dict()` is the MLflow parameter set. No tracking library is imported here.
+**Phase 3: tracking.** The W&B namespaces are `env/`, `reward/`, `adv/`, `turns/` and `meta/`; drop `log/*` and `artifact/*` before logging. `RolloutConfig.to_dict()` is the MLflow parameter set. No tracking library is imported here.
 
 ---
 
@@ -529,6 +545,8 @@ AgenticRL-CUDA-kernels/
 │   ├── verification.py                # 5 random-input checks, atol/rtol 1e-2
 │   ├── profiling.py                   # upstream timing line + --json provenance
 │   ├── benchmark.py · stats.py        # opt-in rotated benchmark; flat bench/* stats
+│   ├── profile_artifacts.py           # opt-in diagnostic pass: trace/kernels/report.json
+│   ├── artifact_report.py             # Torch-free kernel table, hashes, capability report
 │   ├── backend.py                     # backend registry + authored-kernel discovery (AST/regex, no imports)
 │   ├── provenance.py                  # agent / library / torch / memory classifier
 │   ├── reward.py                      # milestone reward, provenance gate, overlong shaping

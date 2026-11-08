@@ -9,7 +9,7 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from unittest.mock import Mock, patch
 
-from tests.support import ROOT, assert_flat, make_task, scratch
+from tests.support import ARTIFACT_KEYS, DEFAULT_RESULT_KEYS, ROOT, assert_flat, make_task, scratch
 from utils.config import RolloutConfig
 from utils.rollout_env import _stage, run_task
 
@@ -48,16 +48,11 @@ class RolloutProtocolTests(unittest.TestCase):
         self.assertEqual(dict(os.environ), before)
         self.assertEqual((result["reward/value"], result["reward/base"], result["meta/backend"]), (3, 3, "triton"))
         self.assertEqual(result["env/speedup_vs_compile"], 1.6)
-        self.assertEqual(len(result), 18)
+        self.assertEqual(set(result), DEFAULT_RESULT_KEYS)
         assert_flat(self, result)
 
     def test_benchmark_stage_opt_in(self):
-        expected_keys = {"env/verify_ok", "env/t_eager_us", "env/t_compile_us",
-                         "env/t_gen_us", "env/speedup_vs_compile", "env/provenance",
-                         "env/wall_s", "env/turns_used", "reward/value", "reward/base",
-                         "reward/reason", "reward/overlong_penalty", "meta/backend",
-                         "meta/task_id", "meta/algo", "meta/seed",
-                         "log/compile_tail", "log/stderr_tail"}
+        expected_keys = set(DEFAULT_RESULT_KEYS)
         with patch("utils.rollout_env._stage", side_effect=self.stages()) as stage:
             result = run_task(str(self.task), self.cfg)
         self.assertEqual(stage.call_count, 3)

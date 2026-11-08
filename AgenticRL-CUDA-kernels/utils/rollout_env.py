@@ -14,6 +14,7 @@ import subprocess
 import sys
 import tempfile
 import time
+import uuid
 from pathlib import Path
 
 from utils.backend import BACKENDS, detect_backend
@@ -69,6 +70,34 @@ def _stage(module, args, workdir, env, deadline):
         return proc.returncode, tail(stdout, 4 * 1024 * 1024), tail(stderr, 8192), timed_out
 
 
+SHARES = ("agent", "library", "torch", "memory")
+
+
+def _artifact_result(artifact_dir, code, stdout, timed_out):
+    """artifact/* keys from files the harness expects, not paths the child prints."""
+    if timed_out:
+        reason = "timeout"
+    elif code != 0:
+        reason = f"diagnostics stage exited {code}"
+    else:
+        try:
+            record = json.loads(stdout.strip().splitlines()[-1])
+            reason = record.get("artifact/unavailable_reason") if isinstance(record, dict) else None
+            reason = None if reason is None else str(reason)[:512]
+            if not isinstance(record, dict):
+                reason = "malformed diagnostics output"
+        except (ValueError, IndexError):
+            reason = "malformed diagnostics output"
+    out = {}
+    for key, name in (("report", "report.json"), ("trace", "trace.json"), ("kernels", "kernels.json")):
+        file = artifact_dir / name
+        out["artifact/" + key] = str(file) if file.is_file() else None
+    if out["artifact/report"] is None and reason is None:
+        reason = "report.json not written"
+    out["artifact/unavailable_reason"] = reason
+    return out
+
+
 def run_task(workdir: str, cfg: RolloutConfig, turns_used: int | None = None, *,
              profile_out: dict | None = None, stage_times_out: dict | None = None) -> dict:
     """Return stable, flat, JSON-safe metrics; unmeasured GPU fields are None.
@@ -96,6 +125,7 @@ def run_task(workdir: str, cfg: RolloutConfig, turns_used: int | None = None, *,
         "env/t_gen_us": None,
         "env/speedup_vs_compile": None,
         "env/provenance": None,
+        **{f"env/provenance_{share}": None for share in SHARES},
         "env/wall_s": 0.0,
         "env/turns_used": turns_used,
         "reward/value": -1.0,
@@ -109,6 +139,10 @@ def run_task(workdir: str, cfg: RolloutConfig, turns_used: int | None = None, *,
         "log/compile_tail": "",
         "log/stderr_tail": "",
     }
+    if cfg.diagnostics:
+        # Paths into the candidate-writable workdir; never read for a reward.
+        result.update({"artifact/report": None, "artifact/trace": None,
+                       "artifact/kernels": None, "artifact/unavailable_reason": "not run"})
 
     def finish(reason=None, reward=None):
         if reason is not None:
@@ -144,13 +178,23 @@ def run_task(workdir: str, cfg: RolloutConfig, turns_used: int | None = None, *,
                   ("verification", "utils.verification", ["--seed", str(cfg.seed)]),
                   ("profiling", "utils.profiling", ["--backend", backend, "--iters", str(cfg.iters),
                                                     "--seed", str(cfg.seed), "--json"]))
+        if cfg.diagnostics:
+            run_id = time.strftime("%Y%m%dT%H%M%SZ", time.gmtime()) + "-" + uuid.uuid4().hex[:8]
+            artifact_dir = path / ".artifacts" / run_id
+            samples = artifact_dir / "benchmark-samples.json"
         if cfg.benchmark:
             stages += (("benchmark", "utils.benchmark",
                         ["--backend", backend, "--warmup-iters", str(cfg.bench_warmup_iters),
                          "--rounds", str(cfg.bench_rounds),
                          "--iters-per-round", str(cfg.bench_iters_per_round),
                          "--seed", str(cfg.seed), "--json",
-                         *(["--cuda-graphs"] if cfg.cuda_graphs else [])]),)
+                         *(["--cuda-graphs"] if cfg.cuda_graphs else []),
+                         *(["--samples-json", str(samples)] if cfg.diagnostics else [])]),)
+        if cfg.diagnostics:
+            stages += (("diagnostics", "utils.profile_artifacts",
+                        ["--backend", backend, "--iters", str(cfg.iters), "--seed", str(cfg.seed),
+                         "--run-id", run_id, "--out-dir", str(artifact_dir),
+                         *(["--bench-samples", str(samples)] if cfg.benchmark else [])]),)
         profile = None
         for stage, module, args in stages:
             stage_started = time.monotonic()
@@ -167,7 +211,7 @@ def run_task(workdir: str, cfg: RolloutConfig, turns_used: int | None = None, *,
                 if timed_out:
                     result.update({"bench/available": False,
                                    "bench/unavailable_reason": "timeout"})
-                    break
+                    continue
                 if code != 0:
                     result["log/stderr_tail"] = (result["log/stderr_tail"] + stdout)[-8192:]
                     result.update({"bench/available": False,
@@ -179,6 +223,12 @@ def run_task(workdir: str, cfg: RolloutConfig, turns_used: int | None = None, *,
                     bench = {"bench/available": False,
                              "bench/unavailable_reason": "malformed benchmark output"}
                 result.update({k: v for k, v in bench.items() if k.startswith("bench/")})
+                continue
+            if stage == "diagnostics":
+                # Diagnostics only, like the benchmark: failure never changes the reward.
+                result.update(_artifact_result(artifact_dir, code, stdout, timed_out))
+                if code not in (0, None):
+                    result["log/stderr_tail"] = (result["log/stderr_tail"] + stdout)[-8192:]
                 continue
             if timed_out:
                 return finish("timeout")
@@ -195,6 +245,11 @@ def run_task(workdir: str, cfg: RolloutConfig, turns_used: int | None = None, *,
                     profile_out.update(profile)
         for field in ("t_eager_us", "t_compile_us", "t_gen_us", "provenance"):
             result["env/" + field] = profile[field]
+        for share in SHARES:
+            value = profile.get("provenance/" + share)
+            # Diagnostic copy of the profiler share; a non-number stays null.
+            result[f"env/provenance_{share}"] = (
+                value if isinstance(value, (int, float)) and not isinstance(value, bool) else None)
         if (profile.get("timing_measured") is False and str(profile.get("timing_reason", "")).startswith(
                 ("empty_profile:", "nonpositive_profile:", "invalid_profile:"))):
             return finish(profile["timing_reason"])
@@ -212,7 +267,8 @@ def run_task(workdir: str, cfg: RolloutConfig, turns_used: int | None = None, *,
     except (OSError, ValueError, TypeError, KeyError, IndexError, SyntaxError) as exc:
         result["log/stderr_tail"] = (result["log/stderr_tail"] + f"{type(exc).__name__}: {exc}")[-8192:]
         # Remove invalid measurements before exposing the failure to loggers.
-        for field in ("t_eager_us", "t_compile_us", "t_gen_us", "provenance", "speedup_vs_compile"):
+        for field in ("t_eager_us", "t_compile_us", "t_gen_us", "provenance", "speedup_vs_compile",
+                      *(f"provenance_{share}" for share in SHARES)):
             result["env/" + field] = None
         for key in [k for k in result if k.startswith("bench/")]:
             del result[key]

@@ -268,3 +268,13 @@
   timelines and five selected-kernel counter captures, all reviewed as passed.
   Clocks remain unlocked; instrumented timings/counters never feed reward.
   Evidence and exact frozen source: `artifacts/h200-toolchain-fix-20261108T195717Z/`.
+- **Step 2 diagnostic artifacts: GPU path not yet run on a GPU.**
+  `--diagnostics` (`utils/profile_artifacts.py`) is covered on CPU, where it
+  writes a truthful unavailable `report.json` and no trace, and by synthetic
+  Torch-free tests. The GPU capture (Chrome trace, measured `kernels.json`,
+  GPU/software metadata, CUPTI capability) is implemented and covered only by
+  the skip-marked `tests.test_profile_artifacts.GPUArtifactTests`; it has not
+  run on H200 yet. The diagnostic pass profiles only the generated model, with
+  CPU activities, recorded shapes and memory events, so its kernel times are
+  more perturbed than the reward profiler's and are diagnostics only. Artifacts
+  live in the candidate-writable workdir and are never a trusted reward input.

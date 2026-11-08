@@ -50,6 +50,18 @@ def make_task(parent, kind="triton"):
     return path
 
 
+# The default run_task key set (all opt-in stages off), pinned explicitly.
+DEFAULT_RESULT_KEYS = frozenset({
+    "env/verify_ok", "env/t_eager_us", "env/t_compile_us", "env/t_gen_us",
+    "env/speedup_vs_compile", "env/provenance", "env/provenance_agent",
+    "env/provenance_library", "env/provenance_torch", "env/provenance_memory",
+    "env/wall_s", "env/turns_used", "reward/value", "reward/base", "reward/reason",
+    "reward/overlong_penalty", "meta/backend", "meta/task_id", "meta/algo", "meta/seed",
+    "log/compile_tail", "log/stderr_tail"})
+ARTIFACT_KEYS = frozenset({"artifact/report", "artifact/trace", "artifact/kernels",
+                           "artifact/unavailable_reason"})
+
+
 def assert_flat(test, result):
     test.assertEqual(json.loads(json.dumps(result, allow_nan=False)), result)
     test.assertTrue(all(v is None or isinstance(v, (str, bool, int, float)) for v in result.values()))

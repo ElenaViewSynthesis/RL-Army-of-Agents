@@ -1855,3 +1855,46 @@ honest cases passed and the invalid-access control was rejected.
 Evidence: [scoring run](artifacts/h200-toolchain-fix-20261108T195717Z/scoring-20261108T200653Z/)
 (acceptance review, results, kernel names, environment, stage logs and
 benchmark samples).
+
+## Step 2: diagnostic profiling artifacts (2026-11-08, CPU only)
+
+`--diagnostics` adds the `utils.profile_artifacts` stage, which writes
+`<workdir>/.artifacts/<run_id>/{report,kernels,trace}.json`. Every result also
+carries `env/provenance_{agent,library,torch,memory}` now; the default key set
+is 22 keys, pinned explicitly as `tests.support.DEFAULT_RESULT_KEYS`. With
+diagnostics off, the stage argv and reward are unchanged. **Nothing in this
+section ran on a GPU.** The GPU capture path is covered only by the
+skip-marked `tests.test_profile_artifacts.GPUArtifactTests`.
+
+```bash
+# WSL2, inside AgenticRL-CUDA-kernels/
+PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover
+# Ran 189 tests in 92.726s
+# OK (skipped=33)
+PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m unittest discover
+# Ran 189 tests in 304.645s
+# OK (skipped=27)
+
+# End-to-end CPU rollout of a fresh Triton task copy (tests.support.make_task)
+CUDA_AGENT_DEVICE=cpu TRITON_INTERPRET=1 .venv/bin/python -m utils.rollout_env     /tmp/step2-cpu/triton --diagnostics --benchmark --timeout-s 600
+# env/verify_ok true, reward/reason "unmeasured", env/provenance_* null,
+# artifact/report and artifact/kernels written, artifact/trace null,
+# artifact/unavailable_reason "CUDA_AGENT_DEVICE=cpu", bench/available false
+```
+
+The CPU report records `gpu: null` with `gpu_reason: CUDA_AGENT_DEVICE=cpu`,
+`trace: null` (no `trace.json` is written), `capture: null`,
+`provenance: null`, input shapes `[1, 128]` float32 ×2, Torch 2.14.1+cpu,
+Triton 3.8.0, `driver: null` (nvidia-smi not found), 34 source hashes, every
+external tool unavailable on PATH, and CUPTI unavailable. `kernels.json` has
+`measured: false` and no rows. The embedded benchmark record is the CPU
+unavailable record. Evidence: [step2-tests-20261108](artifacts/step2-tests-20261108/)
+(both suite logs, the rollout result and the copied artifact directory).
+
+Synthetic, Torch-free tests cover: kernel-table aggregation and provenance
+classes (memory, unknown-as-torch); strict-JSON report round trips; source
+hashes changing only for the edited kernel file; tool and CUPTI capability
+states; and diagnostics-stage failures (exit, timeout, malformed output, a
+child claiming a path it did not write). None of those failures changes the
+reward, and the parent reports only files present in its own artifact
+directory.

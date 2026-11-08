@@ -13,6 +13,7 @@ is diagnostics; the reward metric (t_*_us) comes from utils.profiling.
 import argparse
 import json
 import time
+from pathlib import Path
 
 from utils import stats
 from utils.backend import BACKEND_CHOICES, DEVICE
@@ -29,6 +30,8 @@ def parse_args(argv=None):
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--cuda-graphs", action="store_true",
                         help="Also capture and time CUDA-graph replays")
+    parser.add_argument("--samples-json", type=Path,
+                        help="Also write the summary and raw samples to this file")
     args = parser.parse_args(argv)
     if args.warmup_iters < 0:
         parser.error("--warmup-iters must be non-negative")
@@ -173,14 +176,19 @@ def main():
     record, raw = run_benchmark(args)
     # Opt-in artifact export; raw samples never enter the reward or flat metrics.
     import os
+    payload = json.dumps({"summary": record, "raw": raw,
+                          "command_args": {k: str(v) if isinstance(v, Path) else v
+                                           for k, v in vars(args).items()}},
+                         indent=2, allow_nan=False) + "\n"
     directory = os.environ.get("CUDA_AGENT_BENCH_SAMPLES_DIR")
     if directory:
-        from pathlib import Path
         from uuid import uuid4
         output = Path(directory)
         output.mkdir(parents=True, exist_ok=True)
-        (output / (uuid4().hex + ".json")).write_text(json.dumps(
-            {"summary": record, "raw": raw, "command_args": vars(args)}, indent=2, allow_nan=False) + "\n")
+        (output / (uuid4().hex + ".json")).write_text(payload)
+    if args.samples_json:
+        args.samples_json.parent.mkdir(parents=True, exist_ok=True)
+        args.samples_json.write_text(payload)
     if args.json:
         print(json.dumps(record, allow_nan=False))
     elif record["bench/available"]:

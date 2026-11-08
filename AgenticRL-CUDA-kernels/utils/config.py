@@ -18,6 +18,7 @@ class RolloutConfig:
     bench_rounds: int = 6
     bench_iters_per_round: int = 10
     cuda_graphs: bool = False
+    diagnostics: bool = False
     timeout_s: float = 180
     provenance_threshold: float = 0.90
     speedup_margin: float = 0.05
@@ -67,7 +68,7 @@ class RolloutConfig:
         low_ok = (0 <= self.clip_low <= 1) if self.algo == "cispo" else (0 <= self.clip_low < 1)
         if not low_ok or self.clip_high < 0 or self.kl_coef < 0:
             raise ValueError("Invalid clip range or kl_coef")
-        for name in ("benchmark", "cuda_graphs", "filter_tied_groups"):
+        for name in ("benchmark", "cuda_graphs", "diagnostics", "filter_tied_groups"):
             if not isinstance(getattr(self, name), bool):
                 raise ValueError(f"{name} must be bool")
         if not isinstance(self.seed, int) or not isinstance(self.run_name, str):

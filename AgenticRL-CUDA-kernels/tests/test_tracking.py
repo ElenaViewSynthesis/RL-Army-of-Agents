@@ -10,7 +10,7 @@ import sys
 import unittest
 from pathlib import Path
 
-from tests.support import ROOT, assert_flat, make_task, scratch
+from tests.support import DEFAULT_RESULT_KEYS, ROOT, assert_flat, make_task, scratch
 from tracking import wandb_log, weave_trace
 
 ARTIFACTS = ROOT / "artifacts"
@@ -343,7 +343,7 @@ class ContractTests(unittest.TestCase):
             sink={'old':1}
             with patch('utils.rollout_env._stage',side_effect=stages):b=run_task(task,RolloutConfig(),profile_out=sink)
         self.assertEqual(set(a),set(b));self.assertEqual(a['reward/value'],b['reward/value'])
-        self.assertEqual(len(a),18);self.assertEqual(sink,profile)
+        self.assertEqual(set(a),DEFAULT_RESULT_KEYS);self.assertEqual(sink,profile)
 
     def test_validate_persists_actual_case_and_group_configs(self):
         from unittest.mock import patch

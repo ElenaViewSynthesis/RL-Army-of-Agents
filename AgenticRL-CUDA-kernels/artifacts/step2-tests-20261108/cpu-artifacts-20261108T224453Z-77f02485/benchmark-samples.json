@@ -1,0 +1,17 @@
+{
+  "summary": {
+    "bench/available": false,
+    "bench/unavailable_reason": "CUDA_AGENT_DEVICE=cpu"
+  },
+  "raw": {},
+  "command_args": {
+    "json": true,
+    "warmup_iters": 10,
+    "rounds": 6,
+    "iters_per_round": 10,
+    "backend": "triton",
+    "seed": 0,
+    "cuda_graphs": false,
+    "samples_json": "/tmp/step2-cpu/triton/.artifacts/20261108T224453Z-77f02485/benchmark-samples.json"
+  }
+}

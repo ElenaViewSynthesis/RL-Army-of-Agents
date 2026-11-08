@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "run_id": "20261108T224453Z-77f02485",
+  "backend": "triton",
+  "measured": false,
+  "reason": "CUDA_AGENT_DEVICE=cpu",
+  "iters": 10,
+  "ruleset": "anchored-namespaces-generic-v1",
+  "notes": [
+    "Diagnostic pass only: profiler instrumentation perturbs timings, which never feed the reward.",
+    "Kernel classes are name-based heuristics, not proof of authorship; unknown names count as torch.",
+    "Workdir files are writable by the candidate; this report is not a trusted reward input."
+  ],
+  "kernels": []
+}

@@ -7,7 +7,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from tests.support import make_task, scratch
+from tests.support import DEFAULT_RESULT_KEYS, make_task, scratch
 from utils.config import RolloutConfig
 from utils.profiling import profile_models
 from utils.rollout_env import run_task
@@ -65,7 +65,7 @@ class CaptureTests(unittest.TestCase):
                     self.assertEqual(stage.call_count, 3)  # No retry.
                     self.assertEqual((result['reward/value'],result['reward/reason']),
                                      (-1, 'empty_profile:'+session))
-                    self.assertEqual(len(result), 18)
+                    self.assertEqual(set(result), DEFAULT_RESULT_KEYS)
                     self.assertEqual(sink, profile)
 
     def test_counts_names_traces_order_and_contract(self):
