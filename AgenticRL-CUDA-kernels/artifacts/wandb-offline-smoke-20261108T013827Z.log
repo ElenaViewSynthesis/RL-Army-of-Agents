@@ -1,0 +1,53 @@
+wandb: Tracking run with wandb version 0.31.0
+wandb: W&B syncing is set to `offline` in this directory. Run `wandb online` or set WANDB_MODE=online to enable cloud syncing.
+wandb: Run data is saved locally in <repo>/artifacts/wandb-offline-smoke-20261108T013827Z/wandb/offline-run-20261108_013852-xv2pn4m7
+wandb: View this run in the terminal with `wandb leet`
+wandb: 
+wandb: Run history:
+wandb: iteration ▁█
+wandb: 
+wandb: Run summary:
+wandb:           backends_measured 0
+wandb:                       cases 2
+wandb:             provenance_pass 1
+wandb:                 reward_mean 0.5
+wandb:             reward_positive 1
+wandb:        unavailable_backends 
+wandb: unmatched_agent_names_total 0
+wandb:                   verify_ok 2
+wandb: 
+wandb: You can sync this run to the cloud by running:
+wandb: wandb sync <repo>/artifacts/wandb-offline-smoke-20261108T013827Z/wandb/offline-run-20261108_013852-xv2pn4m7
+wandb: Find logs at: ./artifacts/wandb-offline-smoke-20261108T013827Z/wandb/offline-run-20261108_013852-xv2pn4m7/logs
+wandb: Tracking run with wandb version 0.31.0
+wandb: W&B syncing is set to `offline` in this directory. Run `wandb online` or set WANDB_MODE=online to enable cloud syncing.
+wandb: Run data is saved locally in <repo>/artifacts/wandb-offline-smoke-20261108T013827Z/wandb/offline-run-20261108_013909-c85mrp1x
+wandb: View this run in the terminal with `wandb leet`
+wandb: 
+wandb: Run history:
+wandb:             adv/frac_dropped ▁
+wandb:                     adv/mean ▁
+wandb:                      adv/std ▁
+wandb:                    iteration ▁
+wandb:                reward/frac_3 ▁
+wandb:        reward/frac_max_turns ▁
+wandb:  reward/frac_provenance_fail ▁
+wandb:                  reward/mean ▁
+wandb: reward/mean_overlong_penalty ▁
+wandb:                   turns/mean ▁
+wandb:                           +1 ...
+wandb: 
+wandb: Run summary:
+wandb:           backends_measured 0
+wandb:                       cases 3
+wandb:             provenance_pass 2
+wandb:                 reward_mean 1
+wandb:             reward_positive 2
+wandb:        unavailable_backends 
+wandb: unmatched_agent_names_total 0
+wandb:                   verify_ok 3
+wandb: 
+wandb: You can sync this run to the cloud by running:
+wandb: wandb sync <repo>/artifacts/wandb-offline-smoke-20261108T013827Z/wandb/offline-run-20261108_013909-c85mrp1x
+wandb: Find logs at: ./artifacts/wandb-offline-smoke-20261108T013827Z/wandb/offline-run-20261108_013909-c85mrp1x/logs
+Offline real-SDK smoke passed: <repo>/artifacts/wandb-offline-smoke-20261108T013827Z/report.json

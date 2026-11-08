@@ -1,0 +1,37 @@
+test_build_run_and_unknown (tests.test_tracking.BackfillPayloadTests.test_build_run_and_unknown) ... ok
+test_dry_run_all_covers_manifest (tests.test_tracking.BackfillPayloadTests.test_dry_run_all_covers_manifest) ... ok
+test_failed_run (tests.test_tracking.BackfillPayloadTests.test_failed_run) ... ok
+test_finished_run (tests.test_tracking.BackfillPayloadTests.test_finished_run) ... ok
+test_dry_run_single_is_one_json_doc (tests.test_tracking.CLITests.test_dry_run_single_is_one_json_doc) ... ok
+test_no_wandb_weave_torch_imported (tests.test_tracking.CLITests.test_no_wandb_weave_torch_imported) ... ok
+test_full_config_shares_rules_and_group_stats_backfill (tests.test_tracking.ContractTests.test_full_config_shares_rules_and_group_stats_backfill) ... ok
+test_live_batch_stats_and_standalone_identity (tests.test_tracking.ContractTests.test_live_batch_stats_and_standalone_identity) ... ok
+test_old_config_rules_and_shares_are_unknown_not_reconstructed (tests.test_tracking.ContractTests.test_old_config_rules_and_shares_are_unknown_not_reconstructed) ... ok
+test_pipeline_keys_have_exactly_one_adr_category (tests.test_tracking.ContractTests.test_pipeline_keys_have_exactly_one_adr_category) ... ok
+test_profile_sink_does_not_change_result_or_reward (tests.test_tracking.ContractTests.test_profile_sink_does_not_change_result_or_reward) ... ok
+test_validate_persists_actual_case_and_group_configs (tests.test_tracking.ContractTests.test_validate_persists_actual_case_and_group_configs) ... ok
+test_weave_retains_raw_profile_and_stage_tails_without_sdks (tests.test_tracking.ContractTests.test_weave_retains_raw_profile_and_stage_tails_without_sdks) ... ok
+test_init_log_summary_finish_calls (tests.test_tracking.LogBackfillTests.test_init_log_summary_finish_calls) ... ok
+test_metrics_and_config (tests.test_tracking.PureHelpersTests.test_metrics_and_config) ... ok
+test_sweep_config_matches_rollout_config (tests.test_tracking.SweepTests.test_sweep_config_matches_rollout_config) ... ok
+test_sweep_wrapper_requires_workdir_and_gpu (tests.test_tracking.SweepTests.test_sweep_wrapper_requires_workdir_and_gpu) ... ok
+test_rollout_inputs (tests.test_tracking.WeaveInputsTests.test_rollout_inputs) ... ok
+test_cispo_preset_and_is_weight_bounds (tests.test_config_reward_grpo.ConfigTests.test_cispo_preset_and_is_weight_bounds) ... ok
+test_environment_modules_import_without_site_packages (tests.test_config_reward_grpo.ConfigTests.test_environment_modules_import_without_site_packages) ... ok
+test_every_field_has_a_cli_flag (tests.test_config_reward_grpo.ConfigTests.test_every_field_has_a_cli_flag) ... ok
+test_invalid_configs (tests.test_config_reward_grpo.ConfigTests.test_invalid_configs) ... ok
+test_presets_and_independent_overrides (tests.test_config_reward_grpo.ConfigTests.test_presets_and_independent_overrides) ... ok
+test_identical_groups_under_every_preset (tests.test_config_reward_grpo.GroupTests.test_identical_groups_under_every_preset) ... ok
+test_multiple_groups_same_task_and_stats (tests.test_config_reward_grpo.GroupTests.test_multiple_groups_same_task_and_stats) ... ok
+test_normalization_filter_and_empty (tests.test_config_reward_grpo.GroupTests.test_normalization_filter_and_empty) ... ok
+test_reject_partial_and_invalid_groups (tests.test_config_reward_grpo.GroupTests.test_reject_partial_and_invalid_groups) ... ok
+test_configurable_margin (tests.test_config_reward_grpo.RewardTests.test_configurable_margin) ... ok
+test_gates_and_missing_measurements (tests.test_config_reward_grpo.RewardTests.test_gates_and_missing_measurements) ... ok
+test_milestone_exact_boundaries (tests.test_config_reward_grpo.RewardTests.test_milestone_exact_boundaries) ... ok
+test_turn_caps_and_dapo_shaping (tests.test_config_reward_grpo.RewardTests.test_turn_caps_and_dapo_shaping) ... ok
+test_provenance_gate_and_overlong_via_entry_point (tests.test_rollout_env.RolloutProtocolTests.test_provenance_gate_and_overlong_via_entry_point) ... ok
+
+----------------------------------------------------------------------
+Ran 32 tests in 18.774s
+
+OK
