@@ -11,7 +11,7 @@ import json
 import os
 
 from tests.support import ROOT, make_task, scratch
-from utils.backend import available_backends
+from utils.backend import BACKENDS, available_backends
 from utils.config import ALGOS, RolloutConfig
 from utils.grpo import build_batch
 from utils.provenance import PROVENANCE_RULESET
@@ -23,19 +23,28 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--device", choices=("cpu", "cuda"), default="cpu")
     parser.add_argument("--timeout-s", type=float, default=180)
+    parser.add_argument("--backends", help="Comma-separated selection; default all backends")
     args = parser.parse_args()
+    selected = set(args.backends.split(",")) if args.backends else set(BACKENDS)
+    if not selected or selected - set(BACKENDS):
+        parser.error("unknown or empty backend selection")
     os.environ["CUDA_AGENT_DEVICE"] = args.device
     os.environ["TRITON_INTERPRET"] = "1" if args.device == "cpu" else "0"
     cfg = dataclasses.replace(RolloutConfig.preset("grpo"), timeout_s=args.timeout_s)
     results, unavailable = {}, {}
     case_configs, profiles, candidates, group_configs = {}, {}, {}, {}
+    stage_wall_s = {}
 
     def evaluate(label, path, config, turns):
         import hashlib
         case_configs[label] = config.to_dict()
         candidates[label] = hashlib.sha256((path / "model_new.py").read_bytes()).hexdigest()
         profile = {}
-        result = run_task(str(path), config, turns, profile_out=profile)
+        kwargs = {"profile_out": profile}
+        if os.environ.get("CUDA_AGENT_STAGE_TIMINGS") == "1":
+            stage_wall_s[label] = {}
+            kwargs["stage_times_out"] = stage_wall_s[label]
+        result = run_task(str(path), config, turns, **kwargs)
         profiles[label] = profile
         return result
 
@@ -48,15 +57,20 @@ def main():
             ("max_turns", triton_task, cfg, 25),
             ("overlong", triton_task, dataclasses.replace(RolloutConfig.preset("dapo"), timeout_s=args.timeout_s), 19),
         ):
+            if "triton" not in selected:
+                continue
             results[label] = evaluate(label, path, config, turns)
             print(json.dumps({"case": label, **results[label]}, allow_nan=False), flush=True)
-        if args.device == "cuda":
+        if args.device == "cuda" and "cuda" in selected:
             results["cuda"] = evaluate("cuda", make_task(tmp, "cuda"), cfg, 1)
             print(json.dumps({"case": "cuda", **results["cuda"]}, allow_nan=False), flush=True)
+            label = "reward-hack-torchop-cuda"
+            results[label] = evaluate(label, make_task(tmp, label), cfg, 1)
+            print(json.dumps({"case": label, **results[label]}, allow_nan=False), flush=True)
         # DSL backends have no CPU interpreter: run their honest and Torch-op hack
         # fixtures only on a GPU with the package installed; otherwise say why not.
         for name, missing in available_backends().items():
-            if name in ("cuda", "triton"):
+            if name in ("cuda", "triton") or name not in selected:
                 continue
             reason = missing if args.device == "cuda" else "GPU only (no CPU interpreter)"
             if reason:
@@ -89,9 +103,11 @@ def main():
             versions[package] = version(package)
         except PackageNotFoundError:
             pass
-    report = {"command": f"python -m scripts.validate --device {args.device} --timeout-s {args.timeout_s:g}",
+    report = {"command": f"python -m scripts.validate --device {args.device} --timeout-s {args.timeout_s:g}"
+                         + (f" --backends {args.backends}" if args.backends else ""),
               "config": cfg.to_dict(), "case_configs": case_configs,
               "group_configs": group_configs, "profiles": profiles,
+              "stage_wall_s": stage_wall_s,
               "candidate_sha256": candidates, "provenance_rules": PROVENANCE_RULESET,
               "device": args.device, "versions": versions, "rollouts": results,
               "unavailable_backends": unavailable,

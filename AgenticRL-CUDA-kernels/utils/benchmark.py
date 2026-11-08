@@ -170,7 +170,17 @@ def run_benchmark(args):
 
 def main():
     args = parse_args()
-    record, _ = run_benchmark(args)
+    record, raw = run_benchmark(args)
+    # Opt-in artifact export; raw samples never enter the reward or flat metrics.
+    import os
+    directory = os.environ.get("CUDA_AGENT_BENCH_SAMPLES_DIR")
+    if directory:
+        from pathlib import Path
+        from uuid import uuid4
+        output = Path(directory)
+        output.mkdir(parents=True, exist_ok=True)
+        (output / (uuid4().hex + ".json")).write_text(json.dumps(
+            {"summary": record, "raw": raw, "command_args": vars(args)}, indent=2, allow_nan=False) + "\n")
     if args.json:
         print(json.dumps(record, allow_nan=False))
     elif record["bench/available"]:
