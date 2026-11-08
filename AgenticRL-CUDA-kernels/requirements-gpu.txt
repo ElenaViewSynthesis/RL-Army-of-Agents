@@ -20,3 +20,6 @@ nvidia-nvjitlink==13.3.33
 # cuda-bindings, which kernels/cutedsl imports.
 tilelang==0.1.15
 nvidia-cutlass-dsl[cu13]==4.8.1
+# Keep driver entry-point queries within Modal's CUDA 13.3 API ceiling.
+# Bindings 13.5 requested 13.4/13.5 entry points under Compute Sanitizer.
+cuda-bindings==13.3.0
