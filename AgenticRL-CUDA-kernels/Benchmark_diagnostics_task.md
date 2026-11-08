@@ -201,7 +201,7 @@ Fill the README's *not measured* cells only from this run's output, with the com
 
 ---
 
-## Step 4: Nsight Systems, Nsight Compute, Compute Sanitizer *(next, opt-in diagnostics)*
+## Step 4: Nsight Systems, Nsight Compute, Compute Sanitizer *(implemented and H200-validated for the stock fixtures — see VALIDATION.md)*
 
 Add a diagnostics entry point, e.g. `python -m utils.diagnose {nsys,ncu,sanitizer} [--kernel REGEX] [--out DIR]`. It runs the trusted harness under the tool inside the workdir, with its own timeout, and saves the tool's outputs as artifacts referenced from `report.json`. None of these results ever feed the reward.
 

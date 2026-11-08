@@ -7,7 +7,7 @@
 ![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-3776AB)
 ![PyTorch ≥ 2.3](https://img.shields.io/badge/torch-%E2%89%A52.3-EE4C2C)
 ![Triton ≥ 3.0](https://img.shields.io/badge/triton-%E2%89%A53.0-6E40C9)
-![Validated snapshot: 133 tests](https://img.shields.io/badge/tests_snapshot-133-2EA44F)
+![Validated snapshot: 174 tests](https://img.shields.io/badge/tests_snapshot-174-2EA44F)
 ![GPU: H200 snapshot passed](https://img.shields.io/badge/GPU-H200%20snapshot%20passed-2EA44F)
 
 This project extends the environment released with [CUDA-Agent](https://github.com/BytedTsinghua-SIA/CUDA-Agent) ([paper](https://arxiv.org/abs/2602.24286)). It adds three things:
@@ -30,8 +30,8 @@ This project extends the environment released with [CUDA-Agent](https://github.c
 > The earlier zero eager baseline did not reproduce in 193 completed diagnostic
 > trials, including 100 CuTe DSL trials; its cause remains unknown.
 > [Validated source and raw evidence](VALIDATION.md#full-h200-acceptance-run-20261108t140136z)
-> are pinned. Concurrent profiler extensions saved after upload remain
-> **GPU-unverified**; the badges describe the validated snapshot. Historical
+> are pinned. Profiler extensions saved after that upload were outside that
+> run's scope; newer validated evidence is linked below. Historical
 > [partial acceptance](VALIDATION.md#fresh-h200-run-20261108t014026z) is preserved.
 >
 > **Conditioned snapshot `20261108T153803Z` also passes:** 31 GPU tests, all five
@@ -296,7 +296,7 @@ Each round reports two per-iteration timings: `event_us_*` (CUDA events on the c
 
 ## GPU runtime (cloud)
 
-**Run `20261108T140136Z` passed [snapshot acceptance](VALIDATION.md#full-h200-acceptance-run-20261108t140136z); later concurrent profiler extensions remain GPU-unverified.** The pinned cloud stack is [requirements-gpu.txt](requirements-gpu.txt): the `nvidia/cuda:13.3.1-devel-ubuntu24.04` image (system nvcc + headers at `/usr/local/cuda`), Python 3.12, `torch==2.14.1+cu130`, `triton`, `ninja`, `cuda-tile==1.8.0` with directly pinned CUDA 13.3.1 compiler components (tileiras `13.3.36`), `tilelang==0.1.15` and `nvidia-cutlass-dsl[cu13]==4.8.1`. Install it with **pip** — uv's first-index strategy cannot resolve the `+cu130` wheel (`UV_INDEX_STRATEGY=unsafe-best-match` also works). Hopper (sm_90: H100/H200) needs tileiras **13.3**, which also matches Modal's CUDA 13.3 driver API.
+**Run `20261108T200653Z` passed [scoring acceptance on frozen source](VALIDATION.md#h200-toolchain-scoring-regression--20261108t200653z).** The pinned cloud stack is [requirements-gpu.txt](requirements-gpu.txt): the `nvidia/cuda:13.3.1-devel-ubuntu24.04` image (system nvcc + headers at `/usr/local/cuda`), Python 3.12, `torch==2.14.1+cu130`, `triton`, `ninja`, `cuda-tile==1.8.0` with directly pinned CUDA 13.3.1 compiler components (tileiras `13.3.36`), `tilelang==0.1.15` and `nvidia-cutlass-dsl[cu13]==4.8.1`, with `cuda-bindings==13.3.0` to match the driver API ceiling. Install it with **pip** — uv's first-index strategy cannot resolve the `+cu130` wheel (`UV_INDEX_STRATEGY=unsafe-best-match` also works). Hopper (sm_90: H100/H200) needs tileiras **13.3**, which also matches Modal's CUDA 13.3 driver API.
 
 Preflight on any GPU host: `python -m utils.runtime --json --require cuda,triton,tilelang,cutile,cutedsl` — it prints a flat `runtime/*` record (driver, nvcc, ninja, tileiras, torch/triton/cuda-tile/tilelang/cutlass-dsl versions, GPU UUID) and exits non-zero when a profile is missing; it never imports torch.
 
@@ -342,6 +342,36 @@ Windows process tests require Linux/WSL2; see KNOWN_ISSUES.md.
 
 
 ---
+
+## GPU tool diagnostics (opt-in)
+
+`python -m utils.diagnose` runs the trusted harness under Compute Sanitizer,
+Nsight Systems or Nsight Compute in a task workdir, writing raw tool output
+plus `report.json`; results are diagnostics only and never feed rewards.
+
+```bash
+python -m utils.diagnose sanitizer --backend triton --workdir <task> --out <dir> --check memcheck
+python -m utils.diagnose nsys --backend cuda --workdir <task> --out <dir>
+python -m utils.diagnose ncu --backend cuda --workdir <task> --out <dir> --kernel 'axpby.*'
+python -m scripts.review_diagnostics <diagnostics-dir>
+python -m scripts.recover_nsys --input-dir <runs> --output-dir <dir> --importer <QdstrmImporter> --recovery-run-id <id>
+```
+
+One sequential H200 batch on Modal:
+
+```bash
+MODAL_GPU=H200 WANDB_MODE=offline .venv/bin/modal run --detach cloud/modal_runtime.py \
+    --diagnose-kernels --backends cuda,triton,tilelang,cutile,cutedsl \
+    --diagnostic-tools sanitizer,nsys,ncu \
+    --diagnostic-checks memcheck,racecheck,synccheck,initcheck --diagnostic-timeout-s 600
+```
+
+Fresh H200 diagnostic run `20261108T200118Z` passed all 20 honest sanitizer
+checks, detected the invalid-access control, and produced five reviewed timelines
+and five counter captures. Pinning `cuda-bindings==13.3.0` resolved the captured
+CuTe DSL API mismatch; `libdw1` enables Nsight import and `--clock-control none`
+avoids unavailable clock locking. This covers the shipped fixtures, not general
+memory safety. See [raw evidence and limits](VALIDATION.md#h200-sanitizer-and-nsight-fixes--20261108t200118z).
 
 ## Experiment tracking (W&B + Weave, opt-in)
 

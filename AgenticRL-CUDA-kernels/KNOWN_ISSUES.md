@@ -224,6 +224,17 @@
   upstream issue has been filed or fixed, and there is no confirmed link to the
   historical JWT incident. No SDK patch or dependency upgrade was applied.
 
+- **Historical CuTe DSL memcheck API-version failure (fixture fix verified).**
+  See the fresh `20261108T200118Z` matrix below; the original failure remains evidence. In the GPU
+  diagnostics matrix (run `20261108T192232Z`), `compute-sanitizer --tool memcheck`
+  reported 18 CUDA API errors against CuTe DSL (`cuda_api_version_findings`:
+  API 13041/13050 above driver 13030); its other three checks and all
+  sanitizer checks on the other four backends pass, as do all five Nsight
+  Systems and Nsight Compute captures. The Triton invalid-access control was
+  correctly detected. The historical findings were not suppressed; the fresh
+  fixture fix below does not clear broader CuTe DSL workloads. Summary:
+  `artifacts/gpu-diagnostics-review-20261108T195500Z.json`.
+
 - **Generated artifacts interrupted a Modal image upload.** The first full
   acceptance attempt after diagnosis failed before GPU execution because a
   concurrent local artifact log changed during image construction. The image
@@ -239,3 +250,21 @@
   were empty. All required timings were positive. This verifies the new guard
   and evidence paths, not the cause of the historical zero baseline. The
   diagnosed empty-capture branch is unit-tested but did not reproduce on GPU.
+
+- **CuTe DSL sanitizer API-version failure fixed for the captured fixture.**
+  The first tool batch (`20261108T192232Z`) used CUDA bindings 13.5.0 and
+  reported 18 memcheck errors: entry-point requests 13041/13050 exceeded the
+  driver's 13030 API ceiling, despite five correct outputs. The GPU requirements
+  now pin `cuda-bindings==13.3.0`; compiler/tileiras pins remain at 13.3.
+  Fresh pilot `20261108T195956Z` reported zero errors and five output checks,
+  while detecting the invalid-access control. Full matrix `20261108T200118Z`
+  passed all 20 honest sanitizer checks. API errors were not suppressed; the
+  original failure remains a regression fixture. This establishes only the
+  shipped axpby fixture's captured coverage, not general CuTe memory safety.
+- **Nsight importer and clock-control failures are resolved in the fresh matrix.**
+  The importer needed `libdw.so.1`; the image's existing `libdw1` dependency
+  supplies it. `ncu --clock-control none` avoids unavailable clock locking.
+  Full run `20261108T200118Z` produced five real Nsight Systems reports/SQLite
+  timelines and five selected-kernel counter captures, all reviewed as passed.
+  Clocks remain unlocked; instrumented timings/counters never feed reward.
+  Evidence and exact frozen source: `artifacts/h200-toolchain-fix-20261108T195717Z/`.

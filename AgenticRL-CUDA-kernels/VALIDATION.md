@@ -1668,3 +1668,190 @@ expired-cache fallback defect separately.
 - The five vendor evidence questions in the previous section are retained for
   that possible future escalation. They are not an outstanding vendor request
   and are not a validation gate.
+
+### GPU tool diagnostics matrix — initial historical review (2026-11-08)
+
+Initial frozen summary: `artifacts/gpu-diagnostics-review-20261108T195500Z.json`
+(31 rows; raw inputs immutable in the earlier receipts).
+
+- Acceptance: **partial** — 29 honest cases passed, 1 failed; the seeded
+  invalid-access control was detected (its own result correctly stays failed).
+- Compute Sanitizer (run `20261108T192232Z`): all four checks pass on CUDA,
+  Triton, TileLang and cuTile. CuTe DSL **memcheck failed** — 18 CUDA API
+  errors (`cuda_api_version_findings`; API version 13041/13050 exceeds driver
+  13030); its other three checks pass. Open compatibility finding; no
+  suppression, pin or kernel change made.
+- Invalid-access control (Triton memcheck): 6 errors detected for the actual
+  4-byte invalid global write to the named test kernel — detection works.
+- Nsight Systems: the 5 GPU captures originally failed on a missing importer;
+  the fix was a bounded OS library addition (`libdw1`, installing
+  `libdw1t64`/`libelf1t64` 0.190-1.1ubuntu0.1, user-approved) plus CPU-only
+  recovery of the existing QDSTRM traces — no GPU recapture. All 5 now pass;
+  each shows exactly one kernel in the captured range. No memcpy activity
+  table is present; transfer timing is unavailable (null, not zero). Captured range/process only — not
+  whole-GPU utilization.
+- Nsight Compute: the 5 original captures failed on the GPU clock-lock
+  requirement; rerun with explicit `--clock-control none` (no clock or
+  privilege changes) — all 5 pass, each with 1 selected kernel and 562
+  exported raw metric columns preserved as strings/units. These are
+  diagnostics, not reward latencies; the kernels are 1x128 toy axpby kernels
+  and no optimization claim is made.
+- Original `20261108T192232Z` run GPU `e0ec297f-c080-41d7-d6cf-9da2a35d89ef`;
+  Nsight Compute run `20261108T193605Z` GPU `e774783c-9885-d188-5045-b88ddc547021`.
+- Diagnostics are opt-in and isolated from rewards; cases run as separate
+  processes, not a sandbox. Raw launch statuses are preserved; `reviewed.json`
+  and the frozen summary are the authoritative post-review records.
+- Source snapshots: `artifacts/gpu-diagnostics-source-20261108T192125Z`,
+  `...-20261108T193538Z`. Recovery launcher:
+  `artifacts/nsys-recovery-20261108T194721Z/` (run `20261108T194923Z`).
+- Final local regression gate: system Python **174 tests OK, 32 skipped**;
+  venv **174 tests OK, 26 skipped**, including 12 captured-output decoder tests at that gate (13 after the fail-closed hardening below).
+  Evidence: `artifacts/final-gate-20261108T195620Z/{system,venv}.log`.
+
+
+## H200 sanitizer and Nsight fixes — 20261108T200118Z
+
+The first diagnostic batch (`20261108T192232Z`) remains historical evidence:
+19/20 honest sanitizer checks reported zero errors; CuTe DSL memcheck reported
+18 CUDA API-version errors despite five correct outputs. The invalid-access
+control was detected. Nsight Systems retained raw QDSTRM files but could not
+load its importer, and Nsight Compute could not lock GPU clocks.
+
+Three fixes/mitigations are now verified together:
+
+- `requirements-gpu.txt` explicitly pins `cuda-bindings==13.3.0`. The former
+  13.5.0 bindings requested APIs 13041/13050 while the driver reported 13030.
+  The [13.3.0 package](https://pypi.org/project/cuda-bindings/13.3.0/)
+  satisfies CuTe DSL 4.8.1's `cuda-bindings>=12.8` requirement. Compiler and
+  tileiras 13.3 pins are unchanged. No sanitizer API-error suppression was added.
+- The Modal image now installs `libdw1` (`cloud/modal_runtime.py`), which supplies
+  the `libdw.so.1` that QdstrmImporter was missing. Fresh collection now automatically
+  produces `.nsys-rep` and SQLite output. The frozen reviewer validates worker
+  completion, the generated NVTX range and in-range GPU kernel activity.
+- The existing `--clock-control none` Nsight Compute setting avoids clock-lock
+  operations ([NVIDIA CLI reference](https://docs.nvidia.com/nsight-compute/NsightComputeCli/index.html)).
+  Reviewed reports retain selected kernel identity, raw counter values and units.
+  Unlocked-clock diagnostics are not reward latencies.
+
+Sources were frozen before GPU execution, including concurrent Nsight reviewer
+work; the source manifest checks every copied byte. Exact source and evidence:
+[toolchain-fix bundle](artifacts/h200-toolchain-fix-20261108T195717Z/), including
+`source-snapshot.json`, `source.tar.gz`, both GPU runs and raw local logs.
+Protected models, bindings, stock CUDA kernels and upstream SKILL.md were not edited.
+
+Pilot command (executed from the frozen source with the repository Modal venv):
+
+```bash
+modal run --detach cloud/modal_runtime.py --diagnose-kernels --backends cutedsl --diagnostic-tools sanitizer --diagnostic-checks memcheck --diagnostic-timeout-s 600
+```
+
+Run `20261108T195956Z`: installed bindings 13.3.0; CuTe DSL completed five
+output checks with `ERROR SUMMARY: 0 errors` and tool exit 0. The separate
+Triton invalid-access control reported six errors and was detected. No retry
+or error suppression was used.
+
+Full command:
+
+```bash
+modal run --detach cloud/modal_runtime.py --diagnose-kernels --diagnostic-timeout-s 600
+```
+
+Run `20261108T200118Z`: one diagnostic stage exited 0 without timeout in
+283.120254639 s. Re-review with the exact frozen reviewer reports `pass`, all
+31 planned cases present, 30 honest cases passed and the intentional control
+correctly rejected. Every honest sanitizer case completed five output checks,
+exited 0, and reported zero errors. Racecheck also reported zero hazards/warnings.
+
+| Check | CUDA | Triton | TileLang | cuTile | CuTe DSL |
+|---|---|---|---|---|---|
+| memcheck | clean | clean | clean | clean | clean |
+| racecheck | clean | clean | clean | clean | clean |
+| synccheck | clean | clean | clean | clean | clean |
+| initcheck | clean | clean | clean | clean | clean |
+| Nsight Systems import + timeline review | pass | pass | pass | pass | pass |
+| Nsight Compute counters, clock control none | pass | pass | pass | pass | pass |
+
+Each Nsight Systems capture contains one in-range generated kernel and real,
+nonempty report/SQLite files. Each Nsight Compute capture contains one selected
+kernel and required finite counter metrics. A GPU-health XID 43 warning appeared
+during the intentional invalid-access-control phase and is preserved in the
+raw session log; all ten subsequent Nsight checks passed on that GPU. The warning
+was not erased or treated as sanitizer-clean evidence.
+
+Local commands on the frozen source:
+
+```text
+python3 -m unittest discover -v
+Ran 174 tests in 17.147s
+OK (skipped=32)
+
+.venv/bin/python -m unittest discover -v
+Ran 174 tests in 455.035s
+OK (skipped=26)
+```
+
+The first local snapshot check lacked historical offline tracking fixtures.
+Those data files were copied into its test bundle and the suites reran; no test
+logic was weakened. Artifacts remain excluded from the cloud image except the
+upstream checksum manifest. Diagnostic results are standalone `diag/*` evidence:
+no reward input, result-schema field, timing method or tolerance changed.
+
+- Post-review hardening: the sanitizer "clean" verdict now requires the log to
+  contain *only* the exact expected vendor banner lines (plus an exact
+  zero-error/zero-hazard summary); any unrecognized vendor diagnostic line
+  fails closed to `unavailable`/`unrecognized_sanitizer_output` instead of
+  passing. Applied to the final `sanitizer_clean` branch only. Targeted gate:
+  `python3 -m unittest -v tests.test_diagnostic_review tests.test_diagnose
+  tests.test_modal_diagnostics` — **37 tests OK** on both system Python and
+  the venv (logs in `artifacts/hardening-gate-20261108T201923Z/targeted.log`).
+- Closeout evidence check for `20261108T200118Z`: all 136 manifest entries match
+  both the frozen source directory and source archive. Reviewed capture/raw-output
+  hashes match the saved evidence; capture-harness hashes match the source
+  snapshot. All 31 planned cases are present, all honest tool
+  stages exited zero, and all 20 clean sanitizer outputs also satisfy the stricter
+  post-review guard. No GPU measurement or timing reduction was rerun for this
+  check. Record: `artifacts/h200-toolchain-fix-20261108T195717Z/lead-evidence-check.json`.
+
+## H200 toolchain scoring regression — 20261108T200653Z
+
+Full scoring acceptance with the `cuda-bindings==13.3.0` pin, run from the
+same frozen source as the diagnostic matrix
+(`PYTHONPATH=<frozen source> modal run --detach cloud/modal_runtime.py --tests`).
+The scoring and runtime code in that snapshot matches the committed code. Only
+documentation and the offline reviewer hardening above changed after the
+freeze.
+
+The automatic review reports `pass`, with no failures, no timing anomalies and
+an environment matching the fresh require probe (driver 610.57.04, Torch
+2.14.1+cu130, CuTe DSL 4.8.1, `runtime/cuda_bindings_version` 13.3.0). The
+GPU suite reported `Ran 31 tests in 501.225s` / `OK`. All 11 profiled rollouts
+record `profile/timing_method=cuda-leaf-sum-two-empty-prime-v1`; the
+`timeout` and `max_turns` cases are rejected before profiling.
+
+| case | provenance | eager µs | compile µs | generated µs | reward | reason |
+|---|---|---|---|---|---|---|
+| triton | 1.0 | 1.866 | 0.829 | 0.832 | 2.0 | faster_than_eager |
+| overlong | 1.0 | 1.872 | 0.826 | 0.826 | 1.25 | faster_than_eager |
+| cuda | 1.0 | 1.853 | 0.819 | 0.964 | 2.0 | faster_than_eager |
+| tilelang | 1.0 | 1.862 | 0.864 | 0.810 | 3.0 | faster_than_both |
+| cutile | 1.0 | 1.862 | 0.819 | 0.922 | 2.0 | faster_than_eager |
+| cutedsl | 1.0 | 1.866 | 0.829 | 0.976 | 2.0 | faster_than_eager |
+| reward-hack-torchop (5 backends) | 0.0 | 1.839–1.856 | 0.785–0.834 | 1.760–1.837 | -1 | provenance |
+| timeout / max_turns | — | — | — | — | -1 | timeout / max_turns |
+
+Eager medians here (1.84–1.87 µs) are higher than in unprimed historical runs
+(about 1.60–1.66 µs in the generated-first order). That is consistent with the
+primer removing the order-dependent speedup, but these runs are not
+equivalent measurements and no historical timing was regraded.
+
+TileLang's `faster_than_both` comes from a 0.810 vs 0.864 µs margin at
+sub-microsecond size. Read it as a single-run fixture result, not a
+performance claim.
+
+A re-review of the saved matrix `20261108T200118Z` with the hardened reviewer
+(run on a copy, so the saved evidence is untouched) still reports `pass`: 30
+honest cases passed and the invalid-access control was rejected.
+
+Evidence: [scoring run](artifacts/h200-toolchain-fix-20261108T195717Z/scoring-20261108T200653Z/)
+(acceptance review, results, kernel names, environment, stage logs and
+benchmark samples).
