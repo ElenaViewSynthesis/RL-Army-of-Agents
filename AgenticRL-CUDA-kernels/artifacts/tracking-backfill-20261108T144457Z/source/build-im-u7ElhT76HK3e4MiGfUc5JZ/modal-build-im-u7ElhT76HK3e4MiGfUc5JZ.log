@@ -1,0 +1,54 @@
+Building image im-u7ElhT76HK3e4MiGfUc5JZ
+
+=> Step 0: FROM base
+
+=> Step 1: COPY /.requirements.txt /.requirements.txt
+
+=> Step 2: RUN python -m pip install -r /.requirements.txt
+Looking in indexes: http://pypi-mirror.modal.local:5555/simple, https://download.pytorch.org/whl/cu130
+Collecting torch==2.14.1+cu130 (from -r /.requirements.txt (line 5))
+  Downloading https://download-r2.pytorch.org/whl/cu130/torch-2.14.1%2Bcu130-cp312-cp312-manylinux_2_28_x86_64.whl.metadata (37 kB)
+Collecting triton>=3.0 (from -r /.requirements.txt (line 6))
+  Downloading https://download-r2.pytorch.org/whl/triton-3.9.0-cp312-abi3-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (978 bytes)
+Collecting numpy>=1.26 (from -r /.requirements.txt (line 7))
+  Downloading numpy-2.5.4-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (6.6 kB)
+Collecting ninja>=1.11 (from -r /.requirements.txt (line 8))
+  Downloading http://pypi-mirror.modal.local:5555/simple/ninja/ninja-1.13.2-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (5.4 kB)
+Collecting cuda-tile==1.8.0 (from -r /.requirements.txt (line 11))
+  Downloading http://pypi-mirror.modal.local:5555/simple/cuda-tile/cuda_tile-1.8.0-cp312-cp312-manylinux2014_x86_64.whl.metadata (7.3 kB)
+Collecting cuda-toolkit<13.4,>=13.3 (from cuda-toolkit[nvcc,nvvm,tileiras]<13.4,>=13.3->-r /.requirements.txt (line 12))
+  Downloading https://pypi.nvidia.com/cuda-toolkit/cuda_toolkit-13.3.1-py2.py3-none-any.whl (2.7 kB)
+Collecting tilelang==0.1.15 (from -r /.requirements.txt (line 15))
+  Downloading http://pypi-mirror.modal.local:5555/simple/tilelang/tilelang-0.1.15-cp39-abi3-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (27 kB)
+Collecting nvidia-cutlass-dsl==4.8.1 (from nvidia-cutlass-dsl[cu13]==4.8.1->-r /.requirements.txt (line 16))
+  Downloading http://pypi-mirror.modal.local:5555/simple/nvidia-cutlass-dsl/nvidia_cutlass_dsl-4.8.1-py3-none-any.whl.metadata (3.1 kB)
+Collecting filelock (from torch==2.14.1+cu130->-r /.requirements.txt (line 5))
+  Downloading http://pypi-mirror.modal.local:5555/simple/filelock/filelock-4.2.9-py3-none-any.whl.metadata (2.3 kB)
+Collecting typing-extensions>=4.10.0 (from torch==2.14.1+cu130->-r /.requirements.txt (line 5))
+  Downloading typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)
+Collecting setuptools>=77.0.3 (from torch==2.14.1+cu130->-r /.requirements.txt (line 5))
+  Downloading http://pypi-mirror.modal.local:5555/simple/setuptools/setuptools-84.2.1-py3-none-any.whl.metadata (6.6 kB)
+Collecting sympy>=1.13.3 (from torch==2.14.1+cu130->-r /.requirements.txt (line 5))
+  Downloading sympy-1.14.0-py3-none-any.whl.metadata (12 kB)
+Collecting networkx>=2.5.1 (from torch==2.14.1+cu130->-r /.requirements.txt (line 5))
+  Downloading networkx-3.7-py3-none-any.whl.metadata (6.7 kB)
+Collecting jinja2 (from torch==2.14.1+cu130->-r /.requirements.txt (line 5))
+  Downloading https://download.pytorch.org/whl/jinja2-3.1.6-py3-none-any.whl.metadata (2.9 kB)
+Collecting fsspec>=0.8.5 (from torch==2.14.1+cu130->-r /.requirements.txt (line 5))
+  Downloading fsspec-2026.9.0-py3-none-any.whl.metadata (10 kB)
+INFO: pip is looking at multiple versions of torch to determine which version is compatible with other requirements. This could take a while.
+ERROR: Cannot install -r /.requirements.txt (line 5) and cuda-toolkit<13.4 and >=13.3 because these package versions have conflicting dependencies.
+
+The conflict is caused by:
+    The user requested cuda-toolkit<13.4 and >=13.3
+    torch 2.14.1+cu130 depends on cuda-toolkit==13.0.3; platform_system == "Linux"
+
+To fix this you could try to:
+1. loosen the range of package versions you've specified
+2. remove package versions to allow pip attempt to solve the dependency conflict
+
+ERROR: ResolutionImpossible: for help visit https://pip.pypa.io/en/latest/topics/dependency-resolution/#dealing-with-dependency-conflicts
+
+[notice] A new release of pip is available: 23.3.2 -> 26.3
+[notice] To update, run: pip install --upgrade pip
+Terminating task due to error: failed to run builder command "python -m pip install -r /.requirements.txt": container exit status: 1

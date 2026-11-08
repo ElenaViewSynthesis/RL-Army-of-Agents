@@ -1,0 +1,270 @@
+✓ Initialized. View run at 
+https://modal.com/apps/<workspace>/main/ap-kc56GC9W9x91EiZva7ENr6
+Building image im-EMVmgKSnLeN3N3myGG35CV
+
+=> Step 0: FROM base
+
+=> Step 1: COPY /.requirements.txt /.requirements.txt
+
+=> Step 2: RUN python -m pip install -r /.requirements.txt
+Looking in indexes: http://pypi-mirror.modal.local:5555/simple, https://download.pytorch.org/whl/cu130
+Collecting torch==2.14.1+cu130 (from -r /.requirements.txt (line 5))
+  Downloading https://download-r2.pytorch.org/whl/cu130/torch-2.14.1%2Bcu130-cp312-cp312-manylinux_2_28_x86_64.whl.metadata (37 kB)
+Collecting triton>=3.0 (from -r /.requirements.txt (line 6))
+  Downloading https://download-r2.pytorch.org/whl/triton-3.9.0-cp312-abi3-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (978 bytes)
+Collecting numpy>=1.26 (from -r /.requirements.txt (line 7))
+  Downloading numpy-2.5.4-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (6.6 kB)
+Collecting ninja>=1.11 (from -r /.requirements.txt (line 8))
+  Downloading http://pypi-mirror.modal.local:5555/simple/ninja/ninja-1.13.2-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (5.4 kB)
+Collecting cuda-tile==1.8.0 (from -r /.requirements.txt (line 11))
+  Downloading http://pypi-mirror.modal.local:5555/simple/cuda-tile/cuda_tile-1.8.0-cp312-cp312-manylinux2014_x86_64.whl.metadata (7.3 kB)
+Collecting nvidia-cuda-tileiras==13.3.36 (from -r /.requirements.txt (line 14))
+  Downloading http://pypi-mirror.modal.local:5555/simple/nvidia-cuda-tileiras/nvidia_cuda_tileiras-13.3.36-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (1.9 kB)
+Collecting nvidia-cuda-nvcc==13.3.73 (from -r /.requirements.txt (line 15))
+  Downloading http://pypi-mirror.modal.local:5555/simple/nvidia-cuda-nvcc/nvidia_cuda_nvcc-13.3.73-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (1.9 kB)
+Collecting nvidia-cuda-crt==13.3.73 (from -r /.requirements.txt (line 16))
+  Downloading http://pypi-mirror.modal.local:5555/simple/nvidia-cuda-crt/nvidia_cuda_crt-13.3.73-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (1.7 kB)
+Collecting nvidia-nvvm==13.3.73 (from -r /.requirements.txt (line 17))
+  Downloading http://pypi-mirror.modal.local:5555/simple/nvidia-nvvm/nvidia_nvvm-13.3.73-py3-none-manylinux2010_x86_64.manylinux_2_12_x86_64.whl.metadata (1.7 kB)
+Collecting nvidia-nvjitlink==13.3.33 (from -r /.requirements.txt (line 18))
+  Downloading https://pypi.nvidia.com/nvidia-nvjitlink/nvidia_nvjitlink-13.3.33-py3-none-manylinux2010_x86_64.manylinux_2_12_x86_64.whl (40.7 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 40.7/40.7 MB 28.2 MB/s eta 0:00:00
+Collecting tilelang==0.1.15 (from -r /.requirements.txt (line 21))
+  Downloading http://pypi-mirror.modal.local:5555/simple/tilelang/tilelang-0.1.15-cp39-abi3-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (27 kB)
+Collecting nvidia-cutlass-dsl==4.8.1 (from nvidia-cutlass-dsl[cu13]==4.8.1->-r /.requirements.txt (line 22))
+  Downloading http://pypi-mirror.modal.local:5555/simple/nvidia-cutlass-dsl/nvidia_cutlass_dsl-4.8.1-py3-none-any.whl.metadata (3.1 kB)
+Collecting filelock (from torch==2.14.1+cu130->-r /.requirements.txt (line 5))
+  Downloading http://pypi-mirror.modal.local:5555/simple/filelock/filelock-4.2.9-py3-none-any.whl.metadata (2.3 kB)
+Collecting typing-extensions>=4.10.0 (from torch==2.14.1+cu130->-r /.requirements.txt (line 5))
+  Downloading typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)
+Collecting setuptools>=77.0.3 (from torch==2.14.1+cu130->-r /.requirements.txt (line 5))
+  Downloading http://pypi-mirror.modal.local:5555/simple/setuptools/setuptools-84.2.1-py3-none-any.whl.metadata (6.6 kB)
+Collecting sympy>=1.13.3 (from torch==2.14.1+cu130->-r /.requirements.txt (line 5))
+  Downloading sympy-1.14.0-py3-none-any.whl.metadata (12 kB)
+Collecting networkx>=2.5.1 (from torch==2.14.1+cu130->-r /.requirements.txt (line 5))
+  Downloading networkx-3.7-py3-none-any.whl.metadata (6.7 kB)
+Collecting jinja2 (from torch==2.14.1+cu130->-r /.requirements.txt (line 5))
+  Downloading https://download.pytorch.org/whl/jinja2-3.1.6-py3-none-any.whl.metadata (2.9 kB)
+Collecting fsspec>=0.8.5 (from torch==2.14.1+cu130->-r /.requirements.txt (line 5))
+  Downloading fsspec-2026.9.0-py3-none-any.whl.metadata (10 kB)
+Collecting cuda-toolkit==13.0.3 (from cuda-toolkit[cublas,cudart,cufft,cufile,cupti,curand,cusolver,cusparse,nvjitlink,nvrtc,nvtx]==13.0.3; platform_system == "Linux"->torch==2.14.1+cu130->-r /.requirements.txt (line 5))
+  Downloading https://pypi.nvidia.com/cuda-toolkit/cuda_toolkit-13.0.3.0-py2.py3-none-any.whl (2.5 kB)
+Collecting cuda-bindings<14,>=13.0.3 (from torch==2.14.1+cu130->-r /.requirements.txt (line 5))
+  Downloading http://pypi-mirror.modal.local:5555/simple/cuda-bindings/cuda_bindings-13.5.0-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl.metadata (2.5 kB)
+Collecting nvidia-cudnn-cu13==9.24.0.43 (from torch==2.14.1+cu130->-r /.requirements.txt (line 5))
+  Downloading https://pypi.nvidia.com/nvidia-cudnn-cu13/nvidia_cudnn_cu13-9.24.0.43-py3-none-manylinux_2_27_x86_64.whl (553.1 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 553.1/553.1 MB 25.4 MB/s eta 0:00:00
+Collecting nvidia-cusparselt-cu13==0.8.1 (from torch==2.14.1+cu130->-r /.requirements.txt (line 5))
+  Downloading https://pypi.nvidia.com/nvidia-cusparselt-cu13/nvidia_cusparselt_cu13-0.8.1-py3-none-manylinux2014_x86_64.whl (170.1 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 170.1/170.1 MB 64.3 MB/s eta 0:00:00
+Collecting nvidia-nccl-cu13==2.30.7 (from torch==2.14.1+cu130->-r /.requirements.txt (line 5))
+  Downloading nvidia_nccl_cu13-2.30.7-py3-none-manylinux_2_18_x86_64.whl.metadata (2.1 kB)
+Collecting nvidia-nvshmem-cu13==3.4.5 (from torch==2.14.1+cu130->-r /.requirements.txt (line 5))
+  Downloading https://pypi.nvidia.com/nvidia-nvshmem-cu13/nvidia_nvshmem_cu13-3.4.5-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (60.4 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 60.4/60.4 MB 64.1 MB/s eta 0:00:00
+Collecting triton>=3.0 (from -r /.requirements.txt (line 6))
+  Downloading https://download-r2.pytorch.org/whl/triton-3.8.0-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (978 bytes)
+Collecting nvidia-cuda-runtime (from nvidia-cuda-nvcc==13.3.73->-r /.requirements.txt (line 15))
+  Downloading http://pypi-mirror.modal.local:5555/simple/nvidia-cuda-runtime/nvidia_cuda_runtime-13.5.37-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (1.8 kB)
+Collecting apache-tvm-ffi<0.1.13,>=0.1.11 (from tilelang==0.1.15->-r /.requirements.txt (line 21))
+  Downloading http://pypi-mirror.modal.local:5555/simple/apache-tvm-ffi/apache_tvm_ffi-0.1.12-cp312-abi3-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl.metadata (6.2 kB)
+Collecting torch-c-dlpack-ext (from tilelang==0.1.15->-r /.requirements.txt (line 21))
+  Downloading http://pypi-mirror.modal.local:5555/simple/torch-c-dlpack-ext/torch_c_dlpack_ext-0.1.5-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl.metadata (14 kB)
+Collecting cloudpickle (from tilelang==0.1.15->-r /.requirements.txt (line 21))
+  Downloading http://pypi-mirror.modal.local:5555/simple/cloudpickle/cloudpickle-3.1.2-py3-none-any.whl.metadata (7.1 kB)
+Collecting ml-dtypes (from tilelang==0.1.15->-r /.requirements.txt (line 21))
+  Downloading http://pypi-mirror.modal.local:5555/simple/ml-dtypes/ml_dtypes-0.6.0-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (8.8 kB)
+Collecting psutil (from tilelang==0.1.15->-r /.requirements.txt (line 21))
+  Downloading http://pypi-mirror.modal.local:5555/simple/psutil/psutil-7.2.2-cp36-abi3-manylinux2010_x86_64.manylinux_2_12_x86_64.manylinux_2_28_x86_64.whl.metadata (22 kB)
+Collecting tqdm>=4.62.3 (from tilelang==0.1.15->-r /.requirements.txt (line 21))
+  Downloading http://pypi-mirror.modal.local:5555/simple/tqdm/tqdm-4.70.1-py3-none-any.whl.metadata (57 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 57.4/57.4 kB 160.1 MB/s eta 0:00:00
+Collecting z3-solver<4.15.5,>=4.13.0 (from tilelang==0.1.15->-r /.requirements.txt (line 21))
+  Downloading http://pypi-mirror.modal.local:5555/simple/z3-solver/z3_solver-4.15.4.0-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (602 bytes)
+Collecting nvidia-cutlass-dsl-libs-base==4.8.1 (from nvidia-cutlass-dsl==4.8.1->nvidia-cutlass-dsl[cu13]==4.8.1->-r /.requirements.txt (line 22))
+  Downloading http://pypi-mirror.modal.local:5555/simple/nvidia-cutlass-dsl-libs-base/nvidia_cutlass_dsl_libs_base-4.8.1-cp312-cp312-manylinux_2_28_x86_64.whl.metadata (2.9 kB)
+Collecting nvidia-cutlass-dsl-libs-cu12==4.8.1 (from nvidia-cutlass-dsl==4.8.1->nvidia-cutlass-dsl[cu13]==4.8.1->-r /.requirements.txt (line 22))
+  Downloading http://pypi-mirror.modal.local:5555/simple/nvidia-cutlass-dsl-libs-cu12/nvidia_cutlass_dsl_libs_cu12-4.8.1-cp312-cp312-manylinux_2_28_x86_64.whl.metadata (2.9 kB)
+Collecting nvidia-cutlass-dsl-libs-cu13==4.8.1 (from nvidia-cutlass-dsl[cu13]==4.8.1->-r /.requirements.txt (line 22))
+  Downloading http://pypi-mirror.modal.local:5555/simple/nvidia-cutlass-dsl-libs-cu13/nvidia_cutlass_dsl_libs_cu13-4.8.1-cp312-cp312-manylinux_2_28_x86_64.whl.metadata (2.9 kB)
+Collecting nvidia-cublas==13.1.1.3.* (from cuda-toolkit[cublas,cudart,cufft,cufile,cupti,curand,cusolver,cusparse,nvjitlink,nvrtc,nvtx]==13.0.3; platform_system == "Linux"->torch==2.14.1+cu130->-r /.requirements.txt (line 5))
+  Downloading https://pypi.nvidia.com/nvidia-cublas/nvidia_cublas-13.1.1.3-py3-none-manylinux_2_27_x86_64.whl (423.1 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 423.1/423.1 MB 62.9 MB/s eta 0:00:00
+Collecting nvidia-cuda-nvrtc==13.0.88.* (from cuda-toolkit[cublas,cudart,cufft,cufile,cupti,curand,cusolver,cusparse,nvjitlink,nvrtc,nvtx]==13.0.3; platform_system == "Linux"->torch==2.14.1+cu130->-r /.requirements.txt (line 5))
+  Downloading https://pypi.nvidia.com/nvidia-cuda-nvrtc/nvidia_cuda_nvrtc-13.0.88-py3-none-manylinux2010_x86_64.manylinux_2_12_x86_64.whl (90.2 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 90.2/90.2 MB 64.6 MB/s eta 0:00:00
+Collecting nvidia-cuda-runtime (from nvidia-cuda-nvcc==13.3.73->-r /.requirements.txt (line 15))
+  Downloading https://pypi.nvidia.com/nvidia-cuda-runtime/nvidia_cuda_runtime-13.0.96-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (2.2 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.2/2.2 MB 65.6 MB/s eta 0:00:00
+Collecting nvidia-cufft==12.0.0.61.* (from cuda-toolkit[cublas,cudart,cufft,cufile,cupti,curand,cusolver,cusparse,nvjitlink,nvrtc,nvtx]==13.0.3; platform_system == "Linux"->torch==2.14.1+cu130->-r /.requirements.txt (line 5))
+  Downloading https://pypi.nvidia.com/nvidia-cufft/nvidia_cufft-12.0.0.61-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (214.1 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 214.1/214.1 MB 62.0 MB/s eta 0:00:00
+Collecting nvidia-cufile==1.15.1.6.* (from cuda-toolkit[cublas,cudart,cufft,cufile,cupti,curand,cusolver,cusparse,nvjitlink,nvrtc,nvtx]==13.0.3; platform_system == "Linux"->torch==2.14.1+cu130->-r /.requirements.txt (line 5))
+  Downloading https://pypi.nvidia.com/nvidia-cufile/nvidia_cufile-1.15.1.6-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (1.2 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.2/1.2 MB 72.2 MB/s eta 0:00:00
+Collecting nvidia-cuda-cupti==13.0.85.* (from cuda-toolkit[cublas,cudart,cufft,cufile,cupti,curand,cusolver,cusparse,nvjitlink,nvrtc,nvtx]==13.0.3; platform_system == "Linux"->torch==2.14.1+cu130->-r /.requirements.txt (line 5))
+  Downloading https://pypi.nvidia.com/nvidia-cuda-cupti/nvidia_cuda_cupti-13.0.85-py3-none-manylinux_2_25_x86_64.whl (10.7 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 10.7/10.7 MB 64.0 MB/s eta 0:00:00
+Collecting nvidia-curand==10.4.0.35.* (from cuda-toolkit[cublas,cudart,cufft,cufile,cupti,curand,cusolver,cusparse,nvjitlink,nvrtc,nvtx]==13.0.3; platform_system == "Linux"->torch==2.14.1+cu130->-r /.requirements.txt (line 5))
+  Downloading https://pypi.nvidia.com/nvidia-curand/nvidia_curand-10.4.0.35-py3-none-manylinux_2_27_x86_64.whl (59.5 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 59.5/59.5 MB 64.1 MB/s eta 0:00:00
+Collecting nvidia-cusolver==12.0.4.66.* (from cuda-toolkit[cublas,cudart,cufft,cufile,cupti,curand,cusolver,cusparse,nvjitlink,nvrtc,nvtx]==13.0.3; platform_system == "Linux"->torch==2.14.1+cu130->-r /.requirements.txt (line 5))
+  Downloading https://pypi.nvidia.com/nvidia-cusolver/nvidia_cusolver-12.0.4.66-py3-none-manylinux_2_27_x86_64.whl (200.9 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 200.9/200.9 MB 63.1 MB/s eta 0:00:00
+Collecting nvidia-cusparse==12.6.3.3.* (from cuda-toolkit[cublas,cudart,cufft,cufile,cupti,curand,cusolver,cusparse,nvjitlink,nvrtc,nvtx]==13.0.3; platform_system == "Linux"->torch==2.14.1+cu130->-r /.requirements.txt (line 5))
+  Downloading https://pypi.nvidia.com/nvidia-cusparse/nvidia_cusparse-12.6.3.3-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (145.9 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 145.9/145.9 MB 64.0 MB/s eta 0:00:00
+Collecting nvidia-nvtx==13.0.85.* (from cuda-toolkit[cublas,cudart,cufft,cufile,cupti,curand,cusolver,cusparse,nvjitlink,nvrtc,nvtx]==13.0.3; platform_system == "Linux"->torch==2.14.1+cu130->-r /.requirements.txt (line 5))
+  Downloading https://pypi.nvidia.com/nvidia-nvtx/nvidia_nvtx-13.0.85-py3-none-manylinux1_x86_64.manylinux_2_5_x86_64.whl (148 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 148.0/148.0 kB 106.2 MB/s eta 0:00:00
+Collecting protobuf>=4.21.12 (from nvidia-cutlass-dsl-libs-base==4.8.1->nvidia-cutlass-dsl==4.8.1->nvidia-cutlass-dsl[cu13]==4.8.1->-r /.requirements.txt (line 22))
+  Downloading http://pypi-mirror.modal.local:5555/simple/protobuf/protobuf-7.36.2-cp310-abi3-manylinux2014_x86_64.whl.metadata (595 bytes)
+Collecting nvidia-cutlass-dsl-libs-core==4.8.1 (from nvidia-cutlass-dsl-libs-base==4.8.1->nvidia-cutlass-dsl==4.8.1->nvidia-cutlass-dsl[cu13]==4.8.1->-r /.requirements.txt (line 22))
+  Downloading http://pypi-mirror.modal.local:5555/simple/nvidia-cutlass-dsl-libs-core/nvidia_cutlass_dsl_libs_core-4.8.1-py3-none-any.whl.metadata (2.9 kB)
+Collecting cuda-pathfinder>=1.4.2 (from cuda-bindings<14,>=13.0.3->torch==2.14.1+cu130->-r /.requirements.txt (line 5))
+  Downloading http://pypi-mirror.modal.local:5555/simple/cuda-pathfinder/cuda_pathfinder-1.8.6-py3-none-any.whl.metadata (1.9 kB)
+Collecting mpmath<1.4,>=1.1.0 (from sympy>=1.13.3->torch==2.14.1+cu130->-r /.requirements.txt (line 5))
+  Downloading mpmath-1.3.0-py3-none-any.whl.metadata (8.6 kB)
+Collecting MarkupSafe>=2.0 (from jinja2->torch==2.14.1+cu130->-r /.requirements.txt (line 5))
+  Downloading http://pypi-mirror.modal.local:5555/simple/markupsafe/markupsafe-3.0.4-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.7 kB)
+Downloading https://download-r2.pytorch.org/whl/cu130/torch-2.14.1%2Bcu130-cp312-cp312-manylinux_2_28_x86_64.whl (554.6 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 554.6/554.6 MB 100.3 MB/s eta 0:00:00
+Downloading http://pypi-mirror.modal.local:5555/simple/cuda-tile/cuda_tile-1.8.0-cp312-cp312-manylinux2014_x86_64.whl (534 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 534.5/534.5 kB 162.4 MB/s eta 0:00:00
+Downloading http://pypi-mirror.modal.local:5555/simple/nvidia-cuda-tileiras/nvidia_cuda_tileiras-13.3.36-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (37.1 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 37.1/37.1 MB 124.6 MB/s eta 0:00:00
+Downloading http://pypi-mirror.modal.local:5555/simple/nvidia-cuda-nvcc/nvidia_cuda_nvcc-13.3.73-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (44.9 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 44.9/44.9 MB 123.5 MB/s eta 0:00:00
+Downloading http://pypi-mirror.modal.local:5555/simple/nvidia-cuda-crt/nvidia_cuda_crt-13.3.73-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (157 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 157.4/157.4 kB 178.7 MB/s eta 0:00:00
+Downloading http://pypi-mirror.modal.local:5555/simple/nvidia-nvvm/nvidia_nvvm-13.3.73-py3-none-manylinux2010_x86_64.manylinux_2_12_x86_64.whl (69.3 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 69.3/69.3 MB 113.2 MB/s eta 0:00:00
+Downloading http://pypi-mirror.modal.local:5555/simple/tilelang/tilelang-0.1.15-cp39-abi3-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (49.6 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 49.6/49.6 MB 106.2 MB/s eta 0:00:00
+Downloading http://pypi-mirror.modal.local:5555/simple/nvidia-cutlass-dsl/nvidia_cutlass_dsl-4.8.1-py3-none-any.whl (10 kB)
+Downloading http://pypi-mirror.modal.local:5555/simple/nvidia-cutlass-dsl-libs-base/nvidia_cutlass_dsl_libs_base-4.8.1-cp312-cp312-manylinux_2_28_x86_64.whl (3.1 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.1/3.1 MB 106.8 MB/s eta 0:00:00
+Downloading http://pypi-mirror.modal.local:5555/simple/nvidia-cutlass-dsl-libs-cu12/nvidia_cutlass_dsl_libs_cu12-4.8.1-cp312-cp312-manylinux_2_28_x86_64.whl (91.7 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 91.7/91.7 MB 56.6 MB/s eta 0:00:00
+Downloading http://pypi-mirror.modal.local:5555/simple/nvidia-cutlass-dsl-libs-cu13/nvidia_cutlass_dsl_libs_cu13-4.8.1-cp312-cp312-manylinux_2_28_x86_64.whl (92.0 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 92.0/92.0 MB 108.7 MB/s eta 0:00:00
+Downloading nvidia_nccl_cu13-2.30.7-py3-none-manylinux_2_18_x86_64.whl (216.0 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 216.0/216.0 MB 99.2 MB/s eta 0:00:00
+Downloading http://pypi-mirror.modal.local:5555/simple/nvidia-cutlass-dsl-libs-core/nvidia_cutlass_dsl_libs_core-4.8.1-py3-none-any.whl (1.6 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.6/1.6 MB 108.7 MB/s eta 0:00:00
+Downloading https://download-r2.pytorch.org/whl/triton-3.8.0-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (246.8 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 246.8/246.8 MB 124.7 MB/s eta 0:00:00
+Downloading numpy-2.5.4-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (16.7 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 16.7/16.7 MB 99.7 MB/s eta 0:00:00
+Downloading http://pypi-mirror.modal.local:5555/simple/ninja/ninja-1.13.2-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (183 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 183.4/183.4 kB 184.2 MB/s eta 0:00:00
+Downloading http://pypi-mirror.modal.local:5555/simple/apache-tvm-ffi/apache_tvm_ffi-0.1.12-cp312-abi3-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl (2.7 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.7/2.7 MB 115.4 MB/s eta 0:00:00
+Downloading http://pypi-mirror.modal.local:5555/simple/cuda-bindings/cuda_bindings-13.5.0-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl (8.4 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 8.4/8.4 MB 202.9 MB/s eta 0:00:00
+Downloading fsspec-2026.9.0-py3-none-any.whl (221 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 221.7/221.7 kB 132.6 MB/s eta 0:00:00
+Downloading networkx-3.7-py3-none-any.whl (2.1 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.1/2.1 MB 119.4 MB/s eta 0:00:00
+Downloading http://pypi-mirror.modal.local:5555/simple/setuptools/setuptools-84.2.1-py3-none-any.whl (876 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 876.3/876.3 kB 197.1 MB/s eta 0:00:00
+Downloading sympy-1.14.0-py3-none-any.whl (6.3 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6.3/6.3 MB 109.3 MB/s eta 0:00:00
+Downloading http://pypi-mirror.modal.local:5555/simple/tqdm/tqdm-4.70.1-py3-none-any.whl (80 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 80.2/80.2 kB 182.0 MB/s eta 0:00:00
+Downloading typing_extensions-4.16.0-py3-none-any.whl (45 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 45.6/45.6 kB 116.3 MB/s eta 0:00:00
+Downloading http://pypi-mirror.modal.local:5555/simple/z3-solver/z3_solver-4.15.4.0-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (29.3 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 29.3/29.3 MB 220.5 MB/s eta 0:00:00
+Downloading http://pypi-mirror.modal.local:5555/simple/cloudpickle/cloudpickle-3.1.2-py3-none-any.whl (22 kB)
+Downloading http://pypi-mirror.modal.local:5555/simple/filelock/filelock-4.2.9-py3-none-any.whl (164 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 164.7/164.7 kB 191.3 MB/s eta 0:00:00
+Downloading https://download.pytorch.org/whl/jinja2-3.1.6-py3-none-any.whl (134 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 134.9/134.9 kB 134.1 MB/s eta 0:00:00
+Downloading http://pypi-mirror.modal.local:5555/simple/ml-dtypes/ml_dtypes-0.6.0-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (409 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 409.9/409.9 kB 209.7 MB/s eta 0:00:00
+Downloading http://pypi-mirror.modal.local:5555/simple/psutil/psutil-7.2.2-cp36-abi3-manylinux2010_x86_64.manylinux_2_12_x86_64.manylinux_2_28_x86_64.whl (155 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 155.6/155.6 kB 185.9 MB/s eta 0:00:00
+Downloading http://pypi-mirror.modal.local:5555/simple/torch-c-dlpack-ext/torch_c_dlpack_ext-0.1.5-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl (897 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 897.8/897.8 kB 214.3 MB/s eta 0:00:00
+Downloading http://pypi-mirror.modal.local:5555/simple/cuda-pathfinder/cuda_pathfinder-1.8.6-py3-none-any.whl (62 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 62.6/62.6 kB 192.1 MB/s eta 0:00:00
+Downloading http://pypi-mirror.modal.local:5555/simple/markupsafe/markupsafe-3.0.4-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (22 kB)
+Downloading mpmath-1.3.0-py3-none-any.whl (536 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 536.2/536.2 kB 135.4 MB/s eta 0:00:00
+Downloading http://pypi-mirror.modal.local:5555/simple/protobuf/protobuf-7.36.2-cp310-abi3-manylinux2014_x86_64.whl (343 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 343.2/343.2 kB 211.5 MB/s eta 0:00:00
+Installing collected packages: z3-solver, nvidia-cusparselt-cu13, mpmath, cuda-toolkit, typing-extensions, triton, tqdm, sympy, setuptools, psutil, protobuf, nvidia-nvvm, nvidia-nvtx, nvidia-nvshmem-cu13, nvidia-nvjitlink, nvidia-nccl-cu13, nvidia-curand, nvidia-cufile, nvidia-cuda-runtime, nvidia-cuda-nvrtc, nvidia-cuda-cupti, nvidia-cuda-crt, numpy, ninja, networkx, MarkupSafe, fsspec, filelock, cuda-pathfinder, cloudpickle, nvidia-cusparse, nvidia-cufft, nvidia-cuda-nvcc, nvidia-cublas, ml-dtypes, jinja2, cuda-tile, cuda-bindings, apache-tvm-ffi, nvidia-cutlass-dsl-libs-core, nvidia-cusolver, nvidia-cudnn-cu13, nvidia-cuda-tileiras, nvidia-cutlass-dsl-libs-base, torch, nvidia-cutlass-dsl-libs-cu13, nvidia-cutlass-dsl-libs-cu12, torch-c-dlpack-ext, nvidia-cutlass-dsl, tilelang
+  Attempting uninstall: setuptools
+    Found existing installation: setuptools 69.0.3
+    Uninstalling setuptools-69.0.3:
+      Successfully uninstalled setuptools-69.0.3
+Successfully installed MarkupSafe-3.0.4 apache-tvm-ffi-0.1.12 cloudpickle-3.1.2 cuda-bindings-13.5.0 cuda-pathfinder-1.8.6 cuda-tile-1.8.0 cuda-toolkit-13.0.3.0 filelock-4.2.9 fsspec-2026.9.0 jinja2-3.1.6 ml-dtypes-0.6.0 mpmath-1.3.0 networkx-3.7 ninja-1.13.2 numpy-2.5.4 nvidia-cublas-13.1.1.3 nvidia-cuda-crt-13.3.73 nvidia-cuda-cupti-13.0.85 nvidia-cuda-nvcc-13.3.73 nvidia-cuda-nvrtc-13.0.88 nvidia-cuda-runtime-13.0.96 nvidia-cuda-tileiras-13.3.36 nvidia-cudnn-cu13-9.24.0.43 nvidia-cufft-12.0.0.61 nvidia-cufile-1.15.1.6 nvidia-curand-10.4.0.35 nvidia-cusolver-12.0.4.66 nvidia-cusparse-12.6.3.3 nvidia-cusparselt-cu13-0.8.1 nvidia-cutlass-dsl-4.8.1 nvidia-cutlass-dsl-libs-base-4.8.1 nvidia-cutlass-dsl-libs-core-4.8.1 nvidia-cutlass-dsl-libs-cu12-4.8.1 nvidia-cutlass-dsl-libs-cu13-4.8.1 nvidia-nccl-cu13-2.30.7 nvidia-nvjitlink-13.3.33 nvidia-nvshmem-cu13-3.4.5 nvidia-nvtx-13.0.85 nvidia-nvvm-13.3.73 protobuf-7.36.2 psutil-7.2.2 setuptools-84.2.1 sympy-1.14.0 tilelang-0.1.15 torch-2.14.1+cu130 torch-c-dlpack-ext-0.1.5 tqdm-4.70.1 triton-3.8.0 typing-extensions-4.16.0 z3-solver-4.15.4.0
+
+[notice] A new release of pip is available: 23.3.2 -> 26.3
+[notice] To update, run: pip install --upgrade pip
+Saving image...
+Image saved, took 4.77s
+
+Built image im-EMVmgKSnLeN3N3myGG35CV in 156.57s
+
+
+Building image im-aBtUChfr0yrsAWxSpfC4WL
+
+=> Step 0: FROM base
+
+=> Step 1: ENV CUDA_HOME=/usr/local/cuda
+
+=> Step 2: ENV TORCH_CUDA_ARCH_LIST=9.0
+Saving image...
+Image saved, took 1.56s
+
+Built image im-aBtUChfr0yrsAWxSpfC4WL in 3.91s
+
+
+✓ Created objects.
+├── ✓ Uploaded 
+│   <repo>/AgenticRL-CUDA-kernels/cloud/mo
+│   dal_runtime.py
+├── ✓ Uploaded 
+│   <repo>/AgenticRL-CUDA-kernels
+├── ✓ Created Function preflight.
+└── ✓ Created Function gpu_tests.
+{
+  "runtime/python": "3.12.1",
+  "runtime/python_ok": true,
+  "runtime/gpu_count": 1,
+  "runtime/gpu0_name": "NVIDIA H200",
+  "runtime/gpu0_compute_cap": "9.0",
+  "runtime/gpu0_uuid": "GPU-a0503b16-ad8c-1cec-42c5-b1aa8de79513",
+  "runtime/driver_version": "610.57.04",
+  "runtime/driver_ok": true,
+  "runtime/gpu0_cutile_supported": true,
+  "runtime/nvcc_version": "13.3",
+  "runtime/nvcc_ok": true,
+  "runtime/ninja": "/usr/local/bin/ninja",
+  "runtime/tileiras_version": "13.3.36",
+  "runtime/tileiras_ok": true,
+  "runtime/tileiras_reason": null,
+  "runtime/cuda_tile_version": "1.8.0",
+  "runtime/torch_version": "2.14.1+cu130",
+  "runtime/torch_cuda_build": true,
+  "runtime/triton_version": "3.8.0",
+  "runtime/tilelang_version": "0.1.15",
+  "runtime/cutlass_dsl_version": "4.8.1",
+  "runtime/cuda_bindings_version": "13.5.0",
+  "runtime/nsys": "/usr/local/bin/nsys",
+  "runtime/ncu": "/usr/local/cuda/bin/ncu",
+  "runtime/compute_sanitizer": "/usr/local/cuda/bin/compute-sanitizer",
+  "runtime/ok_cuda_backend": true,
+  "runtime/ok_triton_backend": true,
+  "runtime/ok_cutile": true,
+  "runtime/ok_tilelang": true,
+  "runtime/ok_cutedsl": true,
+  "runtime/unavailable_reason": null,
+  "nvidia_smi": "Fri Nov  6 14:27:43 2026       \n+-----------------------------------------------------------------------------------------+\n| NVIDIA-SMI 610.57.04              KMD Version: 610.57.04     CUDA UMD Version: 13.3     |\n+-----------------------------------------+------------------------+----------------------+\n| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n|                                         |                        |               MIG M. |\n|=========================================+========================+======================|\n|   0  NVIDIA H200                    On  |   00000000:59:00.0 Off |                    0 |\n| N/A   44C    P0             77W /  700W |       4MiB / 143771MiB |      0%      Default |\n|                                         |                        |             Disabled |\n+-----------------------------------------+------------------------+----------------------+\n\n+-----------------------------------------------------------------------------------------+\n| Processes:                                                                              |\n|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |\n|        ID   ID                                                               Usage      |\n|=========================================================================================|\n|  No running processes found                                                             |\n+-----------------------------------------------------------------------------------------+\n",
+  "run_id": "20261106T142735Z"
+}
+Stopping app - local entrypoint completed.
+✓ App completed. View run at 
+https://modal.com/apps/<workspace>/main/ap-kc56GC9W9x91EiZva7ENr6

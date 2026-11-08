@@ -1,0 +1,70 @@
+✓ Initialized. View run at 
+https://modal.com/apps/<workspace>/main/ap-FCSZIFwP1UXy50Na8SIhU4
+Building image im-EMVmgKSnLeN3N3myGG35CV
+
+=> Step 0: FROM base
+
+=> Step 1: COPY /.requirements.txt /.requirements.txt
+
+=> Step 2: RUN python -m pip install -r /.requirements.txt
+Looking in indexes: http://pypi-mirror.modal.local:5555/simple, https://download.pytorch.org/whl/cu130
+Stopping app - uncaught exception raised locally: ExecutionError('<repo>/AgenticRL-CUDA-kernels/artifacts/modal-preflight-rebuild.log was modified during build process.').
+Collecting torch==2.14.1+cu130 (from -r /.requirements.txt (line 5))
+  Downloading https://download-r2.pytorch.org/whl/cu130/torch-2.14.1%2Bcu130-cp312-cp312-manylinux_2_28_x86_64.whl.metadata (37 kB)
+Collecting triton>=3.0 (from -r /.requirements.txt (line 6))
+  Downloading https://download-r2.pytorch.org/whl/triton-3.9.0-cp312-abi3-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (978 bytes)
+Collecting numpy>=1.26 (from -r /.requirements.txt (line 7))
+  Downloading numpy-2.5.4-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (6.6 kB)
+Collecting ninja>=1.11 (from -r /.requirements.txt (line 8))
+  Downloading http://pypi-mirror.modal.local:5555/simple/ninja/ninja-1.13.2-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (5.4 kB)
+Collecting cuda-tile==1.8.0 (from -r /.requirements.txt (line 11))
+  Downloading http://pypi-mirror.modal.local:5555/simple/cuda-tile/cuda_tile-1.8.0-cp312-cp312-manylinux2014_x86_64.whl.metadata (7.3 kB)
+Collecting nvidia-cuda-tileiras==13.3.36 (from -r /.requirements.txt (line 14))
+  Downloading http://pypi-mirror.modal.local:5555/simple/nvidia-cuda-tileiras/nvidia_cuda_tileiras-13.3.36-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (1.9 kB)
+Collecting nvidia-cuda-nvcc==13.3.73 (from -r /.requirements.txt (line 15))
+  Downloading http://pypi-mirror.modal.local:5555/simple/nvidia-cuda-nvcc/nvidia_cuda_nvcc-13.3.73-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (1.9 kB)
+Collecting nvidia-cuda-crt==13.3.73 (from -r /.requirements.txt (line 16))
+  Downloading http://pypi-mirror.modal.local:5555/simple/nvidia-cuda-crt/nvidia_cuda_crt-13.3.73-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (1.7 kB)
+Collecting nvidia-nvvm==13.3.73 (from -r /.requirements.txt (line 17))
+  Downloading http://pypi-mirror.modal.local:5555/simple/nvidia-nvvm/nvidia_nvvm-13.3.73-py3-none-manylinux2010_x86_64.manylinux_2_12_x86_64.whl.metadata (1.7 kB)
+Collecting nvidia-nvjitlink==13.3.33 (from -r /.requirements.txt (line 18))
+  Downloading https://pypi.nvidia.com/nvidia-nvjitlink/nvidia_nvjitlink-13.3.33-py3-none-manylinux2010_x86_64.manylinux_2_12_x86_64.whl (40.7 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 40.7/40.7 MB 118.6 MB/s eta 0:00:00
+Collecting tilelang==0.1.15 (from -r /.requirements.txt (line 21))
+  Downloading http://pypi-mirror.modal.local:5555/simple/tilelang/tilelang-0.1.15-cp39-abi3-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (27 kB)
+Collecting nvidia-cutlass-dsl==4.8.1 (from nvidia-cutlass-dsl[cu13]==4.8.1->-r /.requirements.txt (line 22))
+  Downloading http://pypi-mirror.modal.local:5555/simple/nvidia-cutlass-dsl/nvidia_cutlass_dsl-4.8.1-py3-none-any.whl.metadata (3.1 kB)
+Collecting filelock (from torch==2.14.1+cu130->-r /.requirements.txt (line 5))
+  Downloading http://pypi-mirror.modal.local:5555/simple/filelock/filelock-4.2.9-py3-none-any.whl.metadata (2.3 kB)
+Collecting typing-extensions>=4.10.0 (from torch==2.14.1+cu130->-r /.requirements.txt (line 5))
+  Downloading typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)
+Collecting setuptools>=77.0.3 (from torch==2.14.1+cu130->-r /.requirements.txt (line 5))
+  Downloading http://pypi-mirror.modal.local:5555/simple/setuptools/setuptools-84.2.1-py3-none-any.whl.metadata (6.6 kB)
+Collecting sympy>=1.13.3 (from torch==2.14.1+cu130->-r /.requirements.txt (line 5))
+  Downloading sympy-1.14.0-py3-none-any.whl.metadata (12 kB)
+Collecting networkx>=2.5.1 (from torch==2.14.1+cu130->-r /.requirements.txt (line 5))
+  Downloading networkx-3.7-py3-none-any.whl.metadata (6.7 kB)
+Collecting jinja2 (from torch==2.14.1+cu130->-r /.requirements.txt (line 5))
+  Downloading https://download.pytorch.org/whl/jinja2-3.1.6-py3-none-any.whl.metadata (2.9 kB)
+Collecting fsspec>=0.8.5 (from torch==2.14.1+cu130->-r /.requirements.txt (line 5))
+  Downloading fsspec-2026.9.0-py3-none-any.whl.metadata (10 kB)
+Collecting cuda-toolkit==13.0.3 (from cuda-toolkit[cublas,cudart,cufft,cufile,cupti,curand,cusolver,cusparse,nvjitlink,nvrtc,nvtx]==13.0.3; platform_system == "Linux"->torch==2.14.1+cu130->-r /.requirements.txt (line 5))
+  Downloading https://pypi.nvidia.com/cuda-toolkit/cuda_toolkit-13.0.3.0-py2.py3-none-any.whl (2.5 kB)
+Collecting cuda-bindings<14,>=13.0.3 (from torch==2.14.1+cu130->-r /.requirements.txt (line 5))
+  Downloading http://pypi-mirror.modal.local:5555/simple/cuda-bindings/cuda_bindings-13.5.0-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl.metadata (2.5 kB)
+Collecting nvidia-cudnn-cu13==9.24.0.43 (from torch==2.14.1+cu130->-r /.requirements.txt (line 5))
+  Downloading https://pypi.nvidia.com/nvidia-cudnn-cu13/nvidia_cudnn_cu13-9.24.0.43-py3-none-manylinux_2_27_x86_64.whl (553.1 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 553.1/553.1 MB 115.6 MB/s eta 0:00:00
+Collecting nvidia-cusparselt-cu13==0.8.1 (from torch==2.14.1+cu130->-r /.requirements.txt (line 5))
+  Downloading https://pypi.nvidia.com/nvidia-cusparselt-cu13/nvidia_cusparselt_cu13-0.8.1-py3-none-manylinux2014_x86_64.whl (170.1 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 170.1/170.1 MB 130.0 MB/s eta 0:00:00
+Collecting nvidia-nccl-cu13==2.30.7 (from torch==2.14.1+cu130->-r /.requirements.txt (line 5))
+  Downloading nvidia_nccl_cu13-2.30.7-py3-none-manylinux_2_18_x86_64.whl.metadata (2.1 kB)
+Collecting nvidia-nvshmem-cu13==3.4.5 (from torch==2.14.1+cu130->-r /.requirements.txt (line 5))
+  Downloading https://pypi.nvidia.com/nvidia-nvshmem-cu13/nvidia_nvshmem_cu13-3.4.5-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (60.4 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 60.4/60.4 MB 121.6 MB/s eta 0:00:00
+Collecting triton>=3.0 (from -r /.requirements.txt (line 6))
+╭─ Error ──────────────────────────────────────────────────────────────────────╮
+│ <repo>/AgenticRL-CUDA-kernels/artifact │
+│ s/modal-preflight-rebuild.log was modified during build process.             │
+╰──────────────────────────────────────────────────────────────────────────────╯

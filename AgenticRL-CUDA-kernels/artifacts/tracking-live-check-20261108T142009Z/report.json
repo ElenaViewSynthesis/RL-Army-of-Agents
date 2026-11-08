@@ -1008,7 +1008,7 @@
     },
     "status": "passed"
   },
-  "ui_review": "pending",
+  "ui_review": "user_confirmed",
   "status": "passed",
   "wandb_url": "https://forge.coreweave.com/wandb/elenamylocuda-gemma/CUDA-gen/runs/tracking-check-df6b74c7f55f4490"
 }

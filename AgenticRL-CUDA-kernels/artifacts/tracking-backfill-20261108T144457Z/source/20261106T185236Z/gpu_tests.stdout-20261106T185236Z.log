@@ -1,0 +1,146 @@
+2026-11-06 18:57:49  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:57:50  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:57:51  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:57:52  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:57:52  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:57:54  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:57:54  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:57:55  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:57:55  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:57:57  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:57:57  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:57:58  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:57:59  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:58:00  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:58:00  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:58:01  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:58:02  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:58:03  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:58:03  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:58:04  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:58:05  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:58:06  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:58:06  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:58:07  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:58:08  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:58:09  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:58:09  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:58:10  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:58:11  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:58:12  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:58:12  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:58:14  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:58:14  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:58:15  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:58:15  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:58:17  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:58:17  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:58:18  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:58:18  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:58:20  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:58:20  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:58:21  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:58:22  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:58:23  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:58:23  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:58:24  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:58:25  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:58:26  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:58:26  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:58:27  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:58:28  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:58:29  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:58:29  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:58:30  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:58:31  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:58:32  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:58:32  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:58:33  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:58:34  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:58:35  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:58:35  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:58:36  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:58:37  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:58:38  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:58:38  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:58:39  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:58:40  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:58:41  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:58:41  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:58:42  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:58:43  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:58:44  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:58:44  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:58:45  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:58:46  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:58:47  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:58:47  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:58:49  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:58:49  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:58:50  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:58:50  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:58:52  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:58:52  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:58:53  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:58:54  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:58:55  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:58:55  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:58:56  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:58:57  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:58:58  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:58:58  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:58:59  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:59:00  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:59:01  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:59:01  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:59:02  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:59:03  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:59:04  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:59:04  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:59:05  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:59:06  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:59:07  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:59:07  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:59:08  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:59:09  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:59:10  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:59:10  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:59:11  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:59:12  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:59:13  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:59:13  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:59:14  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:59:15  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:59:16  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:59:16  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:59:17  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:59:18  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:59:19  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:59:19  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:59:20  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:59:21  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:59:22  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:59:22  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:59:24  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:59:24  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:59:25  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:59:25  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:59:27  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:59:27  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:59:28  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:59:29  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:59:30  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:59:30  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:59:31  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:59:32  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:59:33  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:59:33  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:59:34  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:59:35  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:59:36  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:59:36  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:59:37  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:59:38  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:59:39  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+2026-11-06 18:59:39  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-06 18:59:41  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`

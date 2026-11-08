@@ -1,0 +1,115 @@
+{
+  "run_id": "preflight-rebuild-aborted",
+  "wandb_id": "h200-preflight-rebuild-aborted",
+  "url": "https://forge.coreweave.com/wandb/elenamylocuda-gemma/CUDA-gen/runs/h200-preflight-rebuild-aborted",
+  "state": "failed",
+  "config": {
+    "source_command": null,
+    "tracking/contract": "wandb-contract-v1",
+    "meta/provenance_rules": null,
+    "tracking/group_configs": null,
+    "tracking/rules_available": false,
+    "tracking/config_available": false,
+    "tracking/shares_available": false,
+    "tracking/candidates_available": false
+  },
+  "summary": {
+    "_runtime": 2,
+    "_step": 1,
+    "_timestamp": 1794149336.1240766,
+    "_wandb.runtime": 1,
+    "backends_measured": 0,
+    "cases": 0,
+    "kernels": {
+      "path": "media/table/kernels_0_58a9c8390c083f5e6810.table.json",
+      "size": 33,
+      "_type": "table-file",
+      "ncols": 1,
+      "nrows": 0,
+      "sha256": "58a9c8390c083f5e68109f4be6e905085a97a0afa2954e6cdc026ad410cf2c8d",
+      "log_mode": "IMMUTABLE",
+      "artifact_path": "wandb-client-artifact://lbe8fng935j15n8gl28xn9hf2sjwi4zaxp1mme5qtour6vkhi6nd6xi5a6ezuutfktb5jgf7sarv4sxw4t6gyw3pmftmvqglekzsidix8d1cbl5odxxflyukze0n54pw/kernels.table.json",
+      "_latest_artifact_path": "wandb-client-artifact://2pfqj57fcfr7kxdgrlpg2tpuge3v7nyn63zouyyb4f46998rxahimek5i4jwyr6tg3x3ahrelistcbtolejz4wlbup0ecs8mcq9epv1sb6l2x7zt2gff9kq4881eedea:latest/kernels.table.json"
+    },
+    "provenance_pass": 0,
+    "reward_positive": 0,
+    "rollouts": {
+      "path": "media/table/rollouts_0_051f21863ccac603cca9.table.json",
+      "size": 30,
+      "_type": "table-file",
+      "ncols": 1,
+      "nrows": 0,
+      "sha256": "051f21863ccac603cca9db54acac6ee35e5174af574e3735ccf29be53f6dc14c",
+      "log_mode": "IMMUTABLE",
+      "artifact_path": "wandb-client-artifact://nwz0ynp70lmb50masvfyhfkcgofxsai0rdwszm6i6zhflvfq8m5xc10ga128zsm1tjsd4b7ebl1wwratlcv9uxg3zko64mooxt9qehujyfbxk8u9gbnz80iowpgvkej1/rollouts.table.json",
+      "_latest_artifact_path": "wandb-client-artifact://q8zrb28i1syidvts7sia0fmzh7t9n5a7a1ymng5ng1wnhalsb8mykdiawtt6s90b2gffgzloec0luowqgdayp2a14ormlrzf2la08lov2qhia2fmcmxdhaj9immst16a:latest/rollouts.table.json"
+    },
+    "unavailable_backends": "",
+    "unmatched_agent_names_total": 0,
+    "verify_ok": 0
+  },
+  "latest_history": {
+    "_runtime": 2.774584409,
+    "iteration": 0,
+    "_timestamp": 1794149336.1240766,
+    "kernels": {
+      "path": "media/table/kernels_1_58a9c8390c083f5e6810.table.json",
+      "_latest_artifact_path": "wandb-client-artifact://t2sesmfm810fsfyw8mp8o62xap5cdjx2fm0zl6of1fnu4rjhh2ylinyphk72zl6a9wc5lgwtmy9fxqjqiwtg7wikg3qk59cq6idynyfeex9qbauavbjtp71yezcd67pj:latest/kernels.table.json",
+      "artifact_path": "wandb-client-artifact://9iqxe7j8aseisj1sn4lshdbr06y64kldg6kp0947aul6358uwhpa6yxaocwdoafuq7iku4lefs04mh5g74bh8pt1663s6nrwi8fiy879fxs3f272sl2m8ygrma2p7p10/kernels.table.json",
+      "ncols": 1,
+      "sha256": "58a9c8390c083f5e68109f4be6e905085a97a0afa2954e6cdc026ad410cf2c8d",
+      "size": 33,
+      "log_mode": "IMMUTABLE",
+      "_type": "table-file",
+      "nrows": 0
+    },
+    "_step": 1,
+    "rollouts": {
+      "log_mode": "IMMUTABLE",
+      "path": "media/table/rollouts_1_051f21863ccac603cca9.table.json",
+      "_latest_artifact_path": "wandb-client-artifact://p7632lwx5l1yk48522zl65vi7896u5utqshrwu9qorgapm3t4vj32x7491rjynijqqd1hkk35xtjyxka96sbg8tkw8barovpzx7ebcohndnlvesv0904upuw0ia50cve:latest/rollouts.table.json",
+      "artifact_path": "wandb-client-artifact://mkil5g6czu7vwvf5cvqjvslvwoh3upzxpovf562w6qp1p2t7wh0bsnbotwq5x5en3f754ijcatniy9ok0t2zut9k9v0d1mfgtsdw8cj3n4zrjbmayqzhwhq41nhie9xq/rollouts.table.json",
+      "sha256": "051f21863ccac603cca9db54acac6ee35e5174af574e3735ccf29be53f6dc14c",
+      "size": 30,
+      "_type": "table-file",
+      "ncols": 1,
+      "nrows": 0
+    }
+  },
+  "history_rows_including_preserved_legacy": 2,
+  "tables": {
+    "rollouts": {
+      "columns": [
+        "case"
+      ],
+      "data": []
+    },
+    "kernels": {
+      "columns": [
+        "backend"
+      ],
+      "data": []
+    }
+  },
+  "raw_artifact": "h200-preflight-rebuild-aborted:v1",
+  "raw_sha256": {
+    "modal-preflight-rebuild.log": "ddc61d9074f0af6e784a9df097545e67a665ddb0064899933056bfe89597427e"
+  },
+  "weave": {
+    "query": {
+      "$expr": {
+        "$eq": [
+          {
+            "$getField": "attributes.tracking_validation_id"
+          },
+          {
+            "$literal": "backfill-20261108T144457Z:preflight-rebuild-aborted"
+          }
+        ]
+      }
+    },
+    "calls": {},
+    "status": "passed"
+  },
+  "status": "passed"
+}

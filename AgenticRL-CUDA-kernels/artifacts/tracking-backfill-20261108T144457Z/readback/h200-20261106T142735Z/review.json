@@ -1,0 +1,115 @@
+{
+  "run_id": "20261106T142735Z",
+  "wandb_id": "h200-20261106T142735Z",
+  "url": "https://forge.coreweave.com/wandb/elenamylocuda-gemma/CUDA-gen/runs/h200-20261106T142735Z",
+  "state": "finished",
+  "config": {
+    "source_command": null,
+    "tracking/contract": "wandb-contract-v1",
+    "meta/provenance_rules": null,
+    "tracking/group_configs": null,
+    "tracking/rules_available": false,
+    "tracking/config_available": false,
+    "tracking/shares_available": false,
+    "tracking/candidates_available": false
+  },
+  "summary": {
+    "_runtime": 3,
+    "_step": 1,
+    "_timestamp": 1794149320.3215363,
+    "_wandb.runtime": 1,
+    "backends_measured": 0,
+    "cases": 0,
+    "kernels": {
+      "path": "media/table/kernels_0_58a9c8390c083f5e6810.table.json",
+      "size": 33,
+      "_type": "table-file",
+      "ncols": 1,
+      "nrows": 0,
+      "sha256": "58a9c8390c083f5e68109f4be6e905085a97a0afa2954e6cdc026ad410cf2c8d",
+      "log_mode": "IMMUTABLE",
+      "artifact_path": "wandb-client-artifact://9qls3r3ukjvr0vmh573ik2kkorewp7gh6hp6z2hbn6c71m5grpn5i28ba35qiwfn99mf33o54jd6d2mdsbzjcryt2cdf8vx2576frdu7xpyt5sf7qj0xst8kw8ev9q5n/kernels.table.json",
+      "_latest_artifact_path": "wandb-client-artifact://g942v1evbue3xy8fovz98ta9ef62sd3nrjuy47rpnuj9zlyyym7wi9ysesgf00vprbeh9frw5lnts80zp2wvrr4ab4jhdfcnjc0jeqrmp33ps3wtaav2d1j4n93wtqnv:latest/kernels.table.json"
+    },
+    "provenance_pass": 0,
+    "reward_positive": 0,
+    "rollouts": {
+      "path": "media/table/rollouts_0_051f21863ccac603cca9.table.json",
+      "size": 30,
+      "_type": "table-file",
+      "ncols": 1,
+      "nrows": 0,
+      "sha256": "051f21863ccac603cca9db54acac6ee35e5174af574e3735ccf29be53f6dc14c",
+      "log_mode": "IMMUTABLE",
+      "artifact_path": "wandb-client-artifact://6jqctib7emlog46ki44yuk8hab2kfejaj5pams3vniy6h4wnaayutcg0qtfo9kjnc3b5dl7ypfm7z7purpiq94jcxkjvbtb8j9qm7h0aaqijj7s885g5gvyc61twz8zh/rollouts.table.json",
+      "_latest_artifact_path": "wandb-client-artifact://apkpk8r1zg07wwgz3fimmmn21pvtkrl0vtg32y0erlqo2hohf7qd3s0h5mz4va0w5zrehrmk9rjff2d4ekf98z1dnet6qwcwqc0dfumkee7vpikvwmraoka0wvsczmx7:latest/rollouts.table.json"
+    },
+    "unavailable_backends": "",
+    "unmatched_agent_names_total": 0,
+    "verify_ok": 0
+  },
+  "latest_history": {
+    "_step": 1,
+    "rollouts": {
+      "size": 30,
+      "ncols": 1,
+      "log_mode": "IMMUTABLE",
+      "sha256": "051f21863ccac603cca9db54acac6ee35e5174af574e3735ccf29be53f6dc14c",
+      "artifact_path": "wandb-client-artifact://7epxdye96db9damwlsbflms05jq4mt5mgspqx7yqemd140qnjtsudtk7z56objmsfrwr0z2vcinnkchfcvk0wkez3ifx2s1kh1jil8ab01rkvodika9yw98c8tii8w81/rollouts.table.json",
+      "nrows": 0,
+      "_latest_artifact_path": "wandb-client-artifact://revrz3rggxy8mepvr0feq9s3od2o0i6x6a35jx3l2851fm5nvumrqiw7xq0cczwekdg5b5chtauxp2boetuxv1cv1hnsdyuanz06lt1z4pdiur2kq1e41renh3wrqk0z:latest/rollouts.table.json",
+      "path": "media/table/rollouts_1_051f21863ccac603cca9.table.json",
+      "_type": "table-file"
+    },
+    "_runtime": 2.984258671,
+    "iteration": 0,
+    "_timestamp": 1794149320.3215363,
+    "kernels": {
+      "_type": "table-file",
+      "sha256": "58a9c8390c083f5e68109f4be6e905085a97a0afa2954e6cdc026ad410cf2c8d",
+      "_latest_artifact_path": "wandb-client-artifact://ypic85mx7wv747nk10w6aj8968zrlk1k8kc8n9lwalbel0coklmrevhtwghe7d0fdjxa2s79qf3mwhgwo4j9vb6bti6ry2kjeurxtkshhvoo266mvy7m10j0m0fw5rw2:latest/kernels.table.json",
+      "nrows": 0,
+      "size": 33,
+      "artifact_path": "wandb-client-artifact://hibes0to3wbhr0tif3glr1xog750pvnjovzydu4np6iohwrxawk4g3g6yyhfa8rzlcw1dlw0jez6ffukv60b4f56umz2qwwlilo1q7mpgkj33aat63em8x2pf0snapjt/kernels.table.json",
+      "path": "media/table/kernels_1_58a9c8390c083f5e6810.table.json",
+      "log_mode": "IMMUTABLE",
+      "ncols": 1
+    }
+  },
+  "history_rows_including_preserved_legacy": 2,
+  "tables": {
+    "rollouts": {
+      "columns": [
+        "case"
+      ],
+      "data": []
+    },
+    "kernels": {
+      "columns": [
+        "backend"
+      ],
+      "data": []
+    }
+  },
+  "raw_artifact": "h200-20261106T142735Z:v1",
+  "raw_sha256": {
+    "modal-preflight-20261106T142735Z.log": "c0de59ef8108798c8e7e8044a2ff325cb319c109f845b65762a13710473e56ec"
+  },
+  "weave": {
+    "query": {
+      "$expr": {
+        "$eq": [
+          {
+            "$getField": "attributes.tracking_validation_id"
+          },
+          {
+            "$literal": "backfill-20261108T144457Z:20261106T142735Z"
+          }
+        ]
+      }
+    },
+    "calls": {},
+    "status": "passed"
+  },
+  "status": "passed"
+}

@@ -1,0 +1,115 @@
+{
+  "run_id": "build-im-u7ElhT76HK3e4MiGfUc5JZ",
+  "wandb_id": "h200-build-im-u7ElhT76HK3e4MiGfUc5JZ",
+  "url": "https://forge.coreweave.com/wandb/elenamylocuda-gemma/CUDA-gen/runs/h200-build-im-u7ElhT76HK3e4MiGfUc5JZ",
+  "state": "failed",
+  "config": {
+    "source_command": null,
+    "tracking/contract": "wandb-contract-v1",
+    "meta/provenance_rules": null,
+    "tracking/group_configs": null,
+    "tracking/rules_available": false,
+    "tracking/config_available": false,
+    "tracking/shares_available": false,
+    "tracking/candidates_available": false
+  },
+  "summary": {
+    "_runtime": 7,
+    "_step": 1,
+    "_timestamp": 1794149313.1322615,
+    "_wandb.runtime": 4,
+    "backends_measured": 0,
+    "cases": 0,
+    "kernels": {
+      "path": "media/table/kernels_0_58a9c8390c083f5e6810.table.json",
+      "size": 33,
+      "_type": "table-file",
+      "ncols": 1,
+      "nrows": 0,
+      "sha256": "58a9c8390c083f5e68109f4be6e905085a97a0afa2954e6cdc026ad410cf2c8d",
+      "log_mode": "IMMUTABLE",
+      "artifact_path": "wandb-client-artifact://w7u7681bvo5ddknweoc4mfiyix5ioaw8salv8i7jqr5hfy681f6414fj2344y9lshzyw0seepd9jh7r1ykrylq92vpyns33royi9l2vqjx3wf9iww4pdtezkmxvsh9i1/kernels.table.json",
+      "_latest_artifact_path": "wandb-client-artifact://rvrktu5kedv5zey37r5ggpg1bsu8etas3bw7t7w2zzn15vd4k8di7b9g0sdbjs7euvsgz832rnykhrn82s86dwfr2bjwcjsj9c3usv13w0nzglfpzqfhnjfu0id7mpte:latest/kernels.table.json"
+    },
+    "provenance_pass": 0,
+    "reward_positive": 0,
+    "rollouts": {
+      "path": "media/table/rollouts_0_051f21863ccac603cca9.table.json",
+      "size": 30,
+      "_type": "table-file",
+      "ncols": 1,
+      "nrows": 0,
+      "sha256": "051f21863ccac603cca9db54acac6ee35e5174af574e3735ccf29be53f6dc14c",
+      "log_mode": "IMMUTABLE",
+      "artifact_path": "wandb-client-artifact://oqah4ubpjddvgw1a7w46c1e9xy0609rs01p60nvrq01o50taj29zmsx1kq1z925f6p6plewgp4anfqqc44hwokj0bmvg782jdnawevvesu937iah36gev07n954gehmy/rollouts.table.json",
+      "_latest_artifact_path": "wandb-client-artifact://taf7uijbuz9qs5r75s15m11im8ovchxutluj06bfuznglctnz6577ducdmi78b87zt9wiioy05kxlw317kbfzsv36fagbepfwckf71g79s4zeq59ft8z9dvd4y6vz4u4:latest/rollouts.table.json"
+    },
+    "unavailable_backends": "",
+    "unmatched_agent_names_total": 0,
+    "verify_ok": 0
+  },
+  "latest_history": {
+    "kernels": {
+      "sha256": "58a9c8390c083f5e68109f4be6e905085a97a0afa2954e6cdc026ad410cf2c8d",
+      "size": 33,
+      "artifact_path": "wandb-client-artifact://q64xmgbzz8eb0mot66vj55phruq76dz5286qf74kv1w9wl3m1st2xijd4ca2saez3ukpylzje84e5d5rxndqtodw7zimwhvg8ku6qc88p6h3eww8twwefk018mwfnmj5/kernels.table.json",
+      "_latest_artifact_path": "wandb-client-artifact://pl7lsgor126d9fdkzaxhml57hxm5e0li3v5ahmeobxp3dgol2cjbw9w9qlhspqcnn61xcjnjk4jxk140tzxvk35jtcw40aht3ast1hx239qyl60xjww1hlztppj89ry0:latest/kernels.table.json",
+      "_type": "table-file",
+      "log_mode": "IMMUTABLE",
+      "ncols": 1,
+      "nrows": 0,
+      "path": "media/table/kernels_1_58a9c8390c083f5e6810.table.json"
+    },
+    "_step": 1,
+    "rollouts": {
+      "size": 30,
+      "artifact_path": "wandb-client-artifact://1046282j9xmmta3p8d0k7p0q7kir5ozev4iyubqd7h8vj9rrekxqcyvsfhqgklchaoat14vir25w64zyoxudfxsgrdzpjs1jwx5ff2x8ijift22olw6zbhmsjrz74cky/rollouts.table.json",
+      "log_mode": "IMMUTABLE",
+      "_type": "table-file",
+      "ncols": 1,
+      "nrows": 0,
+      "_latest_artifact_path": "wandb-client-artifact://gujgq2ns4k92m3xbeh8k0y2jmh6wq7gu313ae5fo18br5r4gbtp3dtyy3a4qrks9ot3ryd7gtz9v3dnhb050goq3ca2ztprpfa8zeewulo1phexw2dj4bmzx28ip8cnv:latest/rollouts.table.json",
+      "sha256": "051f21863ccac603cca9db54acac6ee35e5174af574e3735ccf29be53f6dc14c",
+      "path": "media/table/rollouts_1_051f21863ccac603cca9.table.json"
+    },
+    "_runtime": 7.638320057,
+    "iteration": 0,
+    "_timestamp": 1794149313.1322615
+  },
+  "history_rows_including_preserved_legacy": 2,
+  "tables": {
+    "rollouts": {
+      "columns": [
+        "case"
+      ],
+      "data": []
+    },
+    "kernels": {
+      "columns": [
+        "backend"
+      ],
+      "data": []
+    }
+  },
+  "raw_artifact": "h200-build-im-u7ElhT76HK3e4MiGfUc5JZ:v0",
+  "raw_sha256": {
+    "modal-build-im-u7ElhT76HK3e4MiGfUc5JZ.log": "fce0ba894a4d269e16cfb8857e6d31c12cb0f357ee0713c531d18d32574ec2bd"
+  },
+  "weave": {
+    "query": {
+      "$expr": {
+        "$eq": [
+          {
+            "$getField": "attributes.tracking_validation_id"
+          },
+          {
+            "$literal": "backfill-20261108T144457Z:build-im-u7ElhT76HK3e4MiGfUc5JZ"
+          }
+        ]
+      }
+    },
+    "calls": {},
+    "status": "passed"
+  },
+  "status": "passed"
+}
