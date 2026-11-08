@@ -1,0 +1,89 @@
+Note that running a local entrypoint in detached mode only keeps the last triggered Modal function alive after the parent process has been killed or disconnected.
+✓ Initialized. View run at 
+https://modal.com/apps/elenamylocuda/main/ap-briMFYPGko0YWJbP6iYmQu
+✓ Created objects.
+├── ✓ Uploaded 
+│   /mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifact
+│   s/upstream.json
+├── ✓ Uploaded 
+│   /mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifact
+│   s/diagnostic-tool-probe-20261108T190503Z/probe_launcher.py
+├── ✓ Uploaded 
+│   /mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels
+└── ✓ Created Function tool_probe.
+{"function_call_id": "fc-01M6Y8VFDRSKP6MVXSJSSVJFHC"}
+{
+  "run_id": "20261108T190608Z",
+  "commands": [
+    {
+      "cmd": [
+        "compute-sanitizer",
+        "--version"
+      ],
+      "resolved": "/usr/local/cuda/bin/compute-sanitizer",
+      "returncode": 0
+    },
+    {
+      "cmd": [
+        "compute-sanitizer",
+        "--help"
+      ],
+      "resolved": "/usr/local/cuda/bin/compute-sanitizer",
+      "returncode": 0
+    },
+    {
+      "cmd": [
+        "nsys",
+        "--version"
+      ],
+      "resolved": "/usr/local/bin/nsys",
+      "returncode": 0
+    },
+    {
+      "cmd": [
+        "nsys",
+        "profile",
+        "--help"
+      ],
+      "resolved": "/usr/local/bin/nsys",
+      "returncode": 0
+    },
+    {
+      "cmd": [
+        "nsys",
+        "stats",
+        "--help"
+      ],
+      "resolved": "/usr/local/bin/nsys",
+      "returncode": 0
+    },
+    {
+      "cmd": [
+        "nsys",
+        "export",
+        "--help"
+      ],
+      "resolved": "/usr/local/bin/nsys",
+      "returncode": 0
+    },
+    {
+      "cmd": [
+        "ncu",
+        "--version"
+      ],
+      "resolved": "/usr/local/cuda/bin/ncu",
+      "returncode": 0
+    },
+    {
+      "cmd": [
+        "ncu",
+        "--help"
+      ],
+      "resolved": "/usr/local/cuda/bin/ncu",
+      "returncode": 0
+    }
+  ]
+}
+[modal-client] 2026-11-08T19:06:22+0000 Timed out waiting for final app logs.
+✓ App completed. View run at 
+https://modal.com/apps/elenamylocuda/main/ap-briMFYPGko0YWJbP6iYmQu

@@ -1,0 +1,75 @@
+{
+  "source_gpu_run_id": "20261108T192232Z",
+  "recovery_run_id": "20261108T194923Z",
+  "gpu_recaptured": false,
+  "complete": true,
+  "stages": [
+    {
+      "argv": [
+        "/opt/nvidia/nsight-compute/2026.2.1/host/linux-desktop-glibc_2_11_3-x64/QdstrmImporter",
+        "--input-file",
+        "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T194923Z/nsys-recovery/cases/24-nsys-cutile-capture/capture.qdstrm",
+        "--output-file",
+        "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T194923Z/nsys-recovery/cases/24-nsys-cutile-capture/capture.nsys-rep"
+      ],
+      "command": "/opt/nvidia/nsight-compute/2026.2.1/host/linux-desktop-glibc_2_11_3-x64/QdstrmImporter --input-file /__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T194923Z/nsys-recovery/cases/24-nsys-cutile-capture/capture.qdstrm --output-file /__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T194923Z/nsys-recovery/cases/24-nsys-cutile-capture/capture.nsys-rep",
+      "stdout": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T194923Z/nsys-recovery/cases/24-nsys-cutile-capture/import.stdout.log",
+      "stderr": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T194923Z/nsys-recovery/cases/24-nsys-cutile-capture/import.stderr.log",
+      "returncode": 0,
+      "timed_out": false,
+      "wall_s": 0.11791012100000131
+    },
+    {
+      "argv": [
+        "/usr/local/bin/nsys",
+        "export",
+        "--type=sqlite",
+        "--output",
+        "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T194923Z/nsys-recovery/cases/24-nsys-cutile-capture/capture.sqlite",
+        "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T194923Z/nsys-recovery/cases/24-nsys-cutile-capture/capture.nsys-rep"
+      ],
+      "command": "/usr/local/bin/nsys export --type=sqlite --output /__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T194923Z/nsys-recovery/cases/24-nsys-cutile-capture/capture.sqlite /__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T194923Z/nsys-recovery/cases/24-nsys-cutile-capture/capture.nsys-rep",
+      "stdout": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T194923Z/nsys-recovery/cases/24-nsys-cutile-capture/export.stdout.log",
+      "stderr": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T194923Z/nsys-recovery/cases/24-nsys-cutile-capture/export.stderr.log",
+      "returncode": 0,
+      "timed_out": false,
+      "wall_s": 0.13272153900000028
+    }
+  ],
+  "source_report_sha256": "7d035d8a81b1155c7c4ee7d0f51cd20c5c81a71c7f092478d1d95f97fce3f063",
+  "source_qdstrm_sha256": "05013ae4a3c50bb405a30e79ca40aff8afed93bd4453ef8b535a3d62dbcf76bd",
+  "versions": [
+    {
+      "argv": [
+        "/opt/nvidia/nsight-compute/2026.2.1/host/linux-desktop-glibc_2_11_3-x64/QdstrmImporter",
+        "--version"
+      ],
+      "command": "/opt/nvidia/nsight-compute/2026.2.1/host/linux-desktop-glibc_2_11_3-x64/QdstrmImporter --version",
+      "stdout": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T194923Z/nsys-recovery/importer_version.stdout.log",
+      "stderr": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T194923Z/nsys-recovery/importer_version.stderr.log",
+      "returncode": 0,
+      "timed_out": false,
+      "wall_s": 0.4234220340000001
+    },
+    {
+      "argv": [
+        "/usr/local/bin/nsys",
+        "--version"
+      ],
+      "command": "/usr/local/bin/nsys --version",
+      "stdout": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T194923Z/nsys-recovery/nsys_version.stdout.log",
+      "stderr": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T194923Z/nsys-recovery/nsys_version.stderr.log",
+      "returncode": 0,
+      "timed_out": false,
+      "wall_s": 0.21885716099999986
+    }
+  ],
+  "recovery_script_sha256": "590ad3cc00734b369db8d691e4143b330b66c155d7f1076c4096ef83a49c0f63",
+  "output_sha256": {
+    "capture.nsys-rep": "5c73468dfc8602e38fbb4d062204b467383174ac982cc8ff8bff4053570eec67",
+    "capture.sqlite": "f278c4009e1a482408badff5b5b74ae6fd0b4b0bc87bf141fc38fe68c2193356"
+  },
+  "base_receipt_sha256": "a3e3be9778cb4adedad1b276d2ef2c4c57687cbbf671caf48a84c05b1bf910df",
+  "processed_qdstrm_sha256": "2b4e9e47d5be1bb6a1cd471309a848b9169bdef0e4114fbb7eff999f39a64f55",
+  "input_mutation_observation": "Importer working copy differs from archived input; original GPU capture preserved separately."
+}

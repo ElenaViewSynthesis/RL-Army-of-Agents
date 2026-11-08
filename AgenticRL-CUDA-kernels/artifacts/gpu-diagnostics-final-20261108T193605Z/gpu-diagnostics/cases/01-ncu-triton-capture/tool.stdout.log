@@ -1,0 +1,6 @@
+==WARNING== Note: Running with unmodified GPU clocks. If not controlled otherwise, profiling results may be inconsistent.
+==PROF== Connected to process 255 (/usr/local/bin/python3)
+==PROF== Profiling "axpby_kernel": 0%....50%....100% - 10 passes
+{"diagnostic_only": true, "available": true, "completed": true, "mode": "capture", "backend": "triton", "reason": null, "gpu_name": "NVIDIA H200", "gpu_index": 0, "gpu_uuid": "e774783c-9885-d188-5045-b88ddc547021", "compute_capability": "9.0", "negative_control": false, "warmup_iters": 20, "capture_range": "agenticrl_generated", "captured_forwards": 1, "verification_checks": 2}
+==PROF== Disconnected from process 255
+==PROF== Report: /__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T193605Z/gpu-diagnostics/cases/01-ncu-triton-capture/capture.ncu-rep

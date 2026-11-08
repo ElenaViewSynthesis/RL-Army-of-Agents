@@ -1,0 +1,50 @@
+{
+  "run_id": "20261108T194045Z",
+  "commands": [
+    {
+      "argv": [
+        "test",
+        "-x",
+        "/usr/bin/ldd"
+      ],
+      "returncode": 0
+    },
+    {
+      "argv": [
+        "printenv",
+        "PATH"
+      ],
+      "returncode": 0
+    },
+    {
+      "argv": [
+        "/lib64/ld-linux-x86-64.so.2",
+        "--list",
+        "/opt/nvidia/nsight-compute/2026.2.1/host/linux-desktop-glibc_2_11_3-x64/QdstrmImporter"
+      ],
+      "returncode": 0
+    },
+    {
+      "argv": [
+        "/opt/nvidia/nsight-compute/2026.2.1/host/linux-desktop-glibc_2_11_3-x64/QdstrmImporter",
+        "--version"
+      ],
+      "returncode": 0
+    },
+    {
+      "argv": [
+        "/opt/nvidia/nsight-compute/2026.2.1/host/linux-desktop-glibc_2_11_3-x64/QdstrmImporter",
+        "--help"
+      ],
+      "returncode": 0
+    },
+    {
+      "argv": [
+        "dpkg",
+        "-s",
+        "libdw1"
+      ],
+      "returncode": 1
+    }
+  ]
+}

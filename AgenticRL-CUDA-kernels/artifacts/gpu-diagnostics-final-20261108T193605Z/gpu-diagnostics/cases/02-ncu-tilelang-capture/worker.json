@@ -1,0 +1,17 @@
+{
+  "diagnostic_only": true,
+  "available": true,
+  "completed": true,
+  "mode": "capture",
+  "backend": "tilelang",
+  "reason": null,
+  "gpu_name": "NVIDIA H200",
+  "gpu_index": 0,
+  "gpu_uuid": "e774783c-9885-d188-5045-b88ddc547021",
+  "compute_capability": "9.0",
+  "negative_control": false,
+  "warmup_iters": 20,
+  "capture_range": "agenticrl_generated",
+  "captured_forwards": 1,
+  "verification_checks": 2
+}

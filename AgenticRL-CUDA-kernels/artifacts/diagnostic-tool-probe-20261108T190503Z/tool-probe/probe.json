@@ -1,0 +1,72 @@
+{
+  "run_id": "20261108T190608Z",
+  "commands": [
+    {
+      "cmd": [
+        "compute-sanitizer",
+        "--version"
+      ],
+      "resolved": "/usr/local/cuda/bin/compute-sanitizer",
+      "returncode": 0
+    },
+    {
+      "cmd": [
+        "compute-sanitizer",
+        "--help"
+      ],
+      "resolved": "/usr/local/cuda/bin/compute-sanitizer",
+      "returncode": 0
+    },
+    {
+      "cmd": [
+        "nsys",
+        "--version"
+      ],
+      "resolved": "/usr/local/bin/nsys",
+      "returncode": 0
+    },
+    {
+      "cmd": [
+        "nsys",
+        "profile",
+        "--help"
+      ],
+      "resolved": "/usr/local/bin/nsys",
+      "returncode": 0
+    },
+    {
+      "cmd": [
+        "nsys",
+        "stats",
+        "--help"
+      ],
+      "resolved": "/usr/local/bin/nsys",
+      "returncode": 0
+    },
+    {
+      "cmd": [
+        "nsys",
+        "export",
+        "--help"
+      ],
+      "resolved": "/usr/local/bin/nsys",
+      "returncode": 0
+    },
+    {
+      "cmd": [
+        "ncu",
+        "--version"
+      ],
+      "resolved": "/usr/local/cuda/bin/ncu",
+      "returncode": 0
+    },
+    {
+      "cmd": [
+        "ncu",
+        "--help"
+      ],
+      "resolved": "/usr/local/cuda/bin/ncu",
+      "returncode": 0
+    }
+  ]
+}

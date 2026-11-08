@@ -1,0 +1,14 @@
+{
+  "diagnostic_only": true,
+  "available": true,
+  "completed": true,
+  "mode": "verify",
+  "backend": "triton",
+  "reason": null,
+  "gpu_name": "NVIDIA H200",
+  "gpu_index": 0,
+  "gpu_uuid": "e0ec297f-c080-41d7-d6cf-9da2a35d89ef",
+  "compute_capability": "9.0",
+  "negative_control": false,
+  "verification_checks": 5
+}

@@ -1,0 +1,72 @@
+{
+  "source_gpu_run_id": "20261108T192232Z",
+  "recovery_run_id": "20261108T194923Z",
+  "gpu_recaptured": false,
+  "complete": true,
+  "stages": [
+    {
+      "argv": [
+        "/opt/nvidia/nsight-compute/2026.2.1/host/linux-desktop-glibc_2_11_3-x64/QdstrmImporter",
+        "--input-file",
+        "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T194923Z/nsys-recovery/cases/22-nsys-triton-capture/capture.qdstrm",
+        "--output-file",
+        "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T194923Z/nsys-recovery/cases/22-nsys-triton-capture/capture.nsys-rep"
+      ],
+      "command": "/opt/nvidia/nsight-compute/2026.2.1/host/linux-desktop-glibc_2_11_3-x64/QdstrmImporter --input-file /__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T194923Z/nsys-recovery/cases/22-nsys-triton-capture/capture.qdstrm --output-file /__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T194923Z/nsys-recovery/cases/22-nsys-triton-capture/capture.nsys-rep",
+      "stdout": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T194923Z/nsys-recovery/cases/22-nsys-triton-capture/import.stdout.log",
+      "stderr": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T194923Z/nsys-recovery/cases/22-nsys-triton-capture/import.stderr.log",
+      "returncode": 0,
+      "timed_out": false,
+      "wall_s": 0.24425264600000052
+    },
+    {
+      "argv": [
+        "/usr/local/bin/nsys",
+        "export",
+        "--type=sqlite",
+        "--output",
+        "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T194923Z/nsys-recovery/cases/22-nsys-triton-capture/capture.sqlite",
+        "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T194923Z/nsys-recovery/cases/22-nsys-triton-capture/capture.nsys-rep"
+      ],
+      "command": "/usr/local/bin/nsys export --type=sqlite --output /__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T194923Z/nsys-recovery/cases/22-nsys-triton-capture/capture.sqlite /__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T194923Z/nsys-recovery/cases/22-nsys-triton-capture/capture.nsys-rep",
+      "stdout": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T194923Z/nsys-recovery/cases/22-nsys-triton-capture/export.stdout.log",
+      "stderr": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T194923Z/nsys-recovery/cases/22-nsys-triton-capture/export.stderr.log",
+      "returncode": 0,
+      "timed_out": false,
+      "wall_s": 0.13017408700000033
+    }
+  ],
+  "source_report_sha256": "70520c7dbb3fa80b6a69e76b596127b6d04481ae4be53bf51871ee22a7b50afd",
+  "source_qdstrm_sha256": "49d7d649a49715548cadd548ae38cd1c4efd3d445a1e45c893956139734aba60",
+  "versions": [
+    {
+      "argv": [
+        "/opt/nvidia/nsight-compute/2026.2.1/host/linux-desktop-glibc_2_11_3-x64/QdstrmImporter",
+        "--version"
+      ],
+      "command": "/opt/nvidia/nsight-compute/2026.2.1/host/linux-desktop-glibc_2_11_3-x64/QdstrmImporter --version",
+      "stdout": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T194923Z/nsys-recovery/importer_version.stdout.log",
+      "stderr": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T194923Z/nsys-recovery/importer_version.stderr.log",
+      "returncode": 0,
+      "timed_out": false,
+      "wall_s": 0.4234220340000001
+    },
+    {
+      "argv": [
+        "/usr/local/bin/nsys",
+        "--version"
+      ],
+      "command": "/usr/local/bin/nsys --version",
+      "stdout": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T194923Z/nsys-recovery/nsys_version.stdout.log",
+      "stderr": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T194923Z/nsys-recovery/nsys_version.stderr.log",
+      "returncode": 0,
+      "timed_out": false,
+      "wall_s": 0.21885716099999986
+    }
+  ],
+  "recovery_script_sha256": "590ad3cc00734b369db8d691e4143b330b66c155d7f1076c4096ef83a49c0f63",
+  "output_sha256": {
+    "capture.nsys-rep": "0af5cdb5f4fe75a1cfb04729cff17906309e994dca418e7c52d690d9f55e0186",
+    "capture.sqlite": "42fcd4500af0b3b80abfc32bb4d6109b37b0a2772130f2b49cc43a6a4702cda3"
+  }
+}

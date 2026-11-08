@@ -1,0 +1,18 @@
+{
+  "cmd": "python -m scripts.recover_nsys --input-dir /artifacts/20261108T192232Z/gpu-diagnostics --output-dir /artifacts/20261108T194923Z/nsys-recovery --importer /opt/nvidia/nsight-compute/2026.2.1/host/linux-desktop-glibc_2_11_3-x64/QdstrmImporter --recovery-run-id 20261108T194923Z",
+  "returncode": 0,
+  "timed_out": false,
+  "wall_s": 9.128724941,
+  "stdout_tail": "{\"case\": \"21-nsys-cuda-capture\", \"postprocessed\": true}\n{\"case\": \"22-nsys-triton-capture\", \"postprocessed\": true}\n{\"case\": \"23-nsys-tilelang-capture\", \"postprocessed\": true}\n{\"case\": \"24-nsys-cutile-capture\", \"postprocessed\": true}\n{\"case\": \"25-nsys-cutedsl-capture\", \"postprocessed\": true}\n",
+  "stderr_tail": "",
+  "dpkg": {
+    "argv": [
+      "dpkg-query",
+      "-W",
+      "-f=${binary:Package} ${Version}\n",
+      "libdw1t64",
+      "libelf1t64"
+    ],
+    "returncode": 0
+  }
+}

@@ -1,0 +1,5 @@
+{"case": "21-nsys-cuda-capture", "postprocessed": true}
+{"case": "22-nsys-triton-capture", "postprocessed": true}
+{"case": "23-nsys-tilelang-capture", "postprocessed": true}
+{"case": "24-nsys-cutile-capture", "postprocessed": true}
+{"case": "25-nsys-cutedsl-capture", "postprocessed": true}

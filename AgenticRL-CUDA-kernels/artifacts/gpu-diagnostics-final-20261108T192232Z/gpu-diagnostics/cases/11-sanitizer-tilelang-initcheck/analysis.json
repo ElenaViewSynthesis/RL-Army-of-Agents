@@ -1,0 +1,35 @@
+{
+  "schema": "gpu-diagnostic-review-v1",
+  "capture_report": "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifacts/gpu-diagnostics-final-20261108T192232Z/gpu-diagnostics/cases/11-sanitizer-tilelang-initcheck/report.json",
+  "diagnostic_only": true,
+  "reviewer_sha256": "000501276a5210f068c76ce0967c60fe4c3fa0fc27023fd1050a397ac6e5cbb2",
+  "capture_sha256": "93eba5cba14a715e5a19fa1740dc23e86c6269b3326e036b5958c252ddb84c66",
+  "result": {
+    "diag/tool": "sanitizer",
+    "diag/check": "initcheck",
+    "diag/backend": "tilelang",
+    "diag/status": "passed",
+    "diag/reason": "sanitizer_clean",
+    "diag/diagnostic_only": true,
+    "diag/evidence_reviewed": true,
+    "diag/negative_control": false,
+    "diag/seed": 0,
+    "diag/kernel_selector": null,
+    "diag/gpu_uuid": "e0ec297f-c080-41d7-d6cf-9da2a35d89ef",
+    "diag/gpu_name": "NVIDIA H200",
+    "diag/reported_errors": 0,
+    "diag/kernel_count": null,
+    "diag/wall_s": 7.003218783000008,
+    "diag/report_json": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T192232Z/gpu-diagnostics/cases/11-sanitizer-tilelang-initcheck/report.json",
+    "diag/review_json": "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifacts/gpu-diagnostics-final-20261108T192232Z/gpu-diagnostics/cases/11-sanitizer-tilelang-initcheck/analysis.json"
+  },
+  "observations": {},
+  "raw_sha256": {
+    "sanitizer.log": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425"
+  },
+  "limitations": [
+    "Coverage is limited to the recorded fixtures and runtime.",
+    "Name-based selectors are not proof of authorship.",
+    "Instrumented and replayed durations never feed rewards."
+  ]
+}

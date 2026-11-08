@@ -1,0 +1,35 @@
+{
+  "schema": "gpu-diagnostic-review-v1",
+  "capture_report": "artifacts/gpu-diagnostics-20261108T192232Z/cases/00-sanitizer-cuda-memcheck/report.json",
+  "diagnostic_only": true,
+  "reviewer_sha256": "02c184a5fa932173671a72be820bcdb493d5a575777243da879f66aa9da81d02",
+  "capture_sha256": "b621ed3baf9edaa7bfc0bf65d2373bda9dc1f5077e6bb68f5e2260c7e534bc66",
+  "result": {
+    "diag/tool": "sanitizer",
+    "diag/check": "memcheck",
+    "diag/backend": "cuda",
+    "diag/status": "passed",
+    "diag/reason": "sanitizer_clean",
+    "diag/diagnostic_only": true,
+    "diag/evidence_reviewed": true,
+    "diag/negative_control": false,
+    "diag/seed": 0,
+    "diag/kernel_selector": null,
+    "diag/gpu_uuid": "e0ec297f-c080-41d7-d6cf-9da2a35d89ef",
+    "diag/gpu_name": "NVIDIA H200",
+    "diag/reported_errors": 0,
+    "diag/kernel_count": null,
+    "diag/wall_s": 27.744568711,
+    "diag/report_json": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T192232Z/gpu-diagnostics/cases/00-sanitizer-cuda-memcheck/report.json",
+    "diag/review_json": "artifacts/gpu-diagnostics-20261108T192232Z/cases/00-sanitizer-cuda-memcheck/review.json"
+  },
+  "observations": {},
+  "raw_sha256": {
+    "sanitizer.log": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425"
+  },
+  "limitations": [
+    "Coverage is limited to the recorded fixtures and runtime.",
+    "Name-based selectors are not proof of authorship.",
+    "Instrumented and replayed durations never feed rewards."
+  ]
+}

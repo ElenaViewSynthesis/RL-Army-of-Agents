@@ -1,0 +1,80 @@
+Note that running a local entrypoint in detached mode only keeps the last triggered Modal function alive after the parent process has been killed or disconnected.
+✓ Initialized. View run at 
+https://modal.com/apps/elenamylocuda/main/ap-sJpqbWoBpkD2zk135EpJrR
+✓ Created objects.
+├── ✓ Uploaded 
+│   /mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifact
+│   s/upstream.json
+├── ✓ Uploaded 
+│   /mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifact
+│   s/diagnostic-nsys-importer-20261108T193058Z/importer_probe.py
+├── ✓ Uploaded 
+│   /mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels
+└── ✓ Created Function importer_probe.
+{"function_call_id": "fc-01M6YAA0CVWF7YB69PZWMEY76N"}
+Traceback (most recent call last):
+{"function_call_id": "fc-01M6YAA0CVWF7YB69PZWMEY76N", "error_type": "TypeError", "recovery": "python -m cloud.modal_job --call-id fc-01M6YAA0CVWF7YB69PZWMEY76N"}
+  File "/pkg/modal/_runtime/container_io_manager.py", line 987, in handle_input_exception
+    yield
+  File "/pkg/modal/_container_entrypoint.py", line 189, in run_input_sync
+    values = io_context.call_function_sync()
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/pkg/modal/_runtime/container_io_manager.py", line 266, in call_function_sync
+    expected_value_or_values = self.finalized_function.callable(*args, **kwargs)
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/importer_probe.py", line 70, in importer_probe
+    stderr = (out_dir / f"{index}-" + Path(str(path)).name + "-version.stderr.log")
+              ~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~
+TypeError: unsupported operand type(s) for +: 'PosixPath' and 'str'
+╭───────────────────── Traceback (most recent call last) ──────────────────────╮
+│ /mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifact │
+│ s/diagnostic-nsys-importer-20261108T193058Z/importer_probe.py:98 in main     │
+│                                                                              │
+│   97 │   run_id = time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())             │
+│ ❱ 98 │   print(json.dumps(wait_for_call(importer_probe.spawn(run_id)), inden │
+│   99                                                                         │
+│                                                                              │
+│ /mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/cloud/mo │
+│ dal_job.py:19 in wait_for_call                                               │
+│                                                                              │
+│   18 │   │   try:                                                            │
+│ ❱ 19 │   │   │   return call.get(timeout=30)                                 │
+│   20 │   │   except Exception as exc:                                        │
+│                                                                              │
+│ /mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/.venv/li │
+│ b/python3.13/site-packages/modal/_object.py:49 in wrapped                    │
+│                                                                              │
+│    48 │   │   await self.hydrate()                                           │
+│ ❱  49 │   │   return await method(self, *args, **kwargs)                     │
+│    50                                                                        │
+│                                                                              │
+│ /mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/.venv/li │
+│ b/python3.13/site-packages/modal/_functions.py:2424 in get                   │
+│                                                                              │
+│   2423 │   │   """                                                           │
+│ ❱ 2424 │   │   return await self._invocation().poll_function(timeout=timeout │
+│   2425                                                                       │
+│                                                                              │
+│ /mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/.venv/li │
+│ b/python3.13/site-packages/modal/_functions.py:350 in poll_function          │
+│                                                                              │
+│    349 │   │                                                                 │
+│ ❱  350 │   │   return await _process_result(                                 │
+│    351 │   │   │   response.outputs[0].result, response.outputs[0].data_form │
+│                                                                              │
+│ /mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/.venv/li │
+│ b/python3.13/site-packages/modal/_utils/function_utils.py:572 in             │
+│ _process_result                                                              │
+│                                                                              │
+│   571 │   │   │                                                              │
+│ ❱ 572 │   │   │   raise exc_with_hints(exc)                                  │
+│   573                                                                        │
+│                                                                              │
+│     ...Remote call to Modal Function (ta-01M6YAA196724Z95DAEN81EQ0R)...      │
+│                                                                              │
+│ /root/importer_probe.py:70 in importer_probe                                 │
+│                                                                              │
+│ ❱ 70 stderr = (out_dir / f"{index}-" + Path(str(path)).name + "-version.stde │
+│                                                                              │
+╰──────────────────────────────────────────────────────────────────────────────╯
+TypeError: unsupported operand type(s) for +: 'PosixPath' and 'str'

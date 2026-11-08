@@ -1,0 +1,58 @@
+Note that running a local entrypoint in detached mode only keeps the last triggered Modal function alive after the parent process has been killed or disconnected.
+✓ Initialized. View run at 
+https://modal.com/apps/elenamylocuda/main/ap-d0AUN5sKodebLhdqEIaqft
+✓ Created objects.
+├── ✓ Uploaded 
+│   /mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/cloud/mo
+│   dal_runtime.py
+├── ✓ Uploaded 
+│   /mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifact
+│   s/upstream.json
+├── ✓ Uploaded 
+│   /mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels
+├── ✓ Created Function preflight.
+├── ✓ Created Function gpu_tests.
+├── ✓ Created Function diagnose_timing.
+├── ✓ Created Function diagnose_order.
+└── ✓ Created Function gpu_diagnostics.
+{"function_call_id": "fc-01M6Y9SGQP2BE5934M51168JC5"}
+{
+  "runtime/python": "3.12.1",
+  "runtime/python_ok": true,
+  "runtime/gpu_count": 1,
+  "runtime/gpu0_name": "NVIDIA H200",
+  "runtime/gpu0_compute_cap": "9.0",
+  "runtime/gpu0_uuid": "GPU-bb73cd9a-c4d5-12e6-22e4-f11e26c13c97",
+  "runtime/driver_version": "610.57.04",
+  "runtime/driver_ok": true,
+  "runtime/gpu0_cutile_supported": true,
+  "runtime/nvcc_version": "13.3",
+  "runtime/nvcc_ok": true,
+  "runtime/ninja": "/usr/local/bin/ninja",
+  "runtime/tileiras_version": "13.3.36",
+  "runtime/tileiras_ok": true,
+  "runtime/tileiras_reason": null,
+  "runtime/cuda_tile_version": "1.8.0",
+  "runtime/torch_version": "2.14.1+cu130",
+  "runtime/torch_cuda_build": true,
+  "runtime/triton_version": "3.8.0",
+  "runtime/tilelang_version": "0.1.15",
+  "runtime/cutlass_dsl_version": "4.8.1",
+  "runtime/cuda_bindings_version": "13.5.0",
+  "runtime/nsys": "/usr/local/bin/nsys",
+  "runtime/ncu": "/usr/local/cuda/bin/ncu",
+  "runtime/compute_sanitizer": "/usr/local/cuda/bin/compute-sanitizer",
+  "runtime/ok_cuda_backend": true,
+  "runtime/ok_triton_backend": true,
+  "runtime/ok_cutile": true,
+  "runtime/ok_tilelang": true,
+  "runtime/ok_cutedsl": true,
+  "runtime/unavailable_reason": null,
+  "nvidia_smi": "Sun Nov  8 19:22:36 2026       \n+-----------------------------------------------------------------------------------------+\n| NVIDIA-SMI 610.57.04              KMD Version: 610.57.04     CUDA UMD Version: 13.3     |\n+-----------------------------------------+------------------------+----------------------+\n| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n|                                         |                        |               MIG M. |\n|=========================================+========================+======================|\n|   0  NVIDIA H200                    On  |   00000000:73:00.0 Off |                    0 |\n| N/A   32C    P0             76W /  700W |       4MiB / 143771MiB |      0%      Default |\n|                                         |                        |             Disabled |\n+-----------------------------------------+------------------------+----------------------+\n\n+-----------------------------------------------------------------------------------------+\n| Processes:                                                                              |\n|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |\n|        ID   ID                                                               Usage      |\n|=========================================================================================|\n|  No running processes found                                                             |\n+-----------------------------------------------------------------------------------------+\n",
+  "run_id": "20261108T192232Z"
+}
+{"function_call_id": "fc-01M6Y9SNYEDA1RTT8VKMRTR36T"}
+{"run_id": "20261108T192232Z", "completed": 1, "backend": "cuda", "tool": "sanitizer", "check": "memcheck", "status": "captured"}
+{"run_id": "20261108T192232Z", "completed": 5, "backend": "triton", "tool": "sanitizer", "check": "memcheck", "status": "captured"}
+{"run_id": "20261108T192232Z", "completed": 8, "backend": "triton", "tool": "sanitizer", "check": "initcheck", "status": "captured"}
+{"run_id": "20261108T192232Z", "completed": 12, "backend": "tilelang", "tool": "sanitizer", "check": "initcheck", "status": "captured"}

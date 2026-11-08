@@ -1,0 +1,79 @@
+{
+  "schema": "gpu-diagnostic-matrix-v1",
+  "run_id": "20261108T192232Z",
+  "recovery_run_id": "20261108T194923Z",
+  "diagnostic_only": true,
+  "source_directory": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T192232Z/gpu-diagnostics",
+  "source_manifest_sha256": "7f1ce88c44a884a56aaef9cb8033948be0fa3274d520de84bc1b9e000b7e33d2",
+  "planned": [
+    [
+      "nsys",
+      "cuda",
+      null,
+      false
+    ],
+    [
+      "nsys",
+      "triton",
+      null,
+      false
+    ],
+    [
+      "nsys",
+      "tilelang",
+      null,
+      false
+    ],
+    [
+      "nsys",
+      "cutile",
+      null,
+      false
+    ],
+    [
+      "nsys",
+      "cutedsl",
+      null,
+      false
+    ]
+  ],
+  "scope": [
+    "cuda",
+    "triton",
+    "tilelang",
+    "cutile",
+    "cutedsl"
+  ],
+  "tools": [
+    "nsys"
+  ],
+  "checks": [],
+  "versions": [
+    {
+      "argv": [
+        "/opt/nvidia/nsight-compute/2026.2.1/host/linux-desktop-glibc_2_11_3-x64/QdstrmImporter",
+        "--version"
+      ],
+      "command": "/opt/nvidia/nsight-compute/2026.2.1/host/linux-desktop-glibc_2_11_3-x64/QdstrmImporter --version",
+      "stdout": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T194923Z/nsys-recovery/importer_version.stdout.log",
+      "stderr": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T194923Z/nsys-recovery/importer_version.stderr.log",
+      "returncode": 0,
+      "timed_out": false,
+      "wall_s": 0.4234220340000001
+    },
+    {
+      "argv": [
+        "/usr/local/bin/nsys",
+        "--version"
+      ],
+      "command": "/usr/local/bin/nsys --version",
+      "stdout": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T194923Z/nsys-recovery/nsys_version.stdout.log",
+      "stderr": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T194923Z/nsys-recovery/nsys_version.stderr.log",
+      "returncode": 0,
+      "timed_out": false,
+      "wall_s": 0.21885716099999986
+    }
+  ],
+  "recovery_script_sha256": "590ad3cc00734b369db8d691e4143b330b66c155d7f1076c4096ef83a49c0f63",
+  "gpu_recaptured": false
+}

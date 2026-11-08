@@ -1,0 +1,7 @@
+{"diagnostic_only": true, "available": true, "completed": true, "mode": "capture", "backend": "cutile", "reason": null, "gpu_name": "NVIDIA H200", "gpu_index": 0, "gpu_uuid": "e0ec297f-c080-41d7-d6cf-9da2a35d89ef", "compute_capability": "9.0", "negative_control": false, "warmup_iters": 20, "capture_range": "agenticrl_generated", "captured_forwards": 1, "verification_checks": 2}
+Capture range started in the application.
+Capture range ended in the application.
+Generating '/tmp/nsys-report-7010.qdstrm'
+Processing events...
+Generated:
+	/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T192232Z/gpu-diagnostics/cases/24-nsys-cutile-capture/capture.qdstrm
