@@ -1,0 +1,92 @@
+========= COMPUTE-SANITIZER
+========= Invalid __global__ write of size 4 bytes
+=========     at diagnostic_invalid_store+0x70 in diagnostic_fault.py:7
+=========     by thread (0,0,0) in block (0,0,0)
+=========     Access to 0x2ac6f3404000 is out of bounds
+=========     and is 16381 bytes after the nearest allocation at 0x2ac6f3400000 of size 4 bytes
+=========     Saved host backtrace up to driver entry point at kernel launch time
+=========         Host Frame: launchKernel [0x8766] in cuda_utils.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame: cfunction_call in methodobject.c:548 [0x396f2b] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:2706 [0x3f00ed] in libpython3.12.so.1.0
+=========         Host Frame: _PyObject_Call_Prepend in call.c:508 [0x369435] in libpython3.12.so.1.0
+=========         Host Frame: slot_tp_call in typeobject.c:8769 [0x4a70e4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367f62] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:61 [0x36a5a4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367fdb] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: PyEval_EvalCode in ceval.c:578 [0x4ec30a] in libpython3.12.so.1.0
+=========         Host Frame: builtin_exec in bltinmodule.c.h:586 [0x4e9c42] in libpython3.12.so.1.0
+=========         Host Frame: cfunction_vectorcall_FASTCALL_KEYWORDS.llvm.4147701398511412712 in methodobject.c:438 [0x3968ce] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:2706 [0x3efbb3] in libpython3.12.so.1.0
+=========         Host Frame: PyEval_EvalCode in ceval.c:578 [0x4ec30a] in libpython3.12.so.1.0
+=========         Host Frame: run_mod.llvm.16864811076475348796 in pythonrun.c:1712 [0x52aaa6] in libpython3.12.so.1.0
+=========         Host Frame: PyRun_SimpleStringFlags in pythonrun.c:480 [0x52a75c] in libpython3.12.so.1.0
+=========         Host Frame: pymain_run_command in main.c:255 [0x53fc7d] in libpython3.12.so.1.0
+=========         Host Frame: Py_RunMain in main.c:709 [0x53f709] in libpython3.12.so.1.0
+=========         Host Frame: Py_BytesMain in main.c:763 [0x29a7d6] in libpython3.12.so.1.0
+=========         Host Frame:  [0x2a1c9] in libc.so.6
+=========         Host Frame: __libc_start_main [0x2a28a] in libc.so.6
+=========         Host Frame: _start [0x2010a8] in python
+=========         Host Frame: __call__ in driver.py:331
+=========         Host Frame: run in jit.py:779
+=========         Host Frame: <lambda> in jit.py:374
+=========         Host Frame: run in diagnostic_fault.py:15
+=========         Host Frame: main in diagnostic_worker.py:52
+========= 
+========= Program hit cudaErrorLaunchFailure (error 719) due to "unspecified launch failure" on CUDA API call to cudaDeviceSynchronize.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: c10::cuda::device_synchronize() [0x50c09] in libc10_cuda.so
+=========         Host Frame: THCPModule_cudaSynchronize(_object*, _object*) [0xf0b234] in libtorch_python.so
+=========         Host Frame: cfunction_vectorcall_NOARGS.llvm.4147701398511412712 in methodobject.c:481 [0x396967] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:2706 [0x3efbb3] in libpython3.12.so.1.0
+=========         Host Frame: PyEval_EvalCode in ceval.c:578 [0x4ec30a] in libpython3.12.so.1.0
+=========         Host Frame: builtin_exec in bltinmodule.c.h:586 [0x4e9c42] in libpython3.12.so.1.0
+=========         Host Frame: cfunction_vectorcall_FASTCALL_KEYWORDS.llvm.4147701398511412712 in methodobject.c:438 [0x3968ce] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:2706 [0x3efbb3] in libpython3.12.so.1.0
+=========         Host Frame: PyEval_EvalCode in ceval.c:578 [0x4ec30a] in libpython3.12.so.1.0
+=========         Host Frame: run_mod.llvm.16864811076475348796 in pythonrun.c:1712 [0x52aaa6] in libpython3.12.so.1.0
+=========         Host Frame: PyRun_SimpleStringFlags in pythonrun.c:480 [0x52a75c] in libpython3.12.so.1.0
+=========         Host Frame: pymain_run_command in main.c:255 [0x53fc7d] in libpython3.12.so.1.0
+=========         Host Frame: Py_RunMain in main.c:709 [0x53f709] in libpython3.12.so.1.0
+=========         Host Frame: Py_BytesMain in main.c:763 [0x29a7d6] in libpython3.12.so.1.0
+=========         Host Frame:  [0x2a1c9] in libc.so.6
+=========         Host Frame: __libc_start_main [0x2a28a] in libc.so.6
+=========         Host Frame: _start [0x2010a8] in python
+=========         Host Frame: synchronize in __init__.py:1281
+=========         Host Frame: run in diagnostic_fault.py:16
+=========         Host Frame: main in diagnostic_worker.py:52
+========= 
+========= Program hit cudaErrorLaunchFailure (error 719) due to "unspecified launch failure" on CUDA API call to cudaGetLastError.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame: c10::cuda::c10_cuda_check_implementation(int, char const*, char const*, unsigned int, bool, c10::cuda::CUDAErrorLogCapture*) [0x4f93e] in libc10_cuda.so
+=========         Host Frame: c10::cuda::device_synchronize() [0x50c2c] in libc10_cuda.so
+=========         Host Frame: THCPModule_cudaSynchronize(_object*, _object*) [0xf0b234] in libtorch_python.so
+=========         Host Frame: cfunction_vectorcall_NOARGS.llvm.4147701398511412712 in methodobject.c:481 [0x396967] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:2706 [0x3efbb3] in libpython3.12.so.1.0
+=========         Host Frame: PyEval_EvalCode in ceval.c:578 [0x4ec30a] in libpython3.12.so.1.0
+=========         Host Frame: builtin_exec in bltinmodule.c.h:586 [0x4e9c42] in libpython3.12.so.1.0
+=========         Host Frame: cfunction_vectorcall_FASTCALL_KEYWORDS.llvm.4147701398511412712 in methodobject.c:438 [0x3968ce] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:2706 [0x3efbb3] in libpython3.12.so.1.0
+=========         Host Frame: PyEval_EvalCode in ceval.c:578 [0x4ec30a] in libpython3.12.so.1.0
+=========         Host Frame: run_mod.llvm.16864811076475348796 in pythonrun.c:1712 [0x52aaa6] in libpython3.12.so.1.0
+=========         Host Frame: PyRun_SimpleStringFlags in pythonrun.c:480 [0x52a75c] in libpython3.12.so.1.0
+=========         Host Frame: pymain_run_command in main.c:255 [0x53fc7d] in libpython3.12.so.1.0
+=========         Host Frame: Py_RunMain in main.c:709 [0x53f709] in libpython3.12.so.1.0
+=========         Host Frame: Py_BytesMain in main.c:763 [0x29a7d6] in libpython3.12.so.1.0
+=========         Host Frame:  [0x2a1c9] in libc.so.6
+=========         Host Frame: __libc_start_main [0x2a28a] in libc.so.6
+=========         Host Frame: _start [0x2010a8] in python
+=========         Host Frame: synchronize in __init__.py:1281
+=========         Host Frame: run in diagnostic_fault.py:16
+=========         Host Frame: main in diagnostic_worker.py:52
+========= 
+========= CUDA API Error: Sticky error detected
+========= 
+========= Program hit cudaErrorLaunchFailure (error 719) due to "unspecified launch failure" on CUDA API call to cudaFree.
+========= 
+========= Program hit cudaErrorLaunchFailure (error 719) due to "unspecified launch failure" on CUDA API call to cudaGetLastError.
+========= 
+========= Error: process didn't terminate successfully
+========= Target application returned an error
+========= ERROR SUMMARY: 6 errors

@@ -1,0 +1,36 @@
+{
+  "schema": "gpu-diagnostic-review-v1",
+  "capture_report": "/tmp/h200-diagnostics-fixed-download/20261108T200118Z/gpu-diagnostics/cases/06-sanitizer-triton-synccheck/report.json",
+  "diagnostic_only": true,
+  "reviewer_sha256": "9010a72262f3a61888fcf09a50d201112298e1db02266d8be96efb486faa43cc",
+  "capture_sha256": "b0965e089d9ee70e729a3555a68b1876a4774a728c1ef500b1c47324048164a6",
+  "result": {
+    "diag/tool": "sanitizer",
+    "diag/check": "synccheck",
+    "diag/backend": "triton",
+    "diag/status": "passed",
+    "diag/reason": "sanitizer_clean",
+    "diag/diagnostic_only": true,
+    "diag/evidence_reviewed": true,
+    "diag/negative_control": false,
+    "diag/seed": 0,
+    "diag/clock_control": null,
+    "diag/kernel_selector": null,
+    "diag/gpu_uuid": "844206bf-7687-441d-4421-7e9166004dd0",
+    "diag/gpu_name": "NVIDIA H200",
+    "diag/reported_errors": 0,
+    "diag/kernel_count": null,
+    "diag/wall_s": 7.412449154000001,
+    "diag/report_json": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T200118Z/gpu-diagnostics/cases/06-sanitizer-triton-synccheck/report.json",
+    "diag/review_json": "/tmp/h200-diagnostics-fixed-download/20261108T200118Z/gpu-diagnostics/cases/06-sanitizer-triton-synccheck/reviewed.json"
+  },
+  "observations": {},
+  "raw_sha256": {
+    "sanitizer.log": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425"
+  },
+  "limitations": [
+    "Coverage is limited to the recorded fixtures and runtime.",
+    "Name-based selectors are not proof of authorship.",
+    "Instrumented and replayed durations never feed rewards."
+  ]
+}

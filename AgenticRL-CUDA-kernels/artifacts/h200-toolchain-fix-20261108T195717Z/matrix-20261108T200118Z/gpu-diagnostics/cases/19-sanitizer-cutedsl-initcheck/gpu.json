@@ -1,0 +1,13 @@
+{
+  "diagnostic_only": true,
+  "available": true,
+  "completed": true,
+  "mode": "probe",
+  "backend": "cutedsl",
+  "reason": null,
+  "gpu_name": "NVIDIA H200",
+  "gpu_index": 0,
+  "gpu_uuid": "844206bf-7687-441d-4421-7e9166004dd0",
+  "compute_capability": "9.0",
+  "negative_control": false
+}

@@ -1,0 +1,6 @@
+==WARNING== Note: Running with unmodified GPU clocks. If not controlled otherwise, profiling results may be inconsistent.
+==PROF== Connected to process 2358 (/usr/local/bin/python3)
+==PROF== Profiling "axpby_tilelang_kernel": 0%....50%....100% - 10 passes
+{"diagnostic_only": true, "available": true, "completed": true, "mode": "capture", "backend": "tilelang", "reason": null, "gpu_name": "NVIDIA H200", "gpu_index": 0, "gpu_uuid": "844206bf-7687-441d-4421-7e9166004dd0", "compute_capability": "9.0", "negative_control": false, "warmup_iters": 20, "capture_range": "agenticrl_generated", "captured_forwards": 1, "verification_checks": 2}
+==PROF== Disconnected from process 2358
+==PROF== Report: /__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T200118Z/gpu-diagnostics/cases/28-ncu-tilelang-capture/capture.ncu-rep

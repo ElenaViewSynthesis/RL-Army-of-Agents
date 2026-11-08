@@ -1,0 +1,3 @@
+2026-11-08 20:03:05  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:137): TileLang begins to compile kernel `axpby_tilelang` with `out_idx=-1`
+2026-11-08 20:03:07  [TileLang:tilelang.jit.kernel:INFO] (kernel.py:145): TileLang completes to compile kernel `axpby_tilelang`
+{"diagnostic_only": true, "available": true, "completed": true, "mode": "verify", "backend": "tilelang", "reason": null, "gpu_name": "NVIDIA H200", "gpu_index": 0, "gpu_uuid": "844206bf-7687-441d-4421-7e9166004dd0", "compute_capability": "9.0", "negative_control": false, "verification_checks": 5}

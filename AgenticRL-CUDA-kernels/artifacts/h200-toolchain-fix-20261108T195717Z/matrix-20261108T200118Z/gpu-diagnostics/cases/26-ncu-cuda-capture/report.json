@@ -1,0 +1,152 @@
+{
+  "schema": "gpu-diagnostics-v1",
+  "diagnostic_only": true,
+  "stages": [
+    {
+      "argv": [
+        "/usr/local/cuda/bin/ncu",
+        "--version"
+      ],
+      "command": "/usr/local/cuda/bin/ncu --version",
+      "stdout": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T200118Z/gpu-diagnostics/cases/26-ncu-cuda-capture/version.stdout.log",
+      "stderr": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T200118Z/gpu-diagnostics/cases/26-ncu-cuda-capture/version.stderr.log",
+      "returncode": 0,
+      "timed_out": false,
+      "wall_s": 0.1677311560000021,
+      "label": "version"
+    },
+    {
+      "argv": [
+        "/usr/local/bin/python",
+        "-c",
+        "import sys, runpy; sys.path.insert(0, '/root/AgenticRL-CUDA-kernels'); import utils; sys.path = [p for p in sys.path if p != '/root/AgenticRL-CUDA-kernels']; sys.path.insert(0, '/root/AgenticRL-CUDA-kernels/artifacts/tmp/gpu-diagnostics-_twn06i9/cuda'); sys.argv = ['utils.diagnostic_worker', '--mode', 'probe', '--backend', 'cuda', '--evidence', '/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T200118Z/gpu-diagnostics/cases/26-ncu-cuda-capture/gpu.json']; runpy.run_module('utils.diagnostic_worker', run_name='__main__')"
+      ],
+      "command": "/usr/local/bin/python -c 'import sys, runpy; sys.path.insert(0, '\"'\"'/root/AgenticRL-CUDA-kernels'\"'\"'); import utils; sys.path = [p for p in sys.path if p != '\"'\"'/root/AgenticRL-CUDA-kernels'\"'\"']; sys.path.insert(0, '\"'\"'/root/AgenticRL-CUDA-kernels/artifacts/tmp/gpu-diagnostics-_twn06i9/cuda'\"'\"'); sys.argv = ['\"'\"'utils.diagnostic_worker'\"'\"', '\"'\"'--mode'\"'\"', '\"'\"'probe'\"'\"', '\"'\"'--backend'\"'\"', '\"'\"'cuda'\"'\"', '\"'\"'--evidence'\"'\"', '\"'\"'/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T200118Z/gpu-diagnostics/cases/26-ncu-cuda-capture/gpu.json'\"'\"']; runpy.run_module('\"'\"'utils.diagnostic_worker'\"'\"', run_name='\"'\"'__main__'\"'\"')'",
+      "stdout": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T200118Z/gpu-diagnostics/cases/26-ncu-cuda-capture/gpu.stdout.log",
+      "stderr": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T200118Z/gpu-diagnostics/cases/26-ncu-cuda-capture/gpu.stderr.log",
+      "returncode": 0,
+      "timed_out": false,
+      "wall_s": 2.2993613769999968,
+      "label": "gpu"
+    },
+    {
+      "argv": [
+        "/usr/local/cuda/bin/ncu",
+        "--clock-control",
+        "none",
+        "--nvtx",
+        "--nvtx-include",
+        "agenticrl_generated/",
+        "--kernel-name-base",
+        "demangled",
+        "--kernel-name",
+        "regex:(?:(^|[\\s:])axpby_kernel\\s*[<(])",
+        "--launch-count",
+        "1",
+        "--set",
+        "basic",
+        "--export",
+        "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T200118Z/gpu-diagnostics/cases/26-ncu-cuda-capture/capture",
+        "/usr/local/bin/python",
+        "-c",
+        "import sys, runpy; sys.path.insert(0, '/root/AgenticRL-CUDA-kernels'); import utils; sys.path = [p for p in sys.path if p != '/root/AgenticRL-CUDA-kernels']; sys.path.insert(0, '/root/AgenticRL-CUDA-kernels/artifacts/tmp/gpu-diagnostics-_twn06i9/cuda'); sys.argv = ['utils.diagnostic_worker', '--mode', 'capture', '--backend', 'cuda', '--seed', '0', '--evidence', '/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T200118Z/gpu-diagnostics/cases/26-ncu-cuda-capture/worker.json']; runpy.run_module('utils.diagnostic_worker', run_name='__main__')"
+      ],
+      "command": "/usr/local/cuda/bin/ncu --clock-control none --nvtx --nvtx-include agenticrl_generated/ --kernel-name-base demangled --kernel-name 'regex:(?:(^|[\\s:])axpby_kernel\\s*[<(])' --launch-count 1 --set basic --export /__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T200118Z/gpu-diagnostics/cases/26-ncu-cuda-capture/capture /usr/local/bin/python -c 'import sys, runpy; sys.path.insert(0, '\"'\"'/root/AgenticRL-CUDA-kernels'\"'\"'); import utils; sys.path = [p for p in sys.path if p != '\"'\"'/root/AgenticRL-CUDA-kernels'\"'\"']; sys.path.insert(0, '\"'\"'/root/AgenticRL-CUDA-kernels/artifacts/tmp/gpu-diagnostics-_twn06i9/cuda'\"'\"'); sys.argv = ['\"'\"'utils.diagnostic_worker'\"'\"', '\"'\"'--mode'\"'\"', '\"'\"'capture'\"'\"', '\"'\"'--backend'\"'\"', '\"'\"'cuda'\"'\"', '\"'\"'--seed'\"'\"', '\"'\"'0'\"'\"', '\"'\"'--evidence'\"'\"', '\"'\"'/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T200118Z/gpu-diagnostics/cases/26-ncu-cuda-capture/worker.json'\"'\"']; runpy.run_module('\"'\"'utils.diagnostic_worker'\"'\"', run_name='\"'\"'__main__'\"'\"')'",
+      "stdout": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T200118Z/gpu-diagnostics/cases/26-ncu-cuda-capture/tool.stdout.log",
+      "stderr": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T200118Z/gpu-diagnostics/cases/26-ncu-cuda-capture/tool.stderr.log",
+      "returncode": 0,
+      "timed_out": false,
+      "wall_s": 5.549603191000017,
+      "label": "tool"
+    },
+    {
+      "argv": [
+        "/usr/local/cuda/bin/ncu",
+        "--import",
+        "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T200118Z/gpu-diagnostics/cases/26-ncu-cuda-capture/capture.ncu-rep",
+        "--csv",
+        "--page",
+        "raw"
+      ],
+      "command": "/usr/local/cuda/bin/ncu --import /__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T200118Z/gpu-diagnostics/cases/26-ncu-cuda-capture/capture.ncu-rep --csv --page raw",
+      "stdout": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T200118Z/gpu-diagnostics/cases/26-ncu-cuda-capture/metrics.stdout.log",
+      "stderr": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T200118Z/gpu-diagnostics/cases/26-ncu-cuda-capture/metrics.stderr.log",
+      "returncode": 0,
+      "timed_out": false,
+      "wall_s": 0.47158750500000224,
+      "label": "metrics"
+    }
+  ],
+  "sources": {
+    "binding.cpp": "43da662b9aedb537a4cb2f04c57d92aeddbe018a9b5f7374ae28ec9bba0b3b62",
+    "binding_registry.h": "a829ca7d5de03049c439f30aa01f7f631c06418c31855cf19a67f23d69349e0f",
+    "kernels/__init__.py": "fa8709e0f841861e590a1400e7bf811752982f12aa6de0b19102d917d614c1a4",
+    "kernels/axpby.cu": "44a6b0ac7d98319e3d3aafc1fa3cb65e57375a4e2b0aac2c6d1028de292380f8",
+    "kernels/axpby_binding.cpp": "90b24e3495c73a5884fb1d61384dab6a5ddd97ee74510692e3792822d3f0a3c9",
+    "kernels/cutedsl/__init__.py": "7ab6d9e0244065e9e92298a72ba9f7870d075ac2bae338ba2c9b5269c3c275a0",
+    "kernels/cutedsl/axpby.py": "571a7424b67cf69b61d3ddce0ae03e46c4bf04f5306c8980b8921a4cdad8e86d",
+    "kernels/cutile/__init__.py": "aff46b86128129df6bb4ba68e0c7114b509e87ffe24d0acdc24fab40d0540447",
+    "kernels/cutile/axpby.py": "703fe686e1505391b5bc6bec3c391b10e625fa8cf67a8adf1f1fee4275814bf2",
+    "kernels/tilelang/__init__.py": "14411c6067edaf71cb45bff191310d8caddf55a6d1fb01aca6a841221638386b",
+    "kernels/tilelang/axpby.py": "28b54345b5ff2278ed091b4dc9257ff85e6fa001e3585c13c645a6f48ce563f4",
+    "kernels/triton/__init__.py": "15c1c4579dfce367a2bd82c9e531493a99ec2242d57d3ba2f28b8945e40fb48a",
+    "kernels/triton/axpby.py": "b97f0fc14e9763778d1f9c5f8deb8c520380059816c3da295d506b4fa2e04492",
+    "model.py": "f92e69573f45f2043b0d2c63032b554653a8b935dddf71f5d7fb6c3190926ecf",
+    "model_new.py": "2318132d3b21c6701aea6b84a6b64bab2fbf2756474153583454f8574449e3eb"
+  },
+  "worker": {
+    "diagnostic_only": true,
+    "available": true,
+    "completed": true,
+    "mode": "capture",
+    "backend": "cuda",
+    "reason": null,
+    "gpu_name": "NVIDIA H200",
+    "gpu_index": 0,
+    "gpu_uuid": "844206bf-7687-441d-4421-7e9166004dd0",
+    "compute_capability": "9.0",
+    "negative_control": false,
+    "warmup_iters": 5,
+    "capture_range": "agenticrl_generated",
+    "captured_forwards": 1,
+    "verification_checks": 2
+  },
+  "gpu_probe": {
+    "diagnostic_only": true,
+    "available": true,
+    "completed": true,
+    "mode": "probe",
+    "backend": "cuda",
+    "reason": null,
+    "gpu_name": "NVIDIA H200",
+    "gpu_index": 0,
+    "gpu_uuid": "844206bf-7687-441d-4421-7e9166004dd0",
+    "compute_capability": "9.0",
+    "negative_control": false
+  },
+  "harness_sha256": {
+    "diagnose.py": "3cf6586cc422d14fbf0c0e900b328ced50bca1e35c9bc3b31940a5c43df510d6",
+    "diagnostic_worker.py": "5d8296416019e770c1e3710387c4341159b656c52317dd1164c7bdf193f7f171",
+    "diagnostic_fault.py": "f3e51fcab71093c7e91ab13ad35c2a45fe1e3374f62651d4df3c00419e95d073"
+  },
+  "tool_version": "NVIDIA (R) Nsight Compute Command Line Profiler\nCopyright (c) 2018-2026 NVIDIA Corporation\nVersion 2026.2.1.0 (build 38283040) (public-release)",
+  "result": {
+    "diag/tool": "ncu",
+    "diag/check": null,
+    "diag/backend": "cuda",
+    "diag/status": "captured",
+    "diag/reason": "raw_evidence_requires_review",
+    "diag/diagnostic_only": true,
+    "diag/evidence_reviewed": false,
+    "diag/negative_control": false,
+    "diag/seed": 0,
+    "diag/clock_control": "none",
+    "diag/kernel_selector": "(?:(^|[\\s:])axpby_kernel\\s*[<(])",
+    "diag/gpu_uuid": "844206bf-7687-441d-4421-7e9166004dd0",
+    "diag/gpu_name": "NVIDIA H200",
+    "diag/reported_errors": null,
+    "diag/kernel_count": null,
+    "diag/wall_s": 8.493448385000022,
+    "diag/report_json": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T200118Z/gpu-diagnostics/cases/26-ncu-cuda-capture/report.json"
+  }
+}

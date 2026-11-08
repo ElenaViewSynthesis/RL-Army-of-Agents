@@ -1,0 +1,76 @@
+{
+  "schema": "gpu-diagnostic-review-v1",
+  "capture_report": "/tmp/h200-diagnostics-fixed-download/20261108T200118Z/gpu-diagnostics/cases/25-nsys-cutedsl-capture/report.json",
+  "diagnostic_only": true,
+  "reviewer_sha256": "9010a72262f3a61888fcf09a50d201112298e1db02266d8be96efb486faa43cc",
+  "capture_sha256": "2b0cff1588416606fb10e4334b23b32b9e9b3bd3b46723dda90ff30876facb52",
+  "result": {
+    "diag/tool": "nsys",
+    "diag/check": null,
+    "diag/backend": "cutedsl",
+    "diag/status": "passed",
+    "diag/reason": "generated_forward_timeline_captured",
+    "diag/diagnostic_only": true,
+    "diag/evidence_reviewed": true,
+    "diag/negative_control": false,
+    "diag/seed": 0,
+    "diag/clock_control": null,
+    "diag/kernel_selector": null,
+    "diag/gpu_uuid": "844206bf-7687-441d-4421-7e9166004dd0",
+    "diag/gpu_name": "NVIDIA H200",
+    "diag/reported_errors": null,
+    "diag/kernel_count": 1,
+    "diag/wall_s": 9.886582527999991,
+    "diag/report_json": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T200118Z/gpu-diagnostics/cases/25-nsys-cutedsl-capture/report.json",
+    "diag/review_json": "/tmp/h200-diagnostics-fixed-download/20261108T200118Z/gpu-diagnostics/cases/25-nsys-cutedsl-capture/reviewed.json",
+    "diag/nsys_kernel_busy_ns": 1088,
+    "diag/nsys_kernel_span_ns": 1088,
+    "diag/nsys_kernel_gap_ns": 0,
+    "diag/nsys_range_ns": 1009003
+  },
+  "observations": {
+    "range_start_ns": 8891632,
+    "range_end_ns": 9900635,
+    "kernels": [
+      {
+        "start_ns": 9789142,
+        "end_ns": 9790230,
+        "device_index": 0,
+        "name": "kernel_cutlass_axpby_cute_kernel_tensorptrf32gmemo151201i64512_tensorptrf32gmemo151201i64512_tensorptrf32gmemo151201i64512_tensor00o1512011105121____0"
+      }
+    ],
+    "runtime_api": [
+      {
+        "name": "cuKernelGetName",
+        "start_ns": 9735255,
+        "end_ns": 9756189,
+        "return_value": 0
+      },
+      {
+        "name": "cudaLaunchKernelExC_v11060",
+        "start_ns": 9756734,
+        "end_ns": 9795746,
+        "return_value": 0
+      },
+      {
+        "name": "cudaDeviceSynchronize_v3020",
+        "start_ns": 9874894,
+        "end_ns": 9891050,
+        "return_value": 0
+      }
+    ],
+    "transfer_duration_ns": null,
+    "transfer_reason": "No memcpy activity table was present in these captured fixtures."
+  },
+  "raw_sha256": {
+    "tool.stdout.log": "323a7ac68401d22c400b903c0f81379148c5fd6fa81467c0caad0d2ab9b5e6a4",
+    "tool.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "capture.sqlite": "ff1b8495a409e6a13a38b59c229966d6354c50104003ccfc46a32a9ceafb4951"
+  },
+  "limitations": [
+    "Coverage is limited to the recorded fixtures and runtime.",
+    "Name-based selectors are not proof of authorship.",
+    "Instrumented and replayed durations never feed rewards.",
+    "Kernel gaps cover only the captured process/range, not whole-device idle time or utilization."
+  ]
+}

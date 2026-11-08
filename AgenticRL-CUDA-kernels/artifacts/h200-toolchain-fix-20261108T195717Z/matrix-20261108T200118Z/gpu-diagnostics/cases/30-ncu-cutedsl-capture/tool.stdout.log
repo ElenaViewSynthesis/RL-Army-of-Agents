@@ -1,0 +1,6 @@
+==WARNING== Note: Running with unmodified GPU clocks. If not controlled otherwise, profiling results may be inconsistent.
+==PROF== Connected to process 2615 (/usr/local/bin/python3)
+==PROF== Profiling "kernel_cutlass_axpby_cute_kernel_tensorptrf32gmemo151201i64512_tensorptrf32gmemo151201i64512_tensorptrf32gmemo151201i64512_tensor00o1512011105121____0": 0%....50%....100% - 10 passes
+{"diagnostic_only": true, "available": true, "completed": true, "mode": "capture", "backend": "cutedsl", "reason": null, "gpu_name": "NVIDIA H200", "gpu_index": 0, "gpu_uuid": "844206bf-7687-441d-4421-7e9166004dd0", "compute_capability": "9.0", "negative_control": false, "warmup_iters": 20, "capture_range": "agenticrl_generated", "captured_forwards": 1, "verification_checks": 2}
+==PROF== Disconnected from process 2615
+==PROF== Report: /__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T200118Z/gpu-diagnostics/cases/30-ncu-cutedsl-capture/capture.ncu-rep

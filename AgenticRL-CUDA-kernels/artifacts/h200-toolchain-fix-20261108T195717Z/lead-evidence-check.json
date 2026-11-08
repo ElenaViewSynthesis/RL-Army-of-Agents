@@ -1,0 +1,18 @@
+{
+  "run_id": "20261108T200118Z",
+  "source_manifest_sha256": "8f161e87f1e2076f9c806a4f42f99dc00ed24e16faf686434e6bd062b0ced588",
+  "frozen_matrix_sha256": "9c02456a697b2158469a54c252f22b190d45161a8e2b00e52be996b203584d20",
+  "checks": {
+    "source_hashes_match": true,
+    "all_review_capture_and_raw_hashes_match": true,
+    "all_capture_harness_hashes_match_snapshot": true,
+    "all_planned_cases_present": true,
+    "all_honest_tool_stages_exit_zero": true,
+    "sanitizer_clean_outputs_supported_by_current_fail_closed_guard": true,
+    "negative_control_contains_real_invalid_write": true
+  },
+  "frozen_status": "pass",
+  "counts_from_frozen_review": {
+    "passed": 30
+  }
+}

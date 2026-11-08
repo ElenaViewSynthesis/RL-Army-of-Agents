@@ -1,0 +1,45 @@
+{
+  "schema": "gpu-diagnostic-matrix-v1",
+  "diagnostic_only": true,
+  "run_id": "20261108T195956Z",
+  "argv": [
+    "/root/AgenticRL-CUDA-kernels/scripts/diagnose_gpu.py",
+    "--backends",
+    "cutedsl",
+    "--tools",
+    "sanitizer",
+    "--checks",
+    "memcheck",
+    "--timeout-s",
+    "600",
+    "--run-id",
+    "20261108T195956Z",
+    "--output-dir",
+    "/artifacts/20261108T195956Z/gpu-diagnostics"
+  ],
+  "planned": [
+    [
+      "sanitizer",
+      "cutedsl",
+      "memcheck",
+      false
+    ],
+    [
+      "sanitizer",
+      "triton",
+      "memcheck",
+      true
+    ]
+  ],
+  "scope": [
+    "cutedsl"
+  ],
+  "tools": [
+    "sanitizer"
+  ],
+  "checks": [
+    "memcheck"
+  ],
+  "timeout_s": 600.0,
+  "seed": 0
+}

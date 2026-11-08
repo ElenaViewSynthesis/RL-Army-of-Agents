@@ -1,0 +1,31 @@
+test_bindings_api_does_not_exceed_captured_driver (tests.test_gpu_toolchain.GPUDriverBindingsTests.test_bindings_api_does_not_exceed_captured_driver) ... ok
+test_child_environment_allowlist_strips_secrets_keeps_cuda (tests.test_diagnose.EnvironmentTests.test_child_environment_allowlist_strips_secrets_keeps_cuda) ... ok
+test_imports_under_python_S_are_torch_free (tests.test_diagnose.EnvironmentTests.test_imports_under_python_S_are_torch_free) ... ok
+test_run_process_kills_timed_out_process_group (tests.test_diagnose.EnvironmentTests.test_run_process_kills_timed_out_process_group) ... ok
+test_tool_commands (tests.test_diagnose.EnvironmentTests.test_tool_commands) ... ok
+test_captured_status_is_unreviewed_with_null_counts (tests.test_diagnose.RunDiagnosticTests.test_captured_status_is_unreviewed_with_null_counts) ... ok
+test_cpu_device_is_unavailable_without_processes (tests.test_diagnose.RunDiagnosticTests.test_cpu_device_is_unavailable_without_processes) ... ok
+test_missing_binary_is_unavailable_without_processes (tests.test_diagnose.RunDiagnosticTests.test_missing_binary_is_unavailable_without_processes) ... ok
+test_ncu_requires_report_then_metrics_export (tests.test_diagnose.RunDiagnosticTests.test_ncu_requires_report_then_metrics_export) ... ok
+test_negative_control_and_kernel_restrictions (tests.test_diagnose.RunDiagnosticTests.test_negative_control_and_kernel_restrictions) ... ok
+test_nsys_requires_trace_files (tests.test_diagnose.RunDiagnosticTests.test_nsys_requires_trace_files) ... ok
+test_tool_failure_timeout_and_incomplete_worker_fail_closed (tests.test_diagnose.RunDiagnosticTests.test_tool_failure_timeout_and_incomplete_worker_fail_closed) ... ok
+test_historical_zero_baseline_cannot_be_accepted (tests.test_modal_diagnostics.AcceptanceTests.test_historical_zero_baseline_cannot_be_accepted) ... ok
+test_positive_acceptance_and_expected_failures (tests.test_modal_diagnostics.AcceptanceTests.test_positive_acceptance_and_expected_failures) ... ok
+test_default_counts_and_balanced_orders (tests.test_modal_diagnostics.PlanTests.test_default_counts_and_balanced_orders) ... ok
+test_forwarding_is_opt_in_and_allowlisted (tests.test_modal_diagnostics.RunnerTests.test_forwarding_is_opt_in_and_allowlisted) ... {"function_call_id": "fc-synthetic"}
+ok
+test_gpu_diagnostics_submits_exact_worker_recipe (tests.test_modal_diagnostics.RunnerTests.test_gpu_diagnostics_submits_exact_worker_recipe) ... ok
+test_main_preflight_uses_spawn_helper_not_remote (tests.test_modal_diagnostics.RunnerTests.test_main_preflight_uses_spawn_helper_not_remote) ... ok
+test_main_routes_diagnose_kernels_exclusively (tests.test_modal_diagnostics.RunnerTests.test_main_routes_diagnose_kernels_exclusively) ... ok
+test_main_routes_diagnose_order_exclusively (tests.test_modal_diagnostics.RunnerTests.test_main_routes_diagnose_order_exclusively) ... ok
+test_non_timeout_error_reports_recovery_and_never_respawns (tests.test_modal_diagnostics.RunnerTests.test_non_timeout_error_reports_recovery_and_never_respawns) ... ok
+test_resume_cli_polls_call_id_without_runner (tests.test_modal_diagnostics.RunnerTests.test_resume_cli_polls_call_id_without_runner) ... ok
+test_resume_cli_rejects_invalid_call_id_before_modal_import (tests.test_modal_diagnostics.RunnerTests.test_resume_cli_rejects_invalid_call_id_before_modal_import) ... ok
+test_runner_writes_automatic_review_from_fresh_outputs (tests.test_modal_diagnostics.RunnerTests.test_runner_writes_automatic_review_from_fresh_outputs) ... ok
+test_wait_for_call_retries_only_builtin_timeout (tests.test_modal_diagnostics.RunnerTests.test_wait_for_call_retries_only_builtin_timeout) ... ok
+
+----------------------------------------------------------------------
+Ran 25 tests in 8.014s
+
+OK

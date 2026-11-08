@@ -1,0 +1,14 @@
+{
+  "diagnostic_only": true,
+  "source_snapshot": "source-snapshot.json",
+  "pilot_run_id": "20261108T195956Z",
+  "matrix_run_id": "20261108T200118Z",
+  "status": "pass",
+  "honest_sanitizer_checks": 20,
+  "nsys_timelines": 5,
+  "ncu_counter_captures": 5,
+  "negative_control_detected": true,
+  "missing_cases": [],
+  "failed_honest_cases": [],
+  "reward_inputs_changed": false
+}

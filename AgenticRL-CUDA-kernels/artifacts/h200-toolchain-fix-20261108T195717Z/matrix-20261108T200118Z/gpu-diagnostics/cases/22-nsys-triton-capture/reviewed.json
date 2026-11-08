@@ -1,0 +1,70 @@
+{
+  "schema": "gpu-diagnostic-review-v1",
+  "capture_report": "/tmp/h200-diagnostics-fixed-download/20261108T200118Z/gpu-diagnostics/cases/22-nsys-triton-capture/report.json",
+  "diagnostic_only": true,
+  "reviewer_sha256": "9010a72262f3a61888fcf09a50d201112298e1db02266d8be96efb486faa43cc",
+  "capture_sha256": "ba290b6fff0ebc370432c79595af7e9779a62a303bff28dfc6e279fafc25b8ca",
+  "result": {
+    "diag/tool": "nsys",
+    "diag/check": null,
+    "diag/backend": "triton",
+    "diag/status": "passed",
+    "diag/reason": "generated_forward_timeline_captured",
+    "diag/diagnostic_only": true,
+    "diag/evidence_reviewed": true,
+    "diag/negative_control": false,
+    "diag/seed": 0,
+    "diag/clock_control": null,
+    "diag/kernel_selector": null,
+    "diag/gpu_uuid": "844206bf-7687-441d-4421-7e9166004dd0",
+    "diag/gpu_name": "NVIDIA H200",
+    "diag/reported_errors": null,
+    "diag/kernel_count": 1,
+    "diag/wall_s": 10.132602027000019,
+    "diag/report_json": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T200118Z/gpu-diagnostics/cases/22-nsys-triton-capture/report.json",
+    "diag/review_json": "/tmp/h200-diagnostics-fixed-download/20261108T200118Z/gpu-diagnostics/cases/22-nsys-triton-capture/reviewed.json",
+    "diag/nsys_kernel_busy_ns": 864,
+    "diag/nsys_kernel_span_ns": 864,
+    "diag/nsys_kernel_gap_ns": 0,
+    "diag/nsys_range_ns": 762378
+  },
+  "observations": {
+    "range_start_ns": 9014217,
+    "range_end_ns": 9776595,
+    "kernels": [
+      {
+        "start_ns": 9631429,
+        "end_ns": 9632293,
+        "device_index": 0,
+        "name": "axpby_kernel"
+      }
+    ],
+    "runtime_api": [
+      {
+        "name": "cuLaunchKernelEx",
+        "start_ns": 9603690,
+        "end_ns": 9651919,
+        "return_value": 0
+      },
+      {
+        "name": "cudaDeviceSynchronize_v3020",
+        "start_ns": 9750669,
+        "end_ns": 9765371,
+        "return_value": 0
+      }
+    ],
+    "transfer_duration_ns": null,
+    "transfer_reason": "No memcpy activity table was present in these captured fixtures."
+  },
+  "raw_sha256": {
+    "tool.stdout.log": "1254b23ed2aa1f01d8da045b0a8f69fa8805de28db15751669c8d506ed14e08b",
+    "tool.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "capture.sqlite": "73d4d718e07adbb37a770bfba00ecbf6098ac267da7f28632087944ce1fc15a4"
+  },
+  "limitations": [
+    "Coverage is limited to the recorded fixtures and runtime.",
+    "Name-based selectors are not proof of authorship.",
+    "Instrumented and replayed durations never feed rewards.",
+    "Kernel gaps cover only the captured process/range, not whole-device idle time or utilization."
+  ]
+}

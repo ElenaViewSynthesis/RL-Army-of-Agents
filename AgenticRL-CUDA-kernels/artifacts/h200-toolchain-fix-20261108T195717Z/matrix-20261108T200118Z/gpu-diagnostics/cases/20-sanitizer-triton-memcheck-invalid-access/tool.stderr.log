@@ -1,0 +1,44 @@
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "<frozen runpy>", line 229, in run_module
+  File "<frozen runpy>", line 88, in _run_code
+  File "/root/AgenticRL-CUDA-kernels/utils/diagnostic_worker.py", line 93, in <module>
+    main()
+  File "/root/AgenticRL-CUDA-kernels/utils/diagnostic_worker.py", line 52, in main
+    run()
+  File "/root/AgenticRL-CUDA-kernels/utils/diagnostic_fault.py", line 16, in run
+    torch.cuda.synchronize()
+  File "/usr/local/lib/python3.12/site-packages/torch/cuda/__init__.py", line 1281, in synchronize
+    return torch._C._cuda_synchronize()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+torch.AcceleratorError: CUDA error: unspecified launch failure
+Search for `cudaErrorLaunchFailure' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.
+CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+The CUDA driver logged these messages, which may provide useful details:
+Returning 719 (CUDA_ERROR_LAUNCH_FAILED) from cuCtxSynchronize_v2
+
+
+terminate called after throwing an instance of 'c10::AcceleratorError'
+  what():  CUDA error: unspecified launch failure
+Search for `cudaErrorLaunchFailure' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.
+CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+The CUDA driver logged these messages, which may provide useful details:
+Sticky error detected
+Returning 719 (CUDA_ERROR_LAUNCH_FAILED) from cuMemFree_v2
+
+
+Exception raised from uncached_delete at /__w/pytorch/pytorch/c10/cuda/CUDACachingAllocator.cpp:4518 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x9d (0x2ac39ff5860d in /usr/local/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #1: <unknown function> + 0xc4f4 (0x2ac39fa6a4f4 in /usr/local/lib/python3.12/site-packages/torch/lib/libc10_cuda.so)
+frame #2: <unknown function> + 0x13699 (0x2ac39fa71699 in /usr/local/lib/python3.12/site-packages/torch/lib/libc10_cuda.so)
+frame #3: <unknown function> + 0x88d54 (0x2ac39ff36d54 in /usr/local/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #4: c10::TensorImpl::~TensorImpl() + 0x9 (0x2ac39ff30869 in /usr/local/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #5: <unknown function> + 0x8a3285 (0x2ac421bc3285 in /usr/local/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #6: <unknown function> + 0x8a3311 (0x2ac421bc3311 in /usr/local/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+<omitting python frames>
+frame #20: <unknown function> + 0x2a1ca (0x2ac3981e61ca in /usr/lib/x86_64-linux-gnu/libc.so.6)
+frame #21: __libc_start_main + 0x8b (0x2ac3981e628b in /usr/lib/x86_64-linux-gnu/libc.so.6)
+frame #22: _start + 0x29 (0x6000a9 in /usr/local/bin/python)
+

@@ -1,0 +1,17 @@
+test_matrix_plan_is_sequential_and_includes_one_negative_control (tests.test_diagnostic_review.DiagnosticReviewTests.test_matrix_plan_is_sequential_and_includes_one_negative_control) ... ok
+test_real_api_version_findings_never_become_a_clean_memory_check (tests.test_diagnostic_review.DiagnosticReviewTests.test_real_api_version_findings_never_become_a_clean_memory_check) ... ok
+test_real_counter_csv_preserves_metric_strings_and_units (tests.test_diagnostic_review.DiagnosticReviewTests.test_real_counter_csv_preserves_metric_strings_and_units) ... ok
+test_real_invalid_store_is_detected_without_accepting_the_control (tests.test_diagnostic_review.DiagnosticReviewTests.test_real_invalid_store_is_detected_without_accepting_the_control) ... ok
+test_real_memcheck_and_racecheck_outputs_are_clean (tests.test_diagnostic_review.DiagnosticReviewTests.test_real_memcheck_and_racecheck_outputs_are_clean) ... ok
+test_real_recovered_timeline_has_one_kernel_and_unmeasured_transfers (tests.test_diagnostic_review.DiagnosticReviewTests.test_real_recovered_timeline_has_one_kernel_and_unmeasured_transfers) ... ok
+test_real_unavailable_tools_have_no_fabricated_kernel_counts (tests.test_diagnostic_review.DiagnosticReviewTests.test_real_unavailable_tools_have_no_fabricated_kernel_counts) ... ok
+test_synthetic_mismatched_gpu_identity_fails_closed (tests.test_diagnostic_review.DiagnosticReviewTests.test_synthetic_mismatched_gpu_identity_fails_closed) ... ok
+test_synthetic_nonfinite_counter_value_fails_closed (tests.test_diagnostic_review.DiagnosticReviewTests.test_synthetic_nonfinite_counter_value_fails_closed) ... ok
+test_synthetic_overlapping_intervals_are_not_double_counted (tests.test_diagnostic_review.DiagnosticReviewTests.test_synthetic_overlapping_intervals_are_not_double_counted) ... ok
+test_synthetic_recovery_receipt_mismatch_fails_closed (tests.test_diagnostic_review.DiagnosticReviewTests.test_synthetic_recovery_receipt_mismatch_fails_closed) ... ok
+test_synthetic_truncated_and_duplicate_summaries_fail_closed (tests.test_diagnostic_review.DiagnosticReviewTests.test_synthetic_truncated_and_duplicate_summaries_fail_closed) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 6.587s
+
+OK
