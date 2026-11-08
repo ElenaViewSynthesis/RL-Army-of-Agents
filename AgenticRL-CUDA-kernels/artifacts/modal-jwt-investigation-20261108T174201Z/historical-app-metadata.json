@@ -1,0 +1,14 @@
+{
+  "app_id": "ap-XsRx6dMlnPhtSbg3H7haXL",
+  "queries": [
+    "AppGetLifecycle(app_id)",
+    "AppGetObjects(app_id, include_unindexed=False)",
+    "FunctionCallList(function_id of diagnose_timing only)"
+  ],
+  "lifecycle": {
+    "app_state": 5,
+    "created_at": "2026-11-08T09:10:55.497248+00:00",
+    "stopped_at": "2026-11-08T09:28:33.279679+00:00"
+  },
+  "query_error_type": "UnimplementedError"
+}

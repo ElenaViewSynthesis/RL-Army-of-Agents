@@ -1,0 +1,100 @@
+{
+  "status": "reproductions_passed",
+  "modal_version": "1.6.3",
+  "python_version": "3.13.9",
+  "network_calls": 0,
+  "real_tokens_used": false,
+  "historical_cause_established": false,
+  "confirmed_sdk_defect": "Expired cached token is returned after a non-auth refresh failure.",
+  "cases": [
+    {
+      "scenario": "no_cached_token_fetch_failure",
+      "error": "RuntimeError",
+      "returned_token": false
+    },
+    {
+      "scenario": "valid_cached_proactive_refresh_failure",
+      "client_time": 1060.0,
+      "old_expiry": 1100.0,
+      "fetch_calls": 2,
+      "error": null,
+      "returned_cached": true,
+      "returned_expired_token": false,
+      "warning_count": 1
+    },
+    {
+      "scenario": "expired_cached_transient_refresh_failure",
+      "client_time": 1101.0,
+      "old_expiry": 1100.0,
+      "fetch_calls": 2,
+      "error": null,
+      "returned_cached": true,
+      "returned_expired_token": true,
+      "warning_count": 1
+    },
+    {
+      "scenario": "expired_cached_auth_denied",
+      "client_time": 1101.0,
+      "old_expiry": 1100.0,
+      "fetch_calls": 2,
+      "error": "AuthError",
+      "returned_cached": false,
+      "returned_expired_token": false,
+      "warning_count": 0
+    },
+    {
+      "scenario": "expired_cached_successful_refresh",
+      "client_time": 1101.0,
+      "old_expiry": 1100.0,
+      "fetch_calls": 2,
+      "error": null,
+      "returned_cached": false,
+      "returned_expired_token": false,
+      "warning_count": 0
+    },
+    {
+      "scenario": "sync_await_refreshes_expired_metadata_between_polls",
+      "await_calls": 2,
+      "fetch_calls": 2,
+      "header_changed": true,
+      "attempt_token_unchanged": true,
+      "completed": true
+    },
+    {
+      "scenario": "synthetic_rpc_auth_error_with_locally_valid_metadata",
+      "await_calls": 1,
+      "fetch_calls": 1,
+      "locally_valid_metadata": true,
+      "error": "AuthError: Jwt is expired",
+      "automatic_auth_retry": false
+    }
+  ],
+  "installed_sdk_sources": {
+    "modal/_utils/auth_token_manager.py": {
+      "sha256": "55db7b5e6da8aab3eabbf89013c949b8d47ca66485da4f4217471f1e8803c9d7",
+      "installed_record_matches": true
+    },
+    "modal/_functions.py": {
+      "sha256": "fb219d68391bd883ca0eee135a5f771e9896114d90bf76c11ab4a49448e21372",
+      "installed_record_matches": true
+    },
+    "modal/client.py": {
+      "sha256": "4f2902d968a0cd4db43d26341f4860eaede297e3389ad719d585c45bfb9e7e26",
+      "installed_record_matches": true
+    },
+    "modal/_grpc_client.py": {
+      "sha256": "6a30b14ea84393eae95ae6265127115f060c3d59afba3a3c724befbf89747339",
+      "installed_record_matches": true
+    },
+    "modal/_utils/logger.py": {
+      "sha256": "3606cc2854fd721618b7f4d4d350dd222a2be41c98af6819b6b58893548544b7",
+      "installed_record_matches": true
+    }
+  },
+  "limitations": [
+    "These are offline real-SDK control-flow reproductions with synthetic tokens/RPCs.",
+    "No server JWT validation or real refresh outage was reproduced.",
+    "The historical log does not identify whether header or attempt JWT expired.",
+    "A shared error string or stack frame does not prove which mechanism occurred."
+  ]
+}

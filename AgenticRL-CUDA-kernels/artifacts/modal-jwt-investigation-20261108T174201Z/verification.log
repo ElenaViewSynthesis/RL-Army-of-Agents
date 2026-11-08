@@ -1,0 +1,10 @@
+== git diff --check ==
+DIFFCHECK_EXIT=0
+== artifacts ==
+EXISTS artifacts/modal-jwt-investigation-20261108T174201Z/reproduce.py
+EXISTS artifacts/modal-jwt-investigation-20261108T174201Z/reproduction.json
+EXISTS artifacts/modal-jwt-investigation-20261108T174201Z/reproduction.log
+EXISTS artifacts/modal-jwt-investigation-20261108T174201Z/historical-app-metadata.json
+EXISTS artifacts/modal-jwt-investigation-20261108T174201Z/historical-app-layout.json
+== stdout vs report JSON ==
+stdout_equals_report: True
