@@ -20,6 +20,7 @@ import modal
 from cloud.acceptance import review
 from cloud.modal_job import wait_for_call
 from utils.backend import BACKENDS
+from utils.diagnose import CHECKS as DIAGNOSTIC_CHECKS, TOOLS as DIAGNOSTIC_TOOLS
 
 ROOT = Path(__file__).resolve().parent.parent
 REMOTE = "/root/AgenticRL-CUDA-kernels"
@@ -28,7 +29,7 @@ GPU = os.environ.get("MODAL_GPU", "H200")
 image = (
     modal.Image.from_registry("nvidia/cuda:13.3.1-devel-ubuntu24.04", add_python="3.12")
     .entrypoint([])
-    .apt_install("ninja-build", "git")
+    .apt_install("ninja-build", "git", "libdw1")
     .pip_install_from_requirements(str(ROOT / "requirements-gpu.txt"))
     .env({"CUDA_HOME": "/usr/local/cuda", "TORCH_CUDA_ARCH_LIST": "9.0", "PYTHONPATH": REMOTE})
     .add_local_dir(
@@ -196,20 +197,59 @@ def diagnose_order(run_id: str, backends: str = 'triton,cutedsl', repeat: int = 
     return {'run_id':run_id,'runs':[require,record]}
 
 
+@app.function(gpu=GPU, timeout=21600, volumes={"/artifacts": volume})
+def gpu_diagnostics(run_id: str, backends: str, tools: str, checks: str, timeout_s: int) -> dict:
+    args = ['python','-m','scripts.diagnose_gpu','--backends',backends,'--tools',tools,
+            '--checks',checks,'--timeout-s',str(timeout_s),'--run-id',run_id,
+            '--output-dir',f'/artifacts/{run_id}/gpu-diagnostics']
+    from concurrent.futures import ThreadPoolExecutor, TimeoutError
+    progress = Path(f"/artifacts/{run_id}/gpu-diagnostics/progress.jsonl")
+    with ThreadPoolExecutor(max_workers=1) as pool:
+        future = pool.submit(_run, args, 'gpu_diagnostics', 21000, run_id)
+        while True:
+            try:
+                record = future.result(timeout=30)
+                break
+            except TimeoutError:
+                try:
+                    lines = progress.read_text().splitlines()
+                    last = json.loads(lines[-1])
+                    print(json.dumps({"run_id": run_id, "completed": len(lines),
+                                      "backend": last.get("backend"), "tool": last.get("tool"),
+                                      "check": last.get("check"), "status": last.get("result", {}).get("diag/status")}), flush=True)
+                except (OSError, ValueError, IndexError):
+                    pass
+                volume.commit()
+    return {"run_id": run_id, "runs": [record]}
+
+
 @app.local_entrypoint()
 def main(tests: bool = False, diagnose: bool = False, diagnose_order_test: bool = False,
+         diagnose_kernels: bool = False, diagnostic_tools: str = 'sanitizer,nsys,ncu',
+         diagnostic_checks: str = 'memcheck,racecheck,synccheck,initcheck',
+         diagnostic_timeout_s: int = 600,
          backends: str = "", repeat: int = 0, forward_diagnostics: bool = False,
          order_preparations: str = ""):
     # One run_id per invocation, shared by both remote calls even across containers.
     selected = backends.split(",") if backends else list(BACKENDS)
     if any(b not in BACKENDS for b in selected) or repeat < 0:
         raise ValueError("known --backends and nonnegative --repeat required")
-    if sum((tests, diagnose, diagnose_order_test)) > 1:
-        raise ValueError("choose --tests, --diagnose or --diagnose-order-test")
+    if sum((tests, diagnose, diagnose_order_test, diagnose_kernels)) > 1:
+        raise ValueError("choose --tests, --diagnose, --diagnose-order-test or --diagnose-kernels")
     if order_preparations and not diagnose_order_test:
         raise ValueError("--order-preparations requires --diagnose-order-test")
+    if diagnose_kernels:
+        tools, checks = diagnostic_tools.split(","), diagnostic_checks.split(",")
+        if repeat != 0:
+            raise ValueError("--repeat is not supported by --diagnose-kernels")
+        if len(set(tools)) != len(tools) or any(t not in DIAGNOSTIC_TOOLS for t in tools):
+            raise ValueError("known unique --diagnostic-tools required")
+        if len(set(checks)) != len(checks) or any(c not in DIAGNOSTIC_CHECKS for c in checks):
+            raise ValueError("known unique --diagnostic-checks required")
+        if diagnostic_timeout_s <= 0:
+            raise ValueError("positive --diagnostic-timeout-s required")
     diagnostics = forwarded_environment(forward_diagnostics)
-    for _ in range(1 if (diagnose or diagnose_order_test) else (repeat or 1)):
+    for _ in range(1 if (diagnose or diagnose_order_test or diagnose_kernels) else (repeat or 1)):
         run_id = time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())
         print(json.dumps(await_job(preflight, run_id), indent=2), flush=True)
         if diagnose:
@@ -217,5 +257,8 @@ def main(tests: bool = False, diagnose: bool = False, diagnose_order_test: bool 
         elif diagnose_order_test:
             print(json.dumps(await_job(diagnose_order, run_id, backends or 'triton,cutedsl', repeat or 4,
                                        *([order_preparations] if order_preparations else [])), indent=2), flush=True)
+        elif diagnose_kernels:
+            print(json.dumps(await_job(gpu_diagnostics, run_id, ",".join(selected), diagnostic_tools,
+                                       diagnostic_checks, diagnostic_timeout_s), indent=2), flush=True)
         elif tests:
             print(json.dumps(await_job(gpu_tests, run_id, ",".join(selected), diagnostics), indent=2), flush=True)

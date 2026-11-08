@@ -214,6 +214,43 @@ class RunnerTests(unittest.TestCase):
         gpu_fn.spawn.assert_not_called()
         diag.spawn.assert_not_called()
 
+    def test_main_routes_diagnose_kernels_exclusively(self):
+        from unittest.mock import Mock, patch
+        runner=self.runner()
+        preflight=Mock();preflight.spawn.return_value=Mock(object_id='fc-pre',get=Mock(return_value={'ok':1}))
+        diag_fn=Mock();diag_fn.spawn.return_value=Mock(object_id='fc-diag',get=Mock(return_value={'runs':1}))
+        with patch.object(runner,'preflight',preflight),patch.object(runner,'gpu_diagnostics',diag_fn),\
+             patch.object(runner,'gpu_tests',Mock()),patch.object(runner,'diagnose_timing',Mock()),\
+             patch.object(runner,'diagnose_order',Mock()),patch('sys.stdout',new_callable=io.StringIO):
+            runner.main(diagnose_kernels=True,backends='triton',diagnostic_tools='nsys,ncu',
+                        diagnostic_checks='memcheck',diagnostic_timeout_s=120)
+            self.assertEqual(diag_fn.spawn.call_args.args[1:],('triton','nsys,ncu','memcheck',120))
+            for bad in ({'diagnostic_tools':'nsys,bogus'},{'diagnostic_tools':'nsys,nsys'},
+                        {'diagnostic_tools':''},{'diagnostic_checks':'memcheck,bogus'},
+                        {'diagnostic_checks':'memcheck,memcheck'},{'diagnostic_checks':''},
+                        {'diagnostic_timeout_s':0},{'diagnostic_timeout_s':-5},{'repeat':2},
+                        {'order_preparations':'none'},{'tests':True},{'diagnose':True},
+                        {'diagnose_order_test':True}):
+                with self.subTest(bad=bad),self.assertRaises(ValueError):
+                    runner.main(diagnose_kernels=True,**bad)
+        self.assertEqual(diag_fn.spawn.call_count,1)
+        self.assertEqual(preflight.spawn.call_count,1)
+
+    def test_gpu_diagnostics_submits_exact_worker_recipe(self):
+        from unittest.mock import Mock, patch
+        runner=self.runner()
+        calls=[]
+        def run(*args):
+            calls.append(args)
+            return {'returncode':0}
+        with patch.object(runner,'_run',side_effect=run):
+            result=runner.gpu_diagnostics('rid','triton,cutedsl','nsys,ncu','memcheck',120)
+        self.assertEqual(calls[0][0],['python','-m','scripts.diagnose_gpu','--backends','triton,cutedsl',
+            '--tools','nsys,ncu','--checks','memcheck','--timeout-s','120','--run-id','rid',
+            '--output-dir','/artifacts/rid/gpu-diagnostics'])
+        self.assertEqual(calls[0][1:],('gpu_diagnostics',21000,'rid'))
+        self.assertEqual(result,{'run_id':'rid','runs':[{'returncode':0}]})
+
 
     def test_runner_writes_automatic_review_from_fresh_outputs(self):
         from unittest.mock import patch

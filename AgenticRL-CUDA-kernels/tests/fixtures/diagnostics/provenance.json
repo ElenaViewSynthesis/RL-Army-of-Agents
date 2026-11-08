@@ -1,0 +1,128 @@
+{
+  "run_id": "20261108T192232Z",
+  "copied_utc": "2026-11-08T19:35:10Z",
+  "note": "Raw vendor outputs copied verbatim from the downloaded Modal run volume; no interpretation.",
+  "files": {
+    "00-sanitizer-cuda-memcheck/report.json": {
+      "source": "artifacts/gpu-diagnostics-final-20261108T192232Z/gpu-diagnostics/cases/00-sanitizer-cuda-memcheck/report.json",
+      "sha256": "b621ed3baf9edaa7bfc0bf65d2373bda9dc1f5077e6bb68f5e2260c7e534bc66"
+    },
+    "00-sanitizer-cuda-memcheck/sanitizer.log": {
+      "source": "artifacts/gpu-diagnostics-final-20261108T192232Z/gpu-diagnostics/cases/00-sanitizer-cuda-memcheck/sanitizer.log",
+      "sha256": "a9d061cee538182f762e132abeea7bac7bddb844338f25751bbbb043f242c425"
+    },
+    "01-sanitizer-cuda-racecheck/report.json": {
+      "source": "artifacts/gpu-diagnostics-final-20261108T192232Z/gpu-diagnostics/cases/01-sanitizer-cuda-racecheck/report.json",
+      "sha256": "1c1a973a4fa56967162d27909b5bc0e240ce15a7417b0ff8a37da183c2e98e1a"
+    },
+    "01-sanitizer-cuda-racecheck/sanitizer.log": {
+      "source": "artifacts/gpu-diagnostics-final-20261108T192232Z/gpu-diagnostics/cases/01-sanitizer-cuda-racecheck/sanitizer.log",
+      "sha256": "91dbb142f8feb8786cd6fde6ac035e816b67db14e4b7b400a01386ec106b75c4"
+    },
+    "16-sanitizer-cutedsl-memcheck/report.json": {
+      "source": "artifacts/gpu-diagnostics-final-20261108T192232Z/gpu-diagnostics/cases/16-sanitizer-cutedsl-memcheck/report.json",
+      "sha256": "ea9c1e0406da2e7cfefffb97eedd95411d251cb943e92ea1db6638fb4d46f13c"
+    },
+    "16-sanitizer-cutedsl-memcheck/sanitizer.log": {
+      "source": "artifacts/gpu-diagnostics-final-20261108T192232Z/gpu-diagnostics/cases/16-sanitizer-cutedsl-memcheck/sanitizer.log",
+      "sha256": "52b263bc475766d21e46b89f595ab8f1e5ccec844ba75b39efaa41f941f37493"
+    },
+    "20-sanitizer-triton-memcheck-invalid-access/report.json": {
+      "source": "artifacts/gpu-diagnostics-final-20261108T192232Z/gpu-diagnostics/cases/20-sanitizer-triton-memcheck-invalid-access/report.json",
+      "sha256": "cf4a3f8b0f1fad77d4ffcd17c730ec2d7acb2ce5f4d959437c6cea1a00e666d6"
+    },
+    "20-sanitizer-triton-memcheck-invalid-access/sanitizer.log": {
+      "source": "artifacts/gpu-diagnostics-final-20261108T192232Z/gpu-diagnostics/cases/20-sanitizer-triton-memcheck-invalid-access/sanitizer.log",
+      "sha256": "c847c687685a0db9be237b5513e79ff36a09f4f4bb9f2a67919ffec5981f5c13"
+    },
+    "21-nsys-cuda-capture/report.json": {
+      "source": "artifacts/gpu-diagnostics-final-20261108T192232Z/gpu-diagnostics/cases/21-nsys-cuda-capture/report.json",
+      "sha256": "5e66ab8f8f2cdc217f7682e0661b0f9ee1185ec9826ccba4d2a9584122d50688"
+    },
+    "21-nsys-cuda-capture/tool.stderr.log": {
+      "source": "artifacts/gpu-diagnostics-final-20261108T192232Z/gpu-diagnostics/cases/21-nsys-cuda-capture/tool.stderr.log",
+      "sha256": "c2d7dda7c91433325f5dadfcfab71134221de4a0b2f21e031175cf17302611fd"
+    },
+    "21-nsys-cuda-capture/tool.stdout.log": {
+      "source": "artifacts/gpu-diagnostics-final-20261108T192232Z/gpu-diagnostics/cases/21-nsys-cuda-capture/tool.stdout.log",
+      "sha256": "7632101172bfa84c191a757ad60e6db951c5542e43da9c444953c14e51b4f645"
+    },
+    "26-ncu-cuda-capture/report.json": {
+      "source": "artifacts/gpu-diagnostics-final-20261108T192232Z/gpu-diagnostics/cases/26-ncu-cuda-capture/report.json",
+      "sha256": "9ecb72d7a6c79e082cdbd75f5d75b2c0d339b27d79cb7811954b897c976b9de4"
+    },
+    "26-ncu-cuda-capture/tool.stderr.log": {
+      "source": "artifacts/gpu-diagnostics-final-20261108T192232Z/gpu-diagnostics/cases/26-ncu-cuda-capture/tool.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "26-ncu-cuda-capture/tool.stdout.log": {
+      "source": "artifacts/gpu-diagnostics-final-20261108T192232Z/gpu-diagnostics/cases/26-ncu-cuda-capture/tool.stdout.log",
+      "sha256": "564c286f089b3d8e1940d3032cf27ae3083c5d1247b74d4c60a7fddc7d77a09c"
+    },
+    "ncu-cuda-clock-none/metrics.stdout.log": {
+      "source": "artifacts/gpu-diagnostics-final-20261108T193605Z/gpu-diagnostics/cases/00-ncu-cuda-capture/metrics.stdout.log",
+      "sha256": "6c18304df8aacd35f475f4e12e724514a6de7aee87a0434e66c909d6ac6ef231",
+      "run_id": "20261108T193605Z"
+    },
+    "ncu-cuda-clock-none/report.json": {
+      "source": "artifacts/gpu-diagnostics-final-20261108T193605Z/gpu-diagnostics/cases/00-ncu-cuda-capture/report.json",
+      "sha256": "42dcf2aef686f3b5f9adc0c912acc5b84f4b3547136cfc5e93416c90f7f65b4e",
+      "run_id": "20261108T193605Z"
+    },
+    "ncu-cuda-clock-none/tool.stderr.log": {
+      "source": "artifacts/gpu-diagnostics-final-20261108T193605Z/gpu-diagnostics/cases/00-ncu-cuda-capture/tool.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "run_id": "20261108T193605Z"
+    },
+    "ncu-cuda-clock-none/tool.stdout.log": {
+      "source": "artifacts/gpu-diagnostics-final-20261108T193605Z/gpu-diagnostics/cases/00-ncu-cuda-capture/tool.stdout.log",
+      "sha256": "fdd9265fc436c2437b9986e8f4fa8649a7684b3bf95ddae2ccd4380aab8821b5",
+      "run_id": "20261108T193605Z"
+    },
+    "nsys-cuda-recovered/capture.nsys-rep": {
+      "source": "artifacts/nsys-recovery-20261108T194721Z/run-20261108T194923Z/nsys-recovery/cases/21-nsys-cuda-capture/capture.nsys-rep",
+      "sha256": "8e0a94495d866ca0b6244a5df9f3f9243ae3acde8ab8ad380f3cad95ee3befba",
+      "run_id": "20261108T194923Z"
+    },
+    "nsys-cuda-recovered/capture.qdstrm": {
+      "source": "artifacts/nsys-recovery-20261108T194721Z/run-20261108T194923Z/nsys-recovery/cases/21-nsys-cuda-capture/capture.qdstrm",
+      "sha256": "a6b86080c9c9208f6cc1807ba1eb5e45b20db0b7bb006a91ab3baaa771b487ce",
+      "run_id": "20261108T194923Z"
+    },
+    "nsys-cuda-recovered/capture.sqlite": {
+      "source": "artifacts/nsys-recovery-20261108T194721Z/run-20261108T194923Z/nsys-recovery/cases/21-nsys-cuda-capture/capture.sqlite",
+      "sha256": "6bfc07062a0aecbf7239a5133c0f8828a4f2e59a3b83746962683ae1454b757d",
+      "run_id": "20261108T194923Z"
+    },
+    "nsys-cuda-recovered/original.qdstrm": {
+      "source": "artifacts/nsys-recovery-20261108T194721Z/run-20261108T194923Z/nsys-recovery/cases/21-nsys-cuda-capture/original.qdstrm",
+      "sha256": "b5ad0ddf56a1ad524e7673fb3843000bf26d2d64f537e8b18193dad154a07ff8",
+      "run_id": "20261108T194923Z"
+    },
+    "nsys-cuda-recovered/postprocess-v2.json": {
+      "source": "artifacts/nsys-recovery-20261108T194721Z/run-20261108T194923Z/nsys-recovery/cases/21-nsys-cuda-capture/postprocess-v2.json",
+      "sha256": "85502b7409dc1261ecefcc31a65f3760d1cb4ca41cd85efe36272aefc0d2a200",
+      "run_id": "20261108T194923Z"
+    },
+    "nsys-cuda-recovered/postprocess.json": {
+      "source": "artifacts/nsys-recovery-20261108T194721Z/run-20261108T194923Z/nsys-recovery/cases/21-nsys-cuda-capture/postprocess.json",
+      "sha256": "b2dd754ef49f0dbf556a70948fdd55067503cc06fe6529a9f5303acebdf3c7de",
+      "run_id": "20261108T194923Z"
+    },
+    "nsys-cuda-recovered/report.json": {
+      "source": "artifacts/nsys-recovery-20261108T194721Z/run-20261108T194923Z/nsys-recovery/cases/21-nsys-cuda-capture/report.json",
+      "sha256": "5e66ab8f8f2cdc217f7682e0661b0f9ee1185ec9826ccba4d2a9584122d50688",
+      "run_id": "20261108T194923Z"
+    },
+    "nsys-cuda-recovered/tool.stderr.log": {
+      "source": "artifacts/nsys-recovery-20261108T194721Z/run-20261108T194923Z/nsys-recovery/cases/21-nsys-cuda-capture/tool.stderr.log",
+      "sha256": "c2d7dda7c91433325f5dadfcfab71134221de4a0b2f21e031175cf17302611fd",
+      "run_id": "20261108T194923Z"
+    },
+    "nsys-cuda-recovered/tool.stdout.log": {
+      "source": "artifacts/nsys-recovery-20261108T194721Z/run-20261108T194923Z/nsys-recovery/cases/21-nsys-cuda-capture/tool.stdout.log",
+      "sha256": "7632101172bfa84c191a757ad60e6db951c5542e43da9c444953c14e51b4f645",
+      "run_id": "20261108T194923Z"
+    }
+  }
+}

@@ -1,0 +1,1100 @@
+========= COMPUTE-SANITIZER
+========= CUDA API Error: cudaVersion argument (13041) exceeds the driver version (13030)
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame:  [0x110b0] in driver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame:  [0x2306c] in driver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame:  [0x15149] in cydriver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame:  [0x3f20d5] in driver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:2706 [0x3efbb3] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_CallOneArg in call.c:401 [0x3681fd] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_GenericGetAttr in object.c:1521 [0x39a425] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:1794 [0x3ed456] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:61 [0x36a5a4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367fdb] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:61 [0x36a5a4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367fdb] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:61 [0x36a5a4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367fdb] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:91 [0x36a519] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: _PyObject_Call_Prepend in call.c:508 [0x369435] in libpython3.12.so.1.0
+=========         Host Frame: slot_tp_call in typeobject.c:8769 [0x4a70e4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367f62] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:91 [0x36a519] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:91 [0x36a519] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: _PyObject_Call_Prepend in call.c:508 [0x369435] in libpython3.12.so.1.0
+=========         Host Frame: slot_tp_call in typeobject.c:8769 [0x4a70e4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367f62] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: PyEval_EvalCode in ceval.c:578 [0x4ec30a] in libpython3.12.so.1.0
+=========         Host Frame: builtin_exec in bltinmodule.c.h:586 [0x4e9c42] in libpython3.12.so.1.0
+=========         Host Frame: cfunction_vectorcall_FASTCALL_KEYWORDS.llvm.4147701398511412712 in methodobject.c:438 [0x3968ce] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:2706 [0x3efbb3] in libpython3.12.so.1.0
+=========         Host Frame: PyEval_EvalCode in ceval.c:578 [0x4ec30a] in libpython3.12.so.1.0
+=========         Host Frame: run_mod.llvm.16864811076475348796 in pythonrun.c:1712 [0x52aaa6] in libpython3.12.so.1.0
+=========         Host Frame: PyRun_SimpleStringFlags in pythonrun.c:480 [0x52a75c] in libpython3.12.so.1.0
+=========         Host Frame: pymain_run_command in main.c:255 [0x53fc7d] in libpython3.12.so.1.0
+=========         Host Frame: Py_RunMain in main.c:709 [0x53f709] in libpython3.12.so.1.0
+=========         Host Frame: Py_BytesMain in main.c:763 [0x29a7d6] in libpython3.12.so.1.0
+=========         Host Frame:  [0x2a1c9] in libc.so.6
+=========         Host Frame: __libc_start_main [0x2a28a] in libc.so.6
+=========         Host Frame: _start [0x2010a8] in python
+=========         Host Frame: get_compute_capability_major_minor in cuda.py:163
+=========         Host Frame: detect_gpu_arch in env_manager.py:422
+=========         Host Frame: arch in env_manager.py:999
+=========         Host Frame: apply_envar_settings in compiler.py:1198
+=========         Host Frame: _prepare_compilation in dsl.py:2722
+=========         Host Frame: _func_impl in dsl.py:2811
+=========         Host Frame: _func in dsl.py:2764
+=========         Host Frame: _compile in compiler.py:1735
+=========         Host Frame: __call__ in compiler.py:1565
+=========         Host Frame: axpby_forward in axpby.py:133
+=========         Host Frame: forward in model_new.py:15
+=========         Host Frame: _call_impl in module.py:1794
+=========         Host Frame: _wrapped_call_impl in module.py:1783
+=========         Host Frame: main in diagnostic_worker.py:64
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuGetProcAddress_v2.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame:  [0x110b0] in driver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame:  [0x2306c] in driver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame:  [0x15149] in cydriver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame:  [0x3f20d5] in driver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:2706 [0x3efbb3] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_CallOneArg in call.c:401 [0x3681fd] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_GenericGetAttr in object.c:1521 [0x39a425] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:1794 [0x3ed456] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:61 [0x36a5a4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367fdb] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:61 [0x36a5a4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367fdb] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:61 [0x36a5a4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367fdb] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:91 [0x36a519] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: _PyObject_Call_Prepend in call.c:508 [0x369435] in libpython3.12.so.1.0
+=========         Host Frame: slot_tp_call in typeobject.c:8769 [0x4a70e4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367f62] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:91 [0x36a519] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:91 [0x36a519] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: _PyObject_Call_Prepend in call.c:508 [0x369435] in libpython3.12.so.1.0
+=========         Host Frame: slot_tp_call in typeobject.c:8769 [0x4a70e4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367f62] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: PyEval_EvalCode in ceval.c:578 [0x4ec30a] in libpython3.12.so.1.0
+=========         Host Frame: builtin_exec in bltinmodule.c.h:586 [0x4e9c42] in libpython3.12.so.1.0
+=========         Host Frame: cfunction_vectorcall_FASTCALL_KEYWORDS.llvm.4147701398511412712 in methodobject.c:438 [0x3968ce] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:2706 [0x3efbb3] in libpython3.12.so.1.0
+=========         Host Frame: PyEval_EvalCode in ceval.c:578 [0x4ec30a] in libpython3.12.so.1.0
+=========         Host Frame: run_mod.llvm.16864811076475348796 in pythonrun.c:1712 [0x52aaa6] in libpython3.12.so.1.0
+=========         Host Frame: PyRun_SimpleStringFlags in pythonrun.c:480 [0x52a75c] in libpython3.12.so.1.0
+=========         Host Frame: pymain_run_command in main.c:255 [0x53fc7d] in libpython3.12.so.1.0
+=========         Host Frame: Py_RunMain in main.c:709 [0x53f709] in libpython3.12.so.1.0
+=========         Host Frame: Py_BytesMain in main.c:763 [0x29a7d6] in libpython3.12.so.1.0
+=========         Host Frame:  [0x2a1c9] in libc.so.6
+=========         Host Frame: __libc_start_main [0x2a28a] in libc.so.6
+=========         Host Frame: _start [0x2010a8] in python
+=========         Host Frame: get_compute_capability_major_minor in cuda.py:163
+=========         Host Frame: detect_gpu_arch in env_manager.py:422
+=========         Host Frame: arch in env_manager.py:999
+=========         Host Frame: apply_envar_settings in compiler.py:1198
+=========         Host Frame: _prepare_compilation in dsl.py:2722
+=========         Host Frame: _func_impl in dsl.py:2811
+=========         Host Frame: _func in dsl.py:2764
+=========         Host Frame: _compile in compiler.py:1735
+=========         Host Frame: __call__ in compiler.py:1565
+=========         Host Frame: axpby_forward in axpby.py:133
+=========         Host Frame: forward in model_new.py:15
+=========         Host Frame: _call_impl in module.py:1794
+=========         Host Frame: _wrapped_call_impl in module.py:1783
+=========         Host Frame: main in diagnostic_worker.py:64
+========= 
+========= CUDA API Error: cudaVersion argument (13041) exceeds the driver version (13030)
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame:  [0x110d7] in driver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame:  [0x2306c] in driver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame:  [0x15149] in cydriver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame:  [0x3f20d5] in driver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:2706 [0x3efbb3] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_CallOneArg in call.c:401 [0x3681fd] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_GenericGetAttr in object.c:1521 [0x39a425] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:1794 [0x3ed456] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:61 [0x36a5a4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367fdb] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:61 [0x36a5a4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367fdb] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:61 [0x36a5a4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367fdb] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:91 [0x36a519] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: _PyObject_Call_Prepend in call.c:508 [0x369435] in libpython3.12.so.1.0
+=========         Host Frame: slot_tp_call in typeobject.c:8769 [0x4a70e4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367f62] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:91 [0x36a519] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:91 [0x36a519] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: _PyObject_Call_Prepend in call.c:508 [0x369435] in libpython3.12.so.1.0
+=========         Host Frame: slot_tp_call in typeobject.c:8769 [0x4a70e4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367f62] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: PyEval_EvalCode in ceval.c:578 [0x4ec30a] in libpython3.12.so.1.0
+=========         Host Frame: builtin_exec in bltinmodule.c.h:586 [0x4e9c42] in libpython3.12.so.1.0
+=========         Host Frame: cfunction_vectorcall_FASTCALL_KEYWORDS.llvm.4147701398511412712 in methodobject.c:438 [0x3968ce] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:2706 [0x3efbb3] in libpython3.12.so.1.0
+=========         Host Frame: PyEval_EvalCode in ceval.c:578 [0x4ec30a] in libpython3.12.so.1.0
+=========         Host Frame: run_mod.llvm.16864811076475348796 in pythonrun.c:1712 [0x52aaa6] in libpython3.12.so.1.0
+=========         Host Frame: PyRun_SimpleStringFlags in pythonrun.c:480 [0x52a75c] in libpython3.12.so.1.0
+=========         Host Frame: pymain_run_command in main.c:255 [0x53fc7d] in libpython3.12.so.1.0
+=========         Host Frame: Py_RunMain in main.c:709 [0x53f709] in libpython3.12.so.1.0
+=========         Host Frame: Py_BytesMain in main.c:763 [0x29a7d6] in libpython3.12.so.1.0
+=========         Host Frame:  [0x2a1c9] in libc.so.6
+=========         Host Frame: __libc_start_main [0x2a28a] in libc.so.6
+=========         Host Frame: _start [0x2010a8] in python
+=========         Host Frame: get_compute_capability_major_minor in cuda.py:163
+=========         Host Frame: detect_gpu_arch in env_manager.py:422
+=========         Host Frame: arch in env_manager.py:999
+=========         Host Frame: apply_envar_settings in compiler.py:1198
+=========         Host Frame: _prepare_compilation in dsl.py:2722
+=========         Host Frame: _func_impl in dsl.py:2811
+=========         Host Frame: _func in dsl.py:2764
+=========         Host Frame: _compile in compiler.py:1735
+=========         Host Frame: __call__ in compiler.py:1565
+=========         Host Frame: axpby_forward in axpby.py:133
+=========         Host Frame: forward in model_new.py:15
+=========         Host Frame: _call_impl in module.py:1794
+=========         Host Frame: _wrapped_call_impl in module.py:1783
+=========         Host Frame: main in diagnostic_worker.py:64
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuGetProcAddress_v2.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame:  [0x110d7] in driver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame:  [0x2306c] in driver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame:  [0x15149] in cydriver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame:  [0x3f20d5] in driver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:2706 [0x3efbb3] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_CallOneArg in call.c:401 [0x3681fd] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_GenericGetAttr in object.c:1521 [0x39a425] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:1794 [0x3ed456] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:61 [0x36a5a4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367fdb] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:61 [0x36a5a4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367fdb] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:61 [0x36a5a4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367fdb] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:91 [0x36a519] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: _PyObject_Call_Prepend in call.c:508 [0x369435] in libpython3.12.so.1.0
+=========         Host Frame: slot_tp_call in typeobject.c:8769 [0x4a70e4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367f62] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:91 [0x36a519] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:91 [0x36a519] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: _PyObject_Call_Prepend in call.c:508 [0x369435] in libpython3.12.so.1.0
+=========         Host Frame: slot_tp_call in typeobject.c:8769 [0x4a70e4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367f62] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: PyEval_EvalCode in ceval.c:578 [0x4ec30a] in libpython3.12.so.1.0
+=========         Host Frame: builtin_exec in bltinmodule.c.h:586 [0x4e9c42] in libpython3.12.so.1.0
+=========         Host Frame: cfunction_vectorcall_FASTCALL_KEYWORDS.llvm.4147701398511412712 in methodobject.c:438 [0x3968ce] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:2706 [0x3efbb3] in libpython3.12.so.1.0
+=========         Host Frame: PyEval_EvalCode in ceval.c:578 [0x4ec30a] in libpython3.12.so.1.0
+=========         Host Frame: run_mod.llvm.16864811076475348796 in pythonrun.c:1712 [0x52aaa6] in libpython3.12.so.1.0
+=========         Host Frame: PyRun_SimpleStringFlags in pythonrun.c:480 [0x52a75c] in libpython3.12.so.1.0
+=========         Host Frame: pymain_run_command in main.c:255 [0x53fc7d] in libpython3.12.so.1.0
+=========         Host Frame: Py_RunMain in main.c:709 [0x53f709] in libpython3.12.so.1.0
+=========         Host Frame: Py_BytesMain in main.c:763 [0x29a7d6] in libpython3.12.so.1.0
+=========         Host Frame:  [0x2a1c9] in libc.so.6
+=========         Host Frame: __libc_start_main [0x2a28a] in libc.so.6
+=========         Host Frame: _start [0x2010a8] in python
+=========         Host Frame: get_compute_capability_major_minor in cuda.py:163
+=========         Host Frame: detect_gpu_arch in env_manager.py:422
+=========         Host Frame: arch in env_manager.py:999
+=========         Host Frame: apply_envar_settings in compiler.py:1198
+=========         Host Frame: _prepare_compilation in dsl.py:2722
+=========         Host Frame: _func_impl in dsl.py:2811
+=========         Host Frame: _func in dsl.py:2764
+=========         Host Frame: _compile in compiler.py:1735
+=========         Host Frame: __call__ in compiler.py:1565
+=========         Host Frame: axpby_forward in axpby.py:133
+=========         Host Frame: forward in model_new.py:15
+=========         Host Frame: _call_impl in module.py:1794
+=========         Host Frame: _wrapped_call_impl in module.py:1783
+=========         Host Frame: main in diagnostic_worker.py:64
+========= 
+========= CUDA API Error: cudaVersion argument (13041) exceeds the driver version (13030)
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame:  [0x110fe] in driver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame:  [0x2306c] in driver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame:  [0x15149] in cydriver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame:  [0x3f20d5] in driver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:2706 [0x3efbb3] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_CallOneArg in call.c:401 [0x3681fd] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_GenericGetAttr in object.c:1521 [0x39a425] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:1794 [0x3ed456] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:61 [0x36a5a4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367fdb] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:61 [0x36a5a4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367fdb] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:61 [0x36a5a4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367fdb] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:91 [0x36a519] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: _PyObject_Call_Prepend in call.c:508 [0x369435] in libpython3.12.so.1.0
+=========         Host Frame: slot_tp_call in typeobject.c:8769 [0x4a70e4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367f62] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:91 [0x36a519] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:91 [0x36a519] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: _PyObject_Call_Prepend in call.c:508 [0x369435] in libpython3.12.so.1.0
+=========         Host Frame: slot_tp_call in typeobject.c:8769 [0x4a70e4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367f62] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: PyEval_EvalCode in ceval.c:578 [0x4ec30a] in libpython3.12.so.1.0
+=========         Host Frame: builtin_exec in bltinmodule.c.h:586 [0x4e9c42] in libpython3.12.so.1.0
+=========         Host Frame: cfunction_vectorcall_FASTCALL_KEYWORDS.llvm.4147701398511412712 in methodobject.c:438 [0x3968ce] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:2706 [0x3efbb3] in libpython3.12.so.1.0
+=========         Host Frame: PyEval_EvalCode in ceval.c:578 [0x4ec30a] in libpython3.12.so.1.0
+=========         Host Frame: run_mod.llvm.16864811076475348796 in pythonrun.c:1712 [0x52aaa6] in libpython3.12.so.1.0
+=========         Host Frame: PyRun_SimpleStringFlags in pythonrun.c:480 [0x52a75c] in libpython3.12.so.1.0
+=========         Host Frame: pymain_run_command in main.c:255 [0x53fc7d] in libpython3.12.so.1.0
+=========         Host Frame: Py_RunMain in main.c:709 [0x53f709] in libpython3.12.so.1.0
+=========         Host Frame: Py_BytesMain in main.c:763 [0x29a7d6] in libpython3.12.so.1.0
+=========         Host Frame:  [0x2a1c9] in libc.so.6
+=========         Host Frame: __libc_start_main [0x2a28a] in libc.so.6
+=========         Host Frame: _start [0x2010a8] in python
+=========         Host Frame: get_compute_capability_major_minor in cuda.py:163
+=========         Host Frame: detect_gpu_arch in env_manager.py:422
+=========         Host Frame: arch in env_manager.py:999
+=========         Host Frame: apply_envar_settings in compiler.py:1198
+=========         Host Frame: _prepare_compilation in dsl.py:2722
+=========         Host Frame: _func_impl in dsl.py:2811
+=========         Host Frame: _func in dsl.py:2764
+=========         Host Frame: _compile in compiler.py:1735
+=========         Host Frame: __call__ in compiler.py:1565
+=========         Host Frame: axpby_forward in axpby.py:133
+=========         Host Frame: forward in model_new.py:15
+=========         Host Frame: _call_impl in module.py:1794
+=========         Host Frame: _wrapped_call_impl in module.py:1783
+=========         Host Frame: main in diagnostic_worker.py:64
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuGetProcAddress_v2.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame:  [0x110fe] in driver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame:  [0x2306c] in driver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame:  [0x15149] in cydriver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame:  [0x3f20d5] in driver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:2706 [0x3efbb3] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_CallOneArg in call.c:401 [0x3681fd] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_GenericGetAttr in object.c:1521 [0x39a425] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:1794 [0x3ed456] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:61 [0x36a5a4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367fdb] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:61 [0x36a5a4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367fdb] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:61 [0x36a5a4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367fdb] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:91 [0x36a519] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: _PyObject_Call_Prepend in call.c:508 [0x369435] in libpython3.12.so.1.0
+=========         Host Frame: slot_tp_call in typeobject.c:8769 [0x4a70e4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367f62] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:91 [0x36a519] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:91 [0x36a519] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: _PyObject_Call_Prepend in call.c:508 [0x369435] in libpython3.12.so.1.0
+=========         Host Frame: slot_tp_call in typeobject.c:8769 [0x4a70e4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367f62] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: PyEval_EvalCode in ceval.c:578 [0x4ec30a] in libpython3.12.so.1.0
+=========         Host Frame: builtin_exec in bltinmodule.c.h:586 [0x4e9c42] in libpython3.12.so.1.0
+=========         Host Frame: cfunction_vectorcall_FASTCALL_KEYWORDS.llvm.4147701398511412712 in methodobject.c:438 [0x3968ce] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:2706 [0x3efbb3] in libpython3.12.so.1.0
+=========         Host Frame: PyEval_EvalCode in ceval.c:578 [0x4ec30a] in libpython3.12.so.1.0
+=========         Host Frame: run_mod.llvm.16864811076475348796 in pythonrun.c:1712 [0x52aaa6] in libpython3.12.so.1.0
+=========         Host Frame: PyRun_SimpleStringFlags in pythonrun.c:480 [0x52a75c] in libpython3.12.so.1.0
+=========         Host Frame: pymain_run_command in main.c:255 [0x53fc7d] in libpython3.12.so.1.0
+=========         Host Frame: Py_RunMain in main.c:709 [0x53f709] in libpython3.12.so.1.0
+=========         Host Frame: Py_BytesMain in main.c:763 [0x29a7d6] in libpython3.12.so.1.0
+=========         Host Frame:  [0x2a1c9] in libc.so.6
+=========         Host Frame: __libc_start_main [0x2a28a] in libc.so.6
+=========         Host Frame: _start [0x2010a8] in python
+=========         Host Frame: get_compute_capability_major_minor in cuda.py:163
+=========         Host Frame: detect_gpu_arch in env_manager.py:422
+=========         Host Frame: arch in env_manager.py:999
+=========         Host Frame: apply_envar_settings in compiler.py:1198
+=========         Host Frame: _prepare_compilation in dsl.py:2722
+=========         Host Frame: _func_impl in dsl.py:2811
+=========         Host Frame: _func in dsl.py:2764
+=========         Host Frame: _compile in compiler.py:1735
+=========         Host Frame: __call__ in compiler.py:1565
+=========         Host Frame: axpby_forward in axpby.py:133
+=========         Host Frame: forward in model_new.py:15
+=========         Host Frame: _call_impl in module.py:1794
+=========         Host Frame: _wrapped_call_impl in module.py:1783
+=========         Host Frame: main in diagnostic_worker.py:64
+========= 
+========= CUDA API Error: cudaVersion argument (13041) exceeds the driver version (13030)
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame:  [0x11125] in driver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame:  [0x2306c] in driver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame:  [0x15149] in cydriver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame:  [0x3f20d5] in driver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:2706 [0x3efbb3] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_CallOneArg in call.c:401 [0x3681fd] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_GenericGetAttr in object.c:1521 [0x39a425] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:1794 [0x3ed456] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:61 [0x36a5a4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367fdb] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:61 [0x36a5a4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367fdb] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:61 [0x36a5a4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367fdb] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:91 [0x36a519] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: _PyObject_Call_Prepend in call.c:508 [0x369435] in libpython3.12.so.1.0
+=========         Host Frame: slot_tp_call in typeobject.c:8769 [0x4a70e4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367f62] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:91 [0x36a519] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:91 [0x36a519] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: _PyObject_Call_Prepend in call.c:508 [0x369435] in libpython3.12.so.1.0
+=========         Host Frame: slot_tp_call in typeobject.c:8769 [0x4a70e4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367f62] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: PyEval_EvalCode in ceval.c:578 [0x4ec30a] in libpython3.12.so.1.0
+=========         Host Frame: builtin_exec in bltinmodule.c.h:586 [0x4e9c42] in libpython3.12.so.1.0
+=========         Host Frame: cfunction_vectorcall_FASTCALL_KEYWORDS.llvm.4147701398511412712 in methodobject.c:438 [0x3968ce] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:2706 [0x3efbb3] in libpython3.12.so.1.0
+=========         Host Frame: PyEval_EvalCode in ceval.c:578 [0x4ec30a] in libpython3.12.so.1.0
+=========         Host Frame: run_mod.llvm.16864811076475348796 in pythonrun.c:1712 [0x52aaa6] in libpython3.12.so.1.0
+=========         Host Frame: PyRun_SimpleStringFlags in pythonrun.c:480 [0x52a75c] in libpython3.12.so.1.0
+=========         Host Frame: pymain_run_command in main.c:255 [0x53fc7d] in libpython3.12.so.1.0
+=========         Host Frame: Py_RunMain in main.c:709 [0x53f709] in libpython3.12.so.1.0
+=========         Host Frame: Py_BytesMain in main.c:763 [0x29a7d6] in libpython3.12.so.1.0
+=========         Host Frame:  [0x2a1c9] in libc.so.6
+=========         Host Frame: __libc_start_main [0x2a28a] in libc.so.6
+=========         Host Frame: _start [0x2010a8] in python
+=========         Host Frame: get_compute_capability_major_minor in cuda.py:163
+=========         Host Frame: detect_gpu_arch in env_manager.py:422
+=========         Host Frame: arch in env_manager.py:999
+=========         Host Frame: apply_envar_settings in compiler.py:1198
+=========         Host Frame: _prepare_compilation in dsl.py:2722
+=========         Host Frame: _func_impl in dsl.py:2811
+=========         Host Frame: _func in dsl.py:2764
+=========         Host Frame: _compile in compiler.py:1735
+=========         Host Frame: __call__ in compiler.py:1565
+=========         Host Frame: axpby_forward in axpby.py:133
+=========         Host Frame: forward in model_new.py:15
+=========         Host Frame: _call_impl in module.py:1794
+=========         Host Frame: _wrapped_call_impl in module.py:1783
+=========         Host Frame: main in diagnostic_worker.py:64
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuGetProcAddress_v2.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame:  [0x11125] in driver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame:  [0x2306c] in driver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame:  [0x15149] in cydriver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame:  [0x3f20d5] in driver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:2706 [0x3efbb3] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_CallOneArg in call.c:401 [0x3681fd] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_GenericGetAttr in object.c:1521 [0x39a425] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:1794 [0x3ed456] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:61 [0x36a5a4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367fdb] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:61 [0x36a5a4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367fdb] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:61 [0x36a5a4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367fdb] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:91 [0x36a519] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: _PyObject_Call_Prepend in call.c:508 [0x369435] in libpython3.12.so.1.0
+=========         Host Frame: slot_tp_call in typeobject.c:8769 [0x4a70e4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367f62] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:91 [0x36a519] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:91 [0x36a519] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: _PyObject_Call_Prepend in call.c:508 [0x369435] in libpython3.12.so.1.0
+=========         Host Frame: slot_tp_call in typeobject.c:8769 [0x4a70e4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367f62] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: PyEval_EvalCode in ceval.c:578 [0x4ec30a] in libpython3.12.so.1.0
+=========         Host Frame: builtin_exec in bltinmodule.c.h:586 [0x4e9c42] in libpython3.12.so.1.0
+=========         Host Frame: cfunction_vectorcall_FASTCALL_KEYWORDS.llvm.4147701398511412712 in methodobject.c:438 [0x3968ce] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:2706 [0x3efbb3] in libpython3.12.so.1.0
+=========         Host Frame: PyEval_EvalCode in ceval.c:578 [0x4ec30a] in libpython3.12.so.1.0
+=========         Host Frame: run_mod.llvm.16864811076475348796 in pythonrun.c:1712 [0x52aaa6] in libpython3.12.so.1.0
+=========         Host Frame: PyRun_SimpleStringFlags in pythonrun.c:480 [0x52a75c] in libpython3.12.so.1.0
+=========         Host Frame: pymain_run_command in main.c:255 [0x53fc7d] in libpython3.12.so.1.0
+=========         Host Frame: Py_RunMain in main.c:709 [0x53f709] in libpython3.12.so.1.0
+=========         Host Frame: Py_BytesMain in main.c:763 [0x29a7d6] in libpython3.12.so.1.0
+=========         Host Frame:  [0x2a1c9] in libc.so.6
+=========         Host Frame: __libc_start_main [0x2a28a] in libc.so.6
+=========         Host Frame: _start [0x2010a8] in python
+=========         Host Frame: get_compute_capability_major_minor in cuda.py:163
+=========         Host Frame: detect_gpu_arch in env_manager.py:422
+=========         Host Frame: arch in env_manager.py:999
+=========         Host Frame: apply_envar_settings in compiler.py:1198
+=========         Host Frame: _prepare_compilation in dsl.py:2722
+=========         Host Frame: _func_impl in dsl.py:2811
+=========         Host Frame: _func in dsl.py:2764
+=========         Host Frame: _compile in compiler.py:1735
+=========         Host Frame: __call__ in compiler.py:1565
+=========         Host Frame: axpby_forward in axpby.py:133
+=========         Host Frame: forward in model_new.py:15
+=========         Host Frame: _call_impl in module.py:1794
+=========         Host Frame: _wrapped_call_impl in module.py:1783
+=========         Host Frame: main in diagnostic_worker.py:64
+========= 
+========= CUDA API Error: cudaVersion argument (13041) exceeds the driver version (13030)
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame:  [0x1114c] in driver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame:  [0x2306c] in driver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame:  [0x15149] in cydriver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame:  [0x3f20d5] in driver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:2706 [0x3efbb3] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_CallOneArg in call.c:401 [0x3681fd] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_GenericGetAttr in object.c:1521 [0x39a425] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:1794 [0x3ed456] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:61 [0x36a5a4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367fdb] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:61 [0x36a5a4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367fdb] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:61 [0x36a5a4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367fdb] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:91 [0x36a519] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: _PyObject_Call_Prepend in call.c:508 [0x369435] in libpython3.12.so.1.0
+=========         Host Frame: slot_tp_call in typeobject.c:8769 [0x4a70e4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367f62] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:91 [0x36a519] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:91 [0x36a519] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: _PyObject_Call_Prepend in call.c:508 [0x369435] in libpython3.12.so.1.0
+=========         Host Frame: slot_tp_call in typeobject.c:8769 [0x4a70e4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367f62] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: PyEval_EvalCode in ceval.c:578 [0x4ec30a] in libpython3.12.so.1.0
+=========         Host Frame: builtin_exec in bltinmodule.c.h:586 [0x4e9c42] in libpython3.12.so.1.0
+=========         Host Frame: cfunction_vectorcall_FASTCALL_KEYWORDS.llvm.4147701398511412712 in methodobject.c:438 [0x3968ce] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:2706 [0x3efbb3] in libpython3.12.so.1.0
+=========         Host Frame: PyEval_EvalCode in ceval.c:578 [0x4ec30a] in libpython3.12.so.1.0
+=========         Host Frame: run_mod.llvm.16864811076475348796 in pythonrun.c:1712 [0x52aaa6] in libpython3.12.so.1.0
+=========         Host Frame: PyRun_SimpleStringFlags in pythonrun.c:480 [0x52a75c] in libpython3.12.so.1.0
+=========         Host Frame: pymain_run_command in main.c:255 [0x53fc7d] in libpython3.12.so.1.0
+=========         Host Frame: Py_RunMain in main.c:709 [0x53f709] in libpython3.12.so.1.0
+=========         Host Frame: Py_BytesMain in main.c:763 [0x29a7d6] in libpython3.12.so.1.0
+=========         Host Frame:  [0x2a1c9] in libc.so.6
+=========         Host Frame: __libc_start_main [0x2a28a] in libc.so.6
+=========         Host Frame: _start [0x2010a8] in python
+=========         Host Frame: get_compute_capability_major_minor in cuda.py:163
+=========         Host Frame: detect_gpu_arch in env_manager.py:422
+=========         Host Frame: arch in env_manager.py:999
+=========         Host Frame: apply_envar_settings in compiler.py:1198
+=========         Host Frame: _prepare_compilation in dsl.py:2722
+=========         Host Frame: _func_impl in dsl.py:2811
+=========         Host Frame: _func in dsl.py:2764
+=========         Host Frame: _compile in compiler.py:1735
+=========         Host Frame: __call__ in compiler.py:1565
+=========         Host Frame: axpby_forward in axpby.py:133
+=========         Host Frame: forward in model_new.py:15
+=========         Host Frame: _call_impl in module.py:1794
+=========         Host Frame: _wrapped_call_impl in module.py:1783
+=========         Host Frame: main in diagnostic_worker.py:64
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuGetProcAddress_v2.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame:  [0x1114c] in driver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame:  [0x2306c] in driver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame:  [0x15149] in cydriver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame:  [0x3f20d5] in driver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:2706 [0x3efbb3] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_CallOneArg in call.c:401 [0x3681fd] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_GenericGetAttr in object.c:1521 [0x39a425] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:1794 [0x3ed456] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:61 [0x36a5a4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367fdb] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:61 [0x36a5a4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367fdb] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:61 [0x36a5a4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367fdb] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:91 [0x36a519] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: _PyObject_Call_Prepend in call.c:508 [0x369435] in libpython3.12.so.1.0
+=========         Host Frame: slot_tp_call in typeobject.c:8769 [0x4a70e4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367f62] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:91 [0x36a519] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:91 [0x36a519] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: _PyObject_Call_Prepend in call.c:508 [0x369435] in libpython3.12.so.1.0
+=========         Host Frame: slot_tp_call in typeobject.c:8769 [0x4a70e4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367f62] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: PyEval_EvalCode in ceval.c:578 [0x4ec30a] in libpython3.12.so.1.0
+=========         Host Frame: builtin_exec in bltinmodule.c.h:586 [0x4e9c42] in libpython3.12.so.1.0
+=========         Host Frame: cfunction_vectorcall_FASTCALL_KEYWORDS.llvm.4147701398511412712 in methodobject.c:438 [0x3968ce] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:2706 [0x3efbb3] in libpython3.12.so.1.0
+=========         Host Frame: PyEval_EvalCode in ceval.c:578 [0x4ec30a] in libpython3.12.so.1.0
+=========         Host Frame: run_mod.llvm.16864811076475348796 in pythonrun.c:1712 [0x52aaa6] in libpython3.12.so.1.0
+=========         Host Frame: PyRun_SimpleStringFlags in pythonrun.c:480 [0x52a75c] in libpython3.12.so.1.0
+=========         Host Frame: pymain_run_command in main.c:255 [0x53fc7d] in libpython3.12.so.1.0
+=========         Host Frame: Py_RunMain in main.c:709 [0x53f709] in libpython3.12.so.1.0
+=========         Host Frame: Py_BytesMain in main.c:763 [0x29a7d6] in libpython3.12.so.1.0
+=========         Host Frame:  [0x2a1c9] in libc.so.6
+=========         Host Frame: __libc_start_main [0x2a28a] in libc.so.6
+=========         Host Frame: _start [0x2010a8] in python
+=========         Host Frame: get_compute_capability_major_minor in cuda.py:163
+=========         Host Frame: detect_gpu_arch in env_manager.py:422
+=========         Host Frame: arch in env_manager.py:999
+=========         Host Frame: apply_envar_settings in compiler.py:1198
+=========         Host Frame: _prepare_compilation in dsl.py:2722
+=========         Host Frame: _func_impl in dsl.py:2811
+=========         Host Frame: _func in dsl.py:2764
+=========         Host Frame: _compile in compiler.py:1735
+=========         Host Frame: __call__ in compiler.py:1565
+=========         Host Frame: axpby_forward in axpby.py:133
+=========         Host Frame: forward in model_new.py:15
+=========         Host Frame: _call_impl in module.py:1794
+=========         Host Frame: _wrapped_call_impl in module.py:1783
+=========         Host Frame: main in diagnostic_worker.py:64
+========= 
+========= CUDA API Error: cudaVersion argument (13041) exceeds the driver version (13030)
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame:  [0x11173] in driver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame:  [0x2306c] in driver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame:  [0x15149] in cydriver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame:  [0x3f20d5] in driver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:2706 [0x3efbb3] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_CallOneArg in call.c:401 [0x3681fd] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_GenericGetAttr in object.c:1521 [0x39a425] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:1794 [0x3ed456] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:61 [0x36a5a4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367fdb] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:61 [0x36a5a4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367fdb] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:61 [0x36a5a4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367fdb] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:91 [0x36a519] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: _PyObject_Call_Prepend in call.c:508 [0x369435] in libpython3.12.so.1.0
+=========         Host Frame: slot_tp_call in typeobject.c:8769 [0x4a70e4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367f62] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:91 [0x36a519] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:91 [0x36a519] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: _PyObject_Call_Prepend in call.c:508 [0x369435] in libpython3.12.so.1.0
+=========         Host Frame: slot_tp_call in typeobject.c:8769 [0x4a70e4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367f62] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: PyEval_EvalCode in ceval.c:578 [0x4ec30a] in libpython3.12.so.1.0
+=========         Host Frame: builtin_exec in bltinmodule.c.h:586 [0x4e9c42] in libpython3.12.so.1.0
+=========         Host Frame: cfunction_vectorcall_FASTCALL_KEYWORDS.llvm.4147701398511412712 in methodobject.c:438 [0x3968ce] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:2706 [0x3efbb3] in libpython3.12.so.1.0
+=========         Host Frame: PyEval_EvalCode in ceval.c:578 [0x4ec30a] in libpython3.12.so.1.0
+=========         Host Frame: run_mod.llvm.16864811076475348796 in pythonrun.c:1712 [0x52aaa6] in libpython3.12.so.1.0
+=========         Host Frame: PyRun_SimpleStringFlags in pythonrun.c:480 [0x52a75c] in libpython3.12.so.1.0
+=========         Host Frame: pymain_run_command in main.c:255 [0x53fc7d] in libpython3.12.so.1.0
+=========         Host Frame: Py_RunMain in main.c:709 [0x53f709] in libpython3.12.so.1.0
+=========         Host Frame: Py_BytesMain in main.c:763 [0x29a7d6] in libpython3.12.so.1.0
+=========         Host Frame:  [0x2a1c9] in libc.so.6
+=========         Host Frame: __libc_start_main [0x2a28a] in libc.so.6
+=========         Host Frame: _start [0x2010a8] in python
+=========         Host Frame: get_compute_capability_major_minor in cuda.py:163
+=========         Host Frame: detect_gpu_arch in env_manager.py:422
+=========         Host Frame: arch in env_manager.py:999
+=========         Host Frame: apply_envar_settings in compiler.py:1198
+=========         Host Frame: _prepare_compilation in dsl.py:2722
+=========         Host Frame: _func_impl in dsl.py:2811
+=========         Host Frame: _func in dsl.py:2764
+=========         Host Frame: _compile in compiler.py:1735
+=========         Host Frame: __call__ in compiler.py:1565
+=========         Host Frame: axpby_forward in axpby.py:133
+=========         Host Frame: forward in model_new.py:15
+=========         Host Frame: _call_impl in module.py:1794
+=========         Host Frame: _wrapped_call_impl in module.py:1783
+=========         Host Frame: main in diagnostic_worker.py:64
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuGetProcAddress_v2.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame:  [0x11173] in driver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame:  [0x2306c] in driver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame:  [0x15149] in cydriver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame:  [0x3f20d5] in driver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:2706 [0x3efbb3] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_CallOneArg in call.c:401 [0x3681fd] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_GenericGetAttr in object.c:1521 [0x39a425] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:1794 [0x3ed456] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:61 [0x36a5a4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367fdb] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:61 [0x36a5a4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367fdb] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:61 [0x36a5a4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367fdb] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:91 [0x36a519] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: _PyObject_Call_Prepend in call.c:508 [0x369435] in libpython3.12.so.1.0
+=========         Host Frame: slot_tp_call in typeobject.c:8769 [0x4a70e4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367f62] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:91 [0x36a519] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:91 [0x36a519] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: _PyObject_Call_Prepend in call.c:508 [0x369435] in libpython3.12.so.1.0
+=========         Host Frame: slot_tp_call in typeobject.c:8769 [0x4a70e4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367f62] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: PyEval_EvalCode in ceval.c:578 [0x4ec30a] in libpython3.12.so.1.0
+=========         Host Frame: builtin_exec in bltinmodule.c.h:586 [0x4e9c42] in libpython3.12.so.1.0
+=========         Host Frame: cfunction_vectorcall_FASTCALL_KEYWORDS.llvm.4147701398511412712 in methodobject.c:438 [0x3968ce] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:2706 [0x3efbb3] in libpython3.12.so.1.0
+=========         Host Frame: PyEval_EvalCode in ceval.c:578 [0x4ec30a] in libpython3.12.so.1.0
+=========         Host Frame: run_mod.llvm.16864811076475348796 in pythonrun.c:1712 [0x52aaa6] in libpython3.12.so.1.0
+=========         Host Frame: PyRun_SimpleStringFlags in pythonrun.c:480 [0x52a75c] in libpython3.12.so.1.0
+=========         Host Frame: pymain_run_command in main.c:255 [0x53fc7d] in libpython3.12.so.1.0
+=========         Host Frame: Py_RunMain in main.c:709 [0x53f709] in libpython3.12.so.1.0
+=========         Host Frame: Py_BytesMain in main.c:763 [0x29a7d6] in libpython3.12.so.1.0
+=========         Host Frame:  [0x2a1c9] in libc.so.6
+=========         Host Frame: __libc_start_main [0x2a28a] in libc.so.6
+=========         Host Frame: _start [0x2010a8] in python
+=========         Host Frame: get_compute_capability_major_minor in cuda.py:163
+=========         Host Frame: detect_gpu_arch in env_manager.py:422
+=========         Host Frame: arch in env_manager.py:999
+=========         Host Frame: apply_envar_settings in compiler.py:1198
+=========         Host Frame: _prepare_compilation in dsl.py:2722
+=========         Host Frame: _func_impl in dsl.py:2811
+=========         Host Frame: _func in dsl.py:2764
+=========         Host Frame: _compile in compiler.py:1735
+=========         Host Frame: __call__ in compiler.py:1565
+=========         Host Frame: axpby_forward in axpby.py:133
+=========         Host Frame: forward in model_new.py:15
+=========         Host Frame: _call_impl in module.py:1794
+=========         Host Frame: _wrapped_call_impl in module.py:1783
+=========         Host Frame: main in diagnostic_worker.py:64
+========= 
+========= CUDA API Error: cudaVersion argument (13041) exceeds the driver version (13030)
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame:  [0x1119a] in driver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame:  [0x2306c] in driver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame:  [0x15149] in cydriver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame:  [0x3f20d5] in driver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:2706 [0x3efbb3] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_CallOneArg in call.c:401 [0x3681fd] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_GenericGetAttr in object.c:1521 [0x39a425] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:1794 [0x3ed456] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:61 [0x36a5a4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367fdb] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:61 [0x36a5a4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367fdb] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:61 [0x36a5a4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367fdb] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:91 [0x36a519] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: _PyObject_Call_Prepend in call.c:508 [0x369435] in libpython3.12.so.1.0
+=========         Host Frame: slot_tp_call in typeobject.c:8769 [0x4a70e4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367f62] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:91 [0x36a519] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:91 [0x36a519] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: _PyObject_Call_Prepend in call.c:508 [0x369435] in libpython3.12.so.1.0
+=========         Host Frame: slot_tp_call in typeobject.c:8769 [0x4a70e4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367f62] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: PyEval_EvalCode in ceval.c:578 [0x4ec30a] in libpython3.12.so.1.0
+=========         Host Frame: builtin_exec in bltinmodule.c.h:586 [0x4e9c42] in libpython3.12.so.1.0
+=========         Host Frame: cfunction_vectorcall_FASTCALL_KEYWORDS.llvm.4147701398511412712 in methodobject.c:438 [0x3968ce] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:2706 [0x3efbb3] in libpython3.12.so.1.0
+=========         Host Frame: PyEval_EvalCode in ceval.c:578 [0x4ec30a] in libpython3.12.so.1.0
+=========         Host Frame: run_mod.llvm.16864811076475348796 in pythonrun.c:1712 [0x52aaa6] in libpython3.12.so.1.0
+=========         Host Frame: PyRun_SimpleStringFlags in pythonrun.c:480 [0x52a75c] in libpython3.12.so.1.0
+=========         Host Frame: pymain_run_command in main.c:255 [0x53fc7d] in libpython3.12.so.1.0
+=========         Host Frame: Py_RunMain in main.c:709 [0x53f709] in libpython3.12.so.1.0
+=========         Host Frame: Py_BytesMain in main.c:763 [0x29a7d6] in libpython3.12.so.1.0
+=========         Host Frame:  [0x2a1c9] in libc.so.6
+=========         Host Frame: __libc_start_main [0x2a28a] in libc.so.6
+=========         Host Frame: _start [0x2010a8] in python
+=========         Host Frame: get_compute_capability_major_minor in cuda.py:163
+=========         Host Frame: detect_gpu_arch in env_manager.py:422
+=========         Host Frame: arch in env_manager.py:999
+=========         Host Frame: apply_envar_settings in compiler.py:1198
+=========         Host Frame: _prepare_compilation in dsl.py:2722
+=========         Host Frame: _func_impl in dsl.py:2811
+=========         Host Frame: _func in dsl.py:2764
+=========         Host Frame: _compile in compiler.py:1735
+=========         Host Frame: __call__ in compiler.py:1565
+=========         Host Frame: axpby_forward in axpby.py:133
+=========         Host Frame: forward in model_new.py:15
+=========         Host Frame: _call_impl in module.py:1794
+=========         Host Frame: _wrapped_call_impl in module.py:1783
+=========         Host Frame: main in diagnostic_worker.py:64
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuGetProcAddress_v2.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame:  [0x1119a] in driver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame:  [0x2306c] in driver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame:  [0x15149] in cydriver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame:  [0x3f20d5] in driver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:2706 [0x3efbb3] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_CallOneArg in call.c:401 [0x3681fd] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_GenericGetAttr in object.c:1521 [0x39a425] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:1794 [0x3ed456] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:61 [0x36a5a4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367fdb] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:61 [0x36a5a4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367fdb] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:61 [0x36a5a4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367fdb] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:91 [0x36a519] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: _PyObject_Call_Prepend in call.c:508 [0x369435] in libpython3.12.so.1.0
+=========         Host Frame: slot_tp_call in typeobject.c:8769 [0x4a70e4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367f62] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:91 [0x36a519] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:91 [0x36a519] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: _PyObject_Call_Prepend in call.c:508 [0x369435] in libpython3.12.so.1.0
+=========         Host Frame: slot_tp_call in typeobject.c:8769 [0x4a70e4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367f62] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: PyEval_EvalCode in ceval.c:578 [0x4ec30a] in libpython3.12.so.1.0
+=========         Host Frame: builtin_exec in bltinmodule.c.h:586 [0x4e9c42] in libpython3.12.so.1.0
+=========         Host Frame: cfunction_vectorcall_FASTCALL_KEYWORDS.llvm.4147701398511412712 in methodobject.c:438 [0x3968ce] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:2706 [0x3efbb3] in libpython3.12.so.1.0
+=========         Host Frame: PyEval_EvalCode in ceval.c:578 [0x4ec30a] in libpython3.12.so.1.0
+=========         Host Frame: run_mod.llvm.16864811076475348796 in pythonrun.c:1712 [0x52aaa6] in libpython3.12.so.1.0
+=========         Host Frame: PyRun_SimpleStringFlags in pythonrun.c:480 [0x52a75c] in libpython3.12.so.1.0
+=========         Host Frame: pymain_run_command in main.c:255 [0x53fc7d] in libpython3.12.so.1.0
+=========         Host Frame: Py_RunMain in main.c:709 [0x53f709] in libpython3.12.so.1.0
+=========         Host Frame: Py_BytesMain in main.c:763 [0x29a7d6] in libpython3.12.so.1.0
+=========         Host Frame:  [0x2a1c9] in libc.so.6
+=========         Host Frame: __libc_start_main [0x2a28a] in libc.so.6
+=========         Host Frame: _start [0x2010a8] in python
+=========         Host Frame: get_compute_capability_major_minor in cuda.py:163
+=========         Host Frame: detect_gpu_arch in env_manager.py:422
+=========         Host Frame: arch in env_manager.py:999
+=========         Host Frame: apply_envar_settings in compiler.py:1198
+=========         Host Frame: _prepare_compilation in dsl.py:2722
+=========         Host Frame: _func_impl in dsl.py:2811
+=========         Host Frame: _func in dsl.py:2764
+=========         Host Frame: _compile in compiler.py:1735
+=========         Host Frame: __call__ in compiler.py:1565
+=========         Host Frame: axpby_forward in axpby.py:133
+=========         Host Frame: forward in model_new.py:15
+=========         Host Frame: _call_impl in module.py:1794
+=========         Host Frame: _wrapped_call_impl in module.py:1783
+=========         Host Frame: main in diagnostic_worker.py:64
+========= 
+========= CUDA API Error: cudaVersion argument (13050) exceeds the driver version (13030)
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame:  [0x111c1] in driver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame:  [0x2306c] in driver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame:  [0x15149] in cydriver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame:  [0x3f20d5] in driver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:2706 [0x3efbb3] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_CallOneArg in call.c:401 [0x3681fd] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_GenericGetAttr in object.c:1521 [0x39a425] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:1794 [0x3ed456] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:61 [0x36a5a4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367fdb] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:61 [0x36a5a4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367fdb] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:61 [0x36a5a4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367fdb] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:91 [0x36a519] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: _PyObject_Call_Prepend in call.c:508 [0x369435] in libpython3.12.so.1.0
+=========         Host Frame: slot_tp_call in typeobject.c:8769 [0x4a70e4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367f62] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:91 [0x36a519] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:91 [0x36a519] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: _PyObject_Call_Prepend in call.c:508 [0x369435] in libpython3.12.so.1.0
+=========         Host Frame: slot_tp_call in typeobject.c:8769 [0x4a70e4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367f62] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: PyEval_EvalCode in ceval.c:578 [0x4ec30a] in libpython3.12.so.1.0
+=========         Host Frame: builtin_exec in bltinmodule.c.h:586 [0x4e9c42] in libpython3.12.so.1.0
+=========         Host Frame: cfunction_vectorcall_FASTCALL_KEYWORDS.llvm.4147701398511412712 in methodobject.c:438 [0x3968ce] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:2706 [0x3efbb3] in libpython3.12.so.1.0
+=========         Host Frame: PyEval_EvalCode in ceval.c:578 [0x4ec30a] in libpython3.12.so.1.0
+=========         Host Frame: run_mod.llvm.16864811076475348796 in pythonrun.c:1712 [0x52aaa6] in libpython3.12.so.1.0
+=========         Host Frame: PyRun_SimpleStringFlags in pythonrun.c:480 [0x52a75c] in libpython3.12.so.1.0
+=========         Host Frame: pymain_run_command in main.c:255 [0x53fc7d] in libpython3.12.so.1.0
+=========         Host Frame: Py_RunMain in main.c:709 [0x53f709] in libpython3.12.so.1.0
+=========         Host Frame: Py_BytesMain in main.c:763 [0x29a7d6] in libpython3.12.so.1.0
+=========         Host Frame:  [0x2a1c9] in libc.so.6
+=========         Host Frame: __libc_start_main [0x2a28a] in libc.so.6
+=========         Host Frame: _start [0x2010a8] in python
+=========         Host Frame: get_compute_capability_major_minor in cuda.py:163
+=========         Host Frame: detect_gpu_arch in env_manager.py:422
+=========         Host Frame: arch in env_manager.py:999
+=========         Host Frame: apply_envar_settings in compiler.py:1198
+=========         Host Frame: _prepare_compilation in dsl.py:2722
+=========         Host Frame: _func_impl in dsl.py:2811
+=========         Host Frame: _func in dsl.py:2764
+=========         Host Frame: _compile in compiler.py:1735
+=========         Host Frame: __call__ in compiler.py:1565
+=========         Host Frame: axpby_forward in axpby.py:133
+=========         Host Frame: forward in model_new.py:15
+=========         Host Frame: _call_impl in module.py:1794
+=========         Host Frame: _wrapped_call_impl in module.py:1783
+=========         Host Frame: main in diagnostic_worker.py:64
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuGetProcAddress_v2.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame:  [0x111c1] in driver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame:  [0x2306c] in driver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame:  [0x15149] in cydriver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame:  [0x3f20d5] in driver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:2706 [0x3efbb3] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_CallOneArg in call.c:401 [0x3681fd] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_GenericGetAttr in object.c:1521 [0x39a425] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:1794 [0x3ed456] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:61 [0x36a5a4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367fdb] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:61 [0x36a5a4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367fdb] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:61 [0x36a5a4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367fdb] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:91 [0x36a519] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: _PyObject_Call_Prepend in call.c:508 [0x369435] in libpython3.12.so.1.0
+=========         Host Frame: slot_tp_call in typeobject.c:8769 [0x4a70e4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367f62] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:91 [0x36a519] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:91 [0x36a519] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: _PyObject_Call_Prepend in call.c:508 [0x369435] in libpython3.12.so.1.0
+=========         Host Frame: slot_tp_call in typeobject.c:8769 [0x4a70e4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367f62] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: PyEval_EvalCode in ceval.c:578 [0x4ec30a] in libpython3.12.so.1.0
+=========         Host Frame: builtin_exec in bltinmodule.c.h:586 [0x4e9c42] in libpython3.12.so.1.0
+=========         Host Frame: cfunction_vectorcall_FASTCALL_KEYWORDS.llvm.4147701398511412712 in methodobject.c:438 [0x3968ce] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:2706 [0x3efbb3] in libpython3.12.so.1.0
+=========         Host Frame: PyEval_EvalCode in ceval.c:578 [0x4ec30a] in libpython3.12.so.1.0
+=========         Host Frame: run_mod.llvm.16864811076475348796 in pythonrun.c:1712 [0x52aaa6] in libpython3.12.so.1.0
+=========         Host Frame: PyRun_SimpleStringFlags in pythonrun.c:480 [0x52a75c] in libpython3.12.so.1.0
+=========         Host Frame: pymain_run_command in main.c:255 [0x53fc7d] in libpython3.12.so.1.0
+=========         Host Frame: Py_RunMain in main.c:709 [0x53f709] in libpython3.12.so.1.0
+=========         Host Frame: Py_BytesMain in main.c:763 [0x29a7d6] in libpython3.12.so.1.0
+=========         Host Frame:  [0x2a1c9] in libc.so.6
+=========         Host Frame: __libc_start_main [0x2a28a] in libc.so.6
+=========         Host Frame: _start [0x2010a8] in python
+=========         Host Frame: get_compute_capability_major_minor in cuda.py:163
+=========         Host Frame: detect_gpu_arch in env_manager.py:422
+=========         Host Frame: arch in env_manager.py:999
+=========         Host Frame: apply_envar_settings in compiler.py:1198
+=========         Host Frame: _prepare_compilation in dsl.py:2722
+=========         Host Frame: _func_impl in dsl.py:2811
+=========         Host Frame: _func in dsl.py:2764
+=========         Host Frame: _compile in compiler.py:1735
+=========         Host Frame: __call__ in compiler.py:1565
+=========         Host Frame: axpby_forward in axpby.py:133
+=========         Host Frame: forward in model_new.py:15
+=========         Host Frame: _call_impl in module.py:1794
+=========         Host Frame: _wrapped_call_impl in module.py:1783
+=========         Host Frame: main in diagnostic_worker.py:64
+========= 
+========= CUDA API Error: cudaVersion argument (13050) exceeds the driver version (13030)
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame:  [0x111e8] in driver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame:  [0x2306c] in driver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame:  [0x15149] in cydriver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame:  [0x3f20d5] in driver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:2706 [0x3efbb3] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_CallOneArg in call.c:401 [0x3681fd] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_GenericGetAttr in object.c:1521 [0x39a425] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:1794 [0x3ed456] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:61 [0x36a5a4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367fdb] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:61 [0x36a5a4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367fdb] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:61 [0x36a5a4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367fdb] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:91 [0x36a519] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: _PyObject_Call_Prepend in call.c:508 [0x369435] in libpython3.12.so.1.0
+=========         Host Frame: slot_tp_call in typeobject.c:8769 [0x4a70e4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367f62] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:91 [0x36a519] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:91 [0x36a519] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: _PyObject_Call_Prepend in call.c:508 [0x369435] in libpython3.12.so.1.0
+=========         Host Frame: slot_tp_call in typeobject.c:8769 [0x4a70e4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367f62] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: PyEval_EvalCode in ceval.c:578 [0x4ec30a] in libpython3.12.so.1.0
+=========         Host Frame: builtin_exec in bltinmodule.c.h:586 [0x4e9c42] in libpython3.12.so.1.0
+=========         Host Frame: cfunction_vectorcall_FASTCALL_KEYWORDS.llvm.4147701398511412712 in methodobject.c:438 [0x3968ce] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:2706 [0x3efbb3] in libpython3.12.so.1.0
+=========         Host Frame: PyEval_EvalCode in ceval.c:578 [0x4ec30a] in libpython3.12.so.1.0
+=========         Host Frame: run_mod.llvm.16864811076475348796 in pythonrun.c:1712 [0x52aaa6] in libpython3.12.so.1.0
+=========         Host Frame: PyRun_SimpleStringFlags in pythonrun.c:480 [0x52a75c] in libpython3.12.so.1.0
+=========         Host Frame: pymain_run_command in main.c:255 [0x53fc7d] in libpython3.12.so.1.0
+=========         Host Frame: Py_RunMain in main.c:709 [0x53f709] in libpython3.12.so.1.0
+=========         Host Frame: Py_BytesMain in main.c:763 [0x29a7d6] in libpython3.12.so.1.0
+=========         Host Frame:  [0x2a1c9] in libc.so.6
+=========         Host Frame: __libc_start_main [0x2a28a] in libc.so.6
+=========         Host Frame: _start [0x2010a8] in python
+=========         Host Frame: get_compute_capability_major_minor in cuda.py:163
+=========         Host Frame: detect_gpu_arch in env_manager.py:422
+=========         Host Frame: arch in env_manager.py:999
+=========         Host Frame: apply_envar_settings in compiler.py:1198
+=========         Host Frame: _prepare_compilation in dsl.py:2722
+=========         Host Frame: _func_impl in dsl.py:2811
+=========         Host Frame: _func in dsl.py:2764
+=========         Host Frame: _compile in compiler.py:1735
+=========         Host Frame: __call__ in compiler.py:1565
+=========         Host Frame: axpby_forward in axpby.py:133
+=========         Host Frame: forward in model_new.py:15
+=========         Host Frame: _call_impl in module.py:1794
+=========         Host Frame: _wrapped_call_impl in module.py:1783
+=========         Host Frame: main in diagnostic_worker.py:64
+========= 
+========= Program hit CUDA_ERROR_INVALID_VALUE (error 1) due to "invalid argument" on CUDA API call to cuGetProcAddress_v2.
+=========     Saved host backtrace up to driver entry point at error
+=========         Host Frame:  [0x111e8] in driver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame:  [0x2306c] in driver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame:  [0x15149] in cydriver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame:  [0x3f20d5] in driver.cpython-312-x86_64-linux-gnu.so
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:2706 [0x3efbb3] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_CallOneArg in call.c:401 [0x3681fd] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_GenericGetAttr in object.c:1521 [0x39a425] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:1794 [0x3ed456] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:61 [0x36a5a4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367fdb] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:61 [0x36a5a4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367fdb] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:61 [0x36a5a4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367fdb] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:91 [0x36a519] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: _PyObject_Call_Prepend in call.c:508 [0x369435] in libpython3.12.so.1.0
+=========         Host Frame: slot_tp_call in typeobject.c:8769 [0x4a70e4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367f62] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:91 [0x36a519] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: method_vectorcall.llvm.16903682059662679103 in classobject.c:91 [0x36a519] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: _PyObject_Call_Prepend in call.c:508 [0x369435] in libpython3.12.so.1.0
+=========         Host Frame: slot_tp_call in typeobject.c:8769 [0x4a70e4] in libpython3.12.so.1.0
+=========         Host Frame: PyObject_Call in call.c:379 [0x367f62] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:3254 [0x3eb6f5] in libpython3.12.so.1.0
+=========         Host Frame: PyEval_EvalCode in ceval.c:578 [0x4ec30a] in libpython3.12.so.1.0
+=========         Host Frame: builtin_exec in bltinmodule.c.h:586 [0x4e9c42] in libpython3.12.so.1.0
+=========         Host Frame: cfunction_vectorcall_FASTCALL_KEYWORDS.llvm.4147701398511412712 in methodobject.c:438 [0x3968ce] in libpython3.12.so.1.0
+=========         Host Frame: _PyEval_EvalFrameDefault in bytecodes.c:2706 [0x3efbb3] in libpython3.12.so.1.0
+=========         Host Frame: PyEval_EvalCode in ceval.c:578 [0x4ec30a] in libpython3.12.so.1.0
+=========         Host Frame: run_mod.llvm.16864811076475348796 in pythonrun.c:1712 [0x52aaa6] in libpython3.12.so.1.0
+=========         Host Frame: PyRun_SimpleStringFlags in pythonrun.c:480 [0x52a75c] in libpython3.12.so.1.0
+=========         Host Frame: pymain_run_command in main.c:255 [0x53fc7d] in libpython3.12.so.1.0
+=========         Host Frame: Py_RunMain in main.c:709 [0x53f709] in libpython3.12.so.1.0
+=========         Host Frame: Py_BytesMain in main.c:763 [0x29a7d6] in libpython3.12.so.1.0
+=========         Host Frame:  [0x2a1c9] in libc.so.6
+=========         Host Frame: __libc_start_main [0x2a28a] in libc.so.6
+=========         Host Frame: _start [0x2010a8] in python
+=========         Host Frame: get_compute_capability_major_minor in cuda.py:163
+=========         Host Frame: detect_gpu_arch in env_manager.py:422
+=========         Host Frame: arch in env_manager.py:999
+=========         Host Frame: apply_envar_settings in compiler.py:1198
+=========         Host Frame: _prepare_compilation in dsl.py:2722
+=========         Host Frame: _func_impl in dsl.py:2811
+=========         Host Frame: _func in dsl.py:2764
+=========         Host Frame: _compile in compiler.py:1735
+=========         Host Frame: __call__ in compiler.py:1565
+=========         Host Frame: axpby_forward in axpby.py:133
+=========         Host Frame: forward in model_new.py:15
+=========         Host Frame: _call_impl in module.py:1794
+=========         Host Frame: _wrapped_call_impl in module.py:1783
+=========         Host Frame: main in diagnostic_worker.py:64
+========= 
+========= ERROR SUMMARY: 18 errors
