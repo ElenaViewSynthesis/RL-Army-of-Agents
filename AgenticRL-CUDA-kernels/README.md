@@ -7,7 +7,7 @@
 ![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-3776AB)
 ![PyTorch ≥ 2.3](https://img.shields.io/badge/torch-%E2%89%A52.3-EE4C2C)
 ![Triton ≥ 3.0](https://img.shields.io/badge/triton-%E2%89%A53.0-6E40C9)
-![Tests: 123](https://img.shields.io/badge/tests-123-2EA44F)
+![Tests: 133](https://img.shields.io/badge/tests-133-2EA44F)
 ![GPU: H200 partial acceptance](https://img.shields.io/badge/GPU-H200%20partial%20acceptance-yellow)
 
 This project extends the environment released with [CUDA-Agent](https://github.com/BytedTsinghua-SIA/CUDA-Agent) ([paper](https://arxiv.org/abs/2602.24286)). It adds three things:
@@ -297,6 +297,34 @@ python -m scripts.validate --device cuda
 
 On Modal: `modal run cloud/modal_runtime.py` (preflight) or `--tests` (require gate, stock pipeline, `record_kernel_names`, GPU suites, validate); `MODAL_GPU` selects the GPU (default H200). Logs and `results.json`/`environment.json`/`kernel_names.json` land in the `agenticrl-cuda-artifacts` Volume under `/artifacts/<run_id>/`.
 
+Empty CUDA captures now fail closed: `timing_measured=false`, a null session
+latency and `timing_reason=empty_profile:<eager|compile|gen>`; rollouts retain
+reward -1 with that reason, without retry. Profiling JSON retains
+`profile/{eager,compile,gen}_events` and `profile/eager_kernel_names` (a JSON
+string of verbatim names). `--trace-dir DIR` exports three Chrome traces;
+traced or reordered profiles are diagnostics and cannot supply rollout rewards.
+
+```bash
+# Targeted H200 evidence: 100 CuTe DSL repetitions, 20 per other backend,
+# fresh processes/caches; half generated-first, half eager-first; no reward.
+modal run --detach cloud/modal_runtime.py --diagnose
+# Short selected diagnostic (explicit repeat overrides those defaults):
+modal run --detach cloud/modal_runtime.py --diagnose --backends cutedsl --repeat 10
+# Full suite, stricter name recording, raw benchmark samples and automatic review:
+modal run cloud/modal_runtime.py --tests
+# Opt-in allowlisted compiler controls are forwarded to the remote child env:
+TRITON_KERNEL_DUMP=1 MLIR_ENABLE_DUMP=1 modal run cloud/modal_runtime.py --tests --forward-diagnostics
+```
+
+`--backends` also scopes the full runner's recorder/validation and applicable
+GPU suites (combined CUDA/Triton checks require both); `--repeat N` repeats
+full invocations, each with its own run ID. The volume contains
+`acceptance-review-<run_id>.json` (`pass` or `partial`, with scope and failures),
+stage `wall_s`, per-case `results.json:stage_wall_s`, `benchmark-samples/`, and diagnostic `timing/` traces/records.
+A passing process exit alone does not establish timing acceptance. Native
+Windows process tests require Linux/WSL2; see KNOWN_ISSUES.md.
+
+
 ---
 
 ## Experiment tracking (W&B + Weave, opt-in)
@@ -463,7 +491,7 @@ AgenticRL-CUDA-kernels/
 │   └── rollout_env.py                 # run_task(): isolated, deadline-bounded evaluation
 ├── scripts/                           # validate + record_kernel_names (artifacts)
 ├── tracking/                          # opt-in W&B + Weave logging, H200 manifest
-├── tests/                             # 123 tests; GPU-only ones skip without CUDA or the DSL package
+├── tests/                             # 133 tests; GPU-only ones skip without CUDA or the DSL package
 ├── artifacts/                         # raw logs, environment record, upstream checksums
 ├── SKILL*.md                          # policy instructions, one per backend
 ├── requirements*.txt                  # torch + triton; optional per-DSL/tracking extras

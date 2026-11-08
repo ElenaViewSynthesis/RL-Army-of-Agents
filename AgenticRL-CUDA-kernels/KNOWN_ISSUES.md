@@ -21,8 +21,9 @@
   names. The latter stock CUDA pipeline compiles and verifies after removing
   the C++17 override. See VALIDATION.md for measured results and raw logs. Unknown names count
   against provenance; no blanket `triton_` fallback is used because Torch
-  Inductor generates that prefix too. Inspect real `ctx.events()` names on the
-  target GPU before accepting the GPU validation as complete.
+  Inductor generates that prefix too. Captured symbols are pinned in
+  VALIDATION.md; the remaining timing blocker is the intermittent empty/zero
+  eager baseline below, not unobserved symbols.
 - **Interpreter autotune.** CPU interpretation pins the first block size; GPU
   execution still autotunes three block sizes. The interpreter uses NumPy,
   which is needed for CPU validation but is not an added GPU runtime dependency.
@@ -51,10 +52,12 @@
   artifacts/rollouts_cold_start.log). Local CPU validation uses `--timeout-s 600`;
   the production default is unchanged. The CUDA attempt also reports missing
   Ninja; a GPU image needs the upstream build tools (Ninja and nvcc).
-- **Benchmark latency series were not archived.** H200 run
+- **Historical benchmark latency series were not archived.** H200 run
   `20261106T185236Z` passed GPU benchmark sampling and CUDA-graph tests
   (`Ran 30 tests in 380.509s`, `OK` for the combined suite). The tests
-  assert samples and replay behavior but do not export raw latency series. A
+  asserted samples and replay behavior without exporting raw latency series.
+  The runner now sets `CUDA_AGENT_BENCH_SAMPLES_DIR` to archive per-sample
+  series under the run volume's `benchmark-samples/`. A
   benchmark stage that crashes, times out or emits malformed output only
   yields `bench/available: false` with a reason; it never changes the reward.
 - **Zero eager baseline in fresh H200 validation.** Run `20261108T014026Z`
@@ -64,9 +67,21 @@
   `timing`. Command exit success does not make this full timing acceptance.
   The saved profile contains generated-kernel events, not the eager baseline's
   event list or a trace, so the cause remains unconfirmed. Preserve this failed
-  measurement; collect baseline event evidence before changing profiler
-  semantics or relying on sweep rewards. See VALIDATION.md and
+  measurement. Profiling now retains CUDA event counts for all three sessions
+  and eager names; an empty session produces null time, `timing_measured=false`
+  and `empty_profile:<session>` (reward -1), with no retry. `--trace-dir`
+  preserves Chrome traces; traced/reordered captures are diagnostic and cannot
+  supply rollout rewards. Diagnostic Run A (`20261108T091114Z` plus
+  `20261108T103454Z`) captured 193 traced trials, 100 of them CuTe DSL, with no
+  empty session: it did not reproduce the fault, and the cause remains
+  unconfirmed. Run B (untraced full validation, repeated) is still needed
+  before relying on sweep rewards. See VALIDATION.md and
   `artifacts/acceptance-review-20261108T014026Z.json`.
+- **Profiling order shifts the eager baseline by about 8%.** Run A measured eager
+  at 1.73–1.77 µs (medians) when profiled first and 1.60–1.65 µs in the
+  production generated-first order, across all five backends. At sub-2 µs sizes
+  this can move `faster_than_eager` decisions near the margin. The cause is
+  unexplained; the order is unchanged.
 - **Event latency excludes un-joined side streams.** `bench/*/event_us_*`
   covers only work ordered on the entry stream; wall latency brackets
   `torch.cuda.synchronize()` and includes CPU dispatch and every stream.
@@ -114,10 +129,18 @@
   environment if they clash with each other or with the torch CUDA build. The
   cloud image installs all three together; the first build required the compiler
   pin fix above, after which all three executed successfully on H200.
-- **Only TileLang gets a task-local compile cache.** `TILELANG_CACHE_DIR` is set
-  per task like `TRITON_CACHE_DIR`. No cache location is configured for cuTile
-  or CuTe DSL; if they don't cache to disk, each compile, verification and
-  profiling subprocess recompiles, and that counts against the task deadline.
+- **DSL compile caches are task-local.** Alongside `TRITON_CACHE_DIR` and
+  `TILELANG_CACHE_DIR`, the harness now sets `CUDA_TILE_CACHE_DIR` (cuTile 1.8.0)
+  and `CUTE_DSL_CACHE_DIR` (CuTe DSL 4.8.1). Pinned sources:
+  [cuTile cache documentation](https://github.com/NVIDIA/cutile-python/blob/v1.8.0/docs/source/debugging.rst)
+  and [CuTe cache implementation](https://github.com/NVIDIA/cutlass/blob/v4.8.1/python/CuTeDSL/cutlass/base_dsl/cache_helpers.py).
+  Caller overrides still take precedence in rollouts. Diagnostic repetitions
+  override them with fresh task directories. Disk caches do not establish that
+  every subprocess avoids compilation; stage wall times include imports/JIT.
+- **Native Windows is not supported by the process harness.** Six local test
+  failures were reported on Windows (POSIX `os.killpg`, backslash paths and no
+  `bash`); this Linux/WSL session has not reproduced them on native Windows.
+  Use Linux/WSL2. These tests are retained to enforce process cleanup here.
 - **Tracking is opt-in and unverified against the live service.** Payloads
   were checked with fake SDKs, `--dry-run`, and a real `wandb==0.31.0` offline
   smoke using explicitly synthetic records. Real-SDK config, tables, summaries
@@ -143,6 +166,15 @@
   now writes environment records from that probe. Run `20261106T231526Z`
   remotely verified the fix: every packaged runtime field matches the fresh
   require probe, and the run_id matches.
-- **Commits unavailable in this workspace.** A focused commit attempt failed
-  with `Unable to create .../.git/index.lock: Read-only file system`.
-  Changes and evidence are retained in the working tree; nothing was pushed.
+
+- **Long synchronous Modal call lost authentication.** Diagnostic run
+  `20261108T091114Z` (Modal SDK 1.6.3) ended with `AuthError: Jwt is expired`
+  in `AttemptAwait`. The app stopped with 53 complete trial records (20 CUDA,
+  20 Triton, 13 TileLang); none had an empty capture, and CuTe DSL had not run.
+  Partial artifacts are preserved. The orchestration now uses one durable
+  `spawn()` and repeated `get(timeout=30)` calls, without resubmitting the job;
+  use `modal run --detach` for long diagnostics. This follows
+  [Modal's invocation guidance](https://modal.com/docs/guide/function-invocation-methods)
+  and [long-job example](https://github.com/modal-labs/modal-examples/blob/main/06_gpu_and_ml/long-training.py).
+  The underlying authentication failure is not yet explained; it is separate
+  from an empty GPU profiler capture. No profiler retry was added.

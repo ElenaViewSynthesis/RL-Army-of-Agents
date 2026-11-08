@@ -17,18 +17,20 @@ reference. Pins below come from H200 run `20261106T185236Z`
 
 When `unmatched_agent_names` is non-empty, first check `measured`/`reason`,
 compile errors, the discovered names and every event/class in `kernel_names.json`.
-The recorder currently checks **substring presence**, not the approved regex
-(`scripts/record_kernel_names.py:77`); an empty list alone does not prove an
-anchored match or a passing provenance gate. Compilation alone does not prove
-that the authored kernel launched.
+The recorder now uses `classify_kernel(event, [authored_name], backend)` for
+this list, including approved patterns and namespace rejection. Historical
+records used substring presence; their empty lists alone did not establish an
+anchored match. Compilation alone does not prove that a kernel launched.
 
 **First compiler diagnostic for Triton: on the GPU host**, enable
 `TRITON_KERNEL_DUMP=1` and `MLIR_ENABLE_DUMP=1`, then repeat compile/profiling
 and retain the emitted IR/symbols. In a Modal H200 run, set these in the remote
 image/sandbox environment before its child processes start; exporting them only
-in the local checkout does not configure the container. The recorder copies
+in the local checkout does not configure the container. The runner now accepts
+`--forward-diagnostics` to forward an explicit allowlist of these variables;
+use remote `/artifacts/<run_id>/...` paths for retained dumps. The recorder copies
 `os.environ` into its stage environment (`scripts/record_kernel_names.py:41`);
-Modal's `_run` likewise inherits its remote environment (`cloud/modal_runtime.py:42`).
+Modal's `_run` likewise inherits its remote environment (`cloud/modal_runtime.py:67`).
 
 For full stdout/stderr, run these stages directly in a retained **remote task
 workdir whose ModelNew already selects Triton**, with the trusted harness on
@@ -1016,3 +1018,139 @@ Evidence: [acceptance review](artifacts/acceptance-review-20261108T014026Z.json)
 [redacted Modal session](artifacts/modal-session-20261108T014026Z.log).
 The original downloaded volume directory is retained locally under
 `artifacts/volume-20261108T014026Z/`.
+
+
+## Empty-capture guard and diagnostic runner (2026-11-08)
+
+`utils/profiling.py::profile_models` retains CUDA leaf-event counts as
+`profile/{eager,compile,gen}_events`, plus the verbatim eager names in the
+JSON-string field `profile/eager_kernel_names`. An empty session has a null
+latency, `timing_measured=false`, and `timing_reason=empty_profile:<session>`.
+The rollout returns reward -1 with that specific reason, without retry.
+Generated-empty captures also leave provenance/shares null. Other captured
+sessions retain their evidence. No reward threshold or timing definition changed.
+
+Opt-in `--trace-dir DIR` writes `eager.json`, `compile.json`, and `gen.json`.
+`--order eager,compile,gen` reverses the default generated-first order.
+Traced/reordered profiles carry `profile/diagnostic=true`; `run_task` rejects
+these as reward measurements (`diagnostic_profile`). Trace export occurs between
+sessions, so absence of failure under tracing does not prove an untraced fault
+has disappeared. The ordinary, untraced full run remains required.
+
+The recorder now computes unmatched names with the same `classify_kernel`
+call used for attribution, including namespace/generic rejection and anchored
+backend patterns. A substring-only synthetic fixture stays unmatched. The
+classifier ruleset itself is unchanged (`anchored-namespaces-generic-v1`).
+
+The Modal runner accepts `--diagnose`, `--backends`, `--repeat`, and opt-in
+`--forward-diagnostics`. Default diagnosis: 100 CuTe DSL trials and 20 per
+control backend, half in each order, sequential on one GPU, with fresh processes
+and task caches. `CUDA_TILE_CACHE_DIR` and `CUTE_DSL_CACHE_DIR` are now task-local
+alongside Triton/TileLang caches; pinned vendor sources are linked in
+KNOWN_ISSUES.md. Full runs archive raw benchmark samples and per-case
+compile/verification/profiling wall seconds (`results.json:stage_wall_s`). These
+include imports and warmup, and do not isolate compiler-only cost. No Level-3
+deadline or verification tolerance changed.
+
+`acceptance-review-<run_id>.json` is generated from fresh stage outputs:
+positive timings and event counts, verified honest provenance exactly 1.0,
+verified Torch-op hacks exactly 0.0 with reward -1, empty unmatched lists,
+and packaged environment matching that container's require probe. Expected
+`timeout`/`max_turns` cases are checked as rejections, not missing timings.
+The CUDA Torch-op case is now included, so default CUDA validation has five
+honest cases and five per-backend hacks. Selected runs report their scope.
+
+Local commands and raw summaries (full logs carry run ID `20261108T091114Z`):
+
+```text
+python3 -m unittest discover -v
+Ran 133 tests in 47.176s
+OK (skipped=32)
+
+.venv/bin/python -m unittest discover -v
+Ran 133 tests in 249.111s
+OK (skipped=26)
+
+python3 -m unittest -v tests.test_rollout_env tests.test_tracking tests.test_profiling tests.test_record_kernel_names tests.test_modal_diagnostics
+Ran 44 tests in 43.431s
+OK
+```
+
+Protected-file checks pass; the upstream timing stdout line and default 18
+result keys are unchanged. Pure parent modules import under `python -S`.
+The Codex sandbox that produced these changes mounted `.git` read-only
+(`Unable to create .../.git/index.lock: Read-only file system`); they were
+committed afterwards from the Windows checkout.
+
+
+The first targeted invocation (`.venv/bin/modal run cloud/modal_runtime.py
+--diagnose`, run `20261108T091114Z`) was interrupted by Modal client
+`AuthError: Jwt is expired` in `AttemptAwait`. The stopped app left 53 complete
+records (CUDA 20, Triton 20, TileLang 13), none with an empty capture, plus an
+interrupted TileLang trial (`tilelang-013`). There are 161 traces: 159 from
+complete trials and two from the interrupted one. This is partial diagnostic
+evidence, not a completed acceptance run. Source fingerprints, all records,
+traces and logs are preserved under
+[artifacts/timing-diagnostic-20261108T091114Z](artifacts/timing-diagnostic-20261108T091114Z).
+
+The runner now calls `spawn()` once and polls that call with `get(timeout=30)`;
+`--detach` preserves the active remote function if the client disconnects.
+Polling never repeats a profiler measurement. Offline tests verify one spawn
+across a polling timeout:
+
+```text
+python3 -m unittest -v tests.test_modal_diagnostics tests.test_profiling tests.test_record_kernel_names
+Ran 14 tests in 15.374s
+OK
+
+.venv/bin/python -m unittest -v tests.test_modal_diagnostics tests.test_profiling tests.test_record_kernel_names
+Ran 14 tests in 11.486s
+OK
+```
+
+### Run A completed: 20261108T103454Z (timing diagnostic)
+
+The detached continuation
+(`.venv/bin/modal run --detach cloud/modal_runtime.py --diagnose --backends cutedsl,cutile,tilelang`,
+function call `fc-01M6XBKJPN0QG0WB9FS7EYYB6X`) ran CuTe DSL first and finished
+all 140 trials: CuTe DSL 100, cuTile 20, TileLang 20. Its summary
+(`timing/timing-diagnostic.json`) reports `empty_captures: []` and
+`failures: []`. All 11 source fingerprints in
+[timing-source-20261108T103454Z.json](artifacts/timing-source-20261108T103454Z.json)
+match the committed sources (CRLF-normalised).
+
+Combined with the 53 complete trials of `20261108T091114Z`, there are **193
+traced trials and no empty session**. Every trial captured exactly 20 eager,
+10 compiled and 10 generated CUDA events, and every generated capture had
+provenance 1.0. Run A therefore **did not reproduce** the zero eager baseline
+of `20261108T014026Z`. If one session in 60 were empty, as in the historical
+runs, 193 clean eager captures would occur with probability about 4%. That
+bounds the rate under these diagnostic conditions only: traces were exported
+between sessions, every trial used a fresh process and cache, and no rollout
+cases ran alongside, unlike the original `scripts.validate` failure. The root
+cause remains unconfirmed; the empty-capture guard is the mitigation.
+
+| backend | order | trials | eager median µs (min–max) | generated median µs |
+|---|---|---|---|---|
+| cuda | gen,eager,compile | 10 | 1.643 (1.635–1.658) | 0.957 |
+| cuda | eager,compile,gen | 10 | 1.773 (1.766–1.782) | 0.930 |
+| triton | gen,eager,compile | 10 | 1.651 (1.642–1.697) | 0.803 |
+| triton | eager,compile,gen | 10 | 1.771 (1.763–1.789) | 0.801 |
+| tilelang | gen,eager,compile | 17 | 1.613 (1.584–1.738) | 0.774 |
+| tilelang | eager,compile,gen | 16 | 1.741 (1.727–1.786) | 0.772 |
+| cutile | gen,eager,compile | 10 | 1.601 (1.591–1.754) | 0.838 |
+| cutile | eager,compile,gen | 10 | 1.733 (1.572–1.744) | 0.822 |
+| cutedsl | gen,eager,compile | 50 | 1.597 (1.581–1.663) | 0.949 |
+| cutedsl | eager,compile,gen | 50 | 1.738 (1.661–1.787) | 0.950 |
+
+**Session order shifts the eager baseline.** In every backend the eager median is
+about 8% higher when eager is profiled first (1.73–1.77 µs) than in the
+production generated-first order (1.60–1.65 µs). The generated time barely moves.
+At these sub-2 µs sizes the reward's `speedup_margin` comparison is therefore
+order-sensitive; the cause (clock state, allocator or launch-path warmup) is
+not established. No profiling order or reward threshold was changed.
+
+Records, logs and the summary are under
+[artifacts/timing-diagnostic-20261108T103454Z](artifacts/timing-diagnostic-20261108T103454Z).
+The per-session Chrome traces of both diagnostic runs (about 20 MB) are kept
+locally and in the Modal volume, not in git.
