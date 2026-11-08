@@ -195,7 +195,8 @@ def run_task(workdir: str, cfg: RolloutConfig, turns_used: int | None = None, *,
                     profile_out.update(profile)
         for field in ("t_eager_us", "t_compile_us", "t_gen_us", "provenance"):
             result["env/" + field] = profile[field]
-        if profile.get("timing_measured") is False and str(profile.get("timing_reason", "")).startswith("empty_profile:"):
+        if (profile.get("timing_measured") is False and str(profile.get("timing_reason", "")).startswith(
+                ("empty_profile:", "nonpositive_profile:", "invalid_profile:"))):
             return finish(profile["timing_reason"])
         if profile.get("profile/diagnostic"):
             return finish("diagnostic_profile")

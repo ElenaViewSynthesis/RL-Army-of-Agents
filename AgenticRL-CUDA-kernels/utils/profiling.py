@@ -3,6 +3,7 @@
 
 import argparse
 import json
+import math
 from pathlib import Path
 
 from utils.backend import BACKEND_CHOICES, DEVICE, agent_kernel_names, detect_backend, get_spec
@@ -67,8 +68,17 @@ def benchmark_model(model, inputs, warmup_iters, run_iters, return_events=False,
         trace_path.parent.mkdir(parents=True, exist_ok=True)
         ctx.export_chrome_trace(str(trace_path))
     # No retry: retain the empty capture as evidence, never a zero latency.
-    timing = sum(duration for _, duration in events) / run_iters if events else None
+    timing = sum(duration for _, duration in events) / run_iters if not capture_reason(events) else None
     return (timing, events) if return_events else timing
+
+
+def capture_reason(events):
+    if not events:
+        return "empty_profile"
+    if (any(not math.isfinite(duration) or duration < 0 for _, duration in events)
+            or not math.isfinite(sum(duration for _, duration in events))):
+        return "invalid_profile"
+    return "nonpositive_profile" if sum(duration for _, duration in events) <= 0 else None
 
 
 def profile_models(models, inputs, backend, iters, *, order="gen,eager,compile", trace_dir=None, agent_names=()):
@@ -79,16 +89,21 @@ def profile_models(models, inputs, backend, iters, *, order="gen,eager,compile",
         captures[session] = benchmark_model(models[session], inputs[session],
                                            get_spec(backend).profile_warmup_iters,
                                            iters, True, trace_path=trace)
-    summary = summarize_events(captures["gen"][1], agent_names, backend, iters)
-    empty = [s for s in order.split(",") if not captures[s][1]]
-    summary.update(timing_measured=not empty,
-                   timing_reason=f"empty_profile:{empty[0]}" if empty else None,
+    failures = {session: capture_reason(capture[1]) for session, capture in captures.items()}
+    summary = summarize_events(captures["gen"][1] if not failures["gen"] else [],
+                               agent_names, backend, iters)
+    reason = next((f"{failure}:{session}" for session, failure in failures.items() if failure), None)
+    summary.update(timing_measured=reason is None,
+                   timing_reason=reason,
                    t_eager_us=captures["eager"][0], t_compile_us=captures["compile"][0],
                    t_gen_us=captures["gen"][0])
-    if not captures["gen"][1]:
+    if failures["gen"]:
         summary["provenance"] = None
         summary.update({"provenance/"+s: None for s in ("agent","library","torch","memory")})
     summary.update({f"profile/{s}_events": len(captures[s][1]) for s in captures})
+    summary.update({f"profile/{s}_kernel_samples": json.dumps(
+        [(name, duration if math.isfinite(duration) else str(duration)) for name, duration in captures[s][1]],
+        allow_nan=False) for s in captures})
     # JSON strings keep the profiler's record flat; names are verbatim.
     summary["profile/eager_kernel_names"] = json.dumps(sorted({n for n, _ in captures["eager"][1]}))
     summary["profile/order"] = order

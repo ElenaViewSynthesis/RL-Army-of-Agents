@@ -85,8 +85,11 @@ class CaptureTests(unittest.TestCase):
             self.assertEqual((result['reward/value'],result['reward/reason']),(-1,'diagnostic_profile'))
             from tracking.contract import classify
             for key in profile:
-                self.assertEqual(classify('profile',key), 'table')
-                self.assertEqual(classify('names','backends/triton/profile/'+key), 'table')
+                metadata = key.startswith('profile/') or key == 'timing_reason'
+                self.assertEqual(classify('profile',key), 'artifact' if metadata else 'table')
+                names_artifact = metadata or key in ('t_eager_us','t_compile_us')
+                self.assertEqual(classify('names','backends/triton/profile/'+key),
+                                 'artifact' if names_artifact else 'table')
 
     def test_all_empty_and_success(self):
         profile = self.capture([[],[],[]])
@@ -97,3 +100,97 @@ class CaptureTests(unittest.TestCase):
         self.assertTrue(profile['timing_measured'])
         self.assertIsNone(profile['timing_reason'])
         self.assertFalse(profile['profile/diagnostic'])
+
+    def test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples(self):
+        for index, session in enumerate(('gen', 'eager', 'compile')):
+            for duration, reason in ((0.0, 'nonpositive_profile'), (-1.0, 'invalid_profile'),
+                                     (float('nan'), 'invalid_profile'),
+                                     (float('inf'), 'invalid_profile')):
+                with self.subTest(session=session, duration=duration):
+                    events = [[event()]] * 3
+                    events[index] = [event(duration=duration)]
+                    profile = self.capture(events)
+                    self.assertFalse(profile['timing_measured'])
+                    self.assertEqual(profile['timing_reason'], reason + ':' + session)
+                    self.assertIsNone(profile['t_' + session + '_us'])
+                    self.assertEqual(profile['profile/' + session + '_events'], 1)
+                    sample = json.loads(profile['profile/' + session + '_kernel_samples'])[0]
+                    self.assertEqual(sample[0], 'axpby_kernel')
+                    self.assertEqual(sample[1], str(duration) if reason == 'invalid_profile'
+                                     and duration not in (-1.0,) else duration)
+                    json.dumps(profile, allow_nan=False)
+                    if session == 'gen':
+                        self.assertIsNone(profile['provenance'])
+                    else:
+                        self.assertEqual(profile['provenance'], 1.0)
+                    with scratch() as tmp:
+                        task = make_task(tmp)
+                        stages = [(0, 'ok', '', False), (0, '[PASS] verify success', '', False),
+                                  (0, json.dumps(profile), '', False)]
+                        with patch('utils.rollout_env._stage', side_effect=stages) as stage:
+                            result = run_task(task, RolloutConfig())
+                        self.assertEqual(stage.call_count, 3)
+                        self.assertEqual((result['reward/value'], result['reward/reason']),
+                                         (-1, reason + ':' + session))
+
+    def test_valid_samples_preserve_cuda_events_only(self):
+        profile = self.capture([[event(), event(device='CPU', duration=100)]] * 3)
+        for session in ('gen', 'eager', 'compile'):
+            self.assertEqual(json.loads(profile['profile/' + session + '_kernel_samples']),
+                             [['axpby_kernel', 2]])
+            self.assertEqual(profile['t_' + session + '_us'], 2)
+
+
+class DiagnosticTests(unittest.TestCase):
+    def test_order_experiment_is_complete_and_counterbalanced(self):
+        from collections import Counter
+        from scripts.diagnose_profile_order import plan
+        from utils.profile_diagnostic import ORDERS, PREPARATIONS
+        jobs = plan(['triton', 'cutedsl'], 4)
+        self.assertEqual(len(jobs), 64)
+        self.assertEqual(len(set(jobs)), 64)
+        counts = Counter((backend, preparation, order) for backend, _, preparation, order in jobs)
+        self.assertEqual(set(counts.values()), {4})
+        self.assertEqual(set(counts), {(b, p, o) for b in ('triton', 'cutedsl')
+                                      for p in PREPARATIONS for o in ORDERS})
+        self.assertEqual(jobs[0][2:], (PREPARATIONS[0], ORDERS[0]))
+        self.assertEqual(jobs[16][2:], (PREPARATIONS[-1], ORDERS[-1]))
+
+    def test_preparation_controls_are_separate_and_always_diagnostic(self):
+        from collections import Counter
+        from utils import profile_diagnostic
+        for preparation in profile_diagnostic.PREPARATIONS:
+            with self.subTest(preparation=preparation):
+                calls = Counter()
+                def model(name):
+                    def forward():
+                        calls[name] += 1
+                    return forward
+                eager, generated, compiled = (model(s) for s in ('eager', 'gen', 'compile'))
+                fake_torch = types.SimpleNamespace(
+                    manual_seed=lambda seed: None, no_grad=contextlib.nullcontext,
+                    compile=lambda model: compiled,
+                    cuda=types.SimpleNamespace(synchronize=lambda: None))
+                with (patch.dict(sys.modules, torch=fake_torch),
+                      patch.object(profile_diagnostic, 'initialize_models',
+                                   return_value=(eager, generated, [], [])),
+                      patch.object(profile_diagnostic, 'agent_kernel_names', return_value=['authored']),
+                      patch.object(profile_diagnostic, 'get_prof_ctx',
+                                   return_value=FakeProfiler([])) as empty,
+                      patch.object(profile_diagnostic, 'benchmark_model',
+                                   return_value=(2.0, [('eager_kernel', 2.0)])) as primer,
+                      patch.object(profile_diagnostic, 'profile_models',
+                                   return_value={'profile/diagnostic': False}) as measured):
+                    result = profile_diagnostic.capture('triton', 'gen,eager,compile', preparation)
+                self.assertTrue(result['diagnostic_only'])
+                self.assertTrue(result['profile']['profile/diagnostic'])
+                measured.assert_called_once()
+                self.assertEqual(measured.call_args.kwargs['order'], 'gen,eager,compile')
+                self.assertEqual(calls, Counter(dict(eager=20, gen=20, compile=20))
+                                 if preparation == 'warmup-all' else Counter())
+                self.assertEqual(empty.call_count, int(preparation == 'empty-prime'))
+                self.assertEqual(primer.call_count, int(preparation == 'eager-prime'))
+                if preparation == 'eager-prime':
+                    primer.assert_called_once_with(eager, [], 20, 10, True)
+                if preparation == 'empty-prime':
+                    self.assertEqual(result['primer'], {'intentional_empty': True, 'cuda_events': 0})
