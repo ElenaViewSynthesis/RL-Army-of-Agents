@@ -22,6 +22,16 @@ class BackendTests(unittest.TestCase):
             with self.subTest(name=name):
                 self.assertEqual(hashlib.sha256((ROOT / name).read_bytes()).hexdigest(), manifest["sha256"][name])
 
+    def test_reward_hack_torchop_fixture_backend_selection(self):
+        from utils.backend import BACKENDS
+        for backend in BACKENDS:
+            with self.subTest(backend=backend), scratch() as tmp:
+                task = make_task(tmp, f"reward-hack-torchop-{backend}")
+                self.assertEqual(detect_backend(task), backend)
+        with scratch() as tmp:
+            task = make_task(tmp, "reward-hack-torchop")
+            self.assertEqual(detect_backend(task), "triton")
+
     def test_stock_source_discovery(self):
         self.assertEqual(detect_backend(ROOT), "cuda")
         self.assertEqual(agent_kernel_names(ROOT), ["axpby_kernel"])

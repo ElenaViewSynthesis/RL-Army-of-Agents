@@ -180,7 +180,7 @@ class GPUBenchmarkTests(unittest.TestCase):
             self.assertTrue(result[f"bench/{impl}/graph_replay_ok"], result)
         self.assertTrue(result["bench/graph_all_capturable"])
         assert_flat(self, result)
-        hack = make_task(self.tmp.name, "hack")
+        hack = make_task(self.tmp.name, "reward-hack-torchop")
         source = (hack / "model_new.py").read_text()
         (hack / "model_new.py").write_text(source.replace(
             "return self.alpha * a + b",

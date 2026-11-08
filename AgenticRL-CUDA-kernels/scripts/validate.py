@@ -43,7 +43,7 @@ def main():
         triton_task = make_task(tmp, "triton")
         for label, path, config, turns in (
             ("triton", triton_task, cfg, 1),
-            ("hack", make_task(tmp, "hack"), cfg, 1),
+            ("reward-hack-torchop", make_task(tmp, "reward-hack-torchop"), cfg, 1),
             ("timeout", make_task(tmp, "sleep"), dataclasses.replace(cfg, timeout_s=5), 1),
             ("max_turns", triton_task, cfg, 25),
             ("overlong", triton_task, dataclasses.replace(RolloutConfig.preset("dapo"), timeout_s=args.timeout_s), 19),
@@ -63,12 +63,12 @@ def main():
                 unavailable[name] = reason
                 print(json.dumps({"case": name, "unavailable": reason}), flush=True)
                 continue
-            for label in (name, f"hack-{name}"):
+            for label in (name, f"reward-hack-torchop-{name}"):
                 results[label] = evaluate(label, make_task(tmp, label), cfg, 1)
                 print(json.dumps({"case": label, **results[label]}, allow_nan=False), flush=True)
     # This demo tests reward/advantage arithmetic only, not GPU performance.
     synthetic = []
-    for rid, provenance in (("triton", 1.0), ("cuda", 1.0), ("hack", 0.0)):
+    for rid, provenance in (("triton", 1.0), ("cuda", 1.0), ("reward-hack-torchop", 0.0)):
         reward = compute_reward(True, 100, 80, 50, provenance, cfg, 1)
         synthetic.append({"rollout_id": rid, "reward/value": reward["reward"],
                           "reward/reason": reward["reason"], "env/turns_used": 1})
@@ -78,8 +78,8 @@ def main():
         group_configs[algo] = config.to_dict()
         pairs, stats = build_batch(["axpby"] * 3, synthetic, config)
         demo[algo] = {"advantages": dict(pairs), "stats": stats}
-        if all(k in results and results[k]["env/provenance"] is not None for k in ("triton", "cuda", "hack")):
-            rows = [dict(results[k], rollout_id=k) for k in ("triton", "cuda", "hack")]
+        if all(k in results and results[k]["env/provenance"] is not None for k in ("triton", "cuda", "reward-hack-torchop")):
+            rows = [dict(results[k], rollout_id=k) for k in ("triton", "cuda", "reward-hack-torchop")]
             pairs, stats = build_batch(["axpby"] * 3, rows, config)
             measured[algo] = {"advantages": dict(pairs), "stats": stats}
     from importlib.metadata import PackageNotFoundError, version

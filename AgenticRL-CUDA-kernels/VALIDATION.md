@@ -808,3 +808,34 @@ must be decided with the trainer owner before those metrics are emitted.
 
 Commit attempt failed: `Unable to create .../.git/index.lock: Read-only file
 system`. Nothing was pushed.
+
+
+## Torch-op reward-hack fixture naming (2026-11-08)
+
+Current fixtures and future validation output use `reward-hack-torchop` and
+`reward-hack-torchop-<backend>`. The factory, validation/group IDs, provenance
+checks and graph benchmark test callers use these names. The default bare
+fixture still declares Triton; explicit backend variants declare their backend.
+The Torch-op model template is byte-identical to its previous value, verified
+against the `_HACK` literal at HEAD. Rewards, grouping, classifier rules, kernel
+sources and protected files are unchanged. Historical artifacts and backfill
+labels remain verbatim (`hack`, `hack-<backend>`); the historical backfill was
+checked directly. The CISPO explainer remains an unlinked draft.
+
+The recorded H200 run `20261107T140018Z` still supplies the environment-side
+ranking evidence (its historical JSON key is `hack`). The trainer's clipped-IS
+loss remains unimplemented. No fresh GPU measurement was made for this naming
+change.
+
+```text
+PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -v
+Ran 123 tests in 87.479s
+OK (skipped=32)
+
+PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m unittest discover -v
+Ran 123 tests in 695.269s
+OK (skipped=26)
+```
+
+Raw logs: [system tests](artifacts/fixture-rename-tests-system-20261108.log) and
+[CPU/interpreter tests](artifacts/fixture-rename-tests-venv-20261108.log).

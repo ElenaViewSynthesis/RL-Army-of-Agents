@@ -49,7 +49,7 @@ class CPUIntegrationTests(unittest.TestCase):
         assert_flat(self, result)
 
     def test_torch_hack_passes_verification_but_cpu_cannot_attribute(self):
-        result = run_task(str(make_task(self.tmp.name, "hack")), self.cfg)
+        result = run_task(str(make_task(self.tmp.name, "reward-hack-torchop")), self.cfg)
         self.assertTrue(result["env/verify_ok"], result)
         self.assertEqual(result["reward/reason"], "unmeasured")
         self.assertEqual(result["reward/value"], -1)
@@ -90,7 +90,7 @@ class GPUIntegrationTests(unittest.TestCase):
         cls.triton_task = make_task(cls.tmp.name, "triton")
         cls.honest_triton = run_task(str(cls.triton_task), cfg, 1)
         cls.honest_cuda = run_task(str(make_task(cls.tmp.name, "cuda")), cfg, 1)
-        cls.hack = run_task(str(make_task(cls.tmp.name, "hack")), cfg, 1)
+        cls.hack = run_task(str(make_task(cls.tmp.name, "reward-hack-torchop")), cfg, 1)
 
     def test_honest_triton(self):
         result = self.honest_triton
@@ -115,12 +115,12 @@ class GPUIntegrationTests(unittest.TestCase):
 
     def test_every_preset_ranks_the_hack_last(self):
         rows = [dict(r, rollout_id=rid) for r, rid in
-                ((self.honest_triton, "triton"), (self.honest_cuda, "cuda"), (self.hack, "hack"))]
+                ((self.honest_triton, "triton"), (self.honest_cuda, "cuda"), (self.hack, "reward-hack-torchop"))]
         for algo in ALGOS:
             cfg = dataclasses.replace(RolloutConfig.preset(algo), group_size=3)
             pairs, stats = build_batch(["axpby"] * 3, rows, cfg)
             advantages = dict(pairs)
-            self.assertLess(advantages["hack"], min(advantages["triton"], advantages["cuda"]))
+            self.assertLess(advantages["reward-hack-torchop"], min(advantages["triton"], advantages["cuda"]))
             self.assertAlmostEqual(sum(advantages.values()), 0)
             assert_flat(self, stats)
 
@@ -158,7 +158,7 @@ class DSLIntegrationChecks:
         cls.addClassCleanup(env.stop)
         cfg = RolloutConfig.preset("grpo")
         cls.honest = run_task(str(make_task(cls.tmp.name, cls.backend)), cfg, 1)
-        cls.hack = run_task(str(make_task(cls.tmp.name, f"hack-{cls.backend}")), cfg, 1)
+        cls.hack = run_task(str(make_task(cls.tmp.name, f"reward-hack-torchop-{cls.backend}")), cfg, 1)
 
     def test_honest_passes_correctness_and_provenance(self):
         result = self.honest
@@ -177,12 +177,12 @@ class DSLIntegrationChecks:
         assert_flat(self, result)
 
     def test_every_preset_ranks_the_hack_last(self):
-        rows = [dict(self.honest, rollout_id="honest"), dict(self.hack, rollout_id="hack")]
+        rows = [dict(self.honest, rollout_id="honest"), dict(self.hack, rollout_id=f"reward-hack-torchop-{self.backend}")]
         for algo in ALGOS:
             cfg = dataclasses.replace(RolloutConfig.preset(algo), group_size=2)
             pairs, _ = build_batch(["axpby"] * 2, rows, cfg)
             advantages = dict(pairs)
-            self.assertLess(advantages["hack"], advantages["honest"])
+            self.assertLess(advantages[f"reward-hack-torchop-{self.backend}"], advantages["honest"])
 
 
 @unittest.skipUnless(HAS_GPU and _has("tilelang"), "requires CUDA GPU, Torch + TileLang")

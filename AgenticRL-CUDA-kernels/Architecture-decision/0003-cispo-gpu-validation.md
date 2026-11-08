@@ -46,3 +46,11 @@ the `clip_low=1.0` CISPO-only rule (no lower bound, as in the paper), the
 attribution (MiniMax-M1 publishes no ε_high), and the environment/trainer
 split. The decision rationale lives in ADR 0001; the README keeps the
 one-paragraph statement and links both sources and this record.
+
+## Fixture naming
+
+The `hack` key in run `20261107T140018Z` is the recorded historical label.
+New fixtures and validation output use `reward-hack-torchop`, or
+`reward-hack-torchop-<backend>` for backend-specific variants. Historical JSON,
+logs and backfill labels retain their original names. This is a naming change;
+the measured advantages and the environment/trainer contract are unchanged.

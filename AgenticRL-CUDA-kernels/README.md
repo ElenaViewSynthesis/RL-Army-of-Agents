@@ -31,7 +31,7 @@ This project extends the environment released with [CUDA-Agent](https://github.c
 
 Upstream verification blocks `torch.nn.functional.*`, but nothing stops `model_new.py` from calling `torch.matmul`, `torch.sum` or `x @ w.T`. Those calls pass the five correctness checks *and* profile as fast, so the milestone reward cannot tell "the agent wrote a kernel" from "PyTorch ran one".
 
-This environment closes that gap by reading the `torch.profiler` CUDA events it already collects and attributing each kernel to its source. The test suite includes a *Torch-op hack* fixture: it passes correctness and must fail provenance.
+This environment closes that gap by reading the `torch.profiler` CUDA events it already collects and attributing each kernel to its source. The test suite includes the `reward-hack-torchop` fixture (`reward-hack-torchop-<backend>` for backend-specific variants): it passes correctness and must fail provenance. Historical artifacts retain their recorded `hack` / `hack-<backend>` case labels.
 
 ## How a rollout is scored
 
@@ -402,7 +402,7 @@ python -m unittest -v tests.test_provenance tests.test_dsl_kernels tests.test_be
 python -m scripts.validate --device cuda
 ```
 
-The GPU tests require honest CUDA and Triton to pass correctness *and* provenance, and the Torch-op hack to pass correctness but fail provenance and rank last under both presets.
+The GPU tests require honest CUDA and Triton to pass correctness *and* provenance, and the Torch-op hack to pass correctness but fail provenance and rank last under every preset.
 
 ---
 
