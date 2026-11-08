@@ -1,0 +1,75 @@
+Note that running a local entrypoint in detached mode only keeps the last triggered Modal function alive after the parent process has been killed or disconnected.
+✓ Initialized. View run at 
+https://modal.com/apps/elenamylocuda/main/ap-MHPQX5MNNfwMOY2prgzixF
+✓ Created objects.
+├── ✓ Uploaded 
+│   /mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/cloud/mo
+│   dal_runtime.py
+├── ✓ Uploaded 
+│   /mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifact
+│   s/upstream.json
+├── ✓ Uploaded 
+│   /mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels
+├── ✓ Created Function preflight.
+├── ✓ Created Function gpu_tests.
+├── ✓ Created Function diagnose_timing.
+└── ✓ Created Function diagnose_order.
+{"function_call_id": "fc-01M6XRHF84EMVN62WMR39GFQWN"}
+{
+  "runtime/python": "3.12.1",
+  "runtime/python_ok": true,
+  "runtime/gpu_count": 1,
+  "runtime/gpu0_name": "NVIDIA H200",
+  "runtime/gpu0_compute_cap": "9.0",
+  "runtime/gpu0_uuid": "GPU-0d083208-bd76-dc2a-f0d7-804882dc6dc8",
+  "runtime/driver_version": "610.57.04",
+  "runtime/driver_ok": true,
+  "runtime/gpu0_cutile_supported": true,
+  "runtime/nvcc_version": "13.3",
+  "runtime/nvcc_ok": true,
+  "runtime/ninja": "/usr/local/bin/ninja",
+  "runtime/tileiras_version": "13.3.36",
+  "runtime/tileiras_ok": true,
+  "runtime/tileiras_reason": null,
+  "runtime/cuda_tile_version": "1.8.0",
+  "runtime/torch_version": "2.14.1+cu130",
+  "runtime/torch_cuda_build": true,
+  "runtime/triton_version": "3.8.0",
+  "runtime/tilelang_version": "0.1.15",
+  "runtime/cutlass_dsl_version": "4.8.1",
+  "runtime/cuda_bindings_version": "13.5.0",
+  "runtime/nsys": "/usr/local/bin/nsys",
+  "runtime/ncu": "/usr/local/cuda/bin/ncu",
+  "runtime/compute_sanitizer": "/usr/local/cuda/bin/compute-sanitizer",
+  "runtime/ok_cuda_backend": true,
+  "runtime/ok_triton_backend": true,
+  "runtime/ok_cutile": true,
+  "runtime/ok_tilelang": true,
+  "runtime/ok_cutedsl": true,
+  "runtime/unavailable_reason": null,
+  "nvidia_smi": "Sun Nov  8 14:21:08 2026       \n+-----------------------------------------------------------------------------------------+\n| NVIDIA-SMI 610.57.04              KMD Version: 610.57.04     CUDA UMD Version: 13.3     |\n+-----------------------------------------+------------------------+----------------------+\n| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n|                                         |                        |               MIG M. |\n|=========================================+========================+======================|\n|   0  NVIDIA H200                    On  |   00000000:CA:00.0 Off |                    0 |\n| N/A   30C    P0             76W /  700W |       4MiB / 143771MiB |      0%      Default |\n|                                         |                        |             Disabled |\n+-----------------------------------------+------------------------+----------------------+\n\n+-----------------------------------------------------------------------------------------+\n| Processes:                                                                              |\n|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |\n|        ID   ID                                                               Usage      |\n|=========================================================================================|\n|  No running processes found                                                             |\n+-----------------------------------------------------------------------------------------+\n",
+  "run_id": "20261108T142102Z"
+}
+{"function_call_id": "fc-01M6XRHPD7TYF4FM82NDST496S"}
+{"function_call_id": "fc-01M6XRHPD7TYF4FM82NDST496S"}
+{
+  "run_id": "20261108T142102Z",
+  "runs": [
+    {
+      "cmd": "python -m utils.runtime --json --require triton,cutedsl",
+      "returncode": 0,
+      "timed_out": false,
+      "wall_s": 0.16454137699999993,
+      "stdout_tail": "{\"runtime/python\": \"3.12.1\", \"runtime/python_ok\": true, \"runtime/gpu_count\": 1, \"runtime/gpu0_name\": \"NVIDIA H200\", \"runtime/gpu0_compute_cap\": \"9.0\", \"runtime/gpu0_uuid\": \"GPU-0434497f-d69e-88fd-9823-cbd7911b1da7\", \"runtime/driver_version\": \"610.57.04\", \"runtime/driver_ok\": true, \"runtime/gpu0_cutile_supported\": true, \"runtime/nvcc_version\": \"13.3\", \"runtime/nvcc_ok\": true, \"runtime/ninja\": \"/usr/local/bin/ninja\", \"runtime/tileiras_version\": \"13.3.36\", \"runtime/tileiras_ok\": true, \"runtime/tileiras_reason\": null, \"runtime/cuda_tile_version\": \"1.8.0\", \"runtime/torch_version\": \"2.14.1+cu130\", \"runtime/torch_cuda_build\": true, \"runtime/triton_version\": \"3.8.0\", \"runtime/tilelang_version\": \"0.1.15\", \"runtime/cutlass_dsl_version\": \"4.8.1\", \"runtime/cuda_bindings_version\": \"13.5.0\", \"runtime/nsys\": \"/usr/local/bin/nsys\", \"runtime/ncu\": \"/usr/local/cuda/bin/ncu\", \"runtime/compute_sanitizer\": \"/usr/local/cuda/bin/compute-sanitizer\", \"runtime/ok_cuda_backend\": true, \"runtime/ok_triton_backend\": true, \"runtime/ok_cutile\": true, \"runtime/ok_tilelang\": true, \"runtime/ok_cutedsl\": true, \"runtime/unavailable_reason\": null}\n",
+      "stderr_tail": ""
+    },
+    {
+      "cmd": "python -m scripts.diagnose_profile_order --backends triton,cutedsl --repeat 4 --output-dir /artifacts/20261108T142102Z/order",
+      "returncode": 0,
+      "timed_out": false,
+      "wall_s": 753.5431967449999,
+      "stdout_tail": "{\"trial\": 0, \"backend\": \"triton\", \"preparation\": \"none\", \"order\": \"gen,eager,compile\"}\n{\"trial\": 1, \"backend\": \"triton\", \"preparation\": \"none\", \"order\": \"eager,compile,gen\"}\n{\"trial\": 2, \"backend\": \"triton\", \"preparation\": \"empty-prime\", \"order\": \"gen,eager,compile\"}\n{\"trial\": 3, \"backend\": \"triton\", \"preparation\": \"empty-prime\", \"order\": \"eager,compile,gen\"}\n{\"trial\": 4, \"backend\": \"triton\", \"preparation\": \"eager-prime\", \"order\": \"gen,eager,compile\"}\n{\"trial\": 5, \"backend\": \"triton\", \"preparation\": \"eager-prime\", \"order\": \"eager,compile,gen\"}\n{\"trial\": 6, \"backend\": \"triton\", \"preparation\": \"warmup-all\", \"order\": \"gen,eager,compile\"}\n{\"trial\": 7, \"backend\": \"triton\", \"preparation\": \"warmup-all\", \"order\": \"eager,compile,gen\"}\n{\"trial\": 8, \"backend\": \"cutedsl\", \"preparation\": \"none\", \"order\": \"gen,eager,compile\"}\n{\"trial\": 9, \"backend\": \"cutedsl\", \"preparation\": \"none\", \"order\": \"eager,compile,gen\"}\n{\"trial\": 10, \"backend\": \"cutedsl\", \"preparation\": \"empty-prime\", \"order\": \"gen,eager,compile\"}\n{\"trial\": 11, \"backend\": \"cutedsl\", \"preparation\": \"empty-prime\", \"order\": \"eager,compile,gen\"}\n{\"trial\": 12, \"backend\": \"cutedsl\", \"preparation\": \"eager-prime\", \"order\": \"gen,eager,compile\"}\n{\"trial\": 13, \"backend\": \"cutedsl\", \"preparation\": \"eager-prime\", \"order\": \"eager,compile,gen\"}\n{\"trial\": 14, \"backend\": \"cutedsl\", \"preparation\": \"warmup-all\", \"order\": \"gen,eager,compile\"}\n{\"trial\": 15, \"backend\": \"cutedsl\", \"preparation\": \"warmup-all\", \"order\": \"eager,compile,gen\"}\n{\"trial\": 16, \"backend\": \"triton\", \"preparation\": \"warmup-all\", \"order\": \"eager,compile,gen\"}\n{\"trial\": 17, \"backend\": \"triton\", \"preparation\": \"warmup-all\", \"order\": \"gen,eager,compile\"}\n{\"trial\": 18, \"backend\": \"triton\", \"preparation\": \"eager-prime\", \"order\": \"eager,compile,gen\"}\n{\"trial\": 19, \"backend\": \"triton\", \"preparation\": \"eager-prime\", \"order\": \"gen,eager,compile\"}\n{\"trial\": 20, \"backend\": \"triton\", \"preparation\": \"empty-prime\", \"order\": \"eager,compile,gen\"}\n{\"trial\": 21, \"backend\": \"triton\", \"preparation\": \"empty-prime\", \"order\": \"gen,eager,compile\"}\n{\"trial\": 22, \"backend\": \"triton\", \"preparation\": \"none\", \"order\": \"eager,compile,gen\"}\n{\"trial\": 23, \"backend\": \"triton\", \"preparation\": \"none\", \"order\": \"gen,eager,compile\"}\n{\"trial\": 24, \"backend\": \"cutedsl\", \"preparation\": \"warmup-all\", \"order\": \"eager,compile,gen\"}\n{\"trial\": 25, \"backend\": \"cutedsl\", \"preparation\": \"warmup-all\", \"order\": \"gen,eager,compile\"}\n{\"trial\": 26, \"backend\": \"cutedsl\", \"preparation\": \"eager-prime\", \"order\": \"eager,compile,gen\"}\n{\"trial\": 27, \"backend\": \"cutedsl\", \"preparation\": \"eager-prime\", \"order\": \"gen,eager,compile\"}\n{\"trial\": 28, \"backend\": \"cutedsl\", \"preparation\": \"empty-prime\", \"order\": \"eager,compile,gen\"}\n{\"trial\": 29, \"backend\": \"cutedsl\", \"preparation\": \"empty-prime\", \"order\": \"gen,eager,compile\"}\n{\"trial\": 30, \"backend\": \"cutedsl\", \"preparation\": \"none\", \"order\": \"eager,compile,gen\"}\n{\"trial\": 31, \"backend\": \"cutedsl\", \"preparation\": \"none\", \"order\": \"gen,eager,compile\"}\n{\"trial\": 32, \"backend\": \"triton\", \"preparation\": \"none\", \"order\": \"gen,eager,compile\"}\n{\"trial\": 33, \"backend\": \"triton\", \"preparation\": \"none\", \"order\": \"eager,compile,gen\"}\n{\"trial\": 34, \"backend\": \"triton\", \"preparation\": \"empty-prime\", \"order\": \"gen,eager,compile\"}\n{\"trial\": 35, \"backend\": \"triton\", \"preparation\": \"empty-prime\", \"order\": \"eager,compile,gen\"}\n{\"trial\": 36, \"backend\": \"triton\", \"preparation\": \"eager-prime\", \"order\": \"gen,eager,compile\"}\n{\"trial\": 37, \"backend\": \"triton\", \"preparation\": \"eager-prime\", \"order\": \"eager,compile,gen\"}\n{\"trial\": 38, \"backend\": \"triton\", \"preparation\": \"warmup-all\", \"order\": \"gen,eager,compile\"}\n{\"trial\": 39, \"backend\": \"triton\", \"preparation\": \"warmup-all\", \"order\": \"eager,compile,gen\"}\n{\"trial\": 40, \"backend\": \"cutedsl\", \"preparation\": \"none\", \"order\": \"gen,eager,compile\"}\n{\"trial\": 41, \"backend\": \"cutedsl\", \"preparation\": \"none\", \"order\": \"eager,compile,gen\"}\n{\"trial\": 42, \"backend\": \"cutedsl\", \"preparation\": \"empty-prime\", \"order\": \"gen,eager,compile\"}\n{\"trial\": 43, \"backend\": \"cutedsl\", \"preparation\": \"empty-prime\", \"order\": \"eager,compile,gen\"}\n{\"trial\": 44, \"backend\": \"cutedsl\", \"preparation\": \"eager-prime\", \"order\": \"gen,eager,compile\"}\n{\"trial\": 45, \"backend\": \"cutedsl\", \"preparation\": \"eager-prime\", \"order\": \"eager,compile,gen\"}\n{\"trial\": 46, \"backend\": \"cutedsl\", \"preparation\": \"warmup-all\", \"order\": \"gen,eager,compile\"}\n{\"trial\": 47, \"backend\": \"cutedsl\", \"preparation\": \"warmup-all\", \"order\": \"eager,compile,gen\"}\n{\"trial\": 48, \"backend\": \"triton\", \"preparation\": \"warmup-all\", \"order\": \"eager,compile,gen\"}\n{\"trial\": 49, \"backend\": \"triton\", \"preparation\": \"warmup-all\", \"order\": \"gen,eager,compile\"}\n{\"trial\": 50, \"backend\": \"triton\", \"preparation\": \"eager-prime\", \"order\": \"eager,compile,gen\"}\n{\"trial\": 51, \"backend\": \"triton\", \"preparation\": \"eager-prime\", \"order\": \"gen,eager,compile\"}\n{\"trial\": 52, \"backend\": \"triton\", \"preparation\": \"empty-prime\", \"order\": \"eager,compile,gen\"}\n{\"trial\": 53, \"backend\": \"triton\", \"preparation\": \"empty-prime\", \"order\": \"gen,eager,compile\"}\n{\"trial\": 54, \"backend\": \"triton\", \"preparation\": \"none\", \"order\": \"eager,compile,gen\"}\n{\"trial\": 55, \"backend\": \"triton\", \"preparation\": \"none\", \"order\": \"gen,eager,compile\"}\n{\"trial\": 56, \"backend\": \"cutedsl\", \"preparation\": \"warmup-all\", \"order\": \"eager,compile,gen\"}\n{\"trial\": 57, \"backend\": \"cutedsl\", \"preparation\": \"warmup-all\", \"order\": \"gen,eager,compile\"}\n{\"trial\": 58, \"backend\": \"cutedsl\", \"preparation\": \"eager-prime\", \"order\": \"eager,compile,gen\"}\n{\"trial\": 59, \"backend\": \"cutedsl\", \"preparation\": \"eager-prime\", \"order\": \"gen,eager,compile\"}\n{\"trial\": 60, \"backend\": \"cutedsl\", \"preparation\": \"empty-prime\", \"order\": \"eager,compile,gen\"}\n{\"trial\": 61, \"backend\": \"cutedsl\", \"preparation\": \"empty-prime\", \"order\": \"gen,eager,compile\"}\n{\"trial\": 62, \"backend\": \"cutedsl\", \"preparation\": \"none\", \"order\": \"eager,compile,gen\"}\n{\"trial\": 63, \"backend\": \"cutedsl\", \"preparation\": \"none\", \"order\": \"gen,eager,compile\"}\n",
+      "stderr_tail": ""
+    }
+  ]
+}

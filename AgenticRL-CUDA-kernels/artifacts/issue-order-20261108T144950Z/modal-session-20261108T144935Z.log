@@ -1,0 +1,76 @@
+Note that running a local entrypoint in detached mode only keeps the last triggered Modal function alive after the parent process has been killed or disconnected.
+✓ Initialized. View run at 
+https://modal.com/apps/elenamylocuda/main/ap-xodFZVhjL2TGIzqpzDw4YS
+✓ Created objects.
+├── ✓ Uploaded 
+│   /mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/cloud/mo
+│   dal_runtime.py
+├── ✓ Uploaded 
+│   /mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifact
+│   s/upstream.json
+├── ✓ Uploaded 
+│   /mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels
+├── ✓ Created Function preflight.
+├── ✓ Created Function gpu_tests.
+├── ✓ Created Function diagnose_timing.
+└── ✓ Created Function diagnose_order.
+{"function_call_id": "fc-01M6XT66YTDV8VVB9MQDDVBKY6"}
+{
+  "runtime/python": "3.12.1",
+  "runtime/python_ok": true,
+  "runtime/gpu_count": 1,
+  "runtime/gpu0_name": "NVIDIA H200",
+  "runtime/gpu0_compute_cap": "9.0",
+  "runtime/gpu0_uuid": "GPU-d55fa7e0-5bc2-610a-0ae6-bd6fe4116209",
+  "runtime/driver_version": "610.57.04",
+  "runtime/driver_ok": true,
+  "runtime/gpu0_cutile_supported": true,
+  "runtime/nvcc_version": "13.3",
+  "runtime/nvcc_ok": true,
+  "runtime/ninja": "/usr/local/bin/ninja",
+  "runtime/tileiras_version": "13.3.36",
+  "runtime/tileiras_ok": true,
+  "runtime/tileiras_reason": null,
+  "runtime/cuda_tile_version": "1.8.0",
+  "runtime/torch_version": "2.14.1+cu130",
+  "runtime/torch_cuda_build": true,
+  "runtime/triton_version": "3.8.0",
+  "runtime/tilelang_version": "0.1.15",
+  "runtime/cutlass_dsl_version": "4.8.1",
+  "runtime/cuda_bindings_version": "13.5.0",
+  "runtime/nsys": "/usr/local/bin/nsys",
+  "runtime/ncu": "/usr/local/cuda/bin/ncu",
+  "runtime/compute_sanitizer": "/usr/local/cuda/bin/compute-sanitizer",
+  "runtime/ok_cuda_backend": true,
+  "runtime/ok_triton_backend": true,
+  "runtime/ok_cutile": true,
+  "runtime/ok_tilelang": true,
+  "runtime/ok_cutedsl": true,
+  "runtime/unavailable_reason": null,
+  "nvidia_smi": "Sun Nov  8 14:49:55 2026       \n+-----------------------------------------------------------------------------------------+\n| NVIDIA-SMI 610.57.04              KMD Version: 610.57.04     CUDA UMD Version: 13.3     |\n+-----------------------------------------+------------------------+----------------------+\n| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n|                                         |                        |               MIG M. |\n|=========================================+========================+======================|\n|   0  NVIDIA H200                    On  |   00000009:00:00.0 Off |                    0 |\n| N/A   28C    P0             78W /  700W |       4MiB / 143771MiB |      0%      Default |\n|                                         |                        |             Disabled |\n+-----------------------------------------+------------------------+----------------------+\n\n+-----------------------------------------------------------------------------------------+\n| Processes:                                                                              |\n|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |\n|        ID   ID                                                               Usage      |\n|=========================================================================================|\n|  No running processes found                                                             |\n+-----------------------------------------------------------------------------------------+\n",
+  "run_id": "20261108T144950Z"
+}
+{"function_call_id": "fc-01M6XT6CR8GN5DXGN0VT9G2ZE4"}
+{
+  "run_id": "20261108T144950Z",
+  "runs": [
+    {
+      "cmd": "python -m utils.runtime --json --require triton,cutedsl",
+      "returncode": 0,
+      "timed_out": false,
+      "wall_s": 0.15139327300000005,
+      "stdout_tail": "{\"runtime/python\": \"3.12.1\", \"runtime/python_ok\": true, \"runtime/gpu_count\": 1, \"runtime/gpu0_name\": \"NVIDIA H200\", \"runtime/gpu0_compute_cap\": \"9.0\", \"runtime/gpu0_uuid\": \"GPU-b12b1eda-457c-8a49-3c87-dbcd16cdf18c\", \"runtime/driver_version\": \"610.57.04\", \"runtime/driver_ok\": true, \"runtime/gpu0_cutile_supported\": true, \"runtime/nvcc_version\": \"13.3\", \"runtime/nvcc_ok\": true, \"runtime/ninja\": \"/usr/local/bin/ninja\", \"runtime/tileiras_version\": \"13.3.36\", \"runtime/tileiras_ok\": true, \"runtime/tileiras_reason\": null, \"runtime/cuda_tile_version\": \"1.8.0\", \"runtime/torch_version\": \"2.14.1+cu130\", \"runtime/torch_cuda_build\": true, \"runtime/triton_version\": \"3.8.0\", \"runtime/tilelang_version\": \"0.1.15\", \"runtime/cutlass_dsl_version\": \"4.8.1\", \"runtime/cuda_bindings_version\": \"13.5.0\", \"runtime/nsys\": \"/usr/local/bin/nsys\", \"runtime/ncu\": \"/usr/local/cuda/bin/ncu\", \"runtime/compute_sanitizer\": \"/usr/local/cuda/bin/compute-sanitizer\", \"runtime/ok_cuda_backend\": true, \"runtime/ok_triton_backend\": true, \"runtime/ok_cutile\": true, \"runtime/ok_tilelang\": true, \"runtime/ok_cutedsl\": true, \"runtime/unavailable_reason\": null}\n",
+      "stderr_tail": ""
+    },
+    {
+      "cmd": "python -m scripts.diagnose_profile_order --backends triton,cutedsl --repeat 4 --output-dir /artifacts/20261108T144950Z/order --preparations double-empty-prime,triple-empty-prime",
+      "returncode": 0,
+      "timed_out": false,
+      "wall_s": 323.77272716,
+      "stdout_tail": "{\"trial\": 0, \"backend\": \"triton\", \"preparation\": \"double-empty-prime\", \"order\": \"gen,eager,compile\"}\n{\"trial\": 1, \"backend\": \"triton\", \"preparation\": \"double-empty-prime\", \"order\": \"eager,compile,gen\"}\n{\"trial\": 2, \"backend\": \"triton\", \"preparation\": \"triple-empty-prime\", \"order\": \"gen,eager,compile\"}\n{\"trial\": 3, \"backend\": \"triton\", \"preparation\": \"triple-empty-prime\", \"order\": \"eager,compile,gen\"}\n{\"trial\": 4, \"backend\": \"cutedsl\", \"preparation\": \"double-empty-prime\", \"order\": \"gen,eager,compile\"}\n{\"trial\": 5, \"backend\": \"cutedsl\", \"preparation\": \"double-empty-prime\", \"order\": \"eager,compile,gen\"}\n{\"trial\": 6, \"backend\": \"cutedsl\", \"preparation\": \"triple-empty-prime\", \"order\": \"gen,eager,compile\"}\n{\"trial\": 7, \"backend\": \"cutedsl\", \"preparation\": \"triple-empty-prime\", \"order\": \"eager,compile,gen\"}\n{\"trial\": 8, \"backend\": \"triton\", \"preparation\": \"triple-empty-prime\", \"order\": \"eager,compile,gen\"}\n{\"trial\": 9, \"backend\": \"triton\", \"preparation\": \"triple-empty-prime\", \"order\": \"gen,eager,compile\"}\n{\"trial\": 10, \"backend\": \"triton\", \"preparation\": \"double-empty-prime\", \"order\": \"eager,compile,gen\"}\n{\"trial\": 11, \"backend\": \"triton\", \"preparation\": \"double-empty-prime\", \"order\": \"gen,eager,compile\"}\n{\"trial\": 12, \"backend\": \"cutedsl\", \"preparation\": \"triple-empty-prime\", \"order\": \"eager,compile,gen\"}\n{\"trial\": 13, \"backend\": \"cutedsl\", \"preparation\": \"triple-empty-prime\", \"order\": \"gen,eager,compile\"}\n{\"trial\": 14, \"backend\": \"cutedsl\", \"preparation\": \"double-empty-prime\", \"order\": \"eager,compile,gen\"}\n{\"trial\": 15, \"backend\": \"cutedsl\", \"preparation\": \"double-empty-prime\", \"order\": \"gen,eager,compile\"}\n{\"trial\": 16, \"backend\": \"triton\", \"preparation\": \"double-empty-prime\", \"order\": \"gen,eager,compile\"}\n{\"trial\": 17, \"backend\": \"triton\", \"preparation\": \"double-empty-prime\", \"order\": \"eager,compile,gen\"}\n{\"trial\": 18, \"backend\": \"triton\", \"preparation\": \"triple-empty-prime\", \"order\": \"gen,eager,compile\"}\n{\"trial\": 19, \"backend\": \"triton\", \"preparation\": \"triple-empty-prime\", \"order\": \"eager,compile,gen\"}\n{\"trial\": 20, \"backend\": \"cutedsl\", \"preparation\": \"double-empty-prime\", \"order\": \"gen,eager,compile\"}\n{\"trial\": 21, \"backend\": \"cutedsl\", \"preparation\": \"double-empty-prime\", \"order\": \"eager,compile,gen\"}\n{\"trial\": 22, \"backend\": \"cutedsl\", \"preparation\": \"triple-empty-prime\", \"order\": \"gen,eager,compile\"}\n{\"trial\": 23, \"backend\": \"cutedsl\", \"preparation\": \"triple-empty-prime\", \"order\": \"eager,compile,gen\"}\n{\"trial\": 24, \"backend\": \"triton\", \"preparation\": \"triple-empty-prime\", \"order\": \"eager,compile,gen\"}\n{\"trial\": 25, \"backend\": \"triton\", \"preparation\": \"triple-empty-prime\", \"order\": \"gen,eager,compile\"}\n{\"trial\": 26, \"backend\": \"triton\", \"preparation\": \"double-empty-prime\", \"order\": \"eager,compile,gen\"}\n{\"trial\": 27, \"backend\": \"triton\", \"preparation\": \"double-empty-prime\", \"order\": \"gen,eager,compile\"}\n{\"trial\": 28, \"backend\": \"cutedsl\", \"preparation\": \"triple-empty-prime\", \"order\": \"eager,compile,gen\"}\n{\"trial\": 29, \"backend\": \"cutedsl\", \"preparation\": \"triple-empty-prime\", \"order\": \"gen,eager,compile\"}\n{\"trial\": 30, \"backend\": \"cutedsl\", \"preparation\": \"double-empty-prime\", \"order\": \"eager,compile,gen\"}\n{\"trial\": 31, \"backend\": \"cutedsl\", \"preparation\": \"double-empty-prime\", \"order\": \"gen,eager,compile\"}\n",
+      "stderr_tail": ""
+    }
+  ]
+}
+✓ App completed. View run at 
+https://modal.com/apps/elenamylocuda/main/ap-xodFZVhjL2TGIzqpzDw4YS

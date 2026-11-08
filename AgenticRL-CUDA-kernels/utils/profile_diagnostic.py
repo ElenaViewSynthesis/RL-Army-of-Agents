@@ -7,6 +7,7 @@ from utils.profiling import benchmark_model, get_prof_ctx, initialize_models, pr
 
 
 PREPARATIONS = ("none", "empty-prime", "eager-prime", "warmup-all")
+ALL_PREPARATIONS = (*PREPARATIONS, "double-empty-prime", "triple-empty-prime")
 ORDERS = ("gen,eager,compile", "eager,compile,gen")
 
 
@@ -25,12 +26,17 @@ def capture(backend, order, preparation):
                 for _ in range(warmup):
                     models[session](*inputs[session])
                 torch.cuda.synchronize()
-    elif preparation == "empty-prime":
-        torch.cuda.synchronize()
-        with get_prof_ctx() as ctx:
+    elif preparation in ("empty-prime", "double-empty-prime", "triple-empty-prime"):
+        count = {"empty-prime": 1, "double-empty-prime": 2, "triple-empty-prime": 3}[preparation]
+        captures = []
+        for _ in range(count):
             torch.cuda.synchronize()
-        primer = {"intentional_empty": True, "cuda_events": sum(
-            event.device_type.name == "CUDA" for event in ctx.events())}
+            with get_prof_ctx() as ctx:
+                torch.cuda.synchronize()
+            captures.append(sum(event.device_type.name == "CUDA" for event in ctx.events()))
+        primer = {"intentional_empty": True, "cuda_events": sum(captures)}
+        if count > 1:
+            primer["empty_capture_events"] = captures
     elif preparation == "eager-prime":
         timing, events = benchmark_model(eager, eager_inputs, warmup, 10, True)
         primer = {"intentional_empty": False, "timing_us": timing,
@@ -38,7 +44,7 @@ def capture(backend, order, preparation):
     elif preparation != "none":
         raise ValueError("unknown preparation")
     profile = profile_models(models, inputs, backend, 10, order=order,
-                             agent_names=agent_kernel_names(Path.cwd(), backend))
+                             agent_names=agent_kernel_names(Path.cwd(), backend), prime=False)
     profile["profile/diagnostic"] = True
     return {"preparation": preparation, "primer": primer, "profile": profile,
             "diagnostic_only": True}
@@ -48,7 +54,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--backend", choices=BACKENDS, required=True)
     parser.add_argument("--order", choices=ORDERS, required=True)
-    parser.add_argument("--preparation", choices=PREPARATIONS, required=True)
+    parser.add_argument("--preparation", choices=ALL_PREPARATIONS, required=True)
     args = parser.parse_args()
     print(json.dumps(capture(args.backend, args.order, args.preparation), allow_nan=False))
 

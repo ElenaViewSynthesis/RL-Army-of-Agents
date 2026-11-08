@@ -7,15 +7,15 @@ from pathlib import Path
 
 from tests.support import make_task, scratch
 from utils.backend import BACKENDS
-from utils.profile_diagnostic import ORDERS, PREPARATIONS
+from utils.profile_diagnostic import ALL_PREPARATIONS, ORDERS, PREPARATIONS
 from utils.rollout_env import _stage
 
 
-def plan(backends, repeat):
+def plan(backends, repeat, preparations=PREPARATIONS):
     return [(backend, index, preparation, order)
             for index in range(repeat)
             for backend in backends
-            for preparation in (PREPARATIONS if index % 2 == 0 else PREPARATIONS[::-1])
+            for preparation in (preparations if index % 2 == 0 else preparations[::-1])
             for order in (ORDERS if index % 2 == 0 else ORDERS[::-1])]
 
 
@@ -23,15 +23,19 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--backends", default="triton,cutedsl")
     parser.add_argument("--repeat", type=int, default=4)
+    parser.add_argument("--preparations", default=",".join(PREPARATIONS))
     parser.add_argument("--output-dir", type=Path, required=True)
     args = parser.parse_args()
     backends = args.backends.split(",")
-    if not backends or any(b not in BACKENDS for b in backends) or args.repeat <= 0:
-        parser.error("known backends and positive repeat required")
+    preparations = tuple(args.preparations.split(","))
+    if (any(b not in BACKENDS for b in backends) or args.repeat <= 0
+            or any(p not in ALL_PREPARATIONS for p in preparations)
+            or len(set(preparations)) != len(preparations)):
+        parser.error("known backends, distinct known preparations and positive repeat required")
     output = args.output_dir.resolve()
     output.mkdir(parents=True, exist_ok=False)
     rows = []
-    for trial, (backend, index, preparation, order) in enumerate(plan(backends, args.repeat)):
+    for trial, (backend, index, preparation, order) in enumerate(plan(backends, args.repeat, preparations)):
         target = output / f"{trial:03d}-{backend}-{preparation}"
         target.mkdir()
         row = {"trial": trial, "backend": backend, "repeat": index,

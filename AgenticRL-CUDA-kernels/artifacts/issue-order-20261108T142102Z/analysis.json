@@ -1,0 +1,217 @@
+{
+  "run_id": "20261108T142102Z",
+  "diagnostic_only": true,
+  "trials": 64,
+  "anomalies": [],
+  "source_matches": {
+    "cloud/modal_runtime.py": true,
+    "cloud/modal_job.py": true,
+    "cloud/acceptance.py": true,
+    "scripts/diagnose_profile_order.py": true,
+    "utils/profile_diagnostic.py": true,
+    "utils/profiling.py": true,
+    "utils/backend.py": true,
+    "utils/verification.py": true,
+    "utils/rollout_env.py": true,
+    "tests/support.py": true
+  },
+  "summaries": [
+    {
+      "backend": "triton",
+      "preparation": "none",
+      "trials_per_order": 4,
+      "median_us": {
+        "gen,eager,compile": {
+          "eager": 1.651449999999943,
+          "compile": 0.8042999999999552,
+          "gen": 0.7856499999999983
+        },
+        "eager,compile,gen": {
+          "eager": 1.7694999999999823,
+          "compile": 0.7200500000000261,
+          "gen": 0.7914499999999975
+        }
+      },
+      "eager_first_shift_ratio": 0.07148263647100639,
+      "paired_eager_shift_ratios": [
+        0.07793713762590682,
+        0.06853375272202755,
+        0.06732100921302187,
+        0.082499848457261
+      ]
+    },
+    {
+      "backend": "triton",
+      "preparation": "empty-prime",
+      "trials_per_order": 4,
+      "median_us": {
+        "gen,eager,compile": {
+          "eager": 1.804700000000048,
+          "compile": 0.813599999999974,
+          "gen": 0.7312999999999761
+        },
+        "eager,compile,gen": {
+          "eager": 1.655700000000047,
+          "compile": 0.7951999999999999,
+          "gen": 0.8048999999998614
+        }
+      },
+      "eager_first_shift_ratio": -0.08256219870338388,
+      "paired_eager_shift_ratios": [
+        -0.08170968637244069,
+        -0.08280432119389136,
+        -0.08230543724769745,
+        -0.08442455384273007
+      ]
+    },
+    {
+      "backend": "triton",
+      "preparation": "eager-prime",
+      "trials_per_order": 4,
+      "median_us": {
+        "gen,eager,compile": {
+          "eager": 1.8213000000000306,
+          "compile": 0.7807499999999437,
+          "gen": 0.7233000000000175
+        },
+        "eager,compile,gen": {
+          "eager": 1.65889999999996,
+          "compile": 0.7808499999999867,
+          "gen": 0.7920499999999947
+        }
+      },
+      "eager_first_shift_ratio": -0.08916707846047756,
+      "paired_eager_shift_ratios": [
+        -0.06131066321363421,
+        -0.15952950761238727,
+        -0.05599909404905057,
+        -0.11648092584652558
+      ]
+    },
+    {
+      "backend": "triton",
+      "preparation": "warmup-all",
+      "trials_per_order": 4,
+      "median_us": {
+        "gen,eager,compile": {
+          "eager": 1.6562499999999774,
+          "compile": 0.7807999999999822,
+          "gen": 0.7999000000000024
+        },
+        "eager,compile,gen": {
+          "eager": 1.774550000000056,
+          "compile": 0.718549999999982,
+          "gen": 0.7791499999999815
+        }
+      },
+      "eager_first_shift_ratio": 0.07142641509438818,
+      "paired_eager_shift_ratios": [
+        0.07143288813682225,
+        0.06725781155750288,
+        0.07557224173429988,
+        0.07509047044634198
+      ]
+    },
+    {
+      "backend": "cutedsl",
+      "preparation": "none",
+      "trials_per_order": 4,
+      "median_us": {
+        "gen,eager,compile": {
+          "eager": 1.652949999999953,
+          "compile": 0.7996499999999855,
+          "gen": 0.9776999999999134
+        },
+        "eager,compile,gen": {
+          "eager": 1.7744499999998538,
+          "compile": 0.7248999999999455,
+          "gen": 0.9616499999999973
+        }
+      },
+      "eager_first_shift_ratio": 0.07350494570307875,
+      "paired_eager_shift_ratios": [
+        0.08130081300820913,
+        0.06377351686011568,
+        0.07557681826433216,
+        0.07143720536680576
+      ]
+    },
+    {
+      "backend": "cutedsl",
+      "preparation": "empty-prime",
+      "trials_per_order": 4,
+      "median_us": {
+        "gen,eager,compile": {
+          "eager": 1.8117999999999825,
+          "compile": 0.8016500000000406,
+          "gen": 0.8977000000000543
+        },
+        "eager,compile,gen": {
+          "eager": 1.6560499999999365,
+          "compile": 0.7999999999999772,
+          "gen": 0.9729000000000042
+        }
+      },
+      "eager_first_shift_ratio": -0.08596423446299128,
+      "paired_eager_shift_ratios": [
+        -0.08471313053525664,
+        -0.09081361927924059,
+        -0.08812830687830531,
+        -0.07987787954488978
+      ]
+    },
+    {
+      "backend": "cutedsl",
+      "preparation": "eager-prime",
+      "trials_per_order": 4,
+      "median_us": {
+        "gen,eager,compile": {
+          "eager": 1.8171999999999797,
+          "compile": 0.787250000000006,
+          "gen": 0.89699999999998
+        },
+        "eager,compile,gen": {
+          "eager": 1.6609999999999898,
+          "compile": 0.7873500000000377,
+          "gen": 0.9583500000000185
+        }
+      },
+      "eager_first_shift_ratio": -0.0859564164648865,
+      "paired_eager_shift_ratios": [
+        -0.10495454300929707,
+        -0.06328257191204079,
+        -0.06803717262740838,
+        -0.11614791167865068
+      ]
+    },
+    {
+      "backend": "cutedsl",
+      "preparation": "warmup-all",
+      "trials_per_order": 4,
+      "median_us": {
+        "gen,eager,compile": {
+          "eager": 1.6590000000000031,
+          "compile": 0.7841000000000009,
+          "gen": 0.9544999999999846
+        },
+        "eager,compile,gen": {
+          "eager": 1.7678000000000793,
+          "compile": 0.7217000000000098,
+          "gen": 0.9632000000000118
+        }
+      },
+      "eager_first_shift_ratio": 0.06558167570830387,
+      "paired_eager_shift_ratios": [
+        0.05943741378270473,
+        0.06143508519321994,
+        0.0697674418605212,
+        0.07807369573143297
+      ]
+    }
+  ],
+  "limitations": [
+    "Four paired repetitions per backend/preparation; no significance or low-level root-cause claim.",
+    "Priming intentionally adds a non-reward capture; no measurement is retried or selected.",
+    "This experiment cannot establish that the historical intermittent empty capture is fixed."
+  ]
+}

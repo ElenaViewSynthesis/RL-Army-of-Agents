@@ -1,0 +1,125 @@
+{
+  "run_id": "20261108T144950Z",
+  "diagnostic_only": true,
+  "trials": 32,
+  "anomalies": [],
+  "source_snapshot": "artifacts/issue-order-source-snapshot-20261108T144932Z.json",
+  "summaries": [
+    {
+      "backend": "triton",
+      "preparation": "double-empty-prime",
+      "trials_per_order": 4,
+      "median_us": {
+        "gen,eager,compile": {
+          "eager": 1.8034500000000206,
+          "compile": 0.8031499999999823,
+          "gen": 0.8032000000000152
+        },
+        "eager,compile,gen": {
+          "eager": 1.806200000000024,
+          "compile": 0.8004999999999882,
+          "gen": 0.8095999999999322
+        }
+      },
+      "order_shift_ratios": {
+        "eager": 0.0015248551387636589,
+        "compile": -0.00329950818650826,
+        "gen": 0.007968127489936139
+      },
+      "paired_eager_shift_ratios": [
+        -0.001994238865528075,
+        0.005050785369405508,
+        0.0018253221970188083,
+        -0.00022203719117375176
+      ]
+    },
+    {
+      "backend": "triton",
+      "preparation": "triple-empty-prime",
+      "trials_per_order": 4,
+      "median_us": {
+        "gen,eager,compile": {
+          "eager": 1.7717999999999847,
+          "compile": 0.7984000000000377,
+          "gen": 0.8079499999999258
+        },
+        "eager,compile,gen": {
+          "eager": 1.8016500000000064,
+          "compile": 0.7967499999999973,
+          "gen": 0.8111000000000104
+        }
+      },
+      "order_shift_ratios": {
+        "eager": 0.01684727395869845,
+        "compile": -0.0020666332665836284,
+        "gen": 0.0038987561112504565
+      },
+      "paired_eager_shift_ratios": [
+        0.071619772767884,
+        -0.007151501815362393,
+        0.04206744698111553,
+        -0.008801848388128919
+      ]
+    },
+    {
+      "backend": "cutedsl",
+      "preparation": "double-empty-prime",
+      "trials_per_order": 4,
+      "median_us": {
+        "gen,eager,compile": {
+          "eager": 1.8035999999999717,
+          "compile": 0.7983999999999469,
+          "gen": 0.9726999999999806
+        },
+        "eager,compile,gen": {
+          "eager": 1.8094499999999811,
+          "compile": 0.796799999999962,
+          "gen": 0.9728000000000065
+        }
+      },
+      "order_shift_ratios": {
+        "eager": 0.0032435129740571167,
+        "compile": -0.0020040080160133034,
+        "gen": 0.00010280662077311042
+      },
+      "paired_eager_shift_ratios": [
+        0.006110092762286579,
+        -0.00011062558768326625,
+        -0.0022158209617019198,
+        0.005105438401794116
+      ]
+    },
+    {
+      "backend": "cutedsl",
+      "preparation": "triple-empty-prime",
+      "trials_per_order": 4,
+      "median_us": {
+        "gen,eager,compile": {
+          "eager": 1.8081500000000235,
+          "compile": 0.7983499999999936,
+          "gen": 0.9792499999999904
+        },
+        "eager,compile,gen": {
+          "eager": 1.7999999999999887,
+          "compile": 0.800000000000091,
+          "gen": 0.9759999999999991
+        }
+      },
+      "order_shift_ratios": {
+        "eager": -0.004507369410742812,
+        "compile": 0.0020667626981867304,
+        "gen": -0.003318866479439686
+      },
+      "paired_eager_shift_ratios": [
+        -0.008667329137617474,
+        0.007160699417160021,
+        -0.007078862957671128,
+        -0.0021016536695860344
+      ]
+    }
+  ],
+  "limitations": [
+    "Small 4-pair control experiment; no significance or low-level CUPTI root-cause claim.",
+    "The historical intermittent empty capture did not reproduce and remains unconfirmed."
+  ]
+}

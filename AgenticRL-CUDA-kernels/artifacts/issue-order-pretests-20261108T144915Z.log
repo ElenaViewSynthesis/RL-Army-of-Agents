@@ -1,0 +1,24 @@
+test_all_empty_and_success (tests.test_profiling.CaptureTests.test_all_empty_and_success) ... ok
+test_counts_names_traces_order_and_contract (tests.test_profiling.CaptureTests.test_counts_names_traces_order_and_contract) ... ok
+test_empty_session_fails_closed_and_preserves_evidence (tests.test_profiling.CaptureTests.test_empty_session_fails_closed_and_preserves_evidence) ... ok
+test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples (tests.test_profiling.CaptureTests.test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples) ... ok
+test_valid_samples_preserve_cuda_events_only (tests.test_profiling.CaptureTests.test_valid_samples_preserve_cuda_events_only) ... ok
+test_order_experiment_is_complete_and_counterbalanced (tests.test_profiling.DiagnosticTests.test_order_experiment_is_complete_and_counterbalanced) ... ok
+test_preparation_controls_are_separate_and_always_diagnostic (tests.test_profiling.DiagnosticTests.test_preparation_controls_are_separate_and_always_diagnostic) ... ok
+test_historical_zero_baseline_cannot_be_accepted (tests.test_modal_diagnostics.AcceptanceTests.test_historical_zero_baseline_cannot_be_accepted) ... ok
+test_positive_acceptance_and_expected_failures (tests.test_modal_diagnostics.AcceptanceTests.test_positive_acceptance_and_expected_failures) ... ok
+test_default_counts_and_balanced_orders (tests.test_modal_diagnostics.PlanTests.test_default_counts_and_balanced_orders) ... ok
+test_forwarding_is_opt_in_and_allowlisted (tests.test_modal_diagnostics.RunnerTests.test_forwarding_is_opt_in_and_allowlisted) ... {"function_call_id": "fc-synthetic"}
+ok
+test_main_preflight_uses_spawn_helper_not_remote (tests.test_modal_diagnostics.RunnerTests.test_main_preflight_uses_spawn_helper_not_remote) ... ok
+test_main_routes_diagnose_order_exclusively (tests.test_modal_diagnostics.RunnerTests.test_main_routes_diagnose_order_exclusively) ... ok
+test_non_timeout_error_reports_recovery_and_never_respawns (tests.test_modal_diagnostics.RunnerTests.test_non_timeout_error_reports_recovery_and_never_respawns) ... ok
+test_resume_cli_polls_call_id_without_runner (tests.test_modal_diagnostics.RunnerTests.test_resume_cli_polls_call_id_without_runner) ... ok
+test_resume_cli_rejects_invalid_call_id_before_modal_import (tests.test_modal_diagnostics.RunnerTests.test_resume_cli_rejects_invalid_call_id_before_modal_import) ... ok
+test_runner_writes_automatic_review_from_fresh_outputs (tests.test_modal_diagnostics.RunnerTests.test_runner_writes_automatic_review_from_fresh_outputs) ... ok
+test_wait_for_call_retries_only_builtin_timeout (tests.test_modal_diagnostics.RunnerTests.test_wait_for_call_retries_only_builtin_timeout) ... ok
+
+----------------------------------------------------------------------
+Ran 18 tests in 13.239s
+
+OK

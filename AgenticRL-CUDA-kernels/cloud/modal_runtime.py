@@ -186,23 +186,28 @@ def diagnose_timing(run_id: str, backends: str = "", repeat: int = 0, diagnostic
 
 
 @app.function(gpu=GPU, timeout=10800, volumes={"/artifacts": volume})
-def diagnose_order(run_id: str, backends: str = 'triton,cutedsl', repeat: int = 4) -> dict:
+def diagnose_order(run_id: str, backends: str = 'triton,cutedsl', repeat: int = 4,
+                   preparations: str = "") -> dict:
     require = _run(['python','-m','utils.runtime','--json','--require',backends], 'require', 300, run_id)
     record = _run(['python','-m','scripts.diagnose_profile_order','--backends',backends,
-                   '--repeat',str(repeat),'--output-dir',f'/artifacts/{run_id}/order'],
+                   '--repeat',str(repeat),'--output-dir',f'/artifacts/{run_id}/order',
+                   *(['--preparations', preparations] if preparations else [])],
                   'diagnose_order', 10000, run_id)
     return {'run_id':run_id,'runs':[require,record]}
 
 
 @app.local_entrypoint()
 def main(tests: bool = False, diagnose: bool = False, diagnose_order_test: bool = False,
-         backends: str = "", repeat: int = 0, forward_diagnostics: bool = False):
+         backends: str = "", repeat: int = 0, forward_diagnostics: bool = False,
+         order_preparations: str = ""):
     # One run_id per invocation, shared by both remote calls even across containers.
     selected = backends.split(",") if backends else list(BACKENDS)
     if any(b not in BACKENDS for b in selected) or repeat < 0:
         raise ValueError("known --backends and nonnegative --repeat required")
     if sum((tests, diagnose, diagnose_order_test)) > 1:
         raise ValueError("choose --tests, --diagnose or --diagnose-order-test")
+    if order_preparations and not diagnose_order_test:
+        raise ValueError("--order-preparations requires --diagnose-order-test")
     diagnostics = forwarded_environment(forward_diagnostics)
     for _ in range(1 if (diagnose or diagnose_order_test) else (repeat or 1)):
         run_id = time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())
@@ -210,6 +215,7 @@ def main(tests: bool = False, diagnose: bool = False, diagnose_order_test: bool 
         if diagnose:
             print(json.dumps(await_job(diagnose_timing, run_id, ",".join(selected), repeat, diagnostics), indent=2), flush=True)
         elif diagnose_order_test:
-            print(json.dumps(await_job(diagnose_order, run_id, backends or 'triton,cutedsl', repeat or 4), indent=2), flush=True)
+            print(json.dumps(await_job(diagnose_order, run_id, backends or 'triton,cutedsl', repeat or 4,
+                                       *([order_preparations] if order_preparations else [])), indent=2), flush=True)
         elif tests:
             print(json.dumps(await_job(gpu_tests, run_id, ",".join(selected), diagnostics), indent=2), flush=True)
