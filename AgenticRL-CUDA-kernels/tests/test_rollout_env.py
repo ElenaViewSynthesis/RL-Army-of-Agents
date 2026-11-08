@@ -37,7 +37,10 @@ class RolloutProtocolTests(unittest.TestCase):
         before = dict(os.environ)
         with patch.dict(os.environ, {"CUDA_VISIBLE_DEVICES": "3"}), patch(
                 "utils.rollout_env._stage", side_effect=self.stages()) as stage:
-            result = run_task(str(self.task), self.cfg, 1)
+            times = {"stale": -1}
+            result = run_task(str(self.task), self.cfg, 1, stage_times_out=times)
+            self.assertEqual(set(times), {"compile", "verification", "profiling"})
+            self.assertTrue(all(t >= 0 for t in times.values()))
             calls = stage.call_args_list
             self.assertTrue(all(c.args[3]["CUDA_VISIBLE_DEVICES"] == "3" for c in calls))
             self.assertEqual(len({c.args[4] for c in calls}), 1)

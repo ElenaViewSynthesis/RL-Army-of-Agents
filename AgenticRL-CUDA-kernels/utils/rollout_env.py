@@ -69,7 +69,8 @@ def _stage(module, args, workdir, env, deadline):
         return proc.returncode, tail(stdout, 4 * 1024 * 1024), tail(stderr, 8192), timed_out
 
 
-def run_task(workdir: str, cfg: RolloutConfig, turns_used: int | None = None, *, profile_out: dict | None = None) -> dict:
+def run_task(workdir: str, cfg: RolloutConfig, turns_used: int | None = None, *,
+             profile_out: dict | None = None, stage_times_out: dict | None = None) -> dict:
     """Return stable, flat, JSON-safe metrics; unmeasured GPU fields are None.
 
     profile_out optionally receives the raw same-pass profiler record, without
@@ -82,6 +83,8 @@ def run_task(workdir: str, cfg: RolloutConfig, turns_used: int | None = None, *,
     """
     if profile_out is not None:
         profile_out.clear()
+    if stage_times_out is not None:
+        stage_times_out.clear()
     if turns_used is not None and (not isinstance(turns_used, int) or turns_used < 0):
         raise ValueError("turns_used must be a non-negative integer or None")
     start = time.monotonic()
@@ -150,7 +153,10 @@ def run_task(workdir: str, cfg: RolloutConfig, turns_used: int | None = None, *,
                          *(["--cuda-graphs"] if cfg.cuda_graphs else [])]),)
         profile = None
         for stage, module, args in stages:
+            stage_started = time.monotonic()
             code, stdout, stderr, timed_out = _stage(module, args, path, env, deadline)
+            if stage_times_out is not None:
+                stage_times_out[stage] = time.monotonic() - stage_started
             if stage == "compile":
                 result["log/compile_tail"] = stdout[-8192:]
             if stderr:
@@ -189,9 +195,14 @@ def run_task(workdir: str, cfg: RolloutConfig, turns_used: int | None = None, *,
                     profile_out.update(profile)
         for field in ("t_eager_us", "t_compile_us", "t_gen_us", "provenance"):
             result["env/" + field] = profile[field]
+        if profile.get("timing_measured") is False and str(profile.get("timing_reason", "")).startswith("empty_profile:"):
+            return finish(profile["timing_reason"])
+        if profile.get("profile/diagnostic"):
+            return finish("diagnostic_profile")
         reward = compute_reward(result["env/verify_ok"], profile["t_eager_us"], profile["t_compile_us"],
                                 profile["t_gen_us"], profile["provenance"], cfg, turns_used)
-        if profile["t_gen_us"] is not None and profile["t_gen_us"] > 0:
+        if (profile["t_gen_us"] is not None and profile["t_gen_us"] > 0
+                and profile["t_compile_us"] is not None):
             result["env/speedup_vs_compile"] = profile["t_compile_us"] / profile["t_gen_us"]
         # A malformed/non-finite measurement is an environment failure, never
         # an unserialisable metrics result.

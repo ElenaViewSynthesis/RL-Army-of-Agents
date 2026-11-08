@@ -40,13 +40,16 @@ def parse_args():
     parser.add_argument("--backend", choices=BACKEND_CHOICES, default="auto")
     parser.add_argument("--json", action="store_true", help="Append a flat JSON device-time/provenance record")
     parser.add_argument("--seed", type=int, default=0)
+    parser.add_argument("--trace-dir", type=Path, help="Opt-in Chrome traces; diagnostic timings only")
+    parser.add_argument("--order", choices=("gen,eager,compile", "eager,compile,gen"),
+                        default="gen,eager,compile", help="Diagnostic session order")
     args = parser.parse_args()
     if args.iters <= 0:
         parser.error("--iters must be positive")
     return args
 
 
-def benchmark_model(model, inputs, warmup_iters, run_iters, return_events=False):
+def benchmark_model(model, inputs, warmup_iters, run_iters, return_events=False, *, trace_path=None):
     import torch
 
     with torch.no_grad():
@@ -59,8 +62,40 @@ def benchmark_model(model, inputs, warmup_iters, run_iters, return_events=False)
             torch.cuda.synchronize()
     # CPU operator scopes also carry CUDA time and would double-count kernels.
     events = [(e.name, e.device_time) for e in ctx.events() if e.device_type.name == "CUDA"]
-    timing = sum(duration for _, duration in events) / run_iters
+    if trace_path is not None:
+        trace_path = Path(trace_path)
+        trace_path.parent.mkdir(parents=True, exist_ok=True)
+        ctx.export_chrome_trace(str(trace_path))
+    # No retry: retain the empty capture as evidence, never a zero latency.
+    timing = sum(duration for _, duration in events) / run_iters if events else None
     return (timing, events) if return_events else timing
+
+
+def profile_models(models, inputs, backend, iters, *, order="gen,eager,compile", trace_dir=None, agent_names=()):
+    """One capture per session, retaining evidence even if another session is empty."""
+    captures = {}
+    for session in order.split(","):
+        trace = Path(trace_dir) / f"{session}.json" if trace_dir is not None else None
+        captures[session] = benchmark_model(models[session], inputs[session],
+                                           get_spec(backend).profile_warmup_iters,
+                                           iters, True, trace_path=trace)
+    summary = summarize_events(captures["gen"][1], agent_names, backend, iters)
+    empty = [s for s in order.split(",") if not captures[s][1]]
+    summary.update(timing_measured=not empty,
+                   timing_reason=f"empty_profile:{empty[0]}" if empty else None,
+                   t_eager_us=captures["eager"][0], t_compile_us=captures["compile"][0],
+                   t_gen_us=captures["gen"][0])
+    if not captures["gen"][1]:
+        summary["provenance"] = None
+        summary.update({"provenance/"+s: None for s in ("agent","library","torch","memory")})
+    summary.update({f"profile/{s}_events": len(captures[s][1]) for s in captures})
+    # JSON strings keep the profiler's record flat; names are verbatim.
+    summary["profile/eager_kernel_names"] = json.dumps(sorted({n for n, _ in captures["eager"][1]}))
+    summary["profile/order"] = order
+    summary["profile/diagnostic"] = trace_dir is not None or order != "gen,eager,compile"
+    if trace_dir is not None:
+        summary.update({f"profile/{s}_trace": str(Path(trace_dir) / f"{s}.json") for s in captures})
+    return summary
 
 
 def print_results(torch_time, compile_time, cuda_time):
@@ -112,14 +147,15 @@ def main():
         run_single(targets, torch_model, cuda_model, torch_inputs, cuda_inputs)
         return
     # JIT backends autotune on early calls; that must finish before timing.
-    warmup_iters = get_spec(backend).profile_warmup_iters
-    cuda_time, events = benchmark_model(cuda_model, cuda_inputs, warmup_iters, args.iters, True)
-    torch_time = benchmark_model(torch_model, torch_inputs, warmup_iters, args.iters)
-    compile_time = benchmark_model(torch.compile(torch_model), torch_inputs, warmup_iters, args.iters)
-    print_results(torch_time, compile_time, cuda_time)
+    summary = profile_models(
+        {"gen": cuda_model, "eager": torch_model, "compile": torch.compile(torch_model)},
+        {"gen": cuda_inputs, "eager": torch_inputs, "compile": torch_inputs}, backend, args.iters,
+        order=args.order, trace_dir=args.trace_dir, agent_names=agent_kernel_names(Path.cwd(), backend))
+    if summary["timing_measured"]:
+        print_results(summary["t_eager_us"], summary["t_compile_us"], summary["t_gen_us"])
+    else:
+        print("[SKIP] " + summary["timing_reason"])
     if args.json:
-        summary = summarize_events(events, agent_kernel_names(Path.cwd(), backend), backend, args.iters)
-        summary.update(timing_measured=True, t_eager_us=torch_time, t_compile_us=compile_time)
         print(json.dumps(summary, allow_nan=False))
 
 
