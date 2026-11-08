@@ -1,5 +1,6 @@
 """Offline acceptance and diagnostic-plan tests; never contact Modal."""
 import copy
+import io
 import json
 import unittest
 from pathlib import Path
@@ -113,6 +114,105 @@ class RunnerTests(unittest.TestCase):
         self.assertIn('--repeat',calls[1][0])
         self.assertEqual(calls[1][0][-1],'2')
         self.assertEqual(calls[1][-1],actual)
+
+
+    def test_wait_for_call_retries_only_builtin_timeout(self):
+        from unittest.mock import Mock, patch
+        from cloud.modal_job import wait_for_call
+        call=Mock(object_id='fc-synthetic')
+        call.get.side_effect=[TimeoutError(),TimeoutError(),{'done':True}]
+        with patch('sys.stdout',new_callable=io.StringIO) as out:
+            self.assertEqual(wait_for_call(call),{'done':True})
+        self.assertEqual(json.loads(out.getvalue()),{'function_call_id':'fc-synthetic'})
+        self.assertEqual(call.get.call_count,3)
+        self.assertTrue(all(c.kwargs=={'timeout':30} for c in call.get.call_args_list))
+
+    def test_non_timeout_error_reports_recovery_and_never_respawns(self):
+        from unittest.mock import Mock, patch
+        runner=self.runner()
+        for raised in (RuntimeError('stand-in credential material'),type('PollTimeout',(TimeoutError,),{})()):
+            call=Mock(object_id='fc-synthetic')
+            call.get.side_effect=raised
+            function=Mock()
+            function.spawn.return_value=call
+            with patch('sys.stdout',new_callable=io.StringIO),patch('sys.stderr',new_callable=io.StringIO) as err:
+                with self.assertRaises(type(raised)):
+                    runner.await_job(function,'job')
+            function.spawn.assert_called_once_with('job')
+            self.assertEqual(call.get.call_count,1)
+            record=json.loads(err.getvalue())
+            self.assertEqual(record['function_call_id'],'fc-synthetic')
+            self.assertEqual(record['error_type'],type(raised).__name__)
+            self.assertEqual(record['recovery'],'python -m cloud.modal_job --call-id fc-synthetic')
+            self.assertNotIn('credential material',err.getvalue())
+
+    def test_resume_cli_polls_call_id_without_runner(self):
+        import types
+        from unittest.mock import Mock, patch
+        from cloud import modal_job
+        unhydrated=Mock(spec=['hydrate','get'])
+        hydrated=Mock(object_id='fc-AbC123')
+        hydrated.get.return_value={'run_id':'resumed'}
+        unhydrated.hydrate.return_value=hydrated
+        from_id=Mock(return_value=unhydrated)
+        fake=types.SimpleNamespace(FunctionCall=types.SimpleNamespace(from_id=from_id))
+        with patch.dict('sys.modules',{'modal':fake,'cloud.modal_runtime':None}),\
+             patch('sys.argv',['modal_job','--call-id','fc-AbC123']),\
+             patch('sys.stdout',new_callable=io.StringIO) as out:
+            modal_job.main()
+        from_id.assert_called_once_with('fc-AbC123')
+        unhydrated.hydrate.assert_called_once_with()
+        unhydrated.get.assert_not_called()
+        hydrated.get.assert_called_once_with(timeout=30)
+        text=out.getvalue()
+        self.assertEqual(json.loads(text.splitlines()[0]),{'function_call_id':'fc-AbC123'})
+        self.assertEqual(json.loads(text[text.index('\n'):]),{'run_id':'resumed'})
+
+    def test_resume_cli_rejects_invalid_call_id_before_modal_import(self):
+        from unittest.mock import patch
+        from cloud import modal_job
+        with patch.dict('sys.modules',{'modal':None}),\
+             patch('sys.argv',['modal_job','--call-id','fc-abc extra']),\
+             patch('sys.stderr',new_callable=io.StringIO):
+            with self.assertRaises(SystemExit):
+                modal_job.main()
+
+    def test_main_preflight_uses_spawn_helper_not_remote(self):
+        from unittest.mock import Mock, patch
+        runner=self.runner()
+        call=Mock(object_id='fc-pre');call.get.return_value={'runtime/ok':True}
+        tests_call=Mock(object_id='fc-tests');tests_call.get.return_value={'acceptance':'pass'}
+        preflight=Mock();preflight.spawn.return_value=call
+        gpu_fn=Mock();gpu_fn.spawn.return_value=tests_call
+        with patch.object(runner,'preflight',preflight),patch.object(runner,'gpu_tests',gpu_fn),\
+             patch('sys.stdout',new_callable=io.StringIO):
+            runner.main(tests=True)
+        preflight.spawn.assert_called_once()
+        preflight.remote.assert_not_called()
+        gpu_fn.spawn.assert_called_once()
+        self.assertTrue(all(c.kwargs=={'timeout':30} for c in call.get.call_args_list+tests_call.get.call_args_list))
+
+    def test_main_routes_diagnose_order_exclusively(self):
+        from unittest.mock import Mock, patch
+        runner=self.runner()
+        preflight=Mock();preflight.spawn.return_value=Mock(object_id='fc-pre',get=Mock(return_value={'ok':1}))
+        order=Mock();order.spawn.return_value=Mock(object_id='fc-order',get=Mock(return_value={'runs':2}))
+        gpu_fn,diag=Mock(),Mock()
+        with patch.object(runner,'preflight',preflight),patch.object(runner,'diagnose_order',order),\
+             patch.object(runner,'gpu_tests',gpu_fn),patch.object(runner,'diagnose_timing',diag),\
+             patch('sys.stdout',new_callable=io.StringIO):
+            runner.main(diagnose_order_test=True)
+            self.assertEqual(order.spawn.call_args.args[1:],('triton,cutedsl',4))
+            runner.main(diagnose_order_test=True,backends='cutile',repeat=2)
+            self.assertEqual(order.spawn.call_args.args[1:],('cutile',2))
+            for flags in ({'tests':True,'diagnose_order_test':True},
+                          {'diagnose':True,'diagnose_order_test':True},
+                          {'tests':True,'diagnose':True}):
+                with self.assertRaises(ValueError):runner.main(**flags)
+        self.assertEqual(order.spawn.call_count,2)
+        self.assertEqual(preflight.spawn.call_count,2)
+        gpu_fn.spawn.assert_not_called()
+        diag.spawn.assert_not_called()
 
 
     def test_runner_writes_automatic_review_from_fresh_outputs(self):
