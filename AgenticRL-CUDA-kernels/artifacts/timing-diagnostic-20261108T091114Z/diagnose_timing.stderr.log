@@ -1,0 +1,16 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/root/AgenticRL-CUDA-kernels/scripts/diagnose_timing.py", line 83, in <module>
+    main()
+  File "/root/AgenticRL-CUDA-kernels/scripts/diagnose_timing.py", line 55, in main
+    code, stdout, stderr, timeout = _stage(module,argv,task,env,start+600)
+                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/AgenticRL-CUDA-kernels/utils/rollout_env.py", line 50, in _stage
+    proc.wait(timeout=max(0.001, deadline - time.monotonic()))
+  File "/usr/local/lib/python3.12/subprocess.py", line 1264, in wait
+    return self._wait(timeout=timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/subprocess.py", line 2040, in _wait
+    time.sleep(delay)
+KeyboardInterrupt

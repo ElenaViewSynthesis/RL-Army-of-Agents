@@ -1,0 +1,55 @@
+test_cleanup_wait_is_bounded_even_if_kill_cannot_reap (tests.test_rollout_env.ProcessTests.test_cleanup_wait_is_bounded_even_if_kill_cannot_reap) ... ok
+test_crash_isolated_and_concurrent_workdirs (tests.test_rollout_env.ProcessTests.test_crash_isolated_and_concurrent_workdirs) ... ok
+test_real_timeout_kills_grandchild_and_preserves_output (tests.test_rollout_env.ProcessTests.test_real_timeout_kills_grandchild_and_preserves_output) ... ok
+test_task_namespace_kernels_and_trusted_utils (tests.test_rollout_env.ProcessTests.test_task_namespace_kernels_and_trusted_utils) ... ok
+test_benchmark_stage_opt_in (tests.test_rollout_env.RolloutProtocolTests.test_benchmark_stage_opt_in) ... ok
+test_cli_without_torch_honors_preset_and_cap (tests.test_rollout_env.RolloutProtocolTests.test_cli_without_torch_honors_preset_and_cap) ... ok
+test_generated_syntax_error_is_a_result_not_a_parent_crash (tests.test_rollout_env.RolloutProtocolTests.test_generated_syntax_error_is_a_result_not_a_parent_crash) ... ok
+test_malformed_profile_missing_workdir_and_unmeasured (tests.test_rollout_env.RolloutProtocolTests.test_malformed_profile_missing_workdir_and_unmeasured) ... ok
+test_max_turns_skips_subprocesses (tests.test_rollout_env.RolloutProtocolTests.test_max_turns_skips_subprocesses) ... ok
+test_provenance_gate_and_overlong_via_entry_point (tests.test_rollout_env.RolloutProtocolTests.test_provenance_gate_and_overlong_via_entry_point) ... ok
+test_stage_failures_and_timeout (tests.test_rollout_env.RolloutProtocolTests.test_stage_failures_and_timeout) ... ok
+test_success_flat_schema_deadline_and_visibility (tests.test_rollout_env.RolloutProtocolTests.test_success_flat_schema_deadline_and_visibility) ... ok
+test_build_run_and_unknown (tests.test_tracking.BackfillPayloadTests.test_build_run_and_unknown) ... ok
+test_dry_run_all_covers_manifest (tests.test_tracking.BackfillPayloadTests.test_dry_run_all_covers_manifest) ... ok
+test_failed_run (tests.test_tracking.BackfillPayloadTests.test_failed_run) ... ok
+test_finished_run (tests.test_tracking.BackfillPayloadTests.test_finished_run) ... ok
+test_dry_run_single_is_one_json_doc (tests.test_tracking.CLITests.test_dry_run_single_is_one_json_doc) ... ok
+test_no_wandb_weave_torch_imported (tests.test_tracking.CLITests.test_no_wandb_weave_torch_imported) ... ok
+test_full_config_shares_rules_and_group_stats_backfill (tests.test_tracking.ContractTests.test_full_config_shares_rules_and_group_stats_backfill) ... ok
+test_live_batch_stats_and_standalone_identity (tests.test_tracking.ContractTests.test_live_batch_stats_and_standalone_identity) ... ok
+test_old_config_rules_and_shares_are_unknown_not_reconstructed (tests.test_tracking.ContractTests.test_old_config_rules_and_shares_are_unknown_not_reconstructed) ... ok
+test_pipeline_keys_have_exactly_one_adr_category (tests.test_tracking.ContractTests.test_pipeline_keys_have_exactly_one_adr_category) ... ok
+test_profile_sink_does_not_change_result_or_reward (tests.test_tracking.ContractTests.test_profile_sink_does_not_change_result_or_reward) ... ok
+test_validate_persists_actual_case_and_group_configs (tests.test_tracking.ContractTests.test_validate_persists_actual_case_and_group_configs) ... ok
+test_weave_retains_raw_profile_and_stage_tails_without_sdks (tests.test_tracking.ContractTests.test_weave_retains_raw_profile_and_stage_tails_without_sdks) ... ok
+test_init_log_summary_finish_calls (tests.test_tracking.LogBackfillTests.test_init_log_summary_finish_calls) ... ok
+test_metrics_and_config (tests.test_tracking.PureHelpersTests.test_metrics_and_config) ... ok
+test_sweep_config_matches_rollout_config (tests.test_tracking.SweepTests.test_sweep_config_matches_rollout_config) ... ok
+test_sweep_wrapper_requires_workdir_and_gpu (tests.test_tracking.SweepTests.test_sweep_wrapper_requires_workdir_and_gpu) ... ok
+test_rollout_inputs (tests.test_tracking.WeaveInputsTests.test_rollout_inputs) ... ok
+test_all_empty_and_success (tests.test_profiling.CaptureTests.test_all_empty_and_success) ... ok
+test_counts_names_traces_order_and_contract (tests.test_profiling.CaptureTests.test_counts_names_traces_order_and_contract) ... ok
+test_empty_session_fails_closed_and_preserves_evidence (tests.test_profiling.CaptureTests.test_empty_session_fails_closed_and_preserves_evidence) ... ok
+test_cpu_null_record_is_unmeasured (tests.test_record_kernel_names.RecordTests.test_cpu_null_record_is_unmeasured) ... {"backend": "triton", "measured": false, "reason": "CPU (no device events)"}
+ok
+test_empty_capture_reason_and_raw_evidence (tests.test_record_kernel_names.RecordTests.test_empty_capture_reason_and_raw_evidence) ... {"backend": "triton", "measured": false, "reason": "empty_profile:eager", "profile": {"timing_measured": false, "t_eager_us": null, "t_compile_us": null, "t_gen_us": null, "provenance": null, "provenance/agent": null, "provenance/library": null, "provenance/torch": null, "provenance/memory": null, "timing_reason": "empty_profile:eager", "profile/eager_events": 0}}
+ok
+test_measured_classes_and_unmatched (tests.test_record_kernel_names.RecordTests.test_measured_classes_and_unmatched) ... {"backend": "triton", "measured": true, "agent_kernel_names": ["axpby_kernel"], "profile": {"timing_measured": true, "t_eager_us": 100.0, "t_compile_us": 80.0, "t_gen_us": 50.0, "provenance": 0.9, "provenance/agent": 0.8, "provenance/library": 0.0, "provenance/torch": 0.1, "provenance/memory": 0.1, "kernel_us/axpby_kernel_0d1d2d": 5.0, "kernel_us/at::native::vectorized_elementwise_kernel": 1.0}, "t_gen_us": 50.0, "provenance": 0.9, "provenance/agent": 0.8, "provenance/library": 0.0, "provenance/torch": 0.1, "provenance/memory": 0.1, "kernels": {"axpby_kernel_0d1d2d": {"us": 5.0, "class": "agent"}, "at::native::vectorized_elementwise_kernel": {"us": 1.0, "class": "torch"}}, "unmatched_agent_names": []}
+ok
+test_substring_only_is_unmatched (tests.test_record_kernel_names.RecordTests.test_substring_only_is_unmatched) ... {"backend": "triton", "measured": true, "agent_kernel_names": ["axpby_kernel"], "profile": {"timing_measured": true, "t_eager_us": 100.0, "t_compile_us": 80.0, "t_gen_us": 50.0, "provenance": 0.9, "provenance/agent": 0.8, "provenance/library": 0.0, "provenance/torch": 0.1, "provenance/memory": 0.1, "kernel_us/prefix_axpby_kernel_suffix": 5.0}, "t_gen_us": 50.0, "provenance": 0.9, "provenance/agent": 0.8, "provenance/library": 0.0, "provenance/torch": 0.1, "provenance/memory": 0.1, "kernels": {"prefix_axpby_kernel_suffix": {"us": 5.0, "class": "torch"}}, "unmatched_agent_names": ["axpby_kernel"]}
+ok
+test_unavailable_backend_skips_stages (tests.test_record_kernel_names.RecordTests.test_unavailable_backend_skips_stages) ... {"backend": "cuda", "unavailable": "package not installed: fake"}
+ok
+test_unknown_kernel_counts_against_authored (tests.test_record_kernel_names.RecordTests.test_unknown_kernel_counts_against_authored) ... {"backend": "triton", "measured": true, "agent_kernel_names": ["axpby_kernel"], "profile": {"timing_measured": true, "t_eager_us": 100.0, "t_compile_us": 80.0, "t_gen_us": 50.0, "provenance": 0.9, "provenance/agent": 0.8, "provenance/library": 0.0, "provenance/torch": 0.1, "provenance/memory": 0.1, "kernel_us/mystery_kernel": 2.0}, "t_gen_us": 50.0, "provenance": 0.9, "provenance/agent": 0.8, "provenance/library": 0.0, "provenance/torch": 0.1, "provenance/memory": 0.1, "kernels": {"mystery_kernel": {"us": 2.0, "class": "torch"}}, "unmatched_agent_names": ["axpby_kernel"]}
+ok
+test_historical_zero_baseline_cannot_be_accepted (tests.test_modal_diagnostics.AcceptanceTests.test_historical_zero_baseline_cannot_be_accepted) ... ok
+test_positive_acceptance_and_expected_failures (tests.test_modal_diagnostics.AcceptanceTests.test_positive_acceptance_and_expected_failures) ... ok
+test_default_counts_and_balanced_orders (tests.test_modal_diagnostics.PlanTests.test_default_counts_and_balanced_orders) ... ok
+test_forwarding_is_opt_in_and_allowlisted (tests.test_modal_diagnostics.RunnerTests.test_forwarding_is_opt_in_and_allowlisted) ... ok
+test_runner_writes_automatic_review_from_fresh_outputs (tests.test_modal_diagnostics.RunnerTests.test_runner_writes_automatic_review_from_fresh_outputs) ... ok
+
+----------------------------------------------------------------------
+Ran 44 tests in 43.431s
+
+OK

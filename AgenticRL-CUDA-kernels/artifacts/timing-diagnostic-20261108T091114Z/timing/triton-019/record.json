@@ -1,0 +1,43 @@
+{
+  "backend": "triton",
+  "repeat": 19,
+  "order": "eager,compile,gen",
+  "stages": {
+    "profiling": {
+      "returncode": 0,
+      "timed_out": false,
+      "wall_s": 14.36913656799993
+    }
+  },
+  "candidate_sha256": "403a4cd1e4189f2ab26a385b0e7176f6ff7f161cd20028dfe72ad96377e192ec",
+  "cache_env": {
+    "PIP_NO_CACHE_DIR": "off",
+    "TRITON_CACHE_DIR": "/root/AgenticRL-CUDA-kernels/artifacts/tmp/timing-abx8iwod/triton/.cache/triton",
+    "TILELANG_CACHE_DIR": "/root/AgenticRL-CUDA-kernels/artifacts/tmp/timing-abx8iwod/triton/.cache/tilelang",
+    "CUDA_TILE_CACHE_DIR": "/root/AgenticRL-CUDA-kernels/artifacts/tmp/timing-abx8iwod/triton/.cache/cutile",
+    "CUTE_DSL_CACHE_DIR": "/root/AgenticRL-CUDA-kernels/artifacts/tmp/timing-abx8iwod/triton/.cache/cutedsl",
+    "TORCHINDUCTOR_CACHE_DIR": "/root/AgenticRL-CUDA-kernels/artifacts/tmp/timing-abx8iwod/triton/.cache/inductor"
+  },
+  "profile": {
+    "t_gen_us": 0.7936000000000376,
+    "provenance": 1.0,
+    "provenance/agent": 1.0,
+    "provenance/library": 0.0,
+    "provenance/torch": 0.0,
+    "provenance/memory": 0.0,
+    "kernel_us/axpby_kernel": 0.7936000000000376,
+    "timing_measured": true,
+    "timing_reason": null,
+    "t_eager_us": 1.7699000000001432,
+    "t_compile_us": 0.7201000000000249,
+    "profile/eager_events": 20,
+    "profile/compile_events": 10,
+    "profile/gen_events": 10,
+    "profile/eager_kernel_names": "[\"void at::native::vectorized_elementwise_kernel<4, at::native::AUnaryFunctor<float, float, float, at::native::binary_internal::MulFunctor<float> >, std::array<char*, 2ul>, false>(int, at::native::AUnaryFunctor<float, float, float, at::native::binary_internal::MulFunctor<float> >, std::array<char*, 2ul>)\", \"void at::native::vectorized_elementwise_kernel<4, at::native::CUDAFunctor_add<float>, std::array<char*, 3ul>, false>(int, at::native::CUDAFunctor_add<float>, std::array<char*, 3ul>)\"]",
+    "profile/order": "eager,compile,gen",
+    "profile/diagnostic": true,
+    "profile/eager_trace": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T091114Z/timing/triton-019/eager.json",
+    "profile/compile_trace": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T091114Z/timing/triton-019/compile.json",
+    "profile/gen_trace": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T091114Z/timing/triton-019/gen.json"
+  }
+}

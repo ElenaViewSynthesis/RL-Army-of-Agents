@@ -1,0 +1,43 @@
+{
+  "backend": "cutile",
+  "repeat": 11,
+  "order": "eager,compile,gen",
+  "stages": {
+    "profiling": {
+      "returncode": 0,
+      "timed_out": false,
+      "wall_s": 8.848977946999867
+    }
+  },
+  "candidate_sha256": "a3ba3ccf7291b8efaa66fbd6767dd0094697629a1a77ac40edc684ed64eefec7",
+  "cache_env": {
+    "PIP_NO_CACHE_DIR": "off",
+    "TRITON_CACHE_DIR": "/root/AgenticRL-CUDA-kernels/artifacts/tmp/timing-kn5dv8he/cutile/.cache/triton",
+    "TILELANG_CACHE_DIR": "/root/AgenticRL-CUDA-kernels/artifacts/tmp/timing-kn5dv8he/cutile/.cache/tilelang",
+    "CUDA_TILE_CACHE_DIR": "/root/AgenticRL-CUDA-kernels/artifacts/tmp/timing-kn5dv8he/cutile/.cache/cutile",
+    "CUTE_DSL_CACHE_DIR": "/root/AgenticRL-CUDA-kernels/artifacts/tmp/timing-kn5dv8he/cutile/.cache/cutedsl",
+    "TORCHINDUCTOR_CACHE_DIR": "/root/AgenticRL-CUDA-kernels/artifacts/tmp/timing-kn5dv8he/cutile/.cache/inductor"
+  },
+  "profile": {
+    "t_gen_us": 0.8289999999999622,
+    "provenance": 1.0,
+    "provenance/agent": 1.0,
+    "provenance/library": 0.0,
+    "provenance/torch": 0.0,
+    "provenance/memory": 0.0,
+    "kernel_us/axpby_cutile_kernel_Kt1_A1f32_1i16t1_p16_A1f32_1i16t1_p16_A1f32_1i16t1_p16_Sf32_I128": 0.8289999999999621,
+    "timing_measured": true,
+    "timing_reason": null,
+    "t_eager_us": 1.730999999999972,
+    "t_compile_us": 0.7039999999999736,
+    "profile/eager_events": 20,
+    "profile/compile_events": 10,
+    "profile/gen_events": 10,
+    "profile/eager_kernel_names": "[\"void at::native::vectorized_elementwise_kernel<4, at::native::AUnaryFunctor<float, float, float, at::native::binary_internal::MulFunctor<float> >, std::array<char*, 2ul>, false>(int, at::native::AUnaryFunctor<float, float, float, at::native::binary_internal::MulFunctor<float> >, std::array<char*, 2ul>)\", \"void at::native::vectorized_elementwise_kernel<4, at::native::CUDAFunctor_add<float>, std::array<char*, 3ul>, false>(int, at::native::CUDAFunctor_add<float>, std::array<char*, 3ul>)\"]",
+    "profile/order": "eager,compile,gen",
+    "profile/diagnostic": true,
+    "profile/eager_trace": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T103454Z/timing/cutile-011/eager.json",
+    "profile/compile_trace": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T103454Z/timing/cutile-011/compile.json",
+    "profile/gen_trace": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T103454Z/timing/cutile-011/gen.json"
+  }
+}

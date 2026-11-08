@@ -1,0 +1,26 @@
+test_historical_zero_baseline_cannot_be_accepted (tests.test_modal_diagnostics.AcceptanceTests.test_historical_zero_baseline_cannot_be_accepted) ... ok
+test_positive_acceptance_and_expected_failures (tests.test_modal_diagnostics.AcceptanceTests.test_positive_acceptance_and_expected_failures) ... ok
+test_default_counts_and_balanced_orders (tests.test_modal_diagnostics.PlanTests.test_default_counts_and_balanced_orders) ... ok
+test_forwarding_is_opt_in_and_allowlisted (tests.test_modal_diagnostics.RunnerTests.test_forwarding_is_opt_in_and_allowlisted) ... {"function_call_id": "fc-synthetic"}
+ok
+test_runner_writes_automatic_review_from_fresh_outputs (tests.test_modal_diagnostics.RunnerTests.test_runner_writes_automatic_review_from_fresh_outputs) ... ok
+test_all_empty_and_success (tests.test_profiling.CaptureTests.test_all_empty_and_success) ... ok
+test_counts_names_traces_order_and_contract (tests.test_profiling.CaptureTests.test_counts_names_traces_order_and_contract) ... ok
+test_empty_session_fails_closed_and_preserves_evidence (tests.test_profiling.CaptureTests.test_empty_session_fails_closed_and_preserves_evidence) ... ok
+test_cpu_null_record_is_unmeasured (tests.test_record_kernel_names.RecordTests.test_cpu_null_record_is_unmeasured) ... {"backend": "triton", "measured": false, "reason": "CPU (no device events)"}
+ok
+test_empty_capture_reason_and_raw_evidence (tests.test_record_kernel_names.RecordTests.test_empty_capture_reason_and_raw_evidence) ... {"backend": "triton", "measured": false, "reason": "empty_profile:eager", "profile": {"timing_measured": false, "t_eager_us": null, "t_compile_us": null, "t_gen_us": null, "provenance": null, "provenance/agent": null, "provenance/library": null, "provenance/torch": null, "provenance/memory": null, "timing_reason": "empty_profile:eager", "profile/eager_events": 0}}
+ok
+test_measured_classes_and_unmatched (tests.test_record_kernel_names.RecordTests.test_measured_classes_and_unmatched) ... {"backend": "triton", "measured": true, "agent_kernel_names": ["axpby_kernel"], "profile": {"timing_measured": true, "t_eager_us": 100.0, "t_compile_us": 80.0, "t_gen_us": 50.0, "provenance": 0.9, "provenance/agent": 0.8, "provenance/library": 0.0, "provenance/torch": 0.1, "provenance/memory": 0.1, "kernel_us/axpby_kernel_0d1d2d": 5.0, "kernel_us/at::native::vectorized_elementwise_kernel": 1.0}, "t_gen_us": 50.0, "provenance": 0.9, "provenance/agent": 0.8, "provenance/library": 0.0, "provenance/torch": 0.1, "provenance/memory": 0.1, "kernels": {"axpby_kernel_0d1d2d": {"us": 5.0, "class": "agent"}, "at::native::vectorized_elementwise_kernel": {"us": 1.0, "class": "torch"}}, "unmatched_agent_names": []}
+ok
+test_substring_only_is_unmatched (tests.test_record_kernel_names.RecordTests.test_substring_only_is_unmatched) ... {"backend": "triton", "measured": true, "agent_kernel_names": ["axpby_kernel"], "profile": {"timing_measured": true, "t_eager_us": 100.0, "t_compile_us": 80.0, "t_gen_us": 50.0, "provenance": 0.9, "provenance/agent": 0.8, "provenance/library": 0.0, "provenance/torch": 0.1, "provenance/memory": 0.1, "kernel_us/prefix_axpby_kernel_suffix": 5.0}, "t_gen_us": 50.0, "provenance": 0.9, "provenance/agent": 0.8, "provenance/library": 0.0, "provenance/torch": 0.1, "provenance/memory": 0.1, "kernels": {"prefix_axpby_kernel_suffix": {"us": 5.0, "class": "torch"}}, "unmatched_agent_names": ["axpby_kernel"]}
+ok
+test_unavailable_backend_skips_stages (tests.test_record_kernel_names.RecordTests.test_unavailable_backend_skips_stages) ... {"backend": "cuda", "unavailable": "package not installed: fake"}
+ok
+test_unknown_kernel_counts_against_authored (tests.test_record_kernel_names.RecordTests.test_unknown_kernel_counts_against_authored) ... {"backend": "triton", "measured": true, "agent_kernel_names": ["axpby_kernel"], "profile": {"timing_measured": true, "t_eager_us": 100.0, "t_compile_us": 80.0, "t_gen_us": 50.0, "provenance": 0.9, "provenance/agent": 0.8, "provenance/library": 0.0, "provenance/torch": 0.1, "provenance/memory": 0.1, "kernel_us/mystery_kernel": 2.0}, "t_gen_us": 50.0, "provenance": 0.9, "provenance/agent": 0.8, "provenance/library": 0.0, "provenance/torch": 0.1, "provenance/memory": 0.1, "kernels": {"mystery_kernel": {"us": 2.0, "class": "torch"}}, "unmatched_agent_names": ["axpby_kernel"]}
+ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 15.374s
+
+OK

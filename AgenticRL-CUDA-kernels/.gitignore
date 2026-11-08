@@ -15,3 +15,8 @@ wandb/
 sweep_tasks/
 sweep_agent_gpu*.log
 .sweep_id
+
+# Diagnostic Chrome traces (~20 MB); kept locally and in the Modal volume
+artifacts/timing-diagnostic-*/timing/*/eager.json
+artifacts/timing-diagnostic-*/timing/*/compile.json
+artifacts/timing-diagnostic-*/timing/*/gen.json

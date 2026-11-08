@@ -1,0 +1,43 @@
+{
+  "backend": "tilelang",
+  "repeat": 16,
+  "order": "gen,eager,compile",
+  "stages": {
+    "profiling": {
+      "returncode": 0,
+      "timed_out": false,
+      "wall_s": 19.611106814000095
+    }
+  },
+  "candidate_sha256": "17d88e411009c5d6ecda4fd6b99c507e10fbdd6312f928afe67b596408cadb20",
+  "cache_env": {
+    "PIP_NO_CACHE_DIR": "off",
+    "TRITON_CACHE_DIR": "/root/AgenticRL-CUDA-kernels/artifacts/tmp/timing-82sdcv9k/tilelang/.cache/triton",
+    "TILELANG_CACHE_DIR": "/root/AgenticRL-CUDA-kernels/artifacts/tmp/timing-82sdcv9k/tilelang/.cache/tilelang",
+    "CUDA_TILE_CACHE_DIR": "/root/AgenticRL-CUDA-kernels/artifacts/tmp/timing-82sdcv9k/tilelang/.cache/cutile",
+    "CUTE_DSL_CACHE_DIR": "/root/AgenticRL-CUDA-kernels/artifacts/tmp/timing-82sdcv9k/tilelang/.cache/cutedsl",
+    "TORCHINDUCTOR_CACHE_DIR": "/root/AgenticRL-CUDA-kernels/artifacts/tmp/timing-82sdcv9k/tilelang/.cache/inductor"
+  },
+  "profile": {
+    "t_gen_us": 0.7711999999999989,
+    "provenance": 1.0,
+    "provenance/agent": 1.0,
+    "provenance/library": 0.0,
+    "provenance/torch": 0.0,
+    "provenance/memory": 0.0,
+    "kernel_us/axpby_tilelang_kernel": 0.7711999999999988,
+    "timing_measured": true,
+    "timing_reason": null,
+    "t_eager_us": 1.6065000000000282,
+    "t_compile_us": 0.7680999999999812,
+    "profile/gen_events": 10,
+    "profile/eager_events": 20,
+    "profile/compile_events": 10,
+    "profile/eager_kernel_names": "[\"void at::native::vectorized_elementwise_kernel<4, at::native::AUnaryFunctor<float, float, float, at::native::binary_internal::MulFunctor<float> >, std::array<char*, 2ul>, false>(int, at::native::AUnaryFunctor<float, float, float, at::native::binary_internal::MulFunctor<float> >, std::array<char*, 2ul>)\", \"void at::native::vectorized_elementwise_kernel<4, at::native::CUDAFunctor_add<float>, std::array<char*, 3ul>, false>(int, at::native::CUDAFunctor_add<float>, std::array<char*, 3ul>)\"]",
+    "profile/order": "gen,eager,compile",
+    "profile/diagnostic": true,
+    "profile/gen_trace": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T103454Z/timing/tilelang-016/gen.json",
+    "profile/eager_trace": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T103454Z/timing/tilelang-016/eager.json",
+    "profile/compile_trace": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T103454Z/timing/tilelang-016/compile.json"
+  }
+}

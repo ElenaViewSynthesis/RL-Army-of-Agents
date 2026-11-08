@@ -1,0 +1,43 @@
+{
+  "backend": "cutedsl",
+  "repeat": 35,
+  "order": "eager,compile,gen",
+  "stages": {
+    "profiling": {
+      "returncode": 0,
+      "timed_out": false,
+      "wall_s": 9.801274425999964
+    }
+  },
+  "candidate_sha256": "7bbc78f0b8e3c81fb530b7a901c9435631c34bc0d15f95a93ed424002b545901",
+  "cache_env": {
+    "PIP_NO_CACHE_DIR": "off",
+    "TRITON_CACHE_DIR": "/root/AgenticRL-CUDA-kernels/artifacts/tmp/timing-njqft7xc/cutedsl/.cache/triton",
+    "TILELANG_CACHE_DIR": "/root/AgenticRL-CUDA-kernels/artifacts/tmp/timing-njqft7xc/cutedsl/.cache/tilelang",
+    "CUDA_TILE_CACHE_DIR": "/root/AgenticRL-CUDA-kernels/artifacts/tmp/timing-njqft7xc/cutedsl/.cache/cutile",
+    "CUTE_DSL_CACHE_DIR": "/root/AgenticRL-CUDA-kernels/artifacts/tmp/timing-njqft7xc/cutedsl/.cache/cutedsl",
+    "TORCHINDUCTOR_CACHE_DIR": "/root/AgenticRL-CUDA-kernels/artifacts/tmp/timing-njqft7xc/cutedsl/.cache/inductor"
+  },
+  "profile": {
+    "t_gen_us": 0.953699999999958,
+    "provenance": 1.0,
+    "provenance/agent": 1.0,
+    "provenance/library": 0.0,
+    "provenance/torch": 0.0,
+    "provenance/memory": 0.0,
+    "kernel_us/kernel_cutlass_axpby_cute_kernel_tensorptrf32gmemo151201i64512_tensorptrf32gmemo151201i64512_tensorptrf32gmemo151201i64512_tensor00o1512011105121____0": 0.9536999999999579,
+    "timing_measured": true,
+    "timing_reason": null,
+    "t_eager_us": 1.7370999999999868,
+    "t_compile_us": 0.7042000000000371,
+    "profile/eager_events": 20,
+    "profile/compile_events": 10,
+    "profile/gen_events": 10,
+    "profile/eager_kernel_names": "[\"void at::native::vectorized_elementwise_kernel<4, at::native::AUnaryFunctor<float, float, float, at::native::binary_internal::MulFunctor<float> >, std::array<char*, 2ul>, false>(int, at::native::AUnaryFunctor<float, float, float, at::native::binary_internal::MulFunctor<float> >, std::array<char*, 2ul>)\", \"void at::native::vectorized_elementwise_kernel<4, at::native::CUDAFunctor_add<float>, std::array<char*, 3ul>, false>(int, at::native::CUDAFunctor_add<float>, std::array<char*, 3ul>)\"]",
+    "profile/order": "eager,compile,gen",
+    "profile/diagnostic": true,
+    "profile/eager_trace": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T103454Z/timing/cutedsl-035/eager.json",
+    "profile/compile_trace": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T103454Z/timing/cutedsl-035/compile.json",
+    "profile/gen_trace": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T103454Z/timing/cutedsl-035/gen.json"
+  }
+}

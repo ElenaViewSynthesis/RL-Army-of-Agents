@@ -1,0 +1,48 @@
+{
+  "backend": "cuda",
+  "repeat": 19,
+  "order": "eager,compile,gen",
+  "stages": {
+    "compile": {
+      "returncode": 0,
+      "timed_out": false,
+      "wall_s": 17.612533601999985
+    },
+    "profiling": {
+      "returncode": 0,
+      "timed_out": false,
+      "wall_s": 13.407758509000018
+    }
+  },
+  "candidate_sha256": "2318132d3b21c6701aea6b84a6b64bab2fbf2756474153583454f8574449e3eb",
+  "cache_env": {
+    "PIP_NO_CACHE_DIR": "off",
+    "TRITON_CACHE_DIR": "/root/AgenticRL-CUDA-kernels/artifacts/tmp/timing-x9hy7q6e/cuda/.cache/triton",
+    "TILELANG_CACHE_DIR": "/root/AgenticRL-CUDA-kernels/artifacts/tmp/timing-x9hy7q6e/cuda/.cache/tilelang",
+    "CUDA_TILE_CACHE_DIR": "/root/AgenticRL-CUDA-kernels/artifacts/tmp/timing-x9hy7q6e/cuda/.cache/cutile",
+    "CUTE_DSL_CACHE_DIR": "/root/AgenticRL-CUDA-kernels/artifacts/tmp/timing-x9hy7q6e/cuda/.cache/cutedsl",
+    "TORCHINDUCTOR_CACHE_DIR": "/root/AgenticRL-CUDA-kernels/artifacts/tmp/timing-x9hy7q6e/cuda/.cache/inductor"
+  },
+  "profile": {
+    "t_gen_us": 0.9278999999999996,
+    "provenance": 1.0,
+    "provenance/agent": 1.0,
+    "provenance/library": 0.0,
+    "provenance/torch": 0.0,
+    "provenance/memory": 0.0,
+    "kernel_us/void axpby_kernel<256>(float*, float const*, float const*, float, int)": 0.9278999999999996,
+    "timing_measured": true,
+    "timing_reason": null,
+    "t_eager_us": 1.7698000000000094,
+    "t_compile_us": 0.7198000000001002,
+    "profile/eager_events": 20,
+    "profile/compile_events": 10,
+    "profile/gen_events": 10,
+    "profile/eager_kernel_names": "[\"void at::native::vectorized_elementwise_kernel<4, at::native::AUnaryFunctor<float, float, float, at::native::binary_internal::MulFunctor<float> >, std::array<char*, 2ul>, false>(int, at::native::AUnaryFunctor<float, float, float, at::native::binary_internal::MulFunctor<float> >, std::array<char*, 2ul>)\", \"void at::native::vectorized_elementwise_kernel<4, at::native::CUDAFunctor_add<float>, std::array<char*, 3ul>, false>(int, at::native::CUDAFunctor_add<float>, std::array<char*, 3ul>)\"]",
+    "profile/order": "eager,compile,gen",
+    "profile/diagnostic": true,
+    "profile/eager_trace": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T091114Z/timing/cuda-019/eager.json",
+    "profile/compile_trace": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T091114Z/timing/cuda-019/compile.json",
+    "profile/gen_trace": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/20261108T091114Z/timing/cuda-019/gen.json"
+  }
+}

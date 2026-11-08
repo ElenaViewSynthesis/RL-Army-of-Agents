@@ -1,0 +1,3 @@
+Compiling 3 files: binding.cpp, kernels/axpby.cu, kernels/axpby_binding.cpp
+Compile success: cuda_extension.so
+[TIME] Compilation took 14.99s
