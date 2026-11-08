@@ -7,6 +7,73 @@ are in [artifacts/upstream.json](artifacts/upstream.json). Tests assert that
 model.py, binding.cpp, binding_registry.h, model_new.py and both stock kernel
 files remain byte-identical.
 
+## Kernel symbol inspection and unmatched-name diagnostics
+
+**Inspection reference:** the per-backend `symbol_pattern` (`re.search`) mapping
+in [Approved symbol rules](#approved-symbol-rules-evidence-run-20261106t185236z)
+links authored names to profiler symbols; keep its captured evidence as the
+reference. Pins below come from H200 run `20261106T185236Z`
+([environment](artifacts/environment-20261106T185236Z.json)).
+
+When `unmatched_agent_names` is non-empty, first check `measured`/`reason`,
+compile errors, the discovered names and every event/class in `kernel_names.json`.
+The recorder currently checks **substring presence**, not the approved regex
+(`scripts/record_kernel_names.py:77`); an empty list alone does not prove an
+anchored match or a passing provenance gate. Compilation alone does not prove
+that the authored kernel launched.
+
+**First compiler diagnostic for Triton: on the GPU host**, enable
+`TRITON_KERNEL_DUMP=1` and `MLIR_ENABLE_DUMP=1`, then repeat compile/profiling
+and retain the emitted IR/symbols. In a Modal H200 run, set these in the remote
+image/sandbox environment before its child processes start; exporting them only
+in the local checkout does not configure the container. The recorder copies
+`os.environ` into its stage environment (`scripts/record_kernel_names.py:41`);
+Modal's `_run` likewise inherits its remote environment (`cloud/modal_runtime.py:42`).
+
+For full stdout/stderr, run these stages directly in a retained **remote task
+workdir whose ModelNew already selects Triton**, with the trusted harness on
+PYTHONPATH; replace RUN_ID with the diagnostic run ID. Successful recorder
+stages discard captured compiler stdout/stderr; the direct commands retain both.
+
+```bash
+export PYTHONPATH="/root/AgenticRL-CUDA-kernels${PYTHONPATH:+:$PYTHONPATH}"
+export CUDA_AGENT_DEVICE=cuda TRITON_INTERPRET=0
+export TRITON_KERNEL_DUMP=1 MLIR_ENABLE_DUMP=1 TRITON_ALWAYS_COMPILE=1
+export TRITON_CACHE_DIR="$PWD/.cache/triton-symbol-debug"
+export TRITON_DUMP_DIR=/artifacts/RUN_ID/triton-ir
+mkdir -p "$TRITON_DUMP_DIR"
+python -m utils.compile --backend triton >"$TRITON_DUMP_DIR/compile.stdout.log" 2>"$TRITON_DUMP_DIR/compile.stderr.log"
+python -m utils.profiling --backend triton --json >"$TRITON_DUMP_DIR/profile.stdout.log" 2>"$TRITON_DUMP_DIR/profile.stderr.log"
+```
+
+For DSL fixtures, select the matching ModelNew and replace the backend/switches
+using this table. **Triton's switches are not universal MLIR switches**; on DSL
+runs they may dump only the Inductor baseline. Names were checked against the pins:
+
+| Backend / recorded version | Applicable inspection controls and policy reference |
+|---|---|
+| Triton 3.8.0 | Both dump flags above are documented in the [3.8.0 README](https://github.com/triton-lang/triton/blob/v3.8.0/README.md#tips-for-hacking). Narrow noisy pass dumps with `MLIR_ENABLE_DUMP=axpby_kernel`; `TRITON_ALWAYS_COMPILE=1` bypasses a stale compilation-cache hit. See [SKILL_TRITON.md](SKILL_TRITON.md) and [TRITON_guide.md](TRITON_guide.md). |
+| TileLang 0.1.15, target `cuda` | Uses TVM/TIR, not Triton's MLIR pipeline. `TILELANG_PRINT_ON_COMPILATION=1` and `kernel.get_kernel_source()` are the quieter compilation-name/generated-CUDA fallback in [SKILL_TILELANG.md:60](SKILL_TILELANG.md#L60). The switch is valid in [0.1.15 env.py:371](https://github.com/tile-ai/tilelang/blob/v0.1.15/tilelang/env.py#L371); no spelling correction is needed. |
+| cuTile 1.8.0 / tileiras 13.3.36 | `CUDA_TILE_LOGS=CUTILEIR` prints Python frontend IR; `CUDA_TILE_DUMP_BYTECODE=/artifacts/RUN_ID/cutile-ir` saves TileIR bytecode ([1.8.0 debugging](https://github.com/NVIDIA/cutile-python/blob/v1.8.0/docs/source/debugging.rst), [_debug.py](https://github.com/NVIDIA/cutile-python/blob/v1.8.0/src/cuda/tile/_debug.py)). TileIR is MLIR-based, but Triton's dump switches do not apply. `CUDA_TILE_LOGS=TILEIR` and `CUDA_TILE_DUMP_TILEIR` require CTK **13.4+**, outside this 13.3 pin; do not recommend them here. Policy: [SKILL_CUTILE.md](SKILL_CUTILE.md). |
+| CuTe DSL 4.8.1 | Its own MLIR controls are `CUTE_DSL_PRINT_IR=1` (generated IR), or `CUTE_DSL_KEEP=ir,ptx` with `CUTE_DSL_DUMP_DIR=/artifacts/RUN_ID/cutedsl-ir` for files ([4.8.1 debugging](https://github.com/NVIDIA/cutlass/blob/v4.8.1/media/docs/pythonDSL/guides/debugging.rst)). Use these, not Triton's `MLIR_ENABLE_DUMP`. Policy: [SKILL_CUTEDSL.md](SKILL_CUTEDSL.md). |
+| CUDA C++ / nvcc 13.3 | Compare the recorded device event with the CUDA rule; none of the Triton/DSL switches above is an nvcc inspection switch. |
+
+Only the TileLang policy currently names a compile-print knob; the cuTile/CuTe
+controls above are release-verified vendor fallbacks, not claims that those
+policy files already list them. A cache hit can suppress compiler output: use a
+fresh diagnostic process/task cache, and retain dumps under the remote artifacts
+volume. These are inspection runs, not new reward/benchmark evidence.
+
+Compare the **actual generated-model profiler event** and dumped entry point
+against that backend's approved pattern, substituting the escaped authored name.
+IR output may also include torch.compile/Inductor baselines; do not credit those
+as authored work. If the authored kernel never launched, fix its call path.
+If a newer compiler demonstrably changed the symbol shape, update the pattern
+**and repin captured-name expectations in `tests/test_symbol_provenance.py` in
+the same reviewed change**, citing the compiler version and capture run ID.
+**Never loosen unknown-event handling to make a fixture pass: unknown events
+remain Torch (fail closed).**
+
 ## Commands and raw output
 
 The original stock pipeline was attempted before editing the utilities:

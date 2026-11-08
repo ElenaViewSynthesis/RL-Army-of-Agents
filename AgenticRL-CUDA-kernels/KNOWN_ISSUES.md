@@ -95,6 +95,7 @@
   Triton emitted the bare `axpby_kernel`. TileLang and CuTe matched their
   documented forms. All had empty unmatched-name lists. Other shapes,
   types and compiler releases may differ; unknown events must still fail closed.
+  For mismatches, see the [unmatched-name diagnostic runbook](VALIDATION.md#kernel-symbol-inspection-and-unmatched-name-diagnostics).
 - **Generic-name over-credit fixed with anchored attribution.** Authored names
   must have at least four characters and avoid the shared generic-name denylist.
   Both discovery and classification enforce this. Memory is handled first;
