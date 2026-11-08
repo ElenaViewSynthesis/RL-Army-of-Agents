@@ -1,0 +1,242 @@
+{
+  "run_id": "20261108T164430Z",
+  "status": "passed",
+  "scope": "intentional fresh five-backend validation of unchanged scorer",
+  "command": "MODAL_GPU=H200 WANDB_MODE=offline PYTHONDONTWRITEBYTECODE=1 .venv/bin/modal run --detach cloud/modal_runtime.py --tests",
+  "source_files": 76,
+  "source_matches_previous_gpu_snapshot": {
+    "utils/profiling.py": true,
+    "utils/backend.py": true,
+    "utils/rollout_env.py": true,
+    "utils/verification.py": true,
+    "utils/provenance.py": true,
+    "utils/reward.py": true,
+    "utils/config.py": true,
+    "cloud/modal_runtime.py": true,
+    "cloud/modal_job.py": true,
+    "cloud/acceptance.py": true,
+    "scripts/validate.py": true,
+    "scripts/record_kernel_names.py": true,
+    "tests/support.py": true
+  },
+  "protected_upstream_byte_identical": [
+    "SKILL.md",
+    "model.py",
+    "model_new.py",
+    "binding.cpp",
+    "binding_registry.h",
+    "kernels/axpby.cu",
+    "kernels/axpby_binding.cpp"
+  ],
+  "gpu_suite": {
+    "tests": 31,
+    "seconds": 502.412,
+    "status": "OK"
+  },
+  "rollout_cases": 13,
+  "actual_measured_profiles": 11,
+  "profile_guard_checks": {
+    "triton": {
+      "iters": 10,
+      "cuda_events": {
+        "eager": 20,
+        "compile": 10,
+        "gen": 10
+      },
+      "timing_method": "cuda-leaf-sum-two-empty-prime-v1",
+      "primer_event_counts": [
+        0,
+        0
+      ],
+      "status": "passed"
+    },
+    "reward-hack-torchop": {
+      "iters": 10,
+      "cuda_events": {
+        "eager": 20,
+        "compile": 10,
+        "gen": 20
+      },
+      "timing_method": "cuda-leaf-sum-two-empty-prime-v1",
+      "primer_event_counts": [
+        0,
+        0
+      ],
+      "status": "passed"
+    },
+    "overlong": {
+      "iters": 10,
+      "cuda_events": {
+        "eager": 20,
+        "compile": 10,
+        "gen": 10
+      },
+      "timing_method": "cuda-leaf-sum-two-empty-prime-v1",
+      "primer_event_counts": [
+        0,
+        0
+      ],
+      "status": "passed"
+    },
+    "cuda": {
+      "iters": 10,
+      "cuda_events": {
+        "eager": 20,
+        "compile": 10,
+        "gen": 10
+      },
+      "timing_method": "cuda-leaf-sum-two-empty-prime-v1",
+      "primer_event_counts": [
+        0,
+        0
+      ],
+      "status": "passed"
+    },
+    "reward-hack-torchop-cuda": {
+      "iters": 10,
+      "cuda_events": {
+        "eager": 20,
+        "compile": 10,
+        "gen": 20
+      },
+      "timing_method": "cuda-leaf-sum-two-empty-prime-v1",
+      "primer_event_counts": [
+        0,
+        0
+      ],
+      "status": "passed"
+    },
+    "tilelang": {
+      "iters": 10,
+      "cuda_events": {
+        "eager": 20,
+        "compile": 10,
+        "gen": 10
+      },
+      "timing_method": "cuda-leaf-sum-two-empty-prime-v1",
+      "primer_event_counts": [
+        0,
+        0
+      ],
+      "status": "passed"
+    },
+    "reward-hack-torchop-tilelang": {
+      "iters": 10,
+      "cuda_events": {
+        "eager": 20,
+        "compile": 10,
+        "gen": 20
+      },
+      "timing_method": "cuda-leaf-sum-two-empty-prime-v1",
+      "primer_event_counts": [
+        0,
+        0
+      ],
+      "status": "passed"
+    },
+    "cutile": {
+      "iters": 10,
+      "cuda_events": {
+        "eager": 20,
+        "compile": 10,
+        "gen": 10
+      },
+      "timing_method": "cuda-leaf-sum-two-empty-prime-v1",
+      "primer_event_counts": [
+        0,
+        0
+      ],
+      "status": "passed"
+    },
+    "reward-hack-torchop-cutile": {
+      "iters": 10,
+      "cuda_events": {
+        "eager": 20,
+        "compile": 10,
+        "gen": 20
+      },
+      "timing_method": "cuda-leaf-sum-two-empty-prime-v1",
+      "primer_event_counts": [
+        0,
+        0
+      ],
+      "status": "passed"
+    },
+    "cutedsl": {
+      "iters": 10,
+      "cuda_events": {
+        "eager": 20,
+        "compile": 10,
+        "gen": 10
+      },
+      "timing_method": "cuda-leaf-sum-two-empty-prime-v1",
+      "primer_event_counts": [
+        0,
+        0
+      ],
+      "status": "passed"
+    },
+    "reward-hack-torchop-cutedsl": {
+      "iters": 10,
+      "cuda_events": {
+        "eager": 20,
+        "compile": 10,
+        "gen": 20
+      },
+      "timing_method": "cuda-leaf-sum-two-empty-prime-v1",
+      "primer_event_counts": [
+        0,
+        0
+      ],
+      "status": "passed"
+    }
+  },
+  "honest_and_torchop_rejection_backends": [
+    "cuda",
+    "triton",
+    "tilelang",
+    "cutile",
+    "cutedsl"
+  ],
+  "timing_anomalies": [],
+  "environment": {
+    "run_id": "20261108T164430Z",
+    "command": "python -m utils.runtime --json --require cuda,triton,tilelang,cutile,cutedsl",
+    "runtime/python": "3.12.1",
+    "runtime/python_ok": true,
+    "runtime/gpu_count": 1,
+    "runtime/gpu0_name": "NVIDIA H200",
+    "runtime/gpu0_compute_cap": "9.0",
+    "runtime/gpu0_uuid": "GPU-c3b87b33-97bc-e90a-f89f-c1b18b4b8d9d",
+    "runtime/driver_version": "610.57.04",
+    "runtime/driver_ok": true,
+    "runtime/gpu0_cutile_supported": true,
+    "runtime/nvcc_version": "13.3",
+    "runtime/nvcc_ok": true,
+    "runtime/ninja": "/usr/local/bin/ninja",
+    "runtime/tileiras_version": "13.3.36",
+    "runtime/tileiras_ok": true,
+    "runtime/tileiras_reason": null,
+    "runtime/cuda_tile_version": "1.8.0",
+    "runtime/torch_version": "2.14.1+cu130",
+    "runtime/torch_cuda_build": true,
+    "runtime/triton_version": "3.8.0",
+    "runtime/tilelang_version": "0.1.15",
+    "runtime/cutlass_dsl_version": "4.8.1",
+    "runtime/cuda_bindings_version": "13.5.0",
+    "runtime/nsys": "/usr/local/bin/nsys",
+    "runtime/ncu": "/usr/local/cuda/bin/ncu",
+    "runtime/compute_sanitizer": "/usr/local/cuda/bin/compute-sanitizer",
+    "runtime/ok_cuda_backend": true,
+    "runtime/ok_triton_backend": true,
+    "runtime/ok_cutile": true,
+    "runtime/ok_tilelang": true,
+    "runtime/ok_cutedsl": true,
+    "runtime/unavailable_reason": null
+  },
+  "limitations": [
+    "Real GPU validation exercises nonempty valid captures; invalid-duration cases are synthetic unit regressions, not claimed hardware faults.",
+    "The historical intermittent-empty and JWT-expiry causes remain unconfirmed.",
+    "No previous measurements were regraded or repeated automatically."
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "created_utc": "2026-11-08T15:37:41Z",
+  "command": "MODAL_GPU=H200 WANDB_MODE=offline PYTHONDONTWRITEBYTECODE=1 .venv/bin/modal run --detach cloud/modal_runtime.py --tests",
+  "sha256_crlf_normalized": {
+    "utils/profiling.py": "ecc3a4960cee5e95bf005e42b14820f14c49a98593fa321a12ade85fa13fa034",
+    "utils/backend.py": "ec69b3bf269934f6caa4116b950016b310f2799977b6b15ea99eeaecdb8e50ea",
+    "utils/rollout_env.py": "52cd74f9c2a66666933a096ccdcbf24fb98de77605afe4ffad870232091a0b47",
+    "utils/verification.py": "47bb2ad47dfedff0c78f4fdd0de6baeff7a0a7c114d9c1694a2041001997f906",
+    "utils/provenance.py": "6e39c2c575667a8ddd8dc503449790f9fa787f7693b8f89a30bf7427f89b11d6",
+    "utils/reward.py": "d1c70f6949d8ca6d0d67637aeb88e0db68c526398d1bde6dd582c2ffd26ddd82",
+    "utils/config.py": "96c29818264c68a6cea7c7627843d5b25809cf8d99cfcfe481fb83386b829a67",
+    "cloud/modal_runtime.py": "c2b89f5cdbf4a851103b18cac8bab8d1c3292fbadac7e04d49afddb1512e6922",
+    "cloud/modal_job.py": "16f1fd72a3a022e4615c17b3b41e3b8e5cc2e8039ae2958f4414dd0d5b3eed60",
+    "cloud/acceptance.py": "cc0184260cf7daf1df9fb5e91f4884c3a6e7fa462fe51fd03e3a371178978e2e",
+    "scripts/validate.py": "d1c1525ac114ae495ad60397bb1c5143d858ae3b7e1844fe6271a1c0e8977f98",
+    "scripts/record_kernel_names.py": "1e57626d4d5be726348601902c1fb6be6d5c7d0a5f615568571780bf72cd1dd3",
+    "tests/support.py": "326fc49d03f32d5c53a44625784d58591be217d0f81bb02214925b028a00753b"
+  }
+}

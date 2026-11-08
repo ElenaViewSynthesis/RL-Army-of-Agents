@@ -1,0 +1,36 @@
+test_honest_interpreter_correctness_no_fabricated_provenance (tests.test_provenance.CPUIntegrationTests.test_honest_interpreter_correctness_no_fabricated_provenance) ... ok
+test_incorrect_output_and_crash_fail_safely (tests.test_provenance.CPUIntegrationTests.test_incorrect_output_and_crash_fail_safely) ... ok
+test_max_turns_through_run_task (tests.test_provenance.CPUIntegrationTests.test_max_turns_through_run_task) ... ok
+test_timeout_five_seconds_through_run_task (tests.test_provenance.CPUIntegrationTests.test_timeout_five_seconds_through_run_task) ... ok
+test_torch_hack_passes_verification_but_cpu_cannot_attribute (tests.test_provenance.CPUIntegrationTests.test_torch_hack_passes_verification_but_cpu_cannot_attribute) ... ok
+test_every_preset_ranks_the_hack_last (tests.test_provenance.CuTeDSLGPUIntegrationTests.test_every_preset_ranks_the_hack_last) ... ok
+test_honest_passes_correctness_and_provenance (tests.test_provenance.CuTeDSLGPUIntegrationTests.test_honest_passes_correctness_and_provenance) ... ok
+test_torch_hack_passes_verification_fails_provenance (tests.test_provenance.CuTeDSLGPUIntegrationTests.test_torch_hack_passes_verification_fails_provenance) ... ok
+test_every_preset_ranks_the_hack_last (tests.test_provenance.CuTileGPUIntegrationTests.test_every_preset_ranks_the_hack_last) ... ok
+test_honest_passes_correctness_and_provenance (tests.test_provenance.CuTileGPUIntegrationTests.test_honest_passes_correctness_and_provenance) ... ok
+test_torch_hack_passes_verification_fails_provenance (tests.test_provenance.CuTileGPUIntegrationTests.test_torch_hack_passes_verification_fails_provenance) ... ok
+test_dapo_overlong_base_unchanged (tests.test_provenance.GPUIntegrationTests.test_dapo_overlong_base_unchanged) ... ok
+test_every_preset_ranks_the_hack_last (tests.test_provenance.GPUIntegrationTests.test_every_preset_ranks_the_hack_last) ... ok
+test_honest_cuda (tests.test_provenance.GPUIntegrationTests.test_honest_cuda) ... ok
+test_honest_triton (tests.test_provenance.GPUIntegrationTests.test_honest_triton) ... ok
+test_torch_hack_passes_verification_fails_provenance (tests.test_provenance.GPUIntegrationTests.test_torch_hack_passes_verification_fails_provenance) ... ok
+test_launched_dummy_kernel_plus_torch_ops_fails_every_backend (tests.test_provenance.GenericNameGPUIntegrationTests.test_launched_dummy_kernel_plus_torch_ops_fails_every_backend) ... ok
+test_every_preset_ranks_the_hack_last (tests.test_provenance.TileLangGPUIntegrationTests.test_every_preset_ranks_the_hack_last) ... ok
+test_honest_passes_correctness_and_provenance (tests.test_provenance.TileLangGPUIntegrationTests.test_honest_passes_correctness_and_provenance) ... ok
+test_torch_hack_passes_verification_fails_provenance (tests.test_provenance.TileLangGPUIntegrationTests.test_torch_hack_passes_verification_fails_provenance) ... ok
+test_graph_capture_replays_on_current_stream (tests.test_dsl_kernels.CuTeDSLAxpbyTests.test_graph_capture_replays_on_current_stream) ... ok
+test_invalid_inputs_rejected (tests.test_dsl_kernels.CuTeDSLAxpbyTests.test_invalid_inputs_rejected) ... ok
+test_shapes_tails_dtypes_and_inputs_unchanged (tests.test_dsl_kernels.CuTeDSLAxpbyTests.test_shapes_tails_dtypes_and_inputs_unchanged) ... ok
+test_graph_capture_replays_on_current_stream (tests.test_dsl_kernels.CuTileAxpbyTests.test_graph_capture_replays_on_current_stream) ... ok
+test_invalid_inputs_rejected (tests.test_dsl_kernels.CuTileAxpbyTests.test_invalid_inputs_rejected) ... ok
+test_shapes_tails_dtypes_and_inputs_unchanged (tests.test_dsl_kernels.CuTileAxpbyTests.test_shapes_tails_dtypes_and_inputs_unchanged) ... ok
+test_graph_capture_replays_on_current_stream (tests.test_dsl_kernels.TileLangAxpbyTests.test_graph_capture_replays_on_current_stream) ... ok
+test_invalid_inputs_rejected (tests.test_dsl_kernels.TileLangAxpbyTests.test_invalid_inputs_rejected) ... ok
+test_shapes_tails_dtypes_and_inputs_unchanged (tests.test_dsl_kernels.TileLangAxpbyTests.test_shapes_tails_dtypes_and_inputs_unchanged) ... ok
+test_bench_samples_order_and_flatness (tests.test_benchmark.GPUBenchmarkTests.test_bench_samples_order_and_flatness) ... ok
+test_cuda_graphs_capture_replay_and_item_hack (tests.test_benchmark.GPUBenchmarkTests.test_cuda_graphs_capture_replay_and_item_hack) ... ok
+
+----------------------------------------------------------------------
+Ran 31 tests in 503.798s
+
+OK

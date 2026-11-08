@@ -1,0 +1,15 @@
+== git diff --check ==
+DIFFCHECK_EXIT=0
+== evidence paths ==
+EXISTS artifacts/profile-order-download-check-20261108T162024Z/receipt.json
+EXISTS artifacts/profile-order-download-check-20261108T162024Z/20261108T142102Z/order/records.json
+EXISTS artifacts/profile-order-download-check-20261108T162024Z/20261108T142102Z/order/progress.jsonl
+EXISTS artifacts/fresh-gpu-20261108T164430Z/review.json
+EXISTS artifacts/fresh-gpu-20261108T164430Z/source-snapshot.json
+EXISTS artifacts/fresh-gpu-20261108T164430Z/source
+EXISTS artifacts/fresh-gpu-20261108T164430Z/acceptance-review-20261108T164430Z.json
+EXISTS artifacts/fresh-gpu-20261108T164430Z/gpu_tests.stderr.log
+EXISTS artifacts/fresh-gpu-source-20261108T164346Z
+== receipt ==
+command: .venv/bin/modal volume get agenticrl-cuda-artifacts '20261108T142102Z/' artifacts/profile-order-download-check-20261108T162024Z/20261108T142102Z
+files: 266 mismatches: 0 missing: 0

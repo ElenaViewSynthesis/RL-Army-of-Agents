@@ -1,0 +1,7 @@
+test_counts_names_traces_order_and_contract (tests.test_profiling.CaptureTests.test_counts_names_traces_order_and_contract) ... ok
+test_pipeline_keys_have_exactly_one_adr_category (tests.test_tracking.ContractTests.test_pipeline_keys_have_exactly_one_adr_category) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 6.540s
+
+OK
