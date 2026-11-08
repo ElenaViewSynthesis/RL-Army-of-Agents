@@ -98,6 +98,10 @@ not generated-token trajectory length. No trainer or optimizer is implemented.
 
 ## Machine-checked classification table
 
+New `profile/*` counters, eager names, order/trace metadata and `timing_reason`
+are retained in raw artifacts, without adding per-case W&B metric steps.
+`timing_measured`, existing timings and shares retain their table projections.
+
 Each source:key is assigned exactly one category. Source distinguishes a raw
 record from its projected tracking row; rows are not extra evaluator keys.
 `*` covers dynamic event names, case labels, package names or artifact paths.
@@ -163,12 +167,13 @@ saves the sampler output (enabled in the Modal test runner).
 | `profile:t_gen_us` | table | t_gen_us | float | us | CPU/failure | reward/input | environment |
 | `profile:provenance` | table | provenance | float | fraction | CPU/failure | reward/input | environment |
 | `results:stage_wall_s/*/*` | artifact | stage_wall_s | float | s | opt-in stage timing disabled/not executed | diagnostic | environment |
-| `profile:timing_reason` | table | profile | str | 1 | null on successful capture | diagnostic | environment |
-| `profile:profile/*_events` | table | profile | int | CUDA events | absent on CPU | diagnostic | environment |
-| `profile:profile/eager_kernel_names` | table | profile | str (JSON list) | 1 | absent on CPU | diagnostic | environment |
-| `profile:profile/order` | table | profile | str | 1 | absent on CPU | diagnostic | environment |
-| `profile:profile/diagnostic` | table | profile | bool | 1 | absent on CPU | diagnostic | environment |
-| `profile:profile/*_trace` | table | profile | str | path | absent unless trace capture requested | diagnostic | environment |
+| `profile:timing_reason` | artifact | profile | str | 1 | null on successful capture | diagnostic | environment |
+| `profile:profile/*_events` | artifact | profile | int | CUDA events | absent on CPU | diagnostic | environment |
+| `profile:profile/eager_kernel_names` | artifact | profile | str (JSON list) | 1 | absent on CPU | diagnostic | environment |
+| `profile:profile/*_kernel_samples` | artifact | profile | str (JSON list of name/duration pairs) | us per CUDA event; non-finite durations encoded as strings | absent on CPU | diagnostic | environment |
+| `profile:profile/order` | artifact | profile | str | 1 | absent on CPU | diagnostic | environment |
+| `profile:profile/diagnostic` | artifact | profile | bool | 1 | absent on CPU | diagnostic | environment |
+| `profile:profile/*_trace` | artifact | profile | str | path | absent unless trace capture requested | diagnostic | environment |
 | `profile:timing_measured` | table | timing_measured | bool | 1 | never | diagnostic | environment |
 | `profile:kernel_us/*` | table | kernel_us | float | us per iteration | event absent | diagnostic | environment |
 | `result:bench/available` | table | bench | bool | 1 | disabled/unsupported; UUID may be unavailable | diagnostic | environment |
@@ -329,15 +334,16 @@ saves the sampler output (enabled in the Modal test runner).
 | `runtime:runtime/ok_cutedsl` | config | runtime | bool | 1 | tool/package/device unavailable; reason null on success | diagnostic | environment |
 | `runtime:runtime/unavailable_reason` | config | runtime | str | 1 | tool/package/device unavailable; reason null on success | diagnostic | environment |
 | `names:backends/*/profile/timing_measured` | table | profile | scalar/string | us for timing; otherwise 1 | CPU/failure/disabled | diagnostic | environment |
-| `names:backends/*/profile/timing_reason` | table | profile | scalar/string | us for timing; otherwise 1 | CPU/failure/disabled | diagnostic | environment |
-| `names:backends/*/profile/t_eager_us` | table | profile | scalar/string | us for timing; otherwise 1 | CPU/failure/disabled | diagnostic | environment |
-| `names:backends/*/profile/t_compile_us` | table | profile | scalar/string | us for timing; otherwise 1 | CPU/failure/disabled | diagnostic | environment |
+| `names:backends/*/profile/timing_reason` | artifact | profile | scalar/string | us for timing; otherwise 1 | CPU/failure/disabled | diagnostic | environment |
+| `names:backends/*/profile/t_eager_us` | artifact | profile | scalar/string | us for timing; otherwise 1 | CPU/failure/disabled | diagnostic | environment |
+| `names:backends/*/profile/t_compile_us` | artifact | profile | scalar/string | us for timing; otherwise 1 | CPU/failure/disabled | diagnostic | environment |
 | `names:backends/*/profile/kernel_us/*` | table | profile | scalar/string | us for timing; otherwise 1 | CPU/failure/disabled | diagnostic | environment |
-| `names:backends/*/profile/profile/*_events` | table | profile | scalar/string | us for timing; otherwise 1 | CPU/failure/disabled | diagnostic | environment |
-| `names:backends/*/profile/profile/eager_kernel_names` | table | profile | scalar/string | us for timing; otherwise 1 | CPU/failure/disabled | diagnostic | environment |
-| `names:backends/*/profile/profile/order` | table | profile | scalar/string | us for timing; otherwise 1 | CPU/failure/disabled | diagnostic | environment |
-| `names:backends/*/profile/profile/diagnostic` | table | profile | scalar/string | us for timing; otherwise 1 | CPU/failure/disabled | diagnostic | environment |
-| `names:backends/*/profile/profile/*_trace` | table | profile | scalar/string | us for timing; otherwise 1 | CPU/failure/disabled | diagnostic | environment |
+| `names:backends/*/profile/profile/*_events` | artifact | profile | scalar/string | us for timing; otherwise 1 | CPU/failure/disabled | diagnostic | environment |
+| `names:backends/*/profile/profile/eager_kernel_names` | artifact | profile | scalar/string | us for timing; otherwise 1 | CPU/failure/disabled | diagnostic | environment |
+| `names:backends/*/profile/profile/*_kernel_samples` | artifact | profile | str (JSON list of name/duration pairs) | us per CUDA event; non-finite durations encoded as strings | CPU/failure/disabled | diagnostic | environment |
+| `names:backends/*/profile/profile/order` | artifact | profile | scalar/string | us for timing; otherwise 1 | CPU/failure/disabled | diagnostic | environment |
+| `names:backends/*/profile/profile/diagnostic` | artifact | profile | scalar/string | us for timing; otherwise 1 | CPU/failure/disabled | diagnostic | environment |
+| `names:backends/*/profile/profile/*_trace` | artifact | profile | scalar/string | us for timing; otherwise 1 | CPU/failure/disabled | diagnostic | environment |
 | `names:backends/*/measured` | table | backends | bool | 1 | unavailable/unmeasured; reasons absent on success | diagnostic | environment |
 | `names:backends/*/reason` | table | backends | str | 1 | unavailable/unmeasured; reasons absent on success | diagnostic | environment |
 | `names:backends/*/unavailable` | table | backends | str | 1 | unavailable/unmeasured; reasons absent on success | diagnostic | environment |

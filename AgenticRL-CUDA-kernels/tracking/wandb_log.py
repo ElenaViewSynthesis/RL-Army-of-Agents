@@ -157,12 +157,12 @@ def _clear_case_summary(run):
             del run.summary[key]
 
 
-def log_backfill(payload, entity=ENTITY, project=PROJECT, wandb_module=None):
+def log_backfill(payload, entity=ENTITY, project=PROJECT, wandb_module=None, *, new_run_id=None):
     wandb = wandb_module or importlib.import_module("wandb")
     run = wandb.init(entity=entity, project=project,
-        id=f"h200-{payload['run_id']}".replace("/", "-")[:64], name=payload["name"],
+        id=new_run_id or f"h200-{payload['run_id']}".replace("/", "-")[:64], name=payload["name"],
         job_type=payload["kind"], tags=payload["tags"], notes=payload["notes"],
-        config=payload["config"], resume="allow")
+        config=payload["config"], resume="never" if new_run_id else "allow")
     define_metrics(run)
     _clear_case_summary(run)
     # A validation invocation is one snapshot (iteration 0), not N training steps.
@@ -170,7 +170,9 @@ def log_backfill(payload, entity=ENTITY, project=PROJECT, wandb_module=None):
              "rollouts": _table(wandb, payload["rollouts"], ["case"]),
              "kernels": _table(wandb, payload["kernels"], ["backend"])})
     run.summary.update(payload["summary"])
-    artifact = wandb.Artifact(name=f"h200-{payload['run_id']}".replace("/", "-")[:64],
+    artifact = wandb.Artifact(
+        name=f"validation-{new_run_id}" if new_run_id
+             else f"h200-{payload['run_id']}".replace("/", "-")[:64],
         type="validation-run", metadata={"kind": payload["kind"], "status": payload["status"]})
     for path in payload["files"]:
         artifact.add_file(path)

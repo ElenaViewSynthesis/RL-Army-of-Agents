@@ -1,0 +1,93 @@
+{
+  "run_state": "finished",
+  "url": "https://forge.coreweave.com/wandb/elenamylocuda-gemma/CUDA-gen/runs/tracking-check-df6b74c7f55f4490",
+  "summary": {
+    "_runtime": 7,
+    "_step": 0,
+    "_timestamp": 1794147696.052387,
+    "_wandb.runtime": 7,
+    "backends_measured": 5,
+    "cases": 12,
+    "gpu_tests": "OK",
+    "provenance_pass": 6,
+    "reward_mean": 0.1875,
+    "reward_positive": 5,
+    "unavailable_backends": "",
+    "unmatched_agent_names_total": 0,
+    "verify_ok": 10
+  },
+  "history": [
+    {
+      "_runtime": 7.238251858,
+      "batch/cispo/reward/frac_3": 0,
+      "batch/dapo/turns/p95": 1,
+      "batch/grpo/adv/frac_dropped": 0,
+      "batch/grpo/reward/frac_provenance_fail": 0.3333333333333333,
+      "batch/grpo/adv/std": 0.9999992928937188,
+      "iteration": 0,
+      "_timestamp": 1794147696.052387,
+      "batch/cispo/adv/mean": 0,
+      "batch/cispo/reward/mean": 1,
+      "batch/dapo/adv/std": 0.9999992928937188,
+      "batch/dapo/reward/frac_provenance_fail": 0.3333333333333333,
+      "batch/grpo/reward/frac_3": 0,
+      "batch/grpo/reward/mean_overlong_penalty": 0,
+      "batch/cispo/turns/p95": 1,
+      "batch/dapo/adv/frac_dropped": 0,
+      "batch/dapo/reward/frac_max_turns": 0,
+      "batch/grpo/reward/frac_max_turns": 0,
+      "batch/grpo/turns/p95": 1,
+      "batch/cispo/reward/frac_max_turns": 0,
+      "batch/dapo/adv/mean": 0,
+      "batch/grpo/reward/mean": 1,
+      "batch/cispo/adv/frac_dropped": 0,
+      "batch/cispo/adv/std": 0.9999992928937188,
+      "batch/cispo/reward/frac_provenance_fail": 0.3333333333333333,
+      "batch/cispo/reward/mean_overlong_penalty": 0,
+      "batch/cispo/turns/mean": 1,
+      "batch/dapo/reward/mean_overlong_penalty": 0,
+      "batch/grpo/adv/mean": 0,
+      "_step": 0,
+      "batch/dapo/reward/mean": 1,
+      "batch/grpo/turns/mean": 1,
+      "kernels": {
+        "artifact_path": "wandb-client-artifact://luy1bwn97593mju5mnqd9htjna2fcroucvrqpryokw3g3wajbrp3j1mukrr976rjub6nrjuy0sf5prpb34ra80ivkhs0mzphvae6szn7ul5716w8hvsz2tf2bmndrjfv/kernels.table.json",
+        "_type": "table-file",
+        "ncols": 7,
+        "size": 692,
+        "log_mode": "IMMUTABLE",
+        "path": "media/table/kernels_0_1bfaec68808de53d379e.table.json",
+        "nrows": 5,
+        "sha256": "1bfaec68808de53d379e2be3b66d71fe17e0863a2a40a9070819a60aebb698eb",
+        "_latest_artifact_path": "wandb-client-artifact://gptgxv65ovfslvcnjy8cau6ybbkggw5nvwuxxh6oo6wrpdaujhu4va9rnwkbqtuopixzcu1sgiwh4x3nzxahip97wvj78c010b58il0l1gei5a232f74ahc4gpixus4r:latest/kernels.table.json"
+      },
+      "rollouts": {
+        "size": 10561,
+        "path": "media/table/rollouts_0_ee45a2cc6e960abc3568.table.json",
+        "_type": "table-file",
+        "ncols": 25,
+        "nrows": 12,
+        "_latest_artifact_path": "wandb-client-artifact://8yn0exg1ec6rb9tv5qq4yeog6x9huqlz8tshop4ilz9r9xmbu957c59kyfi3m7ftmpkzpsi3t1ljqq5q9r051ynup8rasjqdrd9d4cb22qwv9yhg3agjxj5t4aj4ishc:latest/rollouts.table.json",
+        "log_mode": "IMMUTABLE",
+        "sha256": "ee45a2cc6e960abc356868edf1144f46983061c0f922ceb7c65fb7613ca09b5f",
+        "artifact_path": "wandb-client-artifact://a65svg7ikanhi3k765t10y3gsgg0u383gcabwpjbw29oii1yog8j8piajildbg4f7nt2sml3rrigu29ihhvu07oesbfq6ompobset4qoxywm8qop6axj0oetasvr8thr/rollouts.table.json"
+      },
+      "batch/dapo/reward/frac_3": 0,
+      "batch/dapo/turns/mean": 1
+    }
+  ],
+  "artifacts": [
+    {
+      "name": "run-tracking-check-df6b74c7f55f4490-rollouts:v0",
+      "type": "run_table"
+    },
+    {
+      "name": "run-tracking-check-df6b74c7f55f4490-kernels:v0",
+      "type": "run_table"
+    },
+    {
+      "name": "validation-tracking-check-df6b74c7f55f4490:v0",
+      "type": "validation-run"
+    }
+  ]
+}

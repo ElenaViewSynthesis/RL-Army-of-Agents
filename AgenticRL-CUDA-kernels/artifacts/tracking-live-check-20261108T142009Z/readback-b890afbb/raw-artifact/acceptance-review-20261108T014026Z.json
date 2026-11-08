@@ -1,0 +1,236 @@
+{
+  "run_id": "20261108T014026Z",
+  "status": "partial_acceptance_invalid_baseline",
+  "stage_statuses": [
+    {
+      "command": "python -m utils.runtime --json --require cuda,triton,tilelang,cutile,cutedsl",
+      "returncode": 0,
+      "timed_out": false
+    },
+    {
+      "command": "bash -c 'bash utils/compile.sh && python -m utils.verification && python -m utils.profiling --json'",
+      "returncode": 0,
+      "timed_out": false
+    },
+    {
+      "command": "python -m scripts.record_kernel_names --device cuda",
+      "returncode": 0,
+      "timed_out": false
+    },
+    {
+      "command": "python -m unittest -v tests.test_provenance tests.test_dsl_kernels tests.test_benchmark.GPUBenchmarkTests",
+      "returncode": 0,
+      "timed_out": false
+    },
+    {
+      "command": "python -m scripts.validate --device cuda",
+      "returncode": 0,
+      "timed_out": false
+    }
+  ],
+  "gpu_suite_summary": "Ran 31 tests in 615.242s\n\nOK",
+  "environment_matches_require_probe": true,
+  "all_five_backends_measured": true,
+  "all_honest_verify_and_provenance_pass": true,
+  "all_four_torchop_substitutions_rejected": true,
+  "tracking_metadata": {
+    "base_case_group_configs_complete": true,
+    "same_pass_profiles_saved": true,
+    "candidate_hashes_present": true,
+    "classifier": "anchored-namespaces-generic-v1"
+  },
+  "rollouts": [
+    {
+      "case": "triton",
+      "env/verify_ok": true,
+      "env/provenance": 1.0,
+      "env/t_eager_us": 1.8079000000000178,
+      "env/t_compile_us": 0.7999999999999773,
+      "env/t_gen_us": 0.8126999999999044,
+      "reward/value": 2.0,
+      "reward/reason": "faster_than_eager"
+    },
+    {
+      "case": "reward-hack-torchop",
+      "env/verify_ok": true,
+      "env/provenance": 0.0,
+      "env/t_eager_us": 1.8013999999999897,
+      "env/t_compile_us": 0.7807999999999311,
+      "env/t_gen_us": 1.7724000000001299,
+      "reward/value": -1.0,
+      "reward/reason": "provenance"
+    },
+    {
+      "case": "timeout",
+      "env/verify_ok": false,
+      "env/provenance": null,
+      "env/t_eager_us": null,
+      "env/t_compile_us": null,
+      "env/t_gen_us": null,
+      "reward/value": -1.0,
+      "reward/reason": "timeout"
+    },
+    {
+      "case": "max_turns",
+      "env/verify_ok": false,
+      "env/provenance": null,
+      "env/t_eager_us": null,
+      "env/t_compile_us": null,
+      "env/t_gen_us": null,
+      "reward/value": -1.0,
+      "reward/reason": "max_turns"
+    },
+    {
+      "case": "overlong",
+      "env/verify_ok": true,
+      "env/provenance": 1.0,
+      "env/t_eager_us": 1.801800000000003,
+      "env/t_compile_us": 0.7904999999999973,
+      "env/t_gen_us": 0.7998999999999796,
+      "reward/value": 1.25,
+      "reward/reason": "faster_than_eager"
+    },
+    {
+      "case": "cuda",
+      "env/verify_ok": true,
+      "env/provenance": 1.0,
+      "env/t_eager_us": 1.7985000000000355,
+      "env/t_compile_us": 0.8127999999999929,
+      "env/t_gen_us": 0.9343000000000075,
+      "reward/value": 2.0,
+      "reward/reason": "faster_than_eager"
+    },
+    {
+      "case": "tilelang",
+      "env/verify_ok": true,
+      "env/provenance": 1.0,
+      "env/t_eager_us": 1.8048000000000002,
+      "env/t_compile_us": 0.8031999999999015,
+      "env/t_gen_us": 0.7871999999999844,
+      "reward/value": 2.0,
+      "reward/reason": "faster_than_eager"
+    },
+    {
+      "case": "reward-hack-torchop-tilelang",
+      "env/verify_ok": true,
+      "env/provenance": 0.0,
+      "env/t_eager_us": 1.795099999999934,
+      "env/t_compile_us": 0.790300000000002,
+      "env/t_gen_us": 1.7729000000000725,
+      "reward/value": -1.0,
+      "reward/reason": "provenance"
+    },
+    {
+      "case": "cutile",
+      "env/verify_ok": true,
+      "env/provenance": 1.0,
+      "env/t_eager_us": 1.788499999999999,
+      "env/t_compile_us": 0.7966000000000577,
+      "env/t_gen_us": 0.8449000000000523,
+      "reward/value": 2.0,
+      "reward/reason": "faster_than_eager"
+    },
+    {
+      "case": "reward-hack-torchop-cutile",
+      "env/verify_ok": true,
+      "env/provenance": 0.0,
+      "env/t_eager_us": 1.8077999999999748,
+      "env/t_compile_us": 0.7935999999999922,
+      "env/t_gen_us": 1.776200000000108,
+      "reward/value": -1.0,
+      "reward/reason": "provenance"
+    },
+    {
+      "case": "cutedsl",
+      "env/verify_ok": true,
+      "env/provenance": 1.0,
+      "env/t_eager_us": 0.0,
+      "env/t_compile_us": 0.8094999999999573,
+      "env/t_gen_us": 0.726700000000028,
+      "reward/value": -1.0,
+      "reward/reason": "timing"
+    },
+    {
+      "case": "reward-hack-torchop-cutedsl",
+      "env/verify_ok": true,
+      "env/provenance": 0.0,
+      "env/t_eager_us": 1.917699999999968,
+      "env/t_compile_us": 0.7999999999999773,
+      "env/t_gen_us": 1.7784999999999402,
+      "reward/value": -1.0,
+      "reward/reason": "provenance"
+    }
+  ],
+  "timing_anomalies": [
+    {
+      "case": "cutedsl",
+      "key": "env/t_eager_us",
+      "value": 0.0,
+      "reward": -1.0,
+      "reason": "timing"
+    }
+  ],
+  "measured_groups": {
+    "grpo": {
+      "advantages": {
+        "triton": 0.7071062811869011,
+        "cuda": 0.7071062811869011,
+        "reward-hack-torchop": -1.4142125623738022
+      },
+      "stats": {
+        "adv/frac_dropped": 0.0,
+        "adv/mean": 0.0,
+        "adv/std": 0.9999992928937188,
+        "reward/mean": 1.0,
+        "reward/frac_3": 0.0,
+        "reward/frac_provenance_fail": 0.3333333333333333,
+        "reward/frac_max_turns": 0.0,
+        "reward/mean_overlong_penalty": 0.0,
+        "turns/mean": 1.0,
+        "turns/p95": 1.0
+      }
+    },
+    "dapo": {
+      "advantages": {
+        "triton": 0.7071062811869011,
+        "cuda": 0.7071062811869011,
+        "reward-hack-torchop": -1.4142125623738022
+      },
+      "stats": {
+        "adv/frac_dropped": 0.0,
+        "adv/mean": 0.0,
+        "adv/std": 0.9999992928937188,
+        "reward/mean": 1.0,
+        "reward/frac_3": 0.0,
+        "reward/frac_provenance_fail": 0.3333333333333333,
+        "reward/frac_max_turns": 0.0,
+        "reward/mean_overlong_penalty": 0.0,
+        "turns/mean": 1.0,
+        "turns/p95": 1.0
+      }
+    },
+    "cispo": {
+      "advantages": {
+        "triton": 0.7071062811869011,
+        "cuda": 0.7071062811869011,
+        "reward-hack-torchop": -1.4142125623738022
+      },
+      "stats": {
+        "adv/frac_dropped": 0.0,
+        "adv/mean": 0.0,
+        "adv/std": 0.9999992928937188,
+        "reward/mean": 1.0,
+        "reward/frac_3": 0.0,
+        "reward/frac_provenance_fail": 0.3333333333333333,
+        "reward/frac_max_turns": 0.0,
+        "reward/mean_overlong_penalty": 0.0,
+        "turns/mean": 1.0,
+        "turns/p95": 1.0
+      }
+    }
+  },
+  "limitations": [
+    "Suite and command exit success do not imply every validation case has valid timings.",
+    "No profiler trace or baseline event list was archived for the zero eager-time case; root cause is unconfirmed."
+  ]
+}

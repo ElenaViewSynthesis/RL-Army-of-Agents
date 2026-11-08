@@ -140,6 +140,23 @@ class LogBackfillTests(unittest.TestCase):
                                wandb_module=wandb2)
         self.assertEqual(wandb2.run.finished, 1)
 
+    def test_new_run_id_never_resumes_with_unique_artifact(self):
+        payload = wandb_log.backfill_payload(RUN_OK, ARTIFACTS)
+        wb = FakeWandbModule()
+        wandb_log.log_backfill(payload, wandb_module=wb, new_run_id="validation-20261108T140200Z")
+        self.assertEqual((wb.init_kwargs["id"], wb.init_kwargs["resume"]),
+                         ("validation-20261108T140200Z", "never"))
+        self.assertEqual(wb.run.artifacts[0].name, "validation-validation-20261108T140200Z")
+        wb2 = FakeWandbModule()
+        wandb_log.log_backfill(payload, wandb_module=wb2)
+        self.assertEqual((wb2.init_kwargs["id"], wb2.init_kwargs["resume"]),
+                         ("h200-20261106T185236Z", "allow"))
+        self.assertEqual(wb2.run.artifacts[0].name, "h200-20261106T185236Z")
+        self.assertEqual(wb.run.logged, wb2.run.logged)
+        self.assertEqual(wb.run.summary, wb2.run.summary)
+        self.assertEqual(wb.run.definitions, wb2.run.definitions)
+        self.assertEqual(wb.run.finished, wb2.run.finished)
+
 
 class WeaveInputsTests(unittest.TestCase):
     def test_rollout_inputs(self):

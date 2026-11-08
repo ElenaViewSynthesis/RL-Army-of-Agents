@@ -1,0 +1,8 @@
+test_partial_source_is_frozen_and_not_promoted_to_new_gpu_evidence (tests.test_tracking_live.PreparationTests.test_partial_source_is_frozen_and_not_promoted_to_new_gpu_evidence) ... ok
+test_wandb_tables_snapshot_and_summary_are_checked (tests.test_tracking_live.ReadbackTests.test_wandb_tables_snapshot_and_summary_are_checked) ... ok
+test_weave_query_and_exact_results (tests.test_tracking_live.ReadbackTests.test_weave_query_and_exact_results) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.379s
+
+OK
