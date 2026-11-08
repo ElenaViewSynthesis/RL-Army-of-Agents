@@ -57,6 +57,16 @@
   assert samples and replay behavior but do not export raw latency series. A
   benchmark stage that crashes, times out or emits malformed output only
   yields `bench/available: false` with a reason; it never changes the reward.
+- **Zero eager baseline in fresh H200 validation.** Run `20261108T014026Z`
+  passed the 31-test GPU suite, but the separate honest CuTe DSL validation
+  profile recorded `t_eager_us=0.0` despite `timing_measured=true`.
+  Correctness and provenance passed; reward correctly remained -1 with reason
+  `timing`. Command exit success does not make this full timing acceptance.
+  The saved profile contains generated-kernel events, not the eager baseline's
+  event list or a trace, so the cause remains unconfirmed. Preserve this failed
+  measurement; collect baseline event evidence before changing profiler
+  semantics or relying on sweep rewards. See VALIDATION.md and
+  `artifacts/acceptance-review-20261108T014026Z.json`.
 - **Event latency excludes un-joined side streams.** `bench/*/event_us_*`
   covers only work ordered on the entry stream; wall latency brackets
   `torch.cuda.synchronize()` and includes CPU dispatch and every stream.
@@ -108,8 +118,11 @@
   or CuTe DSL; if they don't cache to disk, each compile, verification and
   profiling subprocess recompiles, and that counts against the task deadline.
 - **Tracking is opt-in and unverified against the live service.** Payloads
-  were checked with a fake wandb module and `--dry-run`; the first real
-  `backfill --all` must be inspected in the W&B UI. `${env:WANDB_API_KEY}`
+  were checked with fake SDKs, `--dry-run`, and a real `wandb==0.31.0` offline
+  smoke using explicitly synthetic records. Real-SDK config, tables, summaries
+  and staged evidence passed locally; this is not live W&B/Weave validation.
+  The first approved online backfill must be inspected in the W&B UI.
+  `${env:WANDB_API_KEY}`
   header expansion in `.devin/mcp_config.json` follows Devin's OAuth-field
   docs and should be confirmed on first use.
 - **Deferred scope.** No actual training, Modal orchestration, policy weights,

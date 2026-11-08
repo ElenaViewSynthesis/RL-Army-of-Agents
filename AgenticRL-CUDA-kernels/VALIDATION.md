@@ -839,3 +839,113 @@ OK (skipped=26)
 
 Raw logs: [system tests](artifacts/fixture-rename-tests-system-20261108.log) and
 [CPU/interpreter tests](artifacts/fixture-rename-tests-venv-20261108.log).
+
+## Explainer review, real-SDK offline smoke and H200 acceptance (2026-11-08)
+
+### CISPO explainer review
+
+`CISPO_GPU_batch_ranking.md` remains an unlinked draft. Its worked example now
+uses `(1, 1, -2) / (sqrt(2) + 1e-6)`, rather than presenting the zero-epsilon
+limit as the exact implementation. The stabilized values agree with
+`group_advantages([2, 2, -1])` and the frozen historical artifact to absolute
+tolerance `1e-15`. The review also separates the discrete base reward from
+overlong shaping and documents the strict speedup-margin boundaries.
+
+The GPU ranking checks reuse measured, one-turn GRPO rollout rewards with each
+batch preset. They establish ordering for those non-tied groups, not independent
+CISPO rollouts or optimizer behavior. Tied-group filtering is covered by separate
+synthetic-reward tests; CISPO shaping is checked through mocked stage outputs.
+The separate real-GPU overlong test uses DAPO, not CISPO.
+
+### Real W&B SDK, offline only
+
+Recorded command:
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m scripts.smoke_wandb_offline \
+  --output "$PWD/artifacts/wandb-offline-smoke-20261108T013827Z"
+```
+
+The reusable script requires a new output directory. It forces offline mode,
+removes the API key from its process environment, uses a localhost-only base
+URL, and does not initialize Weave. All reward, timing and profile inputs are
+explicitly synthetic; this is SDK serialization evidence, not a GPU benchmark.
+
+Result: `Offline real-SDK smoke passed`, using `wandb==0.31.0`.
+Both real SDK runs contain all 24 `RolloutConfig` fields plus the classifier
+`anchored-namespaces-generic-v1`. Actual saved table files contain candidate
+SHA-256 values checked against their local source files, full per-case configs
+and all four profile shares. Final tables have two rows for the accumulated
+standalone run and three rows for the batch run. Summaries contain aggregate
+values and SDK system fields, not per-case reward/provenance fields.
+The batch run logs the existing `adv/*`, `reward/*` and `turns/*` statistics.
+Three staged raw-evidence bundles retain config, results and aligned synthetic
+profiles after the logger's temporary source file is removed.
+
+[Smoke log](artifacts/wandb-offline-smoke-20261108T013827Z.log) and
+[reviewed SDK evidence](artifacts/wandb-real-sdk-review-20261108T013827Z.json).
+The complete local SDK output remains under
+`artifacts/wandb-offline-smoke-20261108T013827Z/`.
+No live W&B or Weave run was created or modified; remote backfill migration is
+still unverified.
+
+Narrow local verification, not a new full-suite run:
+
+```text
+PYTHONDONTWRITEBYTECODE=1 python3 -m unittest -v tests.test_tracking tests.test_config_reward_grpo tests.test_rollout_env.RolloutProtocolTests.test_provenance_gate_and_overlong_via_entry_point
+Ran 32 tests in 18.774s
+
+OK
+```
+
+[Local verification log](artifacts/offline-acceptance-local-tests-20261108T013827Z.log).
+
+### Fresh H200 run: 20261108T014026Z
+
+One invocation of
+`MODAL_GPU=H200 WANDB_MODE=offline .venv/bin/modal run cloud/modal_runtime.py --tests`
+completed. All five remote stages returned zero without timeouts: required
+runtime checks, stock pipeline, name recording, GPU tests, and validation.
+
+```text
+Ran 31 tests in 615.242s
+
+OK
+```
+
+All five backends were measured, with no unmatched authored names. All five
+honest cases passed correctness with provenance 1.0. All four ordinary
+Torch-op substitution cases passed correctness but received provenance 0.0
+and reward -1. New case IDs use `reward-hack-torchop` and its backend variants.
+Historical artifacts were not relabelled.
+
+New results persist complete base, case and grouping configs; candidate hashes;
+raw same-pass profiles; and the classifier ID. The packaged environment's
+runtime fields exactly match this invocation's require probe. All three
+measured algorithm groups rank `reward-hack-torchop` last; the shared
+CUDA/Triton group's CISPO advantages are
+`0.7071062811869011`, `0.7071062811869011`, `-1.4142125623738022`.
+
+**Acceptance is partial, not all-green performance evidence.** In the separate
+honest CuTe DSL validation case, the profiler recorded
+`t_eager_us=0.0`, `t_compile_us=0.8094999999999573` and
+`t_gen_us=0.726700000000028`, while `timing_measured` was true.
+Correctness and provenance passed, but the reward correctly failed closed:
+`reward/value=-1`, `reward/reason="timing"`. The valid-timing requirement for
+every honest validation case therefore did not pass, despite the successful
+GPU unittest suite and command exit codes.
+
+No baseline event list or profiler trace was archived for that case, so the
+cause of the zero eager timing remains unconfirmed. No retry, timing replacement
+or reward relaxation was performed. Diagnose this before treating a sweep's
+performance rewards as reliable.
+
+Evidence: [acceptance review](artifacts/acceptance-review-20261108T014026Z.json),
+[GPU tests](artifacts/gpu_tests.stderr-20261108T014026Z.log),
+[results](artifacts/results-20261108T014026Z.json),
+[kernel names](artifacts/kernel_names-20261108T014026Z.json),
+[environment](artifacts/environment-20261108T014026Z.json),
+[fresh require probe](artifacts/require.stdout-20261108T014026Z.log), and
+[redacted Modal session](artifacts/modal-session-20261108T014026Z.log).
+The original downloaded volume directory is retained locally under
+`artifacts/volume-20261108T014026Z/`.
