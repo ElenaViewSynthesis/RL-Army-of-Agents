@@ -7,8 +7,8 @@
 ![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-3776AB)
 ![PyTorch ≥ 2.3](https://img.shields.io/badge/torch-%E2%89%A52.3-EE4C2C)
 ![Triton ≥ 3.0](https://img.shields.io/badge/triton-%E2%89%A53.0-6E40C9)
-![Tests: 133](https://img.shields.io/badge/tests-133-2EA44F)
-![GPU: H200 partial acceptance](https://img.shields.io/badge/GPU-H200%20partial%20acceptance-yellow)
+![Validated snapshot: 133 tests](https://img.shields.io/badge/tests_snapshot-133-2EA44F)
+![GPU: H200 snapshot passed](https://img.shields.io/badge/GPU-H200%20snapshot%20passed-2EA44F)
 
 This project extends the environment released with [CUDA-Agent](https://github.com/BytedTsinghua-SIA/CUDA-Agent) ([paper](https://arxiv.org/abs/2602.24286)). It adds three things:
 
@@ -24,13 +24,15 @@ This project extends the environment released with [CUDA-Agent](https://github.c
 > logs, commands, runtime details and limitations. These tiny axpby measurements
 > do not establish performance on broader workloads.
 >
-> **Latest GPU acceptance is partial.** Run `20261108T014026Z` passed its
-> 31-test GPU suite, but the honest CuTe DSL validation recorded eager time
-> `0.0` us; reward correctly remained `-1` with reason `timing`.
-> The cause is unknown. Collect eager-baseline profiler events or a trace before
-> relying on sweep performance rewards; see the
-> [acceptance record](VALIDATION.md#fresh-h200-run-20261108t014026z) and
-> [known issue](KNOWN_ISSUES.md).
+> **H200 acceptance passed for snapshot `20261108T140136Z`.** The 31-test GPU
+> suite and automatic review passed: all five honest fixtures have provenance
+> 1.0, all five Torch-op hacks 0.0, and required timings are positive.
+> The earlier zero eager baseline did not reproduce in 193 completed diagnostic
+> trials, including 100 CuTe DSL trials; its cause remains unknown.
+> [Validated source and raw evidence](VALIDATION.md#full-h200-acceptance-run-20261108t140136z)
+> are pinned. Concurrent profiler extensions saved after upload remain
+> **GPU-unverified**; the badges describe the validated snapshot. Historical
+> [partial acceptance](VALIDATION.md#fresh-h200-run-20261108t014026z) is preserved.
 
 
 ---
@@ -280,7 +282,7 @@ Each round reports two per-iteration timings: `event_us_*` (CUDA events on the c
 
 ## GPU runtime (cloud)
 
-**Historical run `20261106T185236Z` passed validation; the latest run `20261108T014026Z` has [partial timing acceptance](VALIDATION.md#fresh-h200-run-20261108t014026z).** The pinned cloud stack is [requirements-gpu.txt](requirements-gpu.txt): the `nvidia/cuda:13.3.1-devel-ubuntu24.04` image (system nvcc + headers at `/usr/local/cuda`), Python 3.12, `torch==2.14.1+cu130`, `triton`, `ninja`, `cuda-tile==1.8.0` with directly pinned CUDA 13.3.1 compiler components (tileiras `13.3.36`), `tilelang==0.1.15` and `nvidia-cutlass-dsl[cu13]==4.8.1`. Install it with **pip** — uv's first-index strategy cannot resolve the `+cu130` wheel (`UV_INDEX_STRATEGY=unsafe-best-match` also works). Hopper (sm_90: H100/H200) needs tileiras **13.3**, which also matches Modal's CUDA 13.3 driver API.
+**Run `20261108T140136Z` passed [snapshot acceptance](VALIDATION.md#full-h200-acceptance-run-20261108t140136z); later concurrent profiler extensions remain GPU-unverified.** The pinned cloud stack is [requirements-gpu.txt](requirements-gpu.txt): the `nvidia/cuda:13.3.1-devel-ubuntu24.04` image (system nvcc + headers at `/usr/local/cuda`), Python 3.12, `torch==2.14.1+cu130`, `triton`, `ninja`, `cuda-tile==1.8.0` with directly pinned CUDA 13.3.1 compiler components (tileiras `13.3.36`), `tilelang==0.1.15` and `nvidia-cutlass-dsl[cu13]==4.8.1`. Install it with **pip** — uv's first-index strategy cannot resolve the `+cu130` wheel (`UV_INDEX_STRATEGY=unsafe-best-match` also works). Hopper (sm_90: H100/H200) needs tileiras **13.3**, which also matches Modal's CUDA 13.3 driver API.
 
 Preflight on any GPU host: `python -m utils.runtime --json --require cuda,triton,tilelang,cutile,cutedsl` — it prints a flat `runtime/*` record (driver, nvcc, ninja, tileiras, torch/triton/cuda-tile/tilelang/cutlass-dsl versions, GPU UUID) and exits non-zero when a profile is missing; it never imports torch.
 
@@ -491,7 +493,7 @@ AgenticRL-CUDA-kernels/
 │   └── rollout_env.py                 # run_task(): isolated, deadline-bounded evaluation
 ├── scripts/                           # validate + record_kernel_names (artifacts)
 ├── tracking/                          # opt-in W&B + Weave logging, H200 manifest
-├── tests/                             # 133 tests; GPU-only ones skip without CUDA or the DSL package
+├── tests/                             # validated 133-test snapshot; see VALIDATION.md for scope
 ├── artifacts/                         # raw logs, environment record, upstream checksums
 ├── SKILL*.md                          # policy instructions, one per backend
 ├── requirements*.txt                  # torch + triton; optional per-DSL/tracking extras

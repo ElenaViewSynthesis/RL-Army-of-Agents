@@ -77,6 +77,10 @@
   unconfirmed. Run B (untraced full validation, repeated) is still needed
   before relying on sweep rewards. See VALIDATION.md and
   `artifacts/acceptance-review-20261108T014026Z.json`.
+  Diagnosis runs `20261108T091114Z` (interrupted) and `20261108T103454Z`
+  produced 193 complete trials, including 100 CuTe DSL trials split 50/50 by
+  order, without an empty capture. The continuation saved 420 matching traces.
+  This does not establish the cause of the original untraced failure.
 - **Profiling order shifts the eager baseline by about 8%.** Run A measured eager
   at 1.73–1.77 µs (medians) when profiled first and 1.60–1.65 µs in the
   production generated-first order, across all five backends. At sub-2 µs sizes
@@ -129,7 +133,7 @@
   environment if they clash with each other or with the torch CUDA build. The
   cloud image installs all three together; the first build required the compiler
   pin fix above, after which all three executed successfully on H200.
-- **DSL compile caches are task-local.** Alongside `TRITON_CACHE_DIR` and
+- **DSL cache directories are task-local.** Alongside `TRITON_CACHE_DIR` and
   `TILELANG_CACHE_DIR`, the harness now sets `CUDA_TILE_CACHE_DIR` (cuTile 1.8.0)
   and `CUTE_DSL_CACHE_DIR` (CuTe DSL 4.8.1). Pinned sources:
   [cuTile cache documentation](https://github.com/NVIDIA/cutile-python/blob/v1.8.0/docs/source/debugging.rst)
@@ -178,3 +182,19 @@
   and [long-job example](https://github.com/modal-labs/modal-examples/blob/main/06_gpu_and_ml/long-training.py).
   The underlying authentication failure is not yet explained; it is separate
   from an empty GPU profiler capture. No profiler retry was added.
+
+- **Generated artifacts interrupted a Modal image upload.** The first full
+  acceptance attempt after diagnosis failed before GPU execution because a
+  concurrent local artifact log changed during image construction. The image
+  now excludes `artifacts/` and explicitly includes only `artifacts/upstream.json`.
+  Output logs and historical results are no longer build inputs; fresh reports
+  are still written to the run volume. The next attempt passed image setup and
+  preflight (run `20261108T140136Z`).
+
+- **Current GPU acceptance passed; original collector cause is still unknown.**
+  Full untraced run `20261108T140136Z` passed all 31 GPU tests and its automatic
+  acceptance review. All five honest fixtures verified at provenance 1.0;
+  all five Torch-op hacks verified at 0.0/reward -1; strict unmatched lists
+  were empty. All required timings were positive. This verifies the new guard
+  and evidence paths, not the cause of the historical zero baseline. The
+  diagnosed empty-capture branch is unit-tested but did not reproduce on GPU.

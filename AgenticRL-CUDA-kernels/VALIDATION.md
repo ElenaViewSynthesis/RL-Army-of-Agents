@@ -1154,3 +1154,161 @@ Records, logs and the summary are under
 [artifacts/timing-diagnostic-20261108T103454Z](artifacts/timing-diagnostic-20261108T103454Z).
 The per-session Chrome traces of both diagnostic runs (about 20 MB) are kept
 locally and in the Modal volume, not in git.
+
+
+### Completed timing diagnosis: run 20261108T103454Z
+
+Command: `.venv/bin/modal run --detach cloud/modal_runtime.py --diagnose
+--backends cutedsl,cutile,tilelang`. Both remote stages exited 0; the diagnostic
+subprocess took 1646.788031731 s. GPU: NVIDIA H200, UUID
+`GPU-a8fdfbd1-6e5d-fc61-d1ea-04f2904ec8e0`, CC 9.0, driver 610.57.04.
+Python 3.12.1, nvcc 13.3, tileiras 13.3.36, Torch 2.14.1+cu130, Triton 3.8.0,
+TileLang 0.1.15, cuda-tile 1.8.0, CuTe DSL 4.8.1, cuda-bindings 13.5.0
+(from this container's `require.stdout.log` in the archive).
+
+| Run | Backend | Complete trials | Generated first / eager first | Empty captures |
+|---|---|---:|---:|---:|
+| 20261108T091114Z (interrupted) | cuda | 20 | 10 / 10 | 0 |
+| 20261108T091114Z (interrupted) | triton | 20 | 10 / 10 | 0 |
+| 20261108T091114Z (interrupted) | tilelang | 13 | 7 / 6 | 0 |
+| 20261108T103454Z | cutedsl | 100 | 50 / 50 | 0 |
+| 20261108T103454Z | cutile | 20 | 10 / 10 | 0 |
+| 20261108T103454Z | tilelang | 20 | 10 / 10 | 0 |
+
+All 140 continuation trials had positive timings, exactly 20 eager CUDA events
+and 10 compiled/generated events each. All 420 continuation Chrome traces
+parsed successfully, with kernel counts equal to the recorded event counts.
+Cache roots were unique across all 100/20/20 trials. Across both invocations,
+193 complete trials produced no empty capture; the extra interrupted TileLang
+trial is preserved separately and is not counted as a completed measurement.
+The zero baseline did **not reproduce**; its original cause remains unknown.
+Tracing can perturb collection, so this is not proof that untraced collection
+has been repaired. No profiler retry or reward relaxation was introduced.
+
+For CuTe DSL, observed eager medians were 1.597149999999965 us (generated first)
+and 1.737600000000043 us (eager first). These are diagnostic observations,
+not reward inputs or a proposed timing-order change. Complete ranges, stage
+wall times and raw names are in the
+[diagnostic summary](artifacts/timing-diagnostic-summary-20261108T103454Z.json);
+[all raw records, traces and logs](artifacts/timing-diagnostic-20261108T103454Z.tar.gz)
+and [source fingerprints](artifacts/timing-source-20261108T103454Z.json)
+are retained. The durable invocation completed without the first run's
+synchronous authentication failure.
+
+
+## Full H200 acceptance: run 20261108T140136Z
+
+Command: `.venv/bin/modal run --detach cloud/modal_runtime.py --tests`.
+The revised image excludes mutable generated artifacts and ships the upstream
+checksum manifest explicitly. This attempt built/uploaded successfully; all
+five subprocess stages exited 0 with no timeout. The automatic
+[acceptance review](artifacts/acceptance-review-20261108T140136Z.json) reports
+`pass`, no failures/anomalies, and environment matching the fresh require probe.
+
+**Validated source scope:** this run uploaded the empty-capture implementation
+before concurrent profiler edits at 14:05 UTC. Later per-kernel sample exports,
+nonpositive/invalid-profile handling, order experiments and `modal_job` changes
+are **GPU-unverified by this run**. At the user's request, they are preserved
+and kept separate from this acceptance claim. The
+[source manifest](artifacts/validation-source-20261108T140136Z.json) and
+[recovered validated source](artifacts/validated-source-20261108T140136Z)
+pin the matching committed bytes; the cloud snapshot additionally contains the
+two artifact-exclusion edits applied before upload. No per-kernel sample fields
+appear in this run's profiles. Do not attribute this result to newer worktree code.
+
+Runtime (from packaged environment and its matching fresh require probe):
+NVIDIA H200, UUID `GPU-73641627-b73b-0a2e-7ff2-e5657e05fdf4`, CC 9.0, driver 610.57.04; Python 3.12.1, nvcc 13.3, tileiras 13.3.36, Torch 2.14.1+cu130, Triton 3.8.0, TileLang 0.1.15, cuda-tile 1.8.0, CuTe DSL 4.8.1, cuda-bindings 13.5.0.
+
+Raw GPU suite summary (`python -m unittest -v tests.test_provenance
+ tests.test_dsl_kernels tests.test_benchmark.GPUBenchmarkTests`):
+
+```text
+Ran 31 tests in 599.418s
+
+OK
+```
+
+Compile/verify and reward data from
+[results.json](artifacts/results-20261108T140136Z.json), same command/run ID.
+`--tests` invokes `python -m scripts.validate --device cuda --backends
+cuda,triton,tilelang,cutile,cutedsl`. Values below are profiler device-duration
+sums in microseconds, rounded to four decimals; raw floats remain in JSON.
+
+| Backend | Compile / verify | Eager us | Compile us | Generated us | Honest provenance / reward | Torch-op hack provenance / reward | Unmatched |
+|---|---|---:|---:|---:|---|---|---|
+| cuda | pass / pass | 1.6433 | 0.8035 | 0.9568 | 1.0 / 2.0 | 0.0 / -1.0 | `[]` |
+| triton | pass / pass | 1.6452 | 0.7680 | 0.8000 | 1.0 / 2.0 | 0.0 / -1.0 | `[]` |
+| tilelang | pass / pass | 1.6576 | 0.8023 | 0.8032 | 1.0 / 2.0 | 0.0 / -1.0 | `[]` |
+| cutile | pass / pass | 1.6479 | 0.8000 | 0.8706 | 1.0 / 2.0 | 0.0 / -1.0 | `[]` |
+| cutedsl | pass / pass | 1.6491 | 0.8065 | 0.9956 | 1.0 / 2.0 | 0.0 / -1.0 | `[]` |
+
+Every honest case's reward reason is `faster_than_eager`; every Torch-op hack
+is rejected for `provenance`. There are 13 cases: 11 verified/measured cases,
+plus the expected timeout and max-turns rejections. All required timings are
+positive. The Torch-op Triton case has a positive eager outlier of 1.0444 us;
+its raw event count is retained rather than filtered or retried. The honest
+CuTe eager baseline is 1.6491 us. No historical zero value was rewritten.
+
+Raw names from [kernel_names.json](artifacts/kernel_names-20261108T140136Z.json)
+(verbatim; every event below is `agent`, every unmatched list is empty):
+
+```text
+cuda: void axpby_kernel<256>(float*, float const*, float const*, float, int)
+triton: axpby_kernel
+tilelang: axpby_tilelang_kernel
+cutile: axpby_cutile_kernel_Kt1_A1f32_1i16t1_p16_A1f32_1i16t1_p16_A1f32_1i16t1_p16_Sf32_I128
+cutedsl: kernel_cutlass_axpby_cute_kernel_tensorptrf32gmemo151201i64512_tensorptrf32gmemo151201i64512_tensorptrf32gmemo151201i64512_tensor00o1512011105121____0
+```
+
+CISPO measured-group output remains advantages +0.7071062811869011 for CUDA
+and Triton, -1.4142125623738022 for `reward-hack-torchop`,
+`adv/frac_dropped=0.0`, `reward/mean=1.0`. The trainer loss is not implemented.
+
+Three [raw benchmark artifacts](artifacts/benchmark-samples-20261108T140136Z)
+contain six event and wall samples per implementation; captured graphs also
+have six samples. Every recorded latency is finite and positive. The expected
+`.item()` capture rejection has an empty generated-graph series, not a zero
+latency. These diagnostics never enter reward.
+
+Per-case subprocess wall seconds (includes imports, JIT/warmup and verification;
+not isolated compiler time), from `results.json:stage_wall_s`:
+
+| Honest backend | Compile s | Verification s | Profiling s |
+|---|---:|---:|---:|
+| cuda | 15.404 | 2.857 | 9.755 |
+| triton | 3.919 | 3.765 | 10.504 |
+| tilelang | 5.077 | 3.915 | 10.397 |
+| cutile | 3.004 | 3.158 | 9.754 |
+| cutedsl | 2.957 | 3.514 | 9.805 |
+
+The 180 s default is unchanged. These tiny fixtures cannot establish Level-3
+cold-start needs or isolate how much recompilation each disk cache avoids.
+The collector fault did not reproduce; original cause remains unconfirmed.
+Run C was not needed because all strict unmatched lists were empty. No online
+W&B/Weave write was performed by this task.
+
+After the durable-job and image-upload fixes, targeted offline runner suites
+passed in both interpreters (raw logs archived with this run):
+
+```text
+python3 -m unittest -v tests.test_modal_diagnostics
+Ran 5 tests in 0.866s
+OK
+
+.venv/bin/python -m unittest -v tests.test_modal_diagnostics
+Ran 5 tests in 1.056s
+OK
+```
+
+A final contract check includes the later locally edited code, without GPU
+execution or network calls:
+
+```text
+python3 -m unittest -v tests.test_profiling tests.test_tracking
+Ran 26 tests in 42.780s
+OK
+
+.venv/bin/python -m unittest -v tests.test_profiling tests.test_tracking
+Ran 26 tests in 43.615s
+OK
+```
