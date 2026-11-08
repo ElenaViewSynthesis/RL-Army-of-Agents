@@ -20,3 +20,6 @@ sweep_agent_gpu*.log
 artifacts/timing-diagnostic-*/timing/*/eager.json
 artifacts/timing-diagnostic-*/timing/*/compile.json
 artifacts/timing-diagnostic-*/timing/*/gen.json
+
+# Session handoff notes between agents stay local
+HANDOFF*.md
