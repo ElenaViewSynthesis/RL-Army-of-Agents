@@ -473,6 +473,7 @@ Full evidence, raw command output and what each test establishes are in [VALIDAT
 
 ## Background reading
 
+- [TRITON_guide.md](TRITON_guide.md): Triton installation, autotuning, cache and kernel-IR knobs, with this repo's CPU-interpreter and per-task-cache mapping
 - [Triton_provenance_GRPO_task.md](Triton_provenance_GRPO_task.md): the task brief this implementation follows
 - [CUDA_on_Modal.md](CUDA_on_Modal.md) · [GPU-acceler.md](GPU-acceler.md): the CUDA stack on Modal and GPU-accelerated libraries
 - [WANDB_parallel_sweep_agents.md](WANDB_parallel_sweep_agents.md): running parallel `wandb agent` sweeps on a multi-GPU host — `scripts/sweep.sh`, one agent per `CUDA_VISIBLE_DEVICES` with its own task workdir, sweep config in `sweeps/rollout_sweep.yaml`
