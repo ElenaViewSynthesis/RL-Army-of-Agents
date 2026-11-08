@@ -1,0 +1,31 @@
+test_all_empty_and_success (tests.test_profiling.CaptureTests.test_all_empty_and_success) ... ok
+test_counts_names_traces_order_and_contract (tests.test_profiling.CaptureTests.test_counts_names_traces_order_and_contract) ... ok
+test_empty_session_fails_closed_and_preserves_evidence (tests.test_profiling.CaptureTests.test_empty_session_fails_closed_and_preserves_evidence) ... ok
+test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples (tests.test_profiling.CaptureTests.test_nonpositive_and_invalid_sessions_fail_closed_without_losing_samples) ... ok
+test_valid_samples_preserve_cuda_events_only (tests.test_profiling.CaptureTests.test_valid_samples_preserve_cuda_events_only) ... ok
+test_order_experiment_is_complete_and_counterbalanced (tests.test_profiling.DiagnosticTests.test_order_experiment_is_complete_and_counterbalanced) ... ok
+test_preparation_controls_are_separate_and_always_diagnostic (tests.test_profiling.DiagnosticTests.test_preparation_controls_are_separate_and_always_diagnostic) ... ok
+test_build_run_and_unknown (tests.test_tracking.BackfillPayloadTests.test_build_run_and_unknown) ... ok
+test_dry_run_all_covers_manifest (tests.test_tracking.BackfillPayloadTests.test_dry_run_all_covers_manifest) ... ok
+test_failed_run (tests.test_tracking.BackfillPayloadTests.test_failed_run) ... ok
+test_finished_run (tests.test_tracking.BackfillPayloadTests.test_finished_run) ... ok
+test_dry_run_single_is_one_json_doc (tests.test_tracking.CLITests.test_dry_run_single_is_one_json_doc) ... ok
+test_no_wandb_weave_torch_imported (tests.test_tracking.CLITests.test_no_wandb_weave_torch_imported) ... ok
+test_full_config_shares_rules_and_group_stats_backfill (tests.test_tracking.ContractTests.test_full_config_shares_rules_and_group_stats_backfill) ... ok
+test_live_batch_stats_and_standalone_identity (tests.test_tracking.ContractTests.test_live_batch_stats_and_standalone_identity) ... ok
+test_old_config_rules_and_shares_are_unknown_not_reconstructed (tests.test_tracking.ContractTests.test_old_config_rules_and_shares_are_unknown_not_reconstructed) ... ok
+test_pipeline_keys_have_exactly_one_adr_category (tests.test_tracking.ContractTests.test_pipeline_keys_have_exactly_one_adr_category) ... ok
+test_profile_sink_does_not_change_result_or_reward (tests.test_tracking.ContractTests.test_profile_sink_does_not_change_result_or_reward) ... ok
+test_validate_persists_actual_case_and_group_configs (tests.test_tracking.ContractTests.test_validate_persists_actual_case_and_group_configs) ... ok
+test_weave_retains_raw_profile_and_stage_tails_without_sdks (tests.test_tracking.ContractTests.test_weave_retains_raw_profile_and_stage_tails_without_sdks) ... ok
+test_init_log_summary_finish_calls (tests.test_tracking.LogBackfillTests.test_init_log_summary_finish_calls) ... ok
+test_new_run_id_never_resumes_with_unique_artifact (tests.test_tracking.LogBackfillTests.test_new_run_id_never_resumes_with_unique_artifact) ... ok
+test_metrics_and_config (tests.test_tracking.PureHelpersTests.test_metrics_and_config) ... ok
+test_sweep_config_matches_rollout_config (tests.test_tracking.SweepTests.test_sweep_config_matches_rollout_config) ... ok
+test_sweep_wrapper_requires_workdir_and_gpu (tests.test_tracking.SweepTests.test_sweep_wrapper_requires_workdir_and_gpu) ... ok
+test_rollout_inputs (tests.test_tracking.WeaveInputsTests.test_rollout_inputs) ... ok
+
+----------------------------------------------------------------------
+Ran 26 tests in 43.615s
+
+OK

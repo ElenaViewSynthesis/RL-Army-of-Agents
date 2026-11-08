@@ -1,0 +1,11 @@
+test_historical_zero_baseline_cannot_be_accepted (tests.test_modal_diagnostics.AcceptanceTests.test_historical_zero_baseline_cannot_be_accepted) ... ok
+test_positive_acceptance_and_expected_failures (tests.test_modal_diagnostics.AcceptanceTests.test_positive_acceptance_and_expected_failures) ... ok
+test_default_counts_and_balanced_orders (tests.test_modal_diagnostics.PlanTests.test_default_counts_and_balanced_orders) ... ok
+test_forwarding_is_opt_in_and_allowlisted (tests.test_modal_diagnostics.RunnerTests.test_forwarding_is_opt_in_and_allowlisted) ... {"function_call_id": "fc-synthetic"}
+ok
+test_runner_writes_automatic_review_from_fresh_outputs (tests.test_modal_diagnostics.RunnerTests.test_runner_writes_automatic_review_from_fresh_outputs) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.866s
+
+OK

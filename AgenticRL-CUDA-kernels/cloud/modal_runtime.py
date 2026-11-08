@@ -32,8 +32,10 @@ image = (
     .env({"CUDA_HOME": "/usr/local/cuda", "TORCH_CUDA_ARCH_LIST": "9.0", "PYTHONPATH": REMOTE})
     .add_local_dir(
         str(ROOT), remote_path=REMOTE,
-        ignore=[".venv", ".cache", "build", "__pycache__", "artifacts/tmp",
+        ignore=[".venv", ".cache", "build", "__pycache__", "artifacts",
                 ".env", ".env.*", "*.so", "*.pyc"])
+    .add_local_file(str(ROOT / "artifacts/upstream.json"),
+                    remote_path=f"{REMOTE}/artifacts/upstream.json")
 )
 
 volume = modal.Volume.from_name("agenticrl-cuda-artifacts", create_if_missing=True)

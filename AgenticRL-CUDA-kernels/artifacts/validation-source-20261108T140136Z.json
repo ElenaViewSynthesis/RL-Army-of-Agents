@@ -1,0 +1,39 @@
+{
+  "run_id": "20261108T140136Z",
+  "command": ".venv/bin/modal run --detach cloud/modal_runtime.py --tests",
+  "base_commit": "8ea4e223e0a5a2e1cacb07e4029df65268a00d55",
+  "local_modal_version": "1.6.3",
+  "scope": "Uploaded empty-capture implementation. Later per-kernel samples, nonpositive/invalid guards, profile-order and modal_job extensions are GPU-unverified by this run.",
+  "source_sha256": {
+    "cloud/modal_runtime.py": "fe6d83af0692cf69ecb7e93992ad2fbd131650ae9277022c98852ed85b56c766",
+    "cloud/acceptance.py": "cc0184260cf7daf1df9fb5e91f4884c3a6e7fa462fe51fd03e3a371178978e2e",
+    "scripts/diagnose_timing.py": "9fcfa470d5d1a66ff01410f3cac6f82d5ec58bfc906cfa2c4bd8d5ea008f386a",
+    "scripts/record_kernel_names.py": "1e57626d4d5be726348601902c1fb6be6d5c7d0a5f615568571780bf72cd1dd3",
+    "scripts/validate.py": "d1c1525ac114ae495ad60397bb1c5143d858ae3b7e1844fe6271a1c0e8977f98",
+    "utils/profiling.py": "ad12cf3b39356be8f97f4848566479d597cf0d30af6a29957c9ef53eef9f3b9f",
+    "utils/rollout_env.py": "d907b9c0dd4dec27de7bbba3fdf17189375a206f7f5e2f4e9106b41f6bfc42ab",
+    "utils/backend.py": "e55b2a1372b6a1acfe5a62eb498929aa8ebb61a840293b39addae63b4b03081d",
+    "utils/provenance.py": "6e39c2c575667a8ddd8dc503449790f9fa787f7693b8f89a30bf7427f89b11d6",
+    "utils/benchmark.py": "f3bb6f36ed46c4a5804112c258effc3d9badb328954425dcbad61df603271770",
+    "requirements-gpu.txt": "df69e629ea9cd51d2f07e05e3b924558d9afc5662b9ec808cdb9bc333c2a0b1d",
+    "tests/test_provenance.py": "b344a700a1036c5868378bb63d9c4922cb82979b9d74b0b70bed0aac22058088",
+    "tests/test_dsl_kernels.py": "53d1f2ce4aafef4276bf3900b4d0f9cd4dfb894ee0f415b593f9460259717953",
+    "tests/test_benchmark.py": "2b9a22f07c193ab57472d3f9aee6e89ffeec67da1bc025cda913dce445cfb652"
+  },
+  "source_recovery": {
+    "cloud/modal_runtime.py": "committed bytes match diagnostic source fingerprint; apply the two artifact-exclusion edits made before this run",
+    "cloud/acceptance.py": "committed bytes match diagnostic source fingerprint",
+    "scripts/diagnose_timing.py": "committed bytes match diagnostic source fingerprint",
+    "scripts/record_kernel_names.py": "committed bytes match diagnostic source fingerprint",
+    "scripts/validate.py": "committed bytes match diagnostic source fingerprint",
+    "utils/profiling.py": "committed bytes match diagnostic source fingerprint",
+    "utils/rollout_env.py": "committed bytes match diagnostic source fingerprint",
+    "utils/backend.py": "working-tree bytes match diagnostic source fingerprint (line endings retained)",
+    "utils/provenance.py": "committed bytes match diagnostic source fingerprint",
+    "utils/benchmark.py": "committed bytes match diagnostic source fingerprint",
+    "requirements-gpu.txt": "committed bytes match diagnostic source fingerprint",
+    "tests/test_provenance.py": "unchanged GPU suite source",
+    "tests/test_dsl_kernels.py": "unchanged GPU suite source",
+    "tests/test_benchmark.py": "unchanged GPU suite source"
+  }
+}

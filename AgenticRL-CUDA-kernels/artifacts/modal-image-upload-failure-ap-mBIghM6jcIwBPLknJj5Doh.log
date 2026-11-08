@@ -1,0 +1,7 @@
+Note that running a local entrypoint in detached mode only keeps the last triggered Modal function alive after the parent process has been killed or disconnected.
+✓ Initialized. View run at 
+https://modal.com/apps/elenamylocuda/main/ap-mBIghM6jcIwBPLknJj5Doh
+╭─ Error ──────────────────────────────────────────────────────────────────────╮
+│ /mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifact │
+│ s/issue-baseline-20261108T135636Z.log was modified during build process.     │
+╰──────────────────────────────────────────────────────────────────────────────╯
