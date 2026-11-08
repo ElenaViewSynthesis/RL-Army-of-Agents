@@ -255,6 +255,14 @@ class GPUArtifactTests(unittest.TestCase):
         task = make_task(self.tmp.name, "triton")
         cfg = dataclasses.replace(RolloutConfig.preset("grpo"), diagnostics=True, benchmark=True)
         result = run_task(str(task), cfg)
+        keep = os.environ.get("CUDA_AGENT_KEEP_PROFILE_ARTIFACTS")
+        if keep and result.get("artifact/report"):
+            # Opt-in evidence copy (the Modal runner sets it); scratch is deleted.
+            import shutil
+            source = Path(result["artifact/report"]).parent
+            shutil.copytree(source, Path(keep) / source.name, dirs_exist_ok=True)
+            (Path(keep) / source.name / "rollout-result.json").write_text(
+                json.dumps(result, indent=2, allow_nan=False) + "\n")
         assert_flat(self, result)
         self.assertIsNone(result["artifact/unavailable_reason"], result)
         for key in ("artifact/report", "artifact/trace", "artifact/kernels"):

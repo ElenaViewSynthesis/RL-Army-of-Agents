@@ -103,13 +103,15 @@ def gpu_tests(run_id: str, backends: str = "", diagnostic_env: dict = None) -> d
     # Remove uploaded stale reports before starting. Failed stages cannot package history.
     for name in ("results.json", "kernel_names.json"):
         (Path(REMOTE) / "artifacts" / name).unlink(missing_ok=True)
-    targets = ["tests.test_provenance", "tests.test_dsl_kernels", "tests.test_benchmark.GPUBenchmarkTests"]
+    targets = ["tests.test_provenance", "tests.test_dsl_kernels", "tests.test_benchmark.GPUBenchmarkTests",
+               "tests.test_profile_artifacts.GPUArtifactTests"]
     if set(selected) != set(BACKENDS):
         targets = []
         if {"cuda", "triton"} <= set(selected):
             targets.append("tests.test_provenance.GPUIntegrationTests")
         if "triton" in selected:
-            targets += ["tests.test_provenance.CPUIntegrationTests", "tests.test_benchmark.GPUBenchmarkTests"]
+            targets += ["tests.test_provenance.CPUIntegrationTests", "tests.test_benchmark.GPUBenchmarkTests",
+                        "tests.test_profile_artifacts.GPUArtifactTests"]
         for backend, cls in (("tilelang","TileLang"),("cutile","CuTile"),("cutedsl","CuTeDSL")):
             if backend in selected:
                 targets += [f"tests.test_provenance.{cls}GPUIntegrationTests", f"tests.test_dsl_kernels.{cls}AxpbyTests"]
@@ -126,6 +128,7 @@ def gpu_tests(run_id: str, backends: str = "", diagnostic_env: dict = None) -> d
         (["python", "-m", "scripts.validate", "--device", "cuda", "--backends", ",".join(selected)], "validate", 3600),
     ]
     stage_env = {**(diagnostic_env or {}), "CUDA_AGENT_BENCH_SAMPLES_DIR": str(out_dir / "benchmark-samples"),
+                 "CUDA_AGENT_KEEP_PROFILE_ARTIFACTS": str(out_dir / "profile-artifacts"),
                  "CUDA_AGENT_STAGE_TIMINGS": "1"}
     runs = [_run(args, name, timeout, run_id, stage_env) for args, name, timeout in commands]
     for name in ("results.json", "kernel_names.json"):
