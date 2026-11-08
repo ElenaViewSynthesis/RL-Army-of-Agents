@@ -81,8 +81,22 @@ def capture_reason(events):
     return "nonpositive_profile" if sum(duration for _, duration in events) <= 0 else None
 
 
-def profile_models(models, inputs, backend, iters, *, order="gen,eager,compile", trace_dir=None, agent_names=()):
+def prime_profiler():
+    import torch
+
+    counts = []
+    for _ in range(2):
+        torch.cuda.synchronize()
+        with get_prof_ctx() as ctx:
+            torch.cuda.synchronize()
+        counts.append(sum(event.device_type.name == "CUDA" for event in ctx.events()))
+    return counts
+
+
+def profile_models(models, inputs, backend, iters, *, order="gen,eager,compile", trace_dir=None,
+                   agent_names=(), prime=True):
     """One capture per session, retaining evidence even if another session is empty."""
+    primer_events = prime_profiler() if prime else []
     captures = {}
     for session in order.split(","):
         trace = Path(trace_dir) / f"{session}.json" if trace_dir is not None else None
@@ -107,7 +121,10 @@ def profile_models(models, inputs, backend, iters, *, order="gen,eager,compile",
     # JSON strings keep the profiler's record flat; names are verbatim.
     summary["profile/eager_kernel_names"] = json.dumps(sorted({n for n, _ in captures["eager"][1]}))
     summary["profile/order"] = order
-    summary["profile/diagnostic"] = trace_dir is not None or order != "gen,eager,compile"
+    summary["profile/timing_method"] = ("cuda-leaf-sum-two-empty-prime-v1" if prime
+                                        else "cuda-leaf-sum-unprimed-v1")
+    summary["profile/primer_event_counts"] = json.dumps(primer_events)
+    summary["profile/diagnostic"] = trace_dir is not None or order != "gen,eager,compile" or not prime
     if trace_dir is not None:
         summary.update({f"profile/{s}_trace": str(Path(trace_dir) / f"{s}.json") for s in captures})
     return summary

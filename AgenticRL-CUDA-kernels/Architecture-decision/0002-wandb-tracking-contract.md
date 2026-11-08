@@ -86,6 +86,11 @@ recorded defaults, not a claim that reward or verification ran in that tool.
 W&B API reference: [Run.define_metric source](https://github.com/wandb/wandb/blob/main/wandb/sdk/wandb_run.py).
 The documented summary="none" behavior is tested with a fake SDK, not a live
 service migration. Full backfill is opt-in and is not executed here.
+This describes the initial implementation stage. The subsequent explicitly
+approved live validation and five-entry migration passed service readback and
+user UI inspection; see `artifacts/tracking-live-check-20261108T142009Z/report.json`
+and `artifacts/tracking-backfill-20261108T144457Z/report.json`. Legacy history
+was preserved; current summaries and latest table snapshots follow this contract.
 
 ## Trainer-owned reservations and open decisions
 
@@ -172,6 +177,8 @@ saves the sampler output (enabled in the Modal test runner).
 | `profile:profile/eager_kernel_names` | artifact | profile | str (JSON list) | 1 | absent on CPU | diagnostic | environment |
 | `profile:profile/*_kernel_samples` | artifact | profile | str (JSON list of name/duration pairs) | us per CUDA event; non-finite durations encoded as strings | absent on CPU | diagnostic | environment |
 | `profile:profile/order` | artifact | profile | str | 1 | absent on CPU | diagnostic | environment |
+| `profile:profile/timing_method` | artifact | profile | str | versioned capture conditioning | absent historically/CPU | diagnostic | environment |
+| `profile:profile/primer_event_counts` | artifact | profile | str (JSON list) | CUDA events per intentional empty conditioning capture | absent historically/CPU | diagnostic | environment |
 | `profile:profile/diagnostic` | artifact | profile | bool | 1 | absent on CPU | diagnostic | environment |
 | `profile:profile/*_trace` | artifact | profile | str | path | absent unless trace capture requested | diagnostic | environment |
 | `profile:timing_measured` | table | timing_measured | bool | 1 | never | diagnostic | environment |
@@ -342,6 +349,8 @@ saves the sampler output (enabled in the Modal test runner).
 | `names:backends/*/profile/profile/eager_kernel_names` | artifact | profile | scalar/string | us for timing; otherwise 1 | CPU/failure/disabled | diagnostic | environment |
 | `names:backends/*/profile/profile/*_kernel_samples` | artifact | profile | str (JSON list of name/duration pairs) | us per CUDA event; non-finite durations encoded as strings | CPU/failure/disabled | diagnostic | environment |
 | `names:backends/*/profile/profile/order` | artifact | profile | scalar/string | us for timing; otherwise 1 | CPU/failure/disabled | diagnostic | environment |
+| `names:backends/*/profile/profile/timing_method` | artifact | profile | str | versioned capture conditioning | absent historically/CPU | diagnostic | environment |
+| `names:backends/*/profile/profile/primer_event_counts` | artifact | profile | str (JSON list) | CUDA events per conditioning capture | absent historically/CPU | diagnostic | environment |
 | `names:backends/*/profile/profile/diagnostic` | artifact | profile | scalar/string | us for timing; otherwise 1 | CPU/failure/disabled | diagnostic | environment |
 | `names:backends/*/profile/profile/*_trace` | artifact | profile | scalar/string | us for timing; otherwise 1 | CPU/failure/disabled | diagnostic | environment |
 | `names:backends/*/measured` | table | backends | bool | 1 | unavailable/unmeasured; reasons absent on success | diagnostic | environment |
@@ -515,6 +524,7 @@ saves the sampler output (enabled in the Modal test runner).
 | `row:case` | table | case | str | case identifier | never | diagnostic | environment |
 | `row:case_config` | table | case_config | str | JSON config | historical per-case config missing | diagnostic | environment |
 | `row:timing_measured` | table | timing_measured | bool | 1 | raw profile missing | diagnostic | environment |
+| `row:profile/timing_method` | table | profile | str | versioned capture conditioning | raw profile missing/historical | diagnostic | environment |
 | `tracking_config:meta/provenance_rules` | config | meta | str | identifier | historical classifier identity missing | diagnostic | environment |
 | `tracking_config:source_command` | config | source_command | str | command | source command missing | diagnostic | environment |
 | `tracking_config:tracking/contract` | config | tracking | str | identifier | never | diagnostic | environment |

@@ -53,6 +53,7 @@ def _case_row(case, result, profile=None, candidate_sha256=None, rules=None, cfg
                             "meta/provenance_rules": rules,
                             "case_config": json.dumps(cfg, sort_keys=True) if cfg else None,
                             "timing_measured": (profile or {}).get("timing_measured")})
+    row["profile/timing_method"] = (profile or {}).get("profile/timing_method")
     # Never borrow shares from another fixture or from the separate name-recorder pass.
     for bucket in SHARES:
         row["env/provenance_" + bucket] = (profile or {}).get("provenance/" + bucket)

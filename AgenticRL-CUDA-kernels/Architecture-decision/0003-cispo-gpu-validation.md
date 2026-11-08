@@ -54,3 +54,27 @@ New fixtures and validation output use `reward-hack-torchop`, or
 `reward-hack-torchop-<backend>` for backend-specific variants. Historical JSON,
 logs and backfill labels retain their original names. This is a naming change;
 the measured advantages and the environment/trainer contract are unchanged.
+
+## Approved profiler conditioning follow-up — 2026-11-08
+
+The user explicitly approved making `cuda-leaf-sum-two-empty-prime-v1` the
+production default before H200 run `20261108T153803Z`. Two intentional empty
+CUDA-profiler contexts execute before any model warmup/timing. They are
+conditioning, not failed model captures or retries. Actual model capture counts,
+CUDA-event sum units, model order, provenance/correctness gates, thresholds and
+speed margins are unchanged. Raw artifacts retain conditioning event counts and
+the timing-method version; tracking rows expose the method. Experimental
+unprimed calls are diagnostic-only and cannot supply reward evidence.
+
+Controls `20261108T142102Z` show about 7% eager order sensitivity even after
+all-model warmup; one primer reverses it rather than fixing it. In
+`20261108T144950Z`, two primers reduce median eager order shifts to 0.15%
+(Triton) and 0.32% (CuTe DSL), with four trials per preparation/order/backend.
+This supports a bounded mitigation, not a statistical guarantee or low-level
+CUPTI explanation. Both runs' analysis JSON and original sources are frozen
+under `artifacts/issue-order-<run_id>/`.
+
+Final acceptance validates the conditioned method on all five backends.
+Historical measurements are not retroactively regraded or assumed comparable.
+The original empty-capture and historical Modal JWT-expiry causes remain
+unconfirmed.

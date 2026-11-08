@@ -38,8 +38,9 @@ class CaptureTests(unittest.TestCase):
     def capture(self, events, **kwargs):
         fake_torch = types.SimpleNamespace(no_grad=contextlib.nullcontext,
                                          cuda=types.SimpleNamespace(synchronize=lambda: None))
+        primers = [FakeProfiler([]), FakeProfiler([])] if kwargs.get('prime', True) else []
         with patch.dict(sys.modules, torch=fake_torch), patch('utils.profiling.get_prof_ctx',
-                side_effect=[FakeProfiler(e) for e in events]):
+                side_effect=primers + [FakeProfiler(e) for e in events]):
             return profile_models({s: lambda: None for s in ('gen','eager','compile')},
                                   {s: [] for s in ('gen','eager','compile')}, 'triton', 1,
                                   agent_names=['axpby_kernel'], **kwargs)
@@ -140,6 +141,34 @@ class CaptureTests(unittest.TestCase):
                              [['axpby_kernel', 2]])
             self.assertEqual(profile['t_' + session + '_us'], 2)
 
+    def test_conditioning_precedes_every_model_and_unprimed_is_diagnostic(self):
+        from collections import Counter
+        calls = Counter()
+        contexts = []
+        def model(session):
+            def forward():
+                calls[session] += 1
+            return forward
+        def profiler():
+            contexts.append(dict(calls))
+            return FakeProfiler([] if len(contexts) <= 2 else [event()])
+        fake_torch = types.SimpleNamespace(no_grad=contextlib.nullcontext,
+                                         cuda=types.SimpleNamespace(synchronize=lambda: None))
+        with patch.dict(sys.modules, torch=fake_torch), patch('utils.profiling.get_prof_ctx', profiler):
+            profile = profile_models({s: model(s) for s in ('gen', 'eager', 'compile')},
+                                     {s: [] for s in ('gen', 'eager', 'compile')}, 'triton', 1,
+                                     agent_names=['axpby_kernel'])
+        self.assertEqual(contexts[:2], [{}, {}])
+        self.assertEqual(len(contexts), 5)
+        self.assertEqual(calls, Counter(dict(gen=21, eager=21, compile=21)))
+        self.assertEqual(json.loads(profile['profile/primer_event_counts']), [0, 0])
+        self.assertEqual(profile['profile/timing_method'], 'cuda-leaf-sum-two-empty-prime-v1')
+        self.assertFalse(profile['profile/diagnostic'])
+        unprimed = self.capture([[event()]] * 3, prime=False)
+        self.assertTrue(unprimed['profile/diagnostic'])
+        self.assertEqual(unprimed['profile/timing_method'], 'cuda-leaf-sum-unprimed-v1')
+        self.assertEqual(json.loads(unprimed['profile/primer_event_counts']), [])
+
 
 class DiagnosticTests(unittest.TestCase):
     def test_order_experiment_is_complete_and_counterbalanced(self):
@@ -155,11 +184,14 @@ class DiagnosticTests(unittest.TestCase):
                                       for p in PREPARATIONS for o in ORDERS})
         self.assertEqual(jobs[0][2:], (PREPARATIONS[0], ORDERS[0]))
         self.assertEqual(jobs[16][2:], (PREPARATIONS[-1], ORDERS[-1]))
+        extended = plan(['triton', 'cutedsl'], 4, ('double-empty-prime', 'triple-empty-prime'))
+        self.assertEqual(len(extended), 32)
+        self.assertEqual(set(Counter((b, p, o) for b, _, p, o in extended).values()), {4})
 
     def test_preparation_controls_are_separate_and_always_diagnostic(self):
         from collections import Counter
         from utils import profile_diagnostic
-        for preparation in profile_diagnostic.PREPARATIONS:
+        for preparation in profile_diagnostic.ALL_PREPARATIONS:
             with self.subTest(preparation=preparation):
                 calls = Counter()
                 def model(name):
@@ -186,11 +218,17 @@ class DiagnosticTests(unittest.TestCase):
                 self.assertTrue(result['profile']['profile/diagnostic'])
                 measured.assert_called_once()
                 self.assertEqual(measured.call_args.kwargs['order'], 'gen,eager,compile')
+                self.assertFalse(measured.call_args.kwargs['prime'])
                 self.assertEqual(calls, Counter(dict(eager=20, gen=20, compile=20))
                                  if preparation == 'warmup-all' else Counter())
-                self.assertEqual(empty.call_count, int(preparation == 'empty-prime'))
+                count = {'empty-prime': 1, 'double-empty-prime': 2,
+                         'triple-empty-prime': 3}.get(preparation, 0)
+                self.assertEqual(empty.call_count, count)
                 self.assertEqual(primer.call_count, int(preparation == 'eager-prime'))
                 if preparation == 'eager-prime':
                     primer.assert_called_once_with(eager, [], 20, 10, True)
                 if preparation == 'empty-prime':
                     self.assertEqual(result['primer'], {'intentional_empty': True, 'cuda_events': 0})
+                elif count:
+                    self.assertEqual(result['primer'], {'intentional_empty': True, 'cuda_events': 0,
+                                                       'empty_capture_events': [0] * count})
