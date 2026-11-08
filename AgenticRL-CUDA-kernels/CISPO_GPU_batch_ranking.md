@@ -1,5 +1,7 @@
 # CISPO GPU-batch ranking in this codebase
 
+> Draft: not linked from the README. The proposed fixture rename is not implemented; current identifiers remain `hack` and `hack-<backend>`.
+
 *Explainer note (2026-11-07). Companion to [Architecture-decision/0001-cispo-preset.md](Architecture-decision/0001-cispo-preset.md) (the decision) and [Architecture-decision/0003-cispo-gpu-validation.md](Architecture-decision/0003-cispo-gpu-validation.md) (the measured evidence).*
 
 "CISPO GPU-batch ranking" is the same group-relative advantage machinery the
@@ -139,6 +141,6 @@ the cheat last under the CISPO preset — the environment's half of the
 contract; the trainer's half (applying the clipped-IS-weight loss to these
 advantages) remains to be built.
 
-*Naming: the recorded run and artifacts use the historical case label
-`hack`; the fixture is now named `reward-hack-torchop` (per-backend
-`reward-hack-torchop-<backend>`). Historical labels are preserved verbatim.*
+*Naming: current fixture identifiers and recorded artifact labels are `hack`
+and `hack-<backend>`. The proposed `reward-hack-torchop` rename has not been
+implemented; "reward hack torchOp" is a descriptive label only.*
