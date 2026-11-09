@@ -280,9 +280,11 @@
   live in the candidate-writable workdir and are never a trusted reward input.
 - **Progressive task suite: open items after the H200 runs.** Every task
   with a reference solution passes on H200 for its smoke case and one larger
-  or acceptance case, except the `gemm_tensor_core` CuTe DSL backend: it
-  failed to compile (`task-cute-retest-20261109T021131Z`), and its rewrite
-  is not GPU-tested. The CUDA GEMM build fix passed acceptance afterwards.
+  or acceptance case, including the `gemm_tensor_core` CuTe DSL backend after its C-store fix
+  (`task-cute-fix-{smoke,acceptance}-20261109T030234Z`). That kernel is
+  correct but slow: 2.6% of cuBLAS at 4096³ bf16, about 2.5× slower than
+  eager, because it uses no async copies or pipelining. The CUDA GEMM build
+  fix passed acceptance as well.
   Coverage is one H200 and selected cases, not every catalog case; the
   larger-case batch saved durable results only. The CPU interpreter cannot
   check bf16 `tl.dot` kernels or `topk_sampling` at full vocabulary size, so

@@ -2036,3 +2036,35 @@ PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m unittest discover
 # Ran 238 tests in 437.862s
 # OK (skipped=27)
 ```
+
+### CuTe DSL GEMM fix: runs task-cute-fix-{smoke,acceptance}-20261109T030234Z
+
+The retest `task-cute-retest-20261109T021131Z` failed IR verification:
+`'cute.copy' op expects pred to have compatible shape with: (2,(2,4)) but got
+actual predShape: ((2,2),(2,4))`. The C store was a predicated `cute.copy`
+whose predicate was built from the MMA output-fragment shape. The fix
+(already in the committed tree at `51e71b4`) stores each accumulator element
+under an identity-tensor bounds check, with no copy predicate. The A/B tile
+copies are unchanged.
+
+```bash
+# WSL2: freeze the committed tree, then run from the frozen copy
+.venv/bin/python -m scripts.freeze_task_suite --tasks gemm_tensor_core     --output /tmp/task-cute-fix-source-20261109T030234Z
+cd /tmp/task-cute-fix-source-20261109T030234Z && PYTHONPATH=$PWD   <repo>/.venv/bin/modal run cloud/modal_tasks.py --tasks gemm_tensor_core   --case-set {smoke|acceptance} --backends cutedsl --fixtures honest,hack,wrong   --run-id task-cute-fix-{smoke|acceptance}-20261109T030234Z
+```
+
+Both runs: status `pass`, 3/3. The uploaded source matches the frozen
+manifest, and all 136 frozen files match the committed tree (git `51e71b4`).
+
+| Case | Fixture | Result | Generated µs | Eager µs | Compile µs | cuBLAS fraction |
+|---|---|---|---|---|---|---|
+| 512³ bf16 | honest | `correct`, authored provenance 1.0 | 60.8 | 20.0 | 18.8 | 0.143 |
+| 512³ bf16 | hack / wrong | `provenance` / `verification` (expected) | — | — | — | — |
+| 4096³ bf16 | honest | `correct`, authored provenance 1.0 | 7068.9 | 2886.6 | 2724.3 | 0.026 (19.4 TFLOP/s) |
+| 4096³ bf16 | hack / wrong | `provenance` / `verification` (expected) | — | — | — | — |
+
+The CuTe DSL kernel is now correct but slow: about 2.5× slower than eager at
+4096³. It uses universal (non-async) 16-bit copies, a single shared-memory
+stage and a 64 × 64 × 32 tile. The ≥ 60% cuBLAS acceptance gate applies only
+to the Triton backend, so these rows pass. Evidence:
+`artifacts/task-cute-fix-20261109T030234Z/`.

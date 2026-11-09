@@ -92,7 +92,7 @@ Beyond the stock 1 × 128 `axpby` fixture, `tasks/` holds a progressive curricul
 |---|---|---|
 | 0 | Bootstrap: GEMM with a fused divide-sum-scale epilogue | pass |
 | 1 | Reductions and scans: row softmax, masked mean, prefix sum | pass |
-| 2 | Normalization, fused optimizer and tensor-core GEMM: RMSNorm, LayerNorm + residual + GELU, log-softmax gather, fused AdamW, bf16 GEMM | pass after the CUDA GEMM build fix; CuTe DSL GEMM open |
+| 2 | Normalization, fused optimizer and tensor-core GEMM: RMSNorm, LayerNorm + residual + GELU, log-softmax gather, fused AdamW, bf16 GEMM | pass (after the CUDA GEMM build fix and the CuTe DSL C-store fix) |
 | 3 | Packed-reduction kernels against the repository-authored RL contracts: GRPO group normalization, CISPO weight clipping, packed variable-length reduction | pass |
 | 4 | Attention, grouped GEMM, sampling, residual RMSNorm, decode attention and Dense-MoE; INT8/FP8 as contracts only | pass (grouped GEMM is Triton-only by design) |
 
@@ -106,7 +106,7 @@ Beyond the stock 1 × 128 `axpby` fixture, `tasks/` holds a progressive curricul
 | 2 | `layernorm_residual_gelu` | Triton, CUDA | pass (smoke; 512 × 8192 bf16) |
 | 2 | `log_softmax_gather` | Triton, CUDA | pass (smoke) |
 | 2 | `fused_adamw` | Triton, CUDA | pass (smoke) |
-| 2 | `gemm_tensor_core` | Triton, CUDA, CuTe DSL | Triton and CUDA pass acceptance (4096³ bf16; Triton at 85.4% of cuBLAS, gate ≥ 60%); CuTe DSL failed to compile, later fix untested |
+| 2 | `gemm_tensor_core` | Triton, CUDA, CuTe DSL | all three backends pass smoke and acceptance (4096³ bf16). Triton reaches 85.4% of cuBLAS (gate ≥ 60%, Triton only); CuTe DSL is correct but slow, at 2.6% of cuBLAS |
 | 3 | `grpo_group_norm` | Triton, CUDA | pass (smoke; 512 × 16 groups) |
 | 3 | `cispo_clip_weight` | Triton, CUDA | pass (smoke) |
 | 3 | `packed_varlen_reduction` | Triton, CUDA | pass (smoke; 512 × 8192 sum) |
@@ -122,7 +122,7 @@ Beyond the stock 1 × 128 `axpby` fixture, `tasks/` holds a progressive curricul
 \* Evaluation-only: adapted from GPU MODE reference kernels, whose license does not clear training use (`--purpose train` is refused).
 † Contract only by design: the INT8/FP8 workloads are specified (inputs, reference, checks), but Stage 4 deliberately enables no backend for them; their `ModelNew` raises `unavailable`.
 
-Runs: `task-stage1-20261109T004826Z` (stages 0–1, 24/24), `task-stage23-20261109T013032Z` (stages 2–3, 51/54; the 3 failures are the CUDA tensor-core GEMM build, since fixed), `task-stage4-smoke-20261109T020100Z` (stage 4, 33 passed, 3 unavailable for grouped GEMM CUDA), and the larger-case batch `…-20261109T021131Z` (all pass except the CuTe DSL GEMM retest). Each run used a frozen source; [VALIDATION.md](VALIDATION.md) lists which files changed afterwards. Under the CPU interpreter, bf16 `tl.dot` kernels fail and `topk_sampling` is too slow, so those tasks rely on the GPU results. "Pass" covers the listed cases on one H200, and kernel attribution is name-based.
+Runs: `task-stage1-20261109T004826Z` (stages 0–1, 24/24), `task-stage23-20261109T013032Z` (stages 2–3, 51/54; the 3 failures are the CUDA tensor-core GEMM build, since fixed), `task-stage4-smoke-20261109T020100Z` (stage 4, 33 passed, 3 unavailable for grouped GEMM CUDA), the larger-case batch `…-20261109T021131Z` (all pass except the CuTe DSL GEMM retest), and `task-cute-fix-{smoke,acceptance}-20261109T030234Z` (CuTe DSL GEMM after its fix: 3/3 each). Each run used a frozen source; [VALIDATION.md](VALIDATION.md) lists which files changed afterwards. Under the CPU interpreter, bf16 `tl.dot` kernels fail and `topk_sampling` is too slow, so those tasks rely on the GPU results. "Pass" covers the listed cases on one H200, and kernel attribution is name-based.
 
 - **Reference solution:** the repo ships an authored fixture as a candidate reference solution for the task. Acceptance requires the honest fixture to score, the hack to fail provenance, and the wrong-output control to fail verification. Only its measured GPU cases are verified; source presence is not acceptance.
 - **No verified solution yet:** the task still defines its inputs, PyTorch reference and checks, and an agent can attempt it, but its suite rows cannot be trusted as `passed` until a GPU run confirms the reference solution.
