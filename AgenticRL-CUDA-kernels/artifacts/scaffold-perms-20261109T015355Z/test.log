@@ -1,0 +1,6 @@
+test_scaffold_overwrites_readonly_alias (tests.test_task_scaffold_permissions.ScaffoldPermissionTests.test_scaffold_overwrites_readonly_alias) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.024s
+
+OK

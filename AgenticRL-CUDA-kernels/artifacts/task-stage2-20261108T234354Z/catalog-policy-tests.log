@@ -1,0 +1,34 @@
+test_case_environment_validates_and_restores (tests.test_task_catalog.TaskCatalogTests.test_case_environment_validates_and_restores) ... ok
+test_contract_only_is_never_executed (tests.test_task_catalog.TaskCatalogTests.test_contract_only_is_never_executed) ... ok
+test_fixture_expectations_require_actual_gates (tests.test_task_catalog.TaskCatalogTests.test_fixture_expectations_require_actual_gates) ... ok
+test_gpu_mode_tasks_fail_closed_for_training (tests.test_task_catalog.TaskCatalogTests.test_gpu_mode_tasks_fail_closed_for_training) ... ok
+test_grid_selection (tests.test_task_catalog.TaskCatalogTests.test_grid_selection) ... ok
+test_imports_remain_torch_free (tests.test_task_catalog.TaskCatalogTests.test_imports_remain_torch_free) ... ok
+test_known_curriculum_and_case_identifiers (tests.test_task_catalog.TaskCatalogTests.test_known_curriculum_and_case_identifiers) ... ok
+test_no_gpu_is_unavailable_not_a_pass (tests.test_task_catalog.TaskCatalogTests.test_no_gpu_is_unavailable_not_a_pass) ... {"suite/task": "row_softmax", "suite/case": "b64_h128_float32", "suite/stage": 1, "suite/backend": "triton", "suite/fixture": "honest", "suite/purpose": "eval", "suite/eval_only": false, "suite/contract_only": false, "suite/status": "unavailable", "suite/reason": "CPU evaluation: GPU measurements and GPU candidate acceptance unavailable"}
+{"suite/task": "row_softmax", "suite/case": "b64_h128_float32", "suite/stage": 1, "suite/backend": "triton", "suite/fixture": "hack", "suite/purpose": "eval", "suite/eval_only": false, "suite/contract_only": false, "suite/status": "unavailable", "suite/reason": "CPU evaluation: GPU measurements and GPU candidate acceptance unavailable"}
+{"suite/task": "row_softmax", "suite/case": "b64_h128_float32", "suite/stage": 1, "suite/backend": "triton", "suite/fixture": "wrong", "suite/purpose": "eval", "suite/eval_only": false, "suite/contract_only": false, "suite/status": "unavailable", "suite/reason": "CPU evaluation: GPU measurements and GPU candidate acceptance unavailable"}
+{"suite/task": "row_softmax", "suite/case": "b64_h128_float32", "suite/stage": 1, "suite/backend": "cuda", "suite/fixture": "honest", "suite/purpose": "eval", "suite/eval_only": false, "suite/contract_only": false, "suite/status": "unavailable", "suite/reason": "CPU evaluation: GPU measurements and GPU candidate acceptance unavailable"}
+{"suite/task": "row_softmax", "suite/case": "b64_h128_float32", "suite/stage": 1, "suite/backend": "cuda", "suite/fixture": "hack", "suite/purpose": "eval", "suite/eval_only": false, "suite/contract_only": false, "suite/status": "unavailable", "suite/reason": "CPU evaluation: GPU measurements and GPU candidate acceptance unavailable"}
+{"suite/task": "row_softmax", "suite/case": "b64_h128_float32", "suite/stage": 1, "suite/backend": "cuda", "suite/fixture": "wrong", "suite/purpose": "eval", "suite/eval_only": false, "suite/contract_only": false, "suite/status": "unavailable", "suite/reason": "CPU evaluation: GPU measurements and GPU candidate acceptance unavailable"}
+ok
+test_synthetic_operation_and_byte_counts (tests.test_task_catalog.TaskCatalogTests.test_synthetic_operation_and_byte_counts) ... ok
+test_adamw_is_functional (tests.test_task_catalog.TaskReferenceTests.test_adamw_is_functional) ... ok
+test_cispo_bounds_from_preset_and_mask (tests.test_task_catalog.TaskReferenceTests.test_cispo_bounds_from_preset_and_mask) ... ok
+test_dense_moe_mask_excludes_unselected_experts (tests.test_task_catalog.TaskReferenceTests.test_dense_moe_mask_excludes_unselected_experts) ... ok
+test_grpo_reference_matches_repository_population_math (tests.test_task_catalog.TaskReferenceTests.test_grpo_reference_matches_repository_population_math) ... ok
+test_reference_edge_cases (tests.test_task_catalog.TaskReferenceTests.test_reference_edge_cases) ... ok
+test_sampling_is_deterministic_with_stable_ties (tests.test_task_catalog.TaskReferenceTests.test_sampling_is_deterministic_with_stable_ties) ... ok
+test_diagnostic_profile_cannot_be_reward_evidence (tests.test_task_policy.TaskPolicyTests.test_diagnostic_profile_cannot_be_reward_evidence) ... ok
+test_existing_failure_gates_and_shaping_are_preserved (tests.test_task_policy.TaskPolicyTests.test_existing_failure_gates_and_shaping_are_preserved) ... ok
+test_invalid_share_records_fail_closed (tests.test_task_policy.TaskPolicyTests.test_invalid_share_records_fail_closed) ... ok
+test_memory_excluded_and_boundary_inclusive (tests.test_task_policy.TaskPolicyTests.test_memory_excluded_and_boundary_inclusive) ... ok
+test_no_library_even_when_authored_fraction_exceeds_threshold (tests.test_task_policy.TaskPolicyTests.test_no_library_even_when_authored_fraction_exceeds_threshold) ... ok
+test_synthetic_cuda_library_hack_rejected_without_redefining_env_share (tests.test_task_policy.TaskPolicyTests.test_synthetic_cuda_library_hack_rejected_without_redefining_env_share) ... ok
+test_synthetic_diagnostic_rates_are_unit_correct (tests.test_task_policy.TaskPolicyTests.test_synthetic_diagnostic_rates_are_unit_correct) ... ok
+test_task_floor_cannot_be_lowered_by_caller (tests.test_task_policy.TaskPolicyTests.test_task_floor_cannot_be_lowered_by_caller) ... ok
+
+----------------------------------------------------------------------
+Ran 23 tests in 37.504s
+
+OK

@@ -1,0 +1,100 @@
+{
+  "created_utc": "2026-11-09T00:35:19Z",
+  "verify_command": "CUDA_AGENT_DEVICE=cpu TRITON_INTERPRET=1 .venv/bin/python -c bootstrap_script('utils.verification',['--seed','0'],tasks/log_softmax_gather)",
+  "results": {
+    "log_softmax_gather": {
+      "exit": 0,
+      "log": "verify-log_softmax_gather.log",
+      "checks": "5/5 PASS",
+      "design": "two-kernel chunked partials + final combine"
+    },
+    "grpo_group_norm": {
+      "exit": 0,
+      "log": "verify-grpo_group_norm.log",
+      "checks": "5/5 PASS"
+    },
+    "cispo_clip_weight": {
+      "exit": 0,
+      "log": "verify-cispo_clip_weight.log",
+      "checks": "5/5 PASS"
+    },
+    "packed_varlen_reduction": {
+      "exit": 0,
+      "log": "verify-packed_varlen_reduction.log",
+      "checks": "5/5 PASS"
+    }
+  },
+  "sdk_blocker": {
+    "issue": "cutlass.cute / cutlass.utils Python API sources absent from all declared wheels",
+    "inspected": [
+      "nvidia-cutlass-dsl==4.8.1 (metapackage .pth stub only)",
+      "nvidia-cutlass-dsl-libs-base==4.8.1 (cutlass/_mlir dialects + iket only, no cute/ or utils/)",
+      "nvidia-cutlass-dsl-libs-cu13==4.8.1 (native .so + include, empty dsl_packages/cutlass/)",
+      "nvidia-cutlass-dsl-libs-cu12==4.8.1 (same native-only layout)"
+    ],
+    "extracted": "/tmp/cutedsl-sdk/{base,cu13}",
+    "consequence": "kernels/cutedsl/gemm_tensor_core.py authored against expected 4.8 API; py_compile only, NOT runnable-verified; needs on-image GPU compile",
+    "resolved_by": "nvidia-cutlass-dsl-libs-core==4.8.1 extracted at /tmp/cutedsl-sdk/core/.../cutlass/{cute,utils}; rewrite uses cute.nvgpu.warp.MmaF16BF16Op (m16n8k16), make_tiled_mma, CopyUniversalOp, SmemAllocator"
+  },
+  "file_sha256": {
+    "tasks/rmsnorm/kernels/rmsnorm.cu": "16d9425a2251c36ced1b6939443e52fd9d103162c51b8e7d2889d2d978cdf43e",
+    "tasks/rmsnorm/kernels/rmsnorm_binding.cpp": "163162f997f0796b1640018c32ddf38df1430dc52ab9a4bc051b5d95ea1c68b4",
+    "tasks/log_softmax_gather/kernels/log_softmax_gather.cu": "ed88d0501ff0ac36176199ce04908c442bc8194354d0d04736937bcc8d12a764",
+    "tasks/log_softmax_gather/kernels/log_softmax_gather_binding.cpp": "0690454d8b58569ec17703575b52c572949e906d1f156530d3d68a996950104c",
+    "tasks/log_softmax_gather/kernels/triton/log_softmax_gather.py": "ee43d1f2598c800ef6d2f97747362476f215388699ecae90f26c2facc8d6af8c",
+    "tasks/fused_adamw/kernels/fused_adamw_binding.cpp": "804b6807f0f8b51cc41c9f4ce5caaa66601acaa6ae03ff3961746d81904aca5a",
+    "tasks/gemm_tensor_core/kernels/gemm_tensor_core.cu": "3b6ffc61b97be57267f1f82a46bf16923bb2e3ba352a367e9fce2bdfa5b37c00",
+    "tasks/gemm_tensor_core/kernels/cutedsl/gemm_tensor_core.py": "9a875f266d5ecb1c7f151a0f2b15e70e070cc39107684f0f000ba53ba91f4be1",
+    "tasks/row_softmax/kernels/row_softmax.cu": "ea2f61bd10878d758e2fcb2ea1672224f2a74e88b7a11e9e47a2fb4366308019",
+    "tasks/masked_mean/kernels/masked_mean.cu": "17f49ae0cc0bdb7d8fdeb503ebe4922999107918d3efbfa6e2042780c8f71a95",
+    "tasks/grpo_group_norm/README.md": "a6475cf261a0de102acee5361a9b05c2f71abbeef24f5e96aec2c72d12c2f84c",
+    "tasks/grpo_group_norm/binding.cpp": "43da662b9aedb537a4cb2f04c57d92aeddbe018a9b5f7374ae28ec9bba0b3b62",
+    "tasks/grpo_group_norm/binding_registry.h": "a829ca7d5de03049c439f30aa01f7f631c06418c31855cf19a67f23d69349e0f",
+    "tasks/grpo_group_norm/kernels/__init__.py": "fa8709e0f841861e590a1400e7bf811752982f12aa6de0b19102d917d614c1a4",
+    "tasks/grpo_group_norm/kernels/cuda/__init__.py": "1b646ddad9514bdf974a79a2e494f3bf71f804fda6ba9333c7f6691f68b74ba3",
+    "tasks/grpo_group_norm/kernels/cuda/grpo_group_norm.py": "7445085b852ee8e902a99496ad9d52d3319571fdd5ccc86237d55adb60dd327f",
+    "tasks/grpo_group_norm/kernels/grpo_group_norm.cu": "63bd07267d35f4b6ed6c8d47edb01ed5b58d9fb15bdb6a9b5e08955082fde005",
+    "tasks/grpo_group_norm/kernels/grpo_group_norm_binding.cpp": "8f5415e7150539e381437f4eff4edfe4b429343b2430a1c1ee891cd2a7a7c7cf",
+    "tasks/grpo_group_norm/kernels/triton/__init__.py": "1b646ddad9514bdf974a79a2e494f3bf71f804fda6ba9333c7f6691f68b74ba3",
+    "tasks/grpo_group_norm/kernels/triton/grpo_group_norm.py": "4867a44ff69bcca0130a0eb4d5b20a754807d88cf64b160c4dd543e128a4a524",
+    "tasks/grpo_group_norm/model.py": "7d9e9ce48bc2d9761a1bc18e7ffc8b769a6181c376c135ae22c81125a338bacb",
+    "tasks/grpo_group_norm/model_new.py": "233580a9379efb06152eb9820c12106588539c92c143f32bcfda744de974258b",
+    "tasks/grpo_group_norm/model_new_cuda.py": "490919194bc4b42ea6bec13785bce05d60d137bc16dbd1fabf4d41a4f8916240",
+    "tasks/grpo_group_norm/model_new_hack.py": "c70173b95aeb600847dc73caddf8241b2616f3035330df4113a3c2390ab318c1",
+    "tasks/grpo_group_norm/model_new_triton.py": "6d9a0f86f27984d07f818cbf83d0200f3ddc682efbeb73ce47c234e24a998df1",
+    "tasks/grpo_group_norm/model_new_wrong.py": "58921903343114e6d83c32974581fda7b7250ae65e4d182a1d64f527f6aee6ea",
+    "tasks/cispo_clip_weight/README.md": "42584eaab7280412828ae5c43d8a81a5f82be00d02c9dbf668ff4fc80d140532",
+    "tasks/cispo_clip_weight/binding.cpp": "43da662b9aedb537a4cb2f04c57d92aeddbe018a9b5f7374ae28ec9bba0b3b62",
+    "tasks/cispo_clip_weight/binding_registry.h": "a829ca7d5de03049c439f30aa01f7f631c06418c31855cf19a67f23d69349e0f",
+    "tasks/cispo_clip_weight/kernels/__init__.py": "fa8709e0f841861e590a1400e7bf811752982f12aa6de0b19102d917d614c1a4",
+    "tasks/cispo_clip_weight/kernels/cispo_clip_weight.cu": "4fabc0ed5aed3b28e2852923f7a60a31b77bedcde824296930576d9a8a162f69",
+    "tasks/cispo_clip_weight/kernels/cispo_clip_weight_binding.cpp": "309fd12c846c0c99cfe2c8f92ed61e459f6c81439652512fe0606dd9db49de8b",
+    "tasks/cispo_clip_weight/kernels/cuda/__init__.py": "4bb66bb6a2654f3410fd78cc87b15c607b147e24e448519b4dd7697652213109",
+    "tasks/cispo_clip_weight/kernels/cuda/cispo_clip_weight.py": "f8b7bf24455e1cce1dc2ec7c79a9d012532cb8097a605d95825952a8e38d2fac",
+    "tasks/cispo_clip_weight/kernels/triton/__init__.py": "4bb66bb6a2654f3410fd78cc87b15c607b147e24e448519b4dd7697652213109",
+    "tasks/cispo_clip_weight/kernels/triton/cispo_clip_weight.py": "b102e45b363b3cd2a1fa419ab39cba02df5d2e1a3114ad5c01987659f7ece669",
+    "tasks/cispo_clip_weight/model.py": "e57baa0b79dbc95cf4344d95fbf67a360802e0d83d93e18ce16840d30fd25680",
+    "tasks/cispo_clip_weight/model_new.py": "233580a9379efb06152eb9820c12106588539c92c143f32bcfda744de974258b",
+    "tasks/cispo_clip_weight/model_new_cuda.py": "de8bf22769015c9e24c9507adfbacaba315b047324b423f0bb71a99db3e14220",
+    "tasks/cispo_clip_weight/model_new_hack.py": "c70173b95aeb600847dc73caddf8241b2616f3035330df4113a3c2390ab318c1",
+    "tasks/cispo_clip_weight/model_new_triton.py": "c85e3971759ab7d0d82bf85ca338d2aea73e66c2f964dbbc672aed923d9fd077",
+    "tasks/cispo_clip_weight/model_new_wrong.py": "58921903343114e6d83c32974581fda7b7250ae65e4d182a1d64f527f6aee6ea",
+    "tasks/packed_varlen_reduction/README.md": "01bbadb39cd94c8c096c4decc1d518f0277d02d8b913c93bbdd56f6980302790",
+    "tasks/packed_varlen_reduction/binding.cpp": "43da662b9aedb537a4cb2f04c57d92aeddbe018a9b5f7374ae28ec9bba0b3b62",
+    "tasks/packed_varlen_reduction/binding_registry.h": "a829ca7d5de03049c439f30aa01f7f631c06418c31855cf19a67f23d69349e0f",
+    "tasks/packed_varlen_reduction/kernels/__init__.py": "fa8709e0f841861e590a1400e7bf811752982f12aa6de0b19102d917d614c1a4",
+    "tasks/packed_varlen_reduction/kernels/cuda/__init__.py": "a93fa0ff503c4b39da555b26d7314b277b5e41c82a1747d4a9c76c6fdc1912e7",
+    "tasks/packed_varlen_reduction/kernels/cuda/packed_varlen_reduction.py": "1037b82e33b7fa9e4f5076993a347d0f7908019705b4629909c6a5c81337505c",
+    "tasks/packed_varlen_reduction/kernels/packed_varlen_reduction.cu": "4d737d40bde0ee06f37eb99667f77cbddc3b495ec816a1ab12d690d9ecaa43f5",
+    "tasks/packed_varlen_reduction/kernels/packed_varlen_reduction_binding.cpp": "3456b96a14012727571e9906418784b0c479948a3b7d74fa60537542937de3a8",
+    "tasks/packed_varlen_reduction/kernels/triton/__init__.py": "a93fa0ff503c4b39da555b26d7314b277b5e41c82a1747d4a9c76c6fdc1912e7",
+    "tasks/packed_varlen_reduction/kernels/triton/packed_varlen_reduction.py": "0167ba36689ba87cd1a6ffc97171b0ab0c7c6f9aef1044d6853d54d17a7da8be",
+    "tasks/packed_varlen_reduction/model.py": "38124364cefcd87a06388e3603e1388484ff64667f28ae3833f751cab3b75897",
+    "tasks/packed_varlen_reduction/model_new.py": "233580a9379efb06152eb9820c12106588539c92c143f32bcfda744de974258b",
+    "tasks/packed_varlen_reduction/model_new_cuda.py": "5a4c1fd2632e0b7942421afd26fe9c5267a4ffa1f5238608118ca68f4be28c78",
+    "tasks/packed_varlen_reduction/model_new_hack.py": "c70173b95aeb600847dc73caddf8241b2616f3035330df4113a3c2390ab318c1",
+    "tasks/packed_varlen_reduction/model_new_triton.py": "84b66c9eb45c1a251d85a50d8445a6e29ab237f02552bc5d16e14760fee59d70",
+    "tasks/packed_varlen_reduction/model_new_wrong.py": "58921903343114e6d83c32974581fda7b7250ae65e4d182a1d64f527f6aee6ea"
+  },
+  "linux_copy": "/tmp/task-suite-stage1-source-20261109T002404Z"
+}

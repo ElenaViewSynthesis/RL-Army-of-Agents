@@ -1,0 +1,30 @@
+{
+  "created_utc": "2026-11-09T01:30:34Z",
+  "rework": {
+    "fa_cuda": "scores n_end=s (all S cells initialized); all-input bf16 + D=64 checks; cmath/std::sqrt",
+    "decode_cuda": "Hkv>0 before modulo; D=64 checks; cmath/std::sqrt",
+    "topk_cuda": "final kernel rewritten: global scratch in-place iterative max selection, shared warp_best[8]+selected slots only, no shared candidate array, input logits never mutated",
+    "signed_zero": "explicit x==0->uint0 normalization in CUDA+Triton keys (no x+0.0 under fastmath)",
+    "topk_validation": "K in [1,min(32,V)], V>0, 0<p<=1; rank count masked offs<K",
+    "moe_triton": "explicit (g+u).to(bf16) before tl.dot"
+  },
+  "stopped_cpu_run": {
+    "shell": "f4c68c (terminated), log artifacts/task-stage4-20261109T005506Z/verify-topk_sampling.log 0 bytes",
+    "outcome": "interrupted/timeout coverage ~30min interpreter chunk-sort; NO kernel-correctness verdict"
+  },
+  "py_compile": "clean on all changed Python",
+  "file_sha256": {
+    "tasks/flash_attention_fwd/kernels/flash_attention_fwd.cu": "06444ee04c7264cea9e9aa3fba34610e0fbbf4230ebba577f3848340029dfa15",
+    "tasks/flash_attention_fwd/kernels/flash_attention_fwd_binding.cpp": "982cd6f32b7e1129aa839169d47928b795fdfb3ef03483cbdf2bec535d13cca0",
+    "tasks/flash_attention_fwd/kernels/triton/flash_attention_fwd.py": "9afbbeec12f9231339e7492aad26ec6857ad0ab10804ae2b799b0ea9bbfe9393",
+    "tasks/flash_attention_fwd/kernels/cuda/flash_attention_fwd.py": "b87ad53befa235534941bce00f67e45b83cedfca53b0b07fd86a43316e8ef4b2",
+    "tasks/decode_attention/kernels/decode_attention_binding.cpp": "7e43c5ea471dc4af0e95b083f581854af8e8a94e2c9aca82fec960e58660426d",
+    "tasks/decode_attention/kernels/triton/decode_attention.py": "a78aa3cf8a4693fb779405c552b2e666b10c350e43c4f46abf163455c2a09a20",
+    "tasks/decode_attention/kernels/cuda/decode_attention.py": "f46b095e396654039120b051235a02f576563f18af4ff6309bb906d0f011c2d3",
+    "tasks/moe_dense_gemm/kernels/triton/moe_dense_gemm.py": "1a89000aa72960e7d72baa781fa16822d88241e438abbb0c273bc53f6dd67999",
+    "tasks/topk_sampling/kernels/topk_sampling.cu": "cafcf04e5f4534ab16d68327c5b368aa879ea40e2f32ef515f5becb14635b087",
+    "tasks/topk_sampling/kernels/topk_sampling_binding.cpp": "47a7993497fcfc0a03224e4577ef16f36e1b07fde48578afe9250a2d6375f6bb",
+    "tasks/topk_sampling/kernels/triton/topk_sampling.py": "137dccdcf145d52d7a61fc6a820855a914aa91ad0198e330008cf9ae22621b2c",
+    "tasks/topk_sampling/kernels/cuda/topk_sampling.py": "519fb7cd9033b161b157d6883cbdda5665ce00c8c4348c650bae26adfcc73d66"
+  }
+}

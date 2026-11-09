@@ -1,0 +1,24 @@
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    import sys, runpy; sys.path.insert(0, '/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels'); import utils; sys.path = [p for p in sys.path if p != '/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels']; sys.path.insert(0, '/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/tasks/gemm_tensor_core'); sys.argv = ['utils.verification', '--seed', '0']; runpy.run_module('utils.verification', run_name='__main__')
+                                                                                                                                                                                                                                                                                                                                                                                                                    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen runpy>", line 229, in run_module
+  File "<frozen runpy>", line 88, in _run_code
+  File "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/utils/verification.py", line 117, in <module>
+    main()
+    ~~~~^^
+  File "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/utils/verification.py", line 108, in main
+    check_equal(cuda_output, torch_output)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/utils/verification.py", line 38, in check_equal
+    torch.testing.assert_close(actual, expected, atol=1e-2, rtol=1e-2)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/.venv/lib/python3.13/site-packages/torch/testing/_comparison.py", line 1689, in assert_close
+    raise error_metas[0].to_error(msg)
+AssertionError: Tensor-likes are not close!
+
+Mismatched elements: 262144 / 262144 (100.0%)
+Greatest absolute difference: 616191033344.0 at index (373, 49) (up to 0.01 allowed)
+Greatest relative difference: 1907063592583168.0 at index (323, 332) (up to 0.01 allowed)
+
+

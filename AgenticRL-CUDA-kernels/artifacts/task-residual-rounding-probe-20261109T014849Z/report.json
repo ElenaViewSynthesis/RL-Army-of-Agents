@@ -1,0 +1,3305 @@
+{
+  "scope": "one frozen seed-0 CPU input; controlled interpreter-only intervention; no GPU/reward claim",
+  "torch": "2.14.1+cpu",
+  "triton": "3.8.0",
+  "shape": [
+    128,
+    1024
+  ],
+  "source_sha256": {
+    "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/tasks/residual_rmsnorm/kernels/triton/residual_rmsnorm.py": "441ac2bf135c92ac7630d6ae9919089620ce1e2210b138667014db07b4c43fbe",
+    "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/.venv/lib/python3.13/site-packages/triton/runtime/interpreter.py": "a17550ad6c58a2d903b64cc2eb8b89aeedc02f3b3f263b0a5a7bab43ef3d2435"
+  },
+  "original": {
+    "normalized": {
+      "exact_mismatches": 47746,
+      "outside_approved_tolerance": 35,
+      "maximum_absolute_difference": 0.0625,
+      "examples": [
+        {
+          "index": [
+            4,
+            364
+          ],
+          "actual": -2.015625,
+          "expected": -2.046875
+        },
+        {
+          "index": [
+            5,
+            994
+          ],
+          "actual": -2.078125,
+          "expected": -2.109375
+        },
+        {
+          "index": [
+            11,
+            123
+          ],
+          "actual": -2.078125,
+          "expected": -2.109375
+        },
+        {
+          "index": [
+            13,
+            446
+          ],
+          "actual": -4.875,
+          "expected": -4.9375
+        },
+        {
+          "index": [
+            17,
+            336
+          ],
+          "actual": 5.15625,
+          "expected": 5.21875
+        }
+      ]
+    },
+    "residual_sum": {
+      "exact_mismatches": 35552,
+      "outside_approved_tolerance": 0,
+      "maximum_absolute_difference": 0.03125,
+      "examples": []
+    }
+  },
+  "controlled_rtne_only": {
+    "normalized": {
+      "exact_mismatches": 0,
+      "outside_approved_tolerance": 0,
+      "maximum_absolute_difference": 0.0,
+      "examples": []
+    },
+    "residual_sum": {
+      "exact_mismatches": 0,
+      "outside_approved_tolerance": 0,
+      "maximum_absolute_difference": 0.0,
+      "examples": []
+    }
+  },
+  "executed_float32_to_bf16_conversions": [
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 289
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 511
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 289
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 513
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 269
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 518
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 262
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 534
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 271
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 499
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 302
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 537
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 269
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 518
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 290
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 484
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 290
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 505
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 270
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 503
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 277
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 479
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 275
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 518
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 286
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 507
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 267
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 499
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 286
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 518
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 284
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 519
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 270
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 514
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 274
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 519
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 285
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 490
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 298
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 497
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 291
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 505
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 272
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 492
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 257
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 522
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 273
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 505
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 283
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 532
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 291
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 495
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 299
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 518
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 279
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 532
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 302
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 513
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 252
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 502
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 301
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 512
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 274
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 504
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 248
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 532
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 270
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 470
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 246
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 520
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 274
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 513
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 292
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 520
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 279
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 517
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 249
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 500
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 254
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 508
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 266
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 495
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 286
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 557
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 279
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 536
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 287
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 533
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 281
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 495
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 277
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 513
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 289
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 517
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 284
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 531
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 279
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 527
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 264
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 505
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 285
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 494
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 271
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 517
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 276
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 499
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 286
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 524
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 277
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 521
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 298
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 487
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 272
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 536
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 274
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 524
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 290
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 481
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 274
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 498
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 273
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 496
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 274
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 521
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 261
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 503
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 263
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 526
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 302
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 514
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 267
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 547
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 269
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 513
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 285
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 477
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 267
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 487
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 281
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 531
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 282
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 537
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 272
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 506
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 265
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 497
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 284
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 491
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 292
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 504
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 279
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 504
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 288
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 518
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 266
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 521
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 290
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 518
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 291
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 506
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 294
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 532
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 269
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 524
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 269
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 503
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 279
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 525
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 267
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 507
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 266
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 521
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 286
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 551
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 280
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 509
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 278
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 527
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 272
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 537
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 270
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 529
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 288
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 544
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 261
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 519
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 276
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 516
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 260
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 504
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 284
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 492
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 275
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 517
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 287
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 503
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 276
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 522
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 293
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 485
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 279
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 505
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 267
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 513
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 265
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 496
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 282
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 507
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 281
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 509
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 291
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 502
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 246
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 492
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 262
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 471
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 291
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 535
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 273
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 531
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 265
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 491
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 268
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 526
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 282
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 503
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 299
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 512
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 302
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 516
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 277
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 509
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 245
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 491
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 294
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 525
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 295
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 517
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 264
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 505
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 278
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 508
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 284
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 512
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 285
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 524
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 282
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 487
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 258
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 513
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 285
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 533
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 303
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 506
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 284
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 0
+    },
+    {
+      "rounding_mode": "None",
+      "elements": 1024,
+      "different_from_torch_rtne": 500
+    }
+  ],
+  "rounding_tie_probe": {
+    "float32": [
+      1.00390625,
+      1.01171875,
+      -1.00390625,
+      -1.01171875
+    ],
+    "interpreter_bf16_bits": [
+      16257,
+      16258,
+      49025,
+      49026
+    ],
+    "torch_rtne_bf16_bits": [
+      16256,
+      16258,
+      49024,
+      49026
+    ]
+  },
+  "production_changed": false
+}

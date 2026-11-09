@@ -1,0 +1,10 @@
+test_cross_chunk_tie_and_partial_final_chunk (tests.test_task_sampling.SamplingFixtureTests.test_cross_chunk_tie_and_partial_final_chunk) ... ok
+test_signed_zeros_are_ties_not_distinct_float_bit_keys (tests.test_task_sampling.SamplingFixtureTests.test_signed_zeros_are_ties_not_distinct_float_bit_keys) ... ok
+test_stable_equal_logits_and_exact_cdf_boundary (tests.test_task_sampling.SamplingFixtureTests.test_stable_equal_logits_and_exact_cdf_boundary) ... ok
+test_top_p_excludes_token_with_prefix_equal_to_threshold (tests.test_task_sampling.SamplingFixtureTests.test_top_p_excludes_token_with_prefix_equal_to_threshold) ... ok
+test_top_p_retains_crossing_token_then_renormalizes (tests.test_task_sampling.SamplingFixtureTests.test_top_p_retains_crossing_token_then_renormalizes) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 466.177s
+
+OK

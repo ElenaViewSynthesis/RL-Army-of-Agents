@@ -1,0 +1,48 @@
+{
+  "source": "/tmp/task-suite-all-source-20261109T015605Z",
+  "builder_requested": "2025.06",
+  "rule": "Sequential H200 jobs; never automatically rerun failed or completed measurements. Inspect failures, fix only confirmed causes, freeze new source for any code change.",
+  "current": {
+    "run_id": "task-cute-smoke-20261109T015605Z",
+    "app_id": "ap-UiJroxpMq6H5kkqVYDObQ0",
+    "function_call_id": "fc-01M6Z0CJ8X5CHYY36ZA5DFM3HA",
+    "waiter_shell": "d8efc4",
+    "tasks": "gemm_tensor_core",
+    "case_set": "smoke",
+    "backends": "cutedsl",
+    "fixtures": "honest,hack,wrong"
+  },
+  "next_h200_steps_after_current_finishes_and_review": [
+    {
+      "purpose": "Advanced authored fixtures and negative controls",
+      "tasks": "flash_attention_fwd,grouped_gemm,topk_sampling,residual_rmsnorm,decode_attention,moe_dense_gemm",
+      "case_set": "smoke",
+      "backends": "",
+      "fixtures": "honest,hack,wrong",
+      "benchmark": true,
+      "cold_start": true,
+      "note": "Empty backends selects each task's declared fixtures; grouped_gemm remains Triton-only."
+    },
+    {
+      "purpose": "Flagship acceptance and GPU retest of the confirmed CUDA typed-zero fix",
+      "tasks": "gemm_tensor_core,flash_attention_fwd",
+      "case_set": "acceptance",
+      "backends": "cuda,triton",
+      "fixtures": "honest,hack,wrong",
+      "benchmark": true,
+      "cold_start": true,
+      "note": "BF16 Triton 4096^3 GEMM must reach 60% measured cuBLAS on H200 capability9.0, authored provenance1.0; FA remains atol=rtol1e-2. No performance-number fabrication if unavailable."
+    }
+  ],
+  "lead_only_pending": [
+    "Review Stage23 raw evidence downloaded by shell65d055 into artifacts/task-stage23-20261109T013032Z/evidence. Report51passed3failed; all3CUDA TC compile failures. Do not overwrite or erase failed evidence.",
+    "Stage23 immutable262-file source backup and manifest are already in artifacts/task-stage23-20261109T013032Z/source; receipt checked against launch.",
+    "First-four numerical review is frozen artifacts/task-stage1-20261109T004826Z/review.json. Do not rerun derivations or measurements for README changes; render from captured rows.",
+    "Controlled residual RMS CPU failure mechanism is confirmed for one captured seed-0 case: interpreter FP32-to-BF16 conversions modeNone truncate; correcting only that process-local conversion gives exact reference agreement. See artifacts/task-residual-rounding-probe-20261109T014849Z/{report.json,review.json,probe.py}. No kernel/SDK/tolerance change; other BF16 tl.dot CPU failures remain unconfirmed.",
+    "Five small exact-ID sampling probes passed; log artifacts/task-sampling-probes-20261109T013749Z.log (resolve exact existing filename if needed). Do not rerun separately; eventual full final unittest gate includes them.",
+    "Finish task metadata/contract-only checks, source/licensing audit, final full local suites under system Python and venv once code changes settle (delegate mechanical verification).",
+    "Update VALIDATION.md, KNOWN_ISSUES.md and remaining task baselines only from reviewed captured data; preserve historical failures and unknown fields.",
+    "Full task grids, optional FA CuTe/TileLang stretches and CUTLASS/FA vendor ceilings remain unvalidated; do not silently claim completion.",
+    "No commits/push/online tracking unless requested. Root AXPBY fixtures, stock scoring and floating tolerances stay unchanged; no dependencies or workspace settings changed."
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "created_utc": "2026-11-09T01:37:50Z",
+  "fix": "(T)0 -> zero_value<T>() typed device helper (__float2half_rn(0.f) / __float2bfloat16(0.f)); two padding sites replaced; NVCC int-ctor failure under __CUDA_NO_HALF_CONVERSIONS__ per confirmed error",
+  "unchanged": "alignment, double buffering, stream, dispatch, WMMA structure",
+  "verification": "host has no nvcc/GPU; source review only per handoff",
+  "file_sha256": {
+    "tasks/gemm_tensor_core/kernels/gemm_tensor_core.cu": "69cbd9226d29625b5e6d368710e78c27d78a19fbde142c1a2766cf4059204e89"
+  }
+}

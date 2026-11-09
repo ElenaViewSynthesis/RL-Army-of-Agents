@@ -1,0 +1,14 @@
+test_ceiling_cannot_overwrite_reward_or_reduce_tensor_core_provenance (tests.test_task_measurement.TaskMeasurementTests.test_ceiling_cannot_overwrite_reward_or_reduce_tensor_core_provenance) ... ok
+test_flash_hack_uses_real_sdpa_and_stable_alias (tests.test_task_measurement.TaskMeasurementTests.test_flash_hack_uses_real_sdpa_and_stable_alias) ... ok
+test_missing_ceiling_is_unavailable (tests.test_task_measurement.TaskMeasurementTests.test_missing_ceiling_is_unavailable) ... ok
+test_no_invented_or_inconsistent_rates (tests.test_task_measurement.TaskMeasurementTests.test_no_invented_or_inconsistent_rates) ... ok
+test_nonfinite_zero_negative_and_boolean_latencies_fail_closed (tests.test_task_measurement.TaskMeasurementTests.test_nonfinite_zero_negative_and_boolean_latencies_fail_closed) ... ok
+test_optional_task_diagnostics_are_table_only (tests.test_task_measurement.TaskMeasurementTests.test_optional_task_diagnostics_are_table_only) ... ok
+test_protected_files_are_rechecked_after_optional_ceiling (tests.test_task_measurement.TaskMeasurementTests.test_protected_files_are_rechecked_after_optional_ceiling) ... ok
+test_shape_dtype_provider_and_counts_are_attested (tests.test_task_measurement.TaskMeasurementTests.test_shape_dtype_provider_and_counts_are_attested) ... ok
+test_valid_synthetic_ceiling_and_si_units (tests.test_task_measurement.TaskMeasurementTests.test_valid_synthetic_ceiling_and_si_units) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 13.902s
+
+OK

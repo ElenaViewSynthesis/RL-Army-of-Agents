@@ -1,0 +1,21 @@
+{
+  "scope": "One captured seed-0 CPU residual_rmsnorm case, shape [128,1024]; no GPU or reward acceptance",
+  "status": "mechanism_confirmed_for_captured_cpu_failure",
+  "finding": "Triton 3.8.0 interpreter FP32-to-BF16 conversions received rounding_mode=None; its _convert_float downcast path truncates unless RTNE is explicitly supplied. An additional explicit-RTNE tie probe disagrees with Torch round-to-nearest-even.",
+  "evidence": {
+    "original_outside_tolerance": 35,
+    "original_maximum_absolute_difference": 0.0625,
+    "executed_fp32_to_bf16_conversion_calls": 640,
+    "all_observed_rounding_modes": "None",
+    "controlled_change": "Only replace FP32-to-BF16 conversions with Torch RTNE in this diagnostic process, using the identical captured tensors",
+    "controlled_normalized_exact_mismatches": 0,
+    "controlled_residual_sum_exact_mismatches": 0,
+    "source_hashes_checked": true
+  },
+  "limits": [
+    "No kernel, production SDK, tolerance, dependency, or reward change",
+    "Does not explain the separate CPU BF16 tl.dot mismatches",
+    "Does not establish GPU correctness; native H200 validation remains required",
+    "Does not address historical profiler or Modal JWT causes"
+  ]
+}
