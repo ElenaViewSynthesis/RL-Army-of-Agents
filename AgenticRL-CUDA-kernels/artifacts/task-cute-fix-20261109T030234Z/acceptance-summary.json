@@ -1,0 +1,17 @@
+{
+  "run_id": "task-cute-fix-acceptance-20261109T030234Z",
+  "execution": {
+    "command": "python -m scripts.validate --suite gemm_tensor_core --device cuda --purpose eval --case-set acceptance --fixtures honest,hack,wrong --timeout-s 600 --suite-out /artifacts/task-cute-fix-acceptance-20261109T030234Z/suite --backends cutedsl --benchmark --cold-start",
+    "returncode": 0,
+    "timed_out": false,
+    "wall_s": 63.230839403
+  },
+  "counts": {
+    "passed": 3,
+    "failed": 0,
+    "unavailable": 0
+  },
+  "status": "pass",
+  "source_mismatches": [],
+  "scope": "selected workload cases only; no stock AXPBY acceptance or timing-cause claim"
+}
