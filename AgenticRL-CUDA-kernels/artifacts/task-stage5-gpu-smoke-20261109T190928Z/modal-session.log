@@ -1,0 +1,88 @@
+✓ Initialized. View run at 
+https://modal.com/apps/elenamylocuda/main/ap-uNiW1x20FQ63J6EgKdsLMG
+✓ Created objects.
+├── ✓ Uploaded /tmp/task-stage5-gpu-source-20261109T190928Z/cloud/modal_tasks.py
+├── ✓ Uploaded 
+│   /tmp/task-stage5-gpu-source-20261109T190928Z/artifacts/upstream.json
+├── ✓ Uploaded /tmp/task-stage5-gpu-source-20261109T190928Z
+└── ✓ Created Function evaluate.
+{"run_id": "task-stage5-gpu-smoke-20261109T190928Z", "function_call_id": "fc-01M70VG6EGDDRMZ0SBP801M14T", "volume": "agenticrl-cuda-artifacts", "remote": "/artifacts/task-stage5-gpu-smoke-20261109T190928Z"}
+{"function_call_id": "fc-01M70VG6EGDDRMZ0SBP801M14T"}
+{"completed": 1, "last_task": "eagle_candidate_topk", "last_status": "passed"}
+{"completed": 1, "last_task": "eagle_candidate_topk", "last_status": "passed"}
+{"completed": 2, "last_task": "eagle_candidate_topk", "last_status": "passed"}
+{"completed": 3, "last_task": "eagle_candidate_topk", "last_status": "passed"}
+{"completed": 4, "last_task": "eagle_candidate_topk", "last_status": "passed"}
+{"completed": 6, "last_task": "eagle_candidate_topk", "last_status": "passed"}
+{"completed": 6, "last_task": "eagle_candidate_topk", "last_status": "passed"}
+{"completed": 7, "last_task": "eagle_tree_step", "last_status": "passed"}
+{"completed": 7, "last_task": "eagle_tree_step", "last_status": "passed"}
+{"completed": 8, "last_task": "eagle_tree_step", "last_status": "passed"}
+{"completed": 8, "last_task": "eagle_tree_step", "last_status": "passed"}
+{"completed": 9, "last_task": "eagle_tree_step", "last_status": "passed"}
+{"completed": 9, "last_task": "eagle_tree_step", "last_status": "passed"}
+{"completed": 10, "last_task": "eagle_tree_step", "last_status": "passed"}
+{"completed": 12, "last_task": "eagle_tree_step", "last_status": "passed"}
+{"completed": 14, "last_task": "eagle_tree_step", "last_status": "passed"}
+{"completed": 14, "last_task": "eagle_tree_step", "last_status": "passed"}
+{"completed": 14, "last_task": "eagle_tree_step", "last_status": "passed"}
+{"completed": 15, "last_task": "eagle_tree_row_attention", "last_status": "passed"}
+{"completed": 15, "last_task": "eagle_tree_row_attention", "last_status": "passed"}
+{"completed": 16, "last_task": "eagle_tree_row_attention", "last_status": "passed"}
+{"completed": 16, "last_task": "eagle_tree_row_attention", "last_status": "passed"}
+{"completed": 17, "last_task": "eagle_tree_row_attention", "last_status": "passed"}
+{"completed": 18, "last_task": "eagle_tree_row_attention", "last_status": "passed"}
+{"completed": 19, "last_task": "eagle_tree_row_attention", "last_status": "passed"}
+{"completed": 22, "last_task": "eagle_tree_row_attention", "last_status": "passed"}
+{"completed": 22, "last_task": "eagle_tree_row_attention", "last_status": "passed"}
+{"completed": 22, "last_task": "eagle_tree_row_attention", "last_status": "passed"}
+{"completed": 23, "last_task": "eagle_tree_verify_attention", "last_status": "passed"}
+{"completed": 23, "last_task": "eagle_tree_verify_attention", "last_status": "passed"}
+{"completed": 24, "last_task": "eagle_tree_verify_attention", "last_status": "passed"}
+{"completed": 24, "last_task": "eagle_tree_verify_attention", "last_status": "passed"}
+{"completed": 25, "last_task": "eagle_tree_verify_attention", "last_status": "passed"}
+{"completed": 25, "last_task": "eagle_tree_verify_attention", "last_status": "passed"}
+{"completed": 26, "last_task": "eagle_tree_verify_attention", "last_status": "passed"}
+{"completed": 28, "last_task": "eagle_tree_verify_attention", "last_status": "passed"}
+{"completed": 30, "last_task": "eagle_tree_verify_attention", "last_status": "passed"}
+{"completed": 30, "last_task": "eagle_tree_verify_attention", "last_status": "passed"}
+{"completed": 31, "last_task": "eagle_gdn_tree_conv", "last_status": "passed"}
+{"completed": 31, "last_task": "eagle_gdn_tree_conv", "last_status": "passed"}
+{"completed": 32, "last_task": "eagle_gdn_tree_conv", "last_status": "passed"}
+{"completed": 32, "last_task": "eagle_gdn_tree_conv", "last_status": "passed"}
+{"completed": 33, "last_task": "eagle_gdn_tree_conv", "last_status": "passed"}
+{"completed": 34, "last_task": "eagle_gdn_tree_conv", "last_status": "passed"}
+{"completed": 35, "last_task": "eagle_gdn_tree_conv", "last_status": "passed"}
+{"completed": 38, "last_task": "eagle_gdn_tree_conv", "last_status": "passed"}
+{"completed": 38, "last_task": "eagle_gdn_tree_conv", "last_status": "passed"}
+{"completed": 39, "last_task": "eagle_mamba2_tree_conv", "last_status": "passed"}
+{"completed": 39, "last_task": "eagle_mamba2_tree_conv", "last_status": "passed"}
+{"completed": 40, "last_task": "eagle_mamba2_tree_conv", "last_status": "passed"}
+{"completed": 40, "last_task": "eagle_mamba2_tree_conv", "last_status": "passed"}
+{"completed": 41, "last_task": "eagle_mamba2_tree_conv", "last_status": "passed"}
+{"completed": 41, "last_task": "eagle_mamba2_tree_conv", "last_status": "passed"}
+{"completed": 43, "last_task": "eagle_mamba2_tree_conv", "last_status": "passed"}
+{"completed": 46, "last_task": "eagle_mamba2_tree_conv", "last_status": "passed"}
+{"completed": 46, "last_task": "eagle_mamba2_tree_conv", "last_status": "passed"}
+{"completed": 46, "last_task": "eagle_mamba2_tree_conv", "last_status": "passed"}
+{"completed": 47, "last_task": "eagle_gdn_tree_recurrence", "last_status": "passed"}
+{"completed": 47, "last_task": "eagle_gdn_tree_recurrence", "last_status": "passed"}
+{"completed": 48, "last_task": "eagle_gdn_tree_recurrence", "last_status": "passed"}
+{"completed": 48, "last_task": "eagle_gdn_tree_recurrence", "last_status": "passed"}
+{"completed": 49, "last_task": "eagle_gdn_tree_recurrence", "last_status": "passed"}
+{"completed": 50, "last_task": "eagle_gdn_tree_recurrence", "last_status": "passed"}
+{"completed": 53, "last_task": "eagle_gdn_tree_recurrence", "last_status": "passed"}
+{"completed": 54, "last_task": "eagle_gdn_tree_recurrence", "last_status": "passed"}
+{"completed": 55, "last_task": "eagle_gdn_tree_recurrence", "last_status": "passed"}
+{"completed": 55, "last_task": "eagle_gdn_tree_recurrence", "last_status": "passed"}
+{"completed": 56, "last_task": "eagle_accept_tail", "last_status": "passed"}
+{"completed": 56, "last_task": "eagle_accept_tail", "last_status": "passed"}
+{"completed": 57, "last_task": "eagle_accept_tail", "last_status": "passed"}
+{"completed": 57, "last_task": "eagle_accept_tail", "last_status": "passed"}
+{"completed": 58, "last_task": "eagle_accept_tail", "last_status": "passed"}
+{"completed": 59, "last_task": "eagle_accept_tail", "last_status": "passed"}
+{"completed": 60, "last_task": "eagle_accept_tail", "last_status": "passed"}
+{"completed": 63, "last_task": "eagle_accept_tail", "last_status": "passed"}
+{"completed": 63, "last_task": "eagle_accept_tail", "last_status": "passed"}
+{"completed": 64, "last_task": "eagle_accept_tail_sampled", "last_status": "passed"}
+{"completed": 64, "last_task": "eagle_accept_tail_sampled", "last_status": "passed"}

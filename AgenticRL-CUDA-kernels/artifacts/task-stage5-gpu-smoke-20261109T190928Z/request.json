@@ -1,0 +1,21 @@
+{
+  "run_id": "task-stage5-gpu-smoke-20261109T190928Z",
+  "tasks": [
+    "eagle_candidate_topk",
+    "eagle_tree_step",
+    "eagle_tree_row_attention",
+    "eagle_tree_verify_attention",
+    "eagle_gdn_tree_conv",
+    "eagle_mamba2_tree_conv",
+    "eagle_gdn_tree_recurrence",
+    "eagle_accept_tail",
+    "eagle_accept_tail_sampled"
+  ],
+  "case_set": "smoke",
+  "backends": "cuda,triton",
+  "fixtures": "all",
+  "timeout_s": 900,
+  "benchmark": true,
+  "cold_start": true,
+  "gpu_requested": "H200"
+}

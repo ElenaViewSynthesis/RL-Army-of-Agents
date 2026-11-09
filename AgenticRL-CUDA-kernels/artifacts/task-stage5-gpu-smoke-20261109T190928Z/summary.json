@@ -1,0 +1,17 @@
+{
+  "run_id": "task-stage5-gpu-smoke-20261109T190928Z",
+  "execution": {
+    "command": "python -m scripts.validate --suite eagle_candidate_topk,eagle_tree_step,eagle_tree_row_attention,eagle_tree_verify_attention,eagle_gdn_tree_conv,eagle_mamba2_tree_conv,eagle_gdn_tree_recurrence,eagle_accept_tail,eagle_accept_tail_sampled --device cuda --purpose eval --case-set smoke --fixtures all --timeout-s 900 --suite-out /artifacts/task-stage5-gpu-smoke-20261109T190928Z/suite --backends cuda,triton --benchmark --cold-start",
+    "returncode": 0,
+    "timed_out": false,
+    "wall_s": 2637.4113371629996
+  },
+  "counts": {
+    "passed": 71,
+    "failed": 0,
+    "unavailable": 0
+  },
+  "status": "pass",
+  "source_mismatches": [],
+  "scope": "selected workload cases only; no stock AXPBY acceptance or timing-cause claim"
+}
