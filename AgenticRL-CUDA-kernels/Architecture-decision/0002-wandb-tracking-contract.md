@@ -620,3 +620,68 @@ saves the sampler output (enabled in the Modal test runner).
 | `stage:nvidia_smi` | artifact | nvidia_smi | JSON scalar | sensitive raw diagnostic | tool unavailable | diagnostic | environment |
 | `artifact_header:gpu` | config | gpu | str | requested GPU class (not measured device) | not supplied | diagnostic | environment |
 | `artifact_header:_comment` | drop | _comment | str | explanatory text | not supplied | diagnostic | environment |
+
+### Progressive-task-only projections
+
+These keys exist only in the opt-in task-suite API. They do not alter the stock
+rollout schema or classifier. `task/provenance_authored` excludes memory and
+library credit; the approved new-task gate prohibits library time. The legacy
+combined share and reward are retained for auditing. Warm/cold benchmark and
+ceiling fields never enter reward computation. The 60%-cuBLAS fixture acceptance
+check is separate from milestone rewards. Cold means the first post-initialization
+forward in a benchmark process, not flushed hardware caches.
+
+| Source:key | Category | Namespace | Type | Unit | Null/absence condition | Role | Owner |
+|---|---|---|---|---|---|---|---|
+| `result:task/provenance_policy` | table | task | str | policy id | not a suite row | identity | task suite |
+| `result:task/provenance_authored` | table | task | float | fraction of non-memory time | missing/invalid capture | task-only reward/input | task suite |
+| `result:task/provenance_threshold` | table | task | float | fraction | not a suite row | task-only reward/config | task suite |
+| `result:task/legacy_reward_value` | table | task | float | milestone | raw evaluator unavailable | audit diagnostic | task suite |
+| `result:task/policy_violation` | table | task | str | reason | no policy violation | diagnostic | task suite |
+| `result:task/performance_required` | table | task | bool | 1 | not evaluated | fixture acceptance | task suite |
+| `result:task/minimum_cublas_fraction` | table | task | float | ratio | no required performance gate | fixture acceptance/config | task suite |
+| `result:task/cublas_fraction` | table | task | float | ratio | ceiling not measured | diagnostic | task suite |
+| `result:task/performance_accepted` | table | task | bool | 1 | ceiling not measured/not required | fixture acceptance | task suite |
+| `result:suite/task` | table | suite | str | task id | never for suite rows | identity | task suite |
+| `result:suite/case` | table | suite | str | case id | never for suite rows | identity | task suite |
+| `result:suite/stage` | table | suite | int | curriculum stage | never for suite rows | identity | task suite |
+| `result:suite/backend` | table | suite | str | backend id | never for suite rows | identity | task suite |
+| `result:suite/fixture` | table | suite | str | fixture kind | never for suite rows | identity | task suite |
+| `result:suite/purpose` | table | suite | str | eval/train | never for suite rows | licensing scope | task suite |
+| `result:suite/eval_only` | table | suite | bool | 1 | never for suite rows | licensing scope | task suite |
+| `result:suite/contract_only` | table | suite | bool | 1 | never for suite rows | coverage scope | task suite |
+| `result:suite/status` | table | suite | str | passed/failed/unavailable | never for suite rows | coverage | task suite |
+| `result:suite/reason` | table | suite | str | reason | no reason | diagnostic | task suite |
+| `result:suite/wall_s` | table | suite | float | s | case not executed | deadline diagnostic | task suite |
+| `result:bench/cold_definition` | table | bench | str | timing definition | cold sampling disabled | diagnostic | environment |
+| `result:bench/*/cold_event_us` | table | bench | float | us | cold sampling disabled/unavailable | diagnostic | environment |
+| `result:bench/*/cold_wall_us` | table | bench | float | us | cold sampling disabled/unavailable | diagnostic | environment |
+| `result:bench/workload/flops` | table | bench | int | algorithmic FLOP | count undefined | diagnostic | task suite |
+| `result:bench/workload/logical_io_bytes` | table | bench | int | logical bytes | count undefined | diagnostic | task suite |
+| `result:bench/workload/flop_convention` | table | bench | str | count definition | not evaluated | diagnostic | task suite |
+| `result:bench/workload/bandwidth_convention` | table | bench | str | count definition | not evaluated | diagnostic | task suite |
+| `result:bench/generated/tflops` | table | bench | float | TFLOP/s | warm timing/count unavailable | diagnostic | task suite |
+| `result:bench/generated/logical_gbytes_per_s` | table | bench | float | logical GB/s | warm timing/count unavailable | diagnostic | task suite |
+| `result:ceiling/available` | table | ceiling | bool | 1 | benchmark disabled | diagnostic | task suite |
+| `result:ceiling/unavailable_reason` | table | ceiling | str | reason | ceiling available | diagnostic | task suite |
+| `result:ceiling/provider` | table | ceiling | str | library id | unavailable | diagnostic | task suite |
+| `result:ceiling/definition` | table | ceiling | str | timing definition | unavailable | diagnostic | task suite |
+| `result:ceiling/warmup_iters` | table | ceiling | int | iterations | unavailable | diagnostic | task suite |
+| `result:ceiling/rounds` | table | ceiling | int | rounds | unavailable | diagnostic | task suite |
+| `result:ceiling/iters_per_round` | table | ceiling | int | iterations | unavailable | diagnostic | task suite |
+| `result:ceiling/seed` | table | ceiling | int | seed | unavailable | diagnostic | task suite |
+| `result:ceiling/dtype` | table | ceiling | str | dtype | unavailable | diagnostic | task suite |
+| `result:ceiling/m` | table | ceiling | int | rows | unavailable | diagnostic | task suite |
+| `result:ceiling/n` | table | ceiling | int | columns | unavailable | diagnostic | task suite |
+| `result:ceiling/k` | table | ceiling | int | reduction elements | unavailable | diagnostic | task suite |
+| `result:ceiling/flops` | table | ceiling | int | FLOP | unavailable | diagnostic | task suite |
+| `result:ceiling/order` | table | ceiling | str | round order | unavailable | diagnostic | task suite |
+| `result:ceiling/*_event_us_median` | table | ceiling | float | us | unavailable | diagnostic | task suite |
+| `result:ceiling/*_tflops` | table | ceiling | float | TFLOP/s | unavailable | diagnostic | task suite |
+| `result:ceiling/cublas_fraction` | table | ceiling | float | ratio | unavailable | diagnostic | task suite |
+| `result:ceiling/device_name` | table | ceiling | str | measured device | unavailable | diagnostic | task suite |
+| `result:ceiling/device_uuid` | table | ceiling | str | device id | unavailable | diagnostic | task suite |
+| `result:ceiling/device_capability` | table | ceiling | str | SM version | unavailable | diagnostic | task suite |
+| `result:ceiling/torch_version` | table | ceiling | str | version | unavailable | diagnostic | task suite |
+| `result:ceiling/cuda_version` | table | ceiling | str | version | unavailable | diagnostic | task suite |
+| `result:ceiling/nvcc_version` | table | ceiling | str | version output | unavailable | diagnostic | task suite |
