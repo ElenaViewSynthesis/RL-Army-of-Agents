@@ -95,6 +95,7 @@ Beyond the stock 1 × 128 `axpby` fixture, `tasks/` holds a progressive curricul
 | 2 | Normalization, fused optimizer and tensor-core GEMM: RMSNorm, LayerNorm + residual + GELU, log-softmax gather, fused AdamW, bf16 GEMM | pass (after the CUDA GEMM build fix and the CuTe DSL C-store fix) |
 | 3 | Packed-reduction kernels against the repository-authored RL contracts: GRPO group normalization, CISPO weight clipping, packed variable-length reduction | pass |
 | 4 | Attention, grouped GEMM, sampling, residual RMSNorm, decode attention and Dense-MoE; INT8/FP8 as contracts only | pass (grouped GEMM is Triton-only by design) |
+| 5 (planned) | EAGLE-4 speculative-decoding kernels: candidate top-k, draft-tree expansion, tree attention, GDN tree conv and recurrence, greedy acceptance | not started; brief in [EAGLE4_kernels_task.md](EAGLE4_kernels_task.md) |
 
 | Stage | Task | Reference solution | H200 result (honest scores, hack fails provenance, wrong fails verification) |
 |---|---|---|---|
@@ -118,9 +119,17 @@ Beyond the stock 1 × 128 `axpby` fixture, `tasks/` holds a progressive curricul
 | 4 | `topk_sampling` | Triton, CUDA | pass (smoke; 32 × 128256 vocabulary, k = 32) |
 | 4 | `fp8_gemm`\*† | none by design | — |
 | 4 | `int8_gemm`\*† | none by design | — |
+| 5 | `eagle_candidate_topk`‡ | not yet written | — |
+| 5 | `eagle_tree_step`‡ | not yet written | — |
+| 5 | `eagle_tree_row_attention`‡ | not yet written | — |
+| 5 | `eagle_tree_verify_attention`‡ | not yet written | — |
+| 5 | `eagle_gdn_tree_conv`‡ | not yet written | — |
+| 5 | `eagle_gdn_tree_recurrence`‡ | not yet written | — |
+| 5 | `eagle_accept_tail`‡ | not yet written | — |
 
 \* Evaluation-only: adapted from GPU MODE reference kernels, whose license does not clear training use (`--purpose train` is refused).
 † Contract only by design: the INT8/FP8 workloads are specified (inputs, reference, checks), but Stage 4 deliberately enables no backend for them; their `ModelNew` raises `unavailable`.
+‡ Planned, not in `tasks/` or the catalog yet: engine-free contracts adapted from the [EAGLE-4 kernels documentation](https://github.com/eagle-hq/EAGLE-4/blob/main/docs/kernels.md). EAGLE-4 is under the "Eagle 4 Source-Available License", so these will be implemented from the documented behaviour only and marked evaluation-only until training use is cleared. See [EAGLE4_kernels_task.md](EAGLE4_kernels_task.md).
 
 Runs: `task-stage1-20261109T004826Z` (stages 0–1, 24/24), `task-stage23-20261109T013032Z` (stages 2–3, 51/54; the 3 failures are the CUDA tensor-core GEMM build, since fixed), `task-stage4-smoke-20261109T020100Z` (stage 4, 33 passed, 3 unavailable for grouped GEMM CUDA), the larger-case batch `…-20261109T021131Z` (all pass except the CuTe DSL GEMM retest), and `task-cute-fix-{smoke,acceptance}-20261109T030234Z` (CuTe DSL GEMM after its fix: 3/3 each). Each run used a frozen source; [VALIDATION.md](VALIDATION.md) lists which files changed afterwards. Under the CPU interpreter, bf16 `tl.dot` kernels fail and `topk_sampling` is too slow, so those tasks rely on the GPU results. "Pass" covers the listed cases on one H200, and kernel attribution is name-based.
 
