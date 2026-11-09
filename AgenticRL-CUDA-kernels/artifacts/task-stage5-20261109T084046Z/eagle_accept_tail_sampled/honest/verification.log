@@ -1,0 +1,57 @@
+Traceback (most recent call last):
+  File "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/.venv/lib/python3.13/site-packages/triton/runtime/interpreter.py", line 1413, in __call__
+    self.fn(**args)
+    ~~~~~~~^^^^^^^^
+  File "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifacts/task-stage5-20261109T084046Z/eagle_accept_tail_sampled/honest/kernels/triton/accept_tail_sampled.py", line 74, in eagle_residual_normalize
+    tl.store(Residual+(batch*(N+1)+row)*V+ix,value,(ix<V)&flag)
+    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/.venv/lib/python3.13/site-packages/triton/runtime/interpreter.py", line 912, in <lambda>
+    new_member = lambda *args, member=member, **kwargs: (member(*args, **
+                                                         ~~~~~~^^^^^^^^^^
+                                                                {k: v
+                                                                ^^^^^
+                                                                 for k, v in kwargs.items()
+                                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+                                                                 if k != "_semantic"}, _semantic=interpreter_semantic))
+                                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/.venv/lib/python3.13/site-packages/triton/language/core.py", line 43, in wrapper
+    return fn(*args, **kwargs)
+  File "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/.venv/lib/python3.13/site-packages/triton/language/core.py", line 2610, in store
+    return _semantic.store(pointer, value, mask, boundary_check, cache_modifier, eviction_policy)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/.venv/lib/python3.13/site-packages/triton/language/semantic.py", line 1249, in store
+    raise ValueError("Mask must have boolean scalar type")
+ValueError: Mask must have boolean scalar type
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    import sys,runpy;sys.path.insert(0,'/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels');import utils;sys.path.insert(0,'/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifacts/task-stage5-20261109T084046Z/eagle_accept_tail_sampled/honest');runpy.run_module('utils.task_verification',run_name='__main__')
+                                                                                                                                                                                                                                                                                            ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen runpy>", line 229, in run_module
+  File "<frozen runpy>", line 88, in _run_code
+  File "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/utils/task_verification.py", line 24, in <module>
+    verification.main(compare=check_equal)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/utils/verification.py", line 108, in main
+    cuda_output = cuda_model(*cuda_inputs)
+  File "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/.venv/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1783, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/.venv/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1794, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifacts/task-stage5-20261109T084046Z/eagle_accept_tail_sampled/honest/model_new.py", line 12, in forward
+    return forward(tokens, parents, target, draft, slots, uniforms, bonus_uniforms)
+  File "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifacts/task-stage5-20261109T084046Z/eagle_accept_tail_sampled/honest/kernels/triton/accept_tail_sampled.py", line 135, in forward
+    eagle_residual_normalize[(b,tiles)](parents,residual,scratch,mass,flags,n,v,child,tiles,triton.next_power_of_2(tiles),1024)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/.venv/lib/python3.13/site-packages/triton/runtime/jit.py", line 374, in <lambda>
+    return lambda *args, **kwargs: self.run(grid=grid, warmup=False, *args, **kwargs)
+                                   ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/.venv/lib/python3.13/site-packages/triton/runtime/interpreter.py", line 1527, in run
+    return GridExecutor(fn, self.arg_names, grid, self.pre_run_hooks)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/.venv/lib/python3.13/site-packages/triton/runtime/interpreter.py", line 1417, in __call__
+    raise InterpreterError(repr(e)) from e
+triton.runtime.errors.InterpreterError: ValueError('Mask must have boolean scalar type')

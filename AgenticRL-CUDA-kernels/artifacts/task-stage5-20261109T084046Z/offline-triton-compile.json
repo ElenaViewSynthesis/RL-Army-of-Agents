@@ -1,0 +1,5930 @@
+[
+  {
+    "task": "eagle_candidate_topk",
+    "case": "smoke",
+    "source_sha256": "ea4183be71f7baf328eba68c19c162db027d44e403e4458a909e21e524d04420",
+    "kernel": "eagle_vocab_score",
+    "signature": {
+      "X": "*bf16",
+      "W": "*bf16",
+      "Scores": "*fp32"
+    },
+    "constants": {
+      "H": 4096,
+      "V": 32000,
+      "D": 4096
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 16,
+    "ptx_sha256": "93cf41092d5f36e2e637ac764e7226345a3c697cf9145f04e7b54c0540447c88"
+  },
+  {
+    "task": "eagle_candidate_topk",
+    "case": "smoke",
+    "source_sha256": "ea4183be71f7baf328eba68c19c162db027d44e403e4458a909e21e524d04420",
+    "kernel": "eagle_shard_select",
+    "signature": {
+      "Scores": "*fp32",
+      "Ids": "*i32",
+      "Values": "*fp32"
+    },
+    "constants": {
+      "V": 32000,
+      "K": 8,
+      "SHARDS": 32,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 16,
+    "ptx_sha256": "565861d4befb2c3d747a0891b9ea604ce2bf1409d038a4115b4f928f10d7859c"
+  },
+  {
+    "task": "eagle_candidate_topk",
+    "case": "smoke",
+    "source_sha256": "ea4183be71f7baf328eba68c19c162db027d44e403e4458a909e21e524d04420",
+    "kernel": "eagle_candidate_merge",
+    "signature": {
+      "Ids": "*i32",
+      "Values": "*fp32",
+      "Out": "*i64"
+    },
+    "constants": {
+      "L": 256,
+      "K": 8,
+      "BLOCK": 256
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 16,
+    "ptx_sha256": "6d8d14f50b04fbf67f11769cb642d55b94a23b5c7d134e6390b93acff7d13de2"
+  },
+  {
+    "task": "eagle_candidate_topk",
+    "case": "smoke",
+    "source_sha256": "ea4183be71f7baf328eba68c19c162db027d44e403e4458a909e21e524d04420",
+    "kernel": "eagle_candidate_rescore",
+    "signature": {
+      "X": "*bf16",
+      "W": "*bf16",
+      "Ids": "*i64",
+      "Out": "*fp32"
+    },
+    "constants": {
+      "H": 4096,
+      "K": 8,
+      "D": 4096
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 16,
+    "ptx_sha256": "ebe653c0df2386071a11ed7b1eaff2baf7df17be3a9d67ca68e82a1679f8eee2"
+  },
+  {
+    "task": "eagle_candidate_topk",
+    "case": "large",
+    "source_sha256": "ea4183be71f7baf328eba68c19c162db027d44e403e4458a909e21e524d04420",
+    "kernel": "eagle_vocab_score",
+    "signature": {
+      "X": "*bf16",
+      "W": "*bf16",
+      "Scores": "*fp32"
+    },
+    "constants": {
+      "H": 4096,
+      "V": 151936,
+      "D": 4096
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 16,
+    "ptx_sha256": "3897477210dbd35eee868b064f27862712e2a17c5b195391bddff3fc9229e15d"
+  },
+  {
+    "task": "eagle_candidate_topk",
+    "case": "large",
+    "source_sha256": "ea4183be71f7baf328eba68c19c162db027d44e403e4458a909e21e524d04420",
+    "kernel": "eagle_shard_select",
+    "signature": {
+      "Scores": "*fp32",
+      "Ids": "*i32",
+      "Values": "*fp32"
+    },
+    "constants": {
+      "V": 151936,
+      "K": 16,
+      "SHARDS": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 16,
+    "ptx_sha256": "a92cb99e13313e39bc97e7dd93f02692d8c1b7813cf1a46efc9ffd3c45fe4fef"
+  },
+  {
+    "task": "eagle_candidate_topk",
+    "case": "large",
+    "source_sha256": "ea4183be71f7baf328eba68c19c162db027d44e403e4458a909e21e524d04420",
+    "kernel": "eagle_candidate_merge",
+    "signature": {
+      "Ids": "*i32",
+      "Values": "*fp32",
+      "Out": "*i64"
+    },
+    "constants": {
+      "L": 2384,
+      "K": 16,
+      "BLOCK": 4096
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 16,
+    "ptx_sha256": "83cc38fdfb3685f0fc69ba0740ce07b4dd579c9a75b5286ec67c61f8d5ef91df"
+  },
+  {
+    "task": "eagle_candidate_topk",
+    "case": "large",
+    "source_sha256": "ea4183be71f7baf328eba68c19c162db027d44e403e4458a909e21e524d04420",
+    "kernel": "eagle_candidate_rescore",
+    "signature": {
+      "X": "*bf16",
+      "W": "*bf16",
+      "Ids": "*i64",
+      "Out": "*fp32"
+    },
+    "constants": {
+      "H": 4096,
+      "K": 16,
+      "D": 4096
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 16,
+    "ptx_sha256": "76ca124030b6f1735f0a2b27b751c479672af7953b4d94423e997bc8aba5790f"
+  },
+  {
+    "task": "eagle_tree_step",
+    "case": "smoke",
+    "source_sha256": "9cff0e2341ea6914ac0345b3b9c1cd19a239f5f434d5565cd727a35d2d2406c2",
+    "kernel": "eagle_frontier_select",
+    "signature": {
+      "Scores": "*fp32",
+      "Children": "*fp32",
+      "Parents": "*i32",
+      "Out": "*fp32",
+      "ParentIds": "*i32",
+      "Paths": "*i32"
+    },
+    "constants": {
+      "N": 1,
+      "K": 4,
+      "BLOCK": 4
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "a79cf895b67d5793ac38a5770fd9630428275cdd49e990e26c4ac25369df8ab4"
+  },
+  {
+    "task": "eagle_tree_step",
+    "case": "large",
+    "source_sha256": "9cff0e2341ea6914ac0345b3b9c1cd19a239f5f434d5565cd727a35d2d2406c2",
+    "kernel": "eagle_frontier_select",
+    "signature": {
+      "Scores": "*fp32",
+      "Children": "*fp32",
+      "Parents": "*i32",
+      "Out": "*fp32",
+      "ParentIds": "*i32",
+      "Paths": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "K": 8,
+      "BLOCK": 512
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 16,
+    "ptx_sha256": "7f2c794c740743d4f5cd3c8277952a1da8926be7264efacad10e8673ab781088"
+  },
+  {
+    "task": "eagle_tree_row_attention",
+    "case": "smoke",
+    "source_sha256": "81bf38b0c20cb67f879d460a2156537d190f2c6c51a2863a399090f0876ec144",
+    "kernel": "eagle_ancestor_table",
+    "signature": {
+      "Parents": "*i32",
+      "Paths": "*i32"
+    },
+    "constants": {
+      "N": 1,
+      "BLOCK": 1
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "55733482b93b1a14050f42d795012bc480bfa4bb05758d3f5e85d95a19fcab9f"
+  },
+  {
+    "task": "eagle_tree_row_attention",
+    "case": "smoke",
+    "source_sha256": "81bf38b0c20cb67f879d460a2156537d190f2c6c51a2863a399090f0876ec144",
+    "kernel": "eagle_attention_splits",
+    "signature": {
+      "Q": "*bf16",
+      "K": "*bf16",
+      "V": "*bf16",
+      "TK": "*bf16",
+      "TV": "*bf16",
+      "Paths": "*i32",
+      "Part": "*fp32",
+      "Maximum": "*fp32",
+      "Denom": "*fp32"
+    },
+    "constants": {
+      "N": 1,
+      "S": 512,
+      "HQ": 8,
+      "HK": 8,
+      "D": 64,
+      "WINDOW": 512,
+      "SPLITS": 5,
+      "DEPTH": 1,
+      "BLOCK": 128
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 512,
+    "ptx_sha256": "f86792dec8ed823d1dff010a1e0f8caacdf1b921a1b393a4bf570c23637f3027"
+  },
+  {
+    "task": "eagle_tree_row_attention",
+    "case": "smoke",
+    "source_sha256": "81bf38b0c20cb67f879d460a2156537d190f2c6c51a2863a399090f0876ec144",
+    "kernel": "eagle_attention_merge",
+    "signature": {
+      "Part": "*fp32",
+      "Maximum": "*fp32",
+      "Denom": "*fp32",
+      "Out": "*bf16"
+    },
+    "constants": {
+      "N": 1,
+      "D": 64,
+      "SPLITS": 5,
+      "BLOCK": 8
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 512,
+    "ptx_sha256": "9642503878c32ea8af17e2ba8211733f17b5212967f8b5b3360ee98a10626a67"
+  },
+  {
+    "task": "eagle_tree_row_attention",
+    "case": "large",
+    "source_sha256": "81bf38b0c20cb67f879d460a2156537d190f2c6c51a2863a399090f0876ec144",
+    "kernel": "eagle_ancestor_table",
+    "signature": {
+      "Parents": "*i32",
+      "Paths": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "BLOCK": 64
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "6dd8c089b332a98a7eebc267a69b659e1f6ef240a44edcc2d70afb35a5f3e222"
+  },
+  {
+    "task": "eagle_tree_row_attention",
+    "case": "large",
+    "source_sha256": "81bf38b0c20cb67f879d460a2156537d190f2c6c51a2863a399090f0876ec144",
+    "kernel": "eagle_attention_splits",
+    "signature": {
+      "Q": "*bf16",
+      "K": "*bf16",
+      "V": "*bf16",
+      "TK": "*bf16",
+      "TV": "*bf16",
+      "Paths": "*i32",
+      "Part": "*fp32",
+      "Maximum": "*fp32",
+      "Denom": "*fp32"
+    },
+    "constants": {
+      "N": 64,
+      "S": 32768,
+      "HQ": 64,
+      "HK": 8,
+      "D": 128,
+      "WINDOW": 4096,
+      "SPLITS": 33,
+      "DEPTH": 64,
+      "BLOCK": 128
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 256,
+    "ptx_sha256": "143406b41efa3d7a6e176444c677bf49b551c12d34e06e8b91fe03405115220c"
+  },
+  {
+    "task": "eagle_tree_row_attention",
+    "case": "large",
+    "source_sha256": "81bf38b0c20cb67f879d460a2156537d190f2c6c51a2863a399090f0876ec144",
+    "kernel": "eagle_attention_merge",
+    "signature": {
+      "Part": "*fp32",
+      "Maximum": "*fp32",
+      "Denom": "*fp32",
+      "Out": "*bf16"
+    },
+    "constants": {
+      "N": 64,
+      "D": 128,
+      "SPLITS": 33,
+      "BLOCK": 64
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 8,
+    "ptx_sha256": "156b9dcf90e4e19f6562117a51847c0c93624291b989422653c46c90740ab115"
+  },
+  {
+    "task": "eagle_tree_verify_attention",
+    "case": "large",
+    "source_sha256": "81bf38b0c20cb67f879d460a2156537d190f2c6c51a2863a399090f0876ec144",
+    "kernel": "eagle_attention_splits",
+    "signature": {
+      "Q": "*bf16",
+      "K": "*bf16",
+      "V": "*bf16",
+      "TK": "*bf16",
+      "TV": "*bf16",
+      "Paths": "*i32",
+      "Part": "*fp32",
+      "Maximum": "*fp32",
+      "Denom": "*fp32"
+    },
+    "constants": {
+      "N": 64,
+      "S": 32768,
+      "HQ": 64,
+      "HK": 8,
+      "D": 128,
+      "WINDOW": 32768,
+      "SPLITS": 257,
+      "DEPTH": 64,
+      "BLOCK": 128
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 256,
+    "ptx_sha256": "48633d4fbac7c2599e12498a3a6721214d5f9407da94e90a55471d5b24ce6d3c"
+  },
+  {
+    "task": "eagle_tree_verify_attention",
+    "case": "large",
+    "source_sha256": "81bf38b0c20cb67f879d460a2156537d190f2c6c51a2863a399090f0876ec144",
+    "kernel": "eagle_attention_merge",
+    "signature": {
+      "Part": "*fp32",
+      "Maximum": "*fp32",
+      "Denom": "*fp32",
+      "Out": "*bf16"
+    },
+    "constants": {
+      "N": 64,
+      "D": 128,
+      "SPLITS": 257,
+      "BLOCK": 512
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 512,
+    "ptx_sha256": "f049e32b609bd4d631d51ffcfe6b25b97b059d4891a33adbf3094bd23ed861c9"
+  },
+  {
+    "task": "eagle_gdn_tree_conv",
+    "case": "smoke",
+    "source_sha256": "2a6cf69e7878a0d611829cb459073f5a18679d5b93c9b2ce2106be13142d9423",
+    "kernel": "eagle_conv_windows",
+    "signature": {
+      "Parents": "*i32",
+      "Windows": "*i32"
+    },
+    "constants": {
+      "N": 1
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "bc1f095ee232bf4de82f0933f299617cb665c1d4343d6d653200d49a4560022d"
+  },
+  {
+    "task": "eagle_gdn_tree_conv",
+    "case": "smoke",
+    "source_sha256": "2a6cf69e7878a0d611829cb459073f5a18679d5b93c9b2ce2106be13142d9423",
+    "kernel": "eagle_causal_conv",
+    "signature": {
+      "X": "*bf16",
+      "History": "*bf16",
+      "W": "*fp32",
+      "Bias": "*fp32",
+      "Windows": "*i32",
+      "Out": "*fp32"
+    },
+    "constants": {
+      "N": 1,
+      "C": 192,
+      "MAMBA": false,
+      "BLOCK": 128
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "536e80629035ce47ce59083214c08ff4c99a70ce163ab0772bc3adc62a384697"
+  },
+  {
+    "task": "eagle_gdn_tree_conv",
+    "case": "large",
+    "source_sha256": "2a6cf69e7878a0d611829cb459073f5a18679d5b93c9b2ce2106be13142d9423",
+    "kernel": "eagle_conv_windows",
+    "signature": {
+      "Parents": "*i32",
+      "Windows": "*i32"
+    },
+    "constants": {
+      "N": 64
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "4eee6e4d88c0371b3f63c8700be5fc40de77cda7059d6e4db103ff4f1bc72e34"
+  },
+  {
+    "task": "eagle_gdn_tree_conv",
+    "case": "large",
+    "source_sha256": "2a6cf69e7878a0d611829cb459073f5a18679d5b93c9b2ce2106be13142d9423",
+    "kernel": "eagle_causal_conv",
+    "signature": {
+      "X": "*bf16",
+      "History": "*bf16",
+      "W": "*fp32",
+      "Bias": "*fp32",
+      "Windows": "*i32",
+      "Out": "*fp32"
+    },
+    "constants": {
+      "N": 64,
+      "C": 384,
+      "MAMBA": false,
+      "BLOCK": 128
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "44437d4aa70705e06d1ce8feaec255826fe418427d93af911c9407123b5c99d5"
+  },
+  {
+    "task": "eagle_mamba2_tree_conv",
+    "case": "smoke",
+    "source_sha256": "2a6cf69e7878a0d611829cb459073f5a18679d5b93c9b2ce2106be13142d9423",
+    "kernel": "eagle_causal_conv",
+    "signature": {
+      "X": "*bf16",
+      "History": "*bf16",
+      "W": "*fp32",
+      "Bias": "*fp32",
+      "Windows": "*i32",
+      "Out": "*fp32"
+    },
+    "constants": {
+      "N": 1,
+      "C": 192,
+      "MAMBA": true,
+      "BLOCK": 128
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "22eaefb901b189c7872793b6888cd0abd4dd904584713809848a48ca4a1e3a94"
+  },
+  {
+    "task": "eagle_mamba2_tree_conv",
+    "case": "large",
+    "source_sha256": "2a6cf69e7878a0d611829cb459073f5a18679d5b93c9b2ce2106be13142d9423",
+    "kernel": "eagle_causal_conv",
+    "signature": {
+      "X": "*bf16",
+      "History": "*bf16",
+      "W": "*fp32",
+      "Bias": "*fp32",
+      "Windows": "*i32",
+      "Out": "*fp32"
+    },
+    "constants": {
+      "N": 64,
+      "C": 384,
+      "MAMBA": true,
+      "BLOCK": 128
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "6fc9c1eb071fe86a7819b254fa81508e4a332ac4ef0ccc96ca1a9d6ef97f9b03"
+  },
+  {
+    "task": "eagle_gdn_tree_recurrence",
+    "case": "smoke",
+    "source_sha256": "ff6d8a3305b55701f11171e66e005b465a6c8b21c6e2f7f6d5b350025825f8a8",
+    "kernel": "eagle_gdn_walk",
+    "signature": {
+      "Q": "*fp32",
+      "K": "*fp32",
+      "V": "*fp32",
+      "G": "*fp32",
+      "Initial": "*fp32",
+      "Parents": "*i32",
+      "States": "*fp32",
+      "Out": "*fp32"
+    },
+    "constants": {
+      "N": 1,
+      "H": 1,
+      "DK": 64,
+      "DV": 64,
+      "TILE": 16
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 256,
+    "ptx_sha256": "c2da57558228978386177d72f5cd6231dbd920afaeaf32c47988808561bdbdc5"
+  },
+  {
+    "task": "eagle_gdn_tree_recurrence",
+    "case": "smoke",
+    "source_sha256": "ff6d8a3305b55701f11171e66e005b465a6c8b21c6e2f7f6d5b350025825f8a8",
+    "kernel": "eagle_chain_firstchild",
+    "signature": {
+      "Parents": "*i32",
+      "First": "*i32"
+    },
+    "constants": {
+      "N": 1,
+      "BLOCK": 1
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "900cff6d582dfce2339c190dd295ef0abf1cb8670c55785b5f64b5d27a6a57cf"
+  },
+  {
+    "task": "eagle_gdn_tree_recurrence",
+    "case": "smoke",
+    "source_sha256": "ff6d8a3305b55701f11171e66e005b465a6c8b21c6e2f7f6d5b350025825f8a8",
+    "kernel": "eagle_chain_owner",
+    "signature": {
+      "First": "*i32",
+      "Owner": "*i32"
+    },
+    "constants": {
+      "N": 1
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "b0abf77fc674c9688800e7f2116508070e1b9fb0422b75d42bfc9ad00db53ad0"
+  },
+  {
+    "task": "eagle_gdn_tree_recurrence",
+    "case": "smoke",
+    "source_sha256": "ff6d8a3305b55701f11171e66e005b465a6c8b21c6e2f7f6d5b350025825f8a8",
+    "kernel": "eagle_gdn_chain_replay",
+    "signature": {
+      "Q": "*fp32",
+      "K": "*fp32",
+      "V": "*fp32",
+      "G": "*fp32",
+      "Initial": "*fp32",
+      "Paths": "*i32",
+      "First": "*i32",
+      "Owner": "*i32",
+      "States": "*fp32",
+      "Out": "*fp32"
+    },
+    "constants": {
+      "N": 1,
+      "H": 1,
+      "DK": 64,
+      "DV": 64,
+      "TILE": 16
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 256,
+    "ptx_sha256": "1697ef6dd5e88b842b30f01fba3cfe4f96710d0d7a65f0850f19876248a02e25"
+  },
+  {
+    "task": "eagle_gdn_tree_recurrence",
+    "case": "large",
+    "source_sha256": "ff6d8a3305b55701f11171e66e005b465a6c8b21c6e2f7f6d5b350025825f8a8",
+    "kernel": "eagle_gdn_walk",
+    "signature": {
+      "Q": "*fp32",
+      "K": "*fp32",
+      "V": "*fp32",
+      "G": "*fp32",
+      "Initial": "*fp32",
+      "Parents": "*i32",
+      "States": "*fp32",
+      "Out": "*fp32"
+    },
+    "constants": {
+      "N": 64,
+      "H": 4,
+      "DK": 128,
+      "DV": 128,
+      "TILE": 16
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 512,
+    "ptx_sha256": "9398acc95aa558a2310f73e376361e18fdfec24712dbd5a65cb360d010ba1264"
+  },
+  {
+    "task": "eagle_gdn_tree_recurrence",
+    "case": "large",
+    "source_sha256": "ff6d8a3305b55701f11171e66e005b465a6c8b21c6e2f7f6d5b350025825f8a8",
+    "kernel": "eagle_chain_firstchild",
+    "signature": {
+      "Parents": "*i32",
+      "First": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "BLOCK": 64
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 8,
+    "ptx_sha256": "34c178715d80366f57be2b9a86a2a00d0d5f3c90d6542427f2f9ecd7efb5969a"
+  },
+  {
+    "task": "eagle_gdn_tree_recurrence",
+    "case": "large",
+    "source_sha256": "ff6d8a3305b55701f11171e66e005b465a6c8b21c6e2f7f6d5b350025825f8a8",
+    "kernel": "eagle_chain_owner",
+    "signature": {
+      "First": "*i32",
+      "Owner": "*i32"
+    },
+    "constants": {
+      "N": 64
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "5bca7692b4e5c0a5bbe8bfc62720d9cb4eb7c86d795ba202472245a5480ea809"
+  },
+  {
+    "task": "eagle_gdn_tree_recurrence",
+    "case": "large",
+    "source_sha256": "ff6d8a3305b55701f11171e66e005b465a6c8b21c6e2f7f6d5b350025825f8a8",
+    "kernel": "eagle_gdn_chain_replay",
+    "signature": {
+      "Q": "*fp32",
+      "K": "*fp32",
+      "V": "*fp32",
+      "G": "*fp32",
+      "Initial": "*fp32",
+      "Paths": "*i32",
+      "First": "*i32",
+      "Owner": "*i32",
+      "States": "*fp32",
+      "Out": "*fp32"
+    },
+    "constants": {
+      "N": 64,
+      "H": 4,
+      "DK": 128,
+      "DV": 128,
+      "TILE": 16
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 512,
+    "ptx_sha256": "b3fc92be66572627a22222bd6c942b9a0a574f924eada8302334e7c6057a9a47"
+  },
+  {
+    "task": "eagle_accept_tail",
+    "case": "smoke",
+    "source_sha256": "6803c3707b2e5a230adadc2169ca746d875a57062b51b153a313415e140cc25e",
+    "kernel": "eagle_greedy_walk",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Targets": "*i32",
+      "Slots": "*i32",
+      "Lengths": "*i32",
+      "Paths": "*i32",
+      "Bonus": "*i32",
+      "Compact": "*i32"
+    },
+    "constants": {
+      "N": 1,
+      "BLOCK": 1
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "3a71ff56264845b382679c88ea3ba256cce5fc8d0c194c466a784d0e4a3c67c1"
+  },
+  {
+    "task": "eagle_accept_tail",
+    "case": "large",
+    "source_sha256": "6803c3707b2e5a230adadc2169ca746d875a57062b51b153a313415e140cc25e",
+    "kernel": "eagle_greedy_walk",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Targets": "*i32",
+      "Slots": "*i32",
+      "Lengths": "*i32",
+      "Paths": "*i32",
+      "Bonus": "*i32",
+      "Compact": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "BLOCK": 64
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 8,
+    "ptx_sha256": "6b04799b362d4a7684ba58eae7c2e1daec063ad8b215cee20a0847453e342631"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "smoke",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_sample_init",
+    "signature": {
+      "Target": "*fp32",
+      "Residual": "*fp32",
+      "Winner": "*i32",
+      "Bonuses": "*i32"
+    },
+    "constants": {
+      "N": 1,
+      "V": 32000,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "60c5493974667189e3f29fa712ce95e4c09d3d4e75132c451d2bfb89fceed55a"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "smoke",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 1,
+      "V": 32000,
+      "CHILD": 0
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "3db42fd82fc9074eca62664a160fcacb7969cb21cfdb18110024b118d807f101"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "smoke",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 1,
+      "V": 32000,
+      "CHILD": 0,
+      "TILES": 32,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "bdce04bd6d3cc6b305adffbe48f9296c0f47dd53a690cb7cc9a8a67642f416f9"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "smoke",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 1,
+      "V": 32000,
+      "CHILD": 0,
+      "TILES": 32,
+      "MASSBLOCK": 32,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "fd7a6d82097e621927a4f5c5b927f7cdc85a42e22d3efefa390a3be9651b0e51"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "smoke",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_probability_masses",
+    "signature": {
+      "Residual": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "V": 32000,
+      "TILES": 32,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "32a406084616d2e9ef8fa1e327dd964c5e0fb0d6dc9e62872c7446a974d01711"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "smoke",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_bonus_sample",
+    "signature": {
+      "Residual": "*fp32",
+      "Mass": "*fp64",
+      "Uniforms": "*fp32",
+      "Bonuses": "*i32"
+    },
+    "constants": {
+      "V": 32000,
+      "TILES": 32,
+      "MASSBLOCK": 32,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 256,
+    "ptx_sha256": "6af6e6922c79455284c25178f32ad30c149e71c2a23f4813862f1b46773e33ca"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "smoke",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_sampled_walk",
+    "signature": {
+      "Parents": "*i32",
+      "Slots": "*i32",
+      "Winner": "*i32",
+      "Bonuses": "*i32",
+      "Residual": "*fp32",
+      "Lengths": "*i32",
+      "Paths": "*i32",
+      "Bonus": "*i32",
+      "Compact": "*i32",
+      "Probability": "*fp32"
+    },
+    "constants": {
+      "N": 1,
+      "V": 32000,
+      "BLOCK": 1
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "5130f3de85772474810e7f601b2d07ef83f6bf6fe8b0291bd6c2ca2f4671325e"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_sample_init",
+    "signature": {
+      "Target": "*fp32",
+      "Residual": "*fp32",
+      "Winner": "*i32",
+      "Bonuses": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "6ca12aad3e11a540ddf481a959d70ba76f90c8523a624016db4ad144e57d7d78"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 0
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "edc6f3345e0b10a8b93ba1b5a903f050fcb949c8cc591066db8491f7b4b8535e"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 0,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "b5a6a7f086bb50800d4eda2e993386ba82bd48c846f246602cc2fbe80e21eaf6"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 0,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "9f5a684a537945630abd1f53ecbe42e74c5acc856a91a9472fd48597d51fedb5"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 1
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "4cd0ff0c8fd47e196ef61514ad80e349f7737515b636987dd6dff26fdab6c491"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 1,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "d2581867dfc7019f69d5dfffbcaf2284c9bfd97c844b25f804393c7a88b07297"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 1,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "101f8d390acd6ade9fcf7de3cde5f498948620a134d45639877845464bb001a9"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 2
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "f90b69307a4fe2ba0ef940e1ad67e42cb9b6f8d4a62526f974d1f4782109b3c5"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 2,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "4b125592ef377a0fe893144f3f2f562f92d57f26be24f6a3c7f89b2065e6da88"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 2,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "148d9a3f7ddd6fc73970aa8b274de0604bb0bc1e71779aba97924c3e2af5bfb9"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 3
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "63c4e8f0f3baf6616cec92cf831224eace31bec5478987726c07d9669d2382bd"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 3,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "349f916f685b6272cfcfd320d60c5c3f7af047dba5941b42b93c6cba24d09b3e"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 3,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "70e44ba45bf92edb755a69ca875b36c82a2a0f79046abb0d4ac7b84c10bf2642"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 4
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "2c826a40ca29271e4d7a008849abd1d4a8e501cb0113dedac28d48b9a62c1556"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 4,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "08279b342cbe71bb3e59cac3a9565229f08ef91295380e02dd9d8ecd6c486952"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 4,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "92396d636ee7d458b9dc119283033460e8ccbb6992f640db0d3fa017640f9165"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 5
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "2586d50623d75c0e6e0c05d0defce61f01557b5c696db77091bfe60d7c24525a"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 5,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "8f0c8b21a53df7b17ae85358c271836c11111fe23e59f13d774a795bb477e819"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 5,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "d67fc50b082e68b04de16b8ffd8b0ad93033e21de3f32754add0148b83e6e918"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 6
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "521d5d84613fd9fbcf53883b5783d9c26831ac8e228d94c7b0b35827f1ba60f4"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 6,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "a299ab5be77275d2becdb9dea8d995c478bd6ba1e175693f8cfdeec2f451f448"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 6,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "7a38277d0b132b171dbef0a5df3fdf7bec3a9fe1cd1927c45d9d920fdc2ed0a9"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 7
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "7e9d92140d08faa73c55741e3e0227624413e63f8ef2fe57cb4a6ca9f7234c5c"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 7,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "6bdea5e5b0d0447d59827182f4ce139874b92a8ddb71418508097809edccc28d"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 7,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "3e5f3b01d06f31d905097d631eb06a570e07753871e49f2553b40c87cbe233b9"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 8
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "f416f215cb98509afdf5c3574aed7fa2a6713b8aa553673abd78ffd0e91f12ad"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 8,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "0b6319cdfedee3e608fc4b7f2a09bf8df3e11ebcc3a316c01bf208b5e7891214"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 8,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "c5ee1673509ee97cb74bc9dd22f1cc429489606ff9ff34a6608388701e3928b9"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 9
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "778c1b59c3eea2fa1aad4ee488b771942fd2fc936573dd8b312f56bdb0b6a113"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 9,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "94b21da31afdef394e975723f495e1cbbcd0402ce44222d2bac55984e941767b"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 9,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "bdf172616b3e37be639398dd874d525a743f53143e3178d40ef8ccb7c82173fa"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 10
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "85f2b00f85f2b02a6f6d1c420a5148298b21e6c4ee076ff42e4ca900e324c037"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 10,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "69bb6249cc959ae4bff43b89445612e2fc028fbe9baa257a905752011cb92287"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 10,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "99cecbbd97a3467a036524d84bc06d3a06ecc22b8c45d12df711a1fc7b7de276"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 11
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "b0cd3021ea1d8bbc1c04d0109e6da6789907d788d56949b52e9f6fbd65bc50f0"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 11,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "52990689c1bd303ea81dd388ea7fcaee057e57b44b774c84e422d645ae1c8d5a"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 11,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "2be6571a5b2693514403a932a27f082a195cbe0a53b574287c88833d28446806"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 12
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "e2ec1d013ce1483fc9a36ff833baf218be99f48a71c4ad756ec14e2567eac5a4"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 12,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "1035800cc377fa8b48020518f88eabd0c9fbf8bb0fe3c83da61a34711da22ebb"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 12,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "582dac28aaf684ebd18947796fc78200cc569a11954068d867f87e35e081d8bc"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 13
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "473b1ba9c2343f961d8f8cbd2fad623584946ab55a5e2ed292cdf2ac0c2519d4"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 13,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "acaea34eb1ae87f9011c09a1e36ec103c08e4eb06496c749f089bd01d0a9f602"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 13,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "b9b5b2e264bb0981c202e425320c2da7005e44123865e66b20d5ed0cd83b4e32"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 14
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "49d086ea4c0efcd3211f96da1efa18a6a969c5efb0f98dbf3b12777cd44e0b8f"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 14,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "6f7b4600c4f554d967453f01b9fdadae9407d0d15293a068f6332d72ccf72e68"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 14,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "f8abf542de5faec342ec22efe1141f06b3c2cb3aafa48c179c8613f1413c83cb"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 15
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "4c74f4d36151f49d67034814b382226a71bbc99b42f898ae70108ddd0256d3af"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 15,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "3436aec5a7aa348b3b49a7b9fbe935be9262477869db65a85d74490eb4c24007"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 15,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "33d877a86576f45c6b919c42a586c93f914d6d7700758893b5b2a63530485bf4"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 16
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "b6936d0d3a37c72b93c89eec147e3f0d0aecb23fa8b5ba2bbbf4e72472da837e"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 16,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "db73fdef18d223915f57b3656110e89ce815af299d4442e321075fe1786f26ab"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 16,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "d4d97d187d9726125767591e0fa53542aa1cfb01e14d44e5ad615376cec90c43"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 17
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "32a7a770a7b911cdcd55b1f6172db8e4750feb36345e46dabc9da9affd555a0e"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 17,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "1a2c79cf0c26cd09c46c94a7df6eb169f5cc30b57b3f46e205eb5144840690b2"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 17,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "0fb0af434dced09cf1b93c950afe11465a2d0ab5d10b26c9b63bfdc5bf0c9a41"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 18
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "6efc7924da4472218c8d07de1c3e9a4648b5ed1059952bc5a38d9437495f1b70"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 18,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "2078fa83520c9ca591fcd38457e0c02c0b8690fb0389eb1a498f1dc6846b96b3"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 18,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "b5145ccca34724e8e4215e0b8dc0045934bf6ac20b261439576c36841c07de9c"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 19
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "622d1c8106740874684ae0aac1c95c2725bbb91c420a9fb33f67ce40d944a84e"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 19,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "48e14697317cbf7ab084518c1ea93737def97cb78511367c0501f21c3bd08fa3"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 19,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "70a9eac16955ad4038a87309ee7332ff37565794110cbea83b8b023af0a03aa2"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 20
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "8911272fa3379fff7669a6573a9e1e17a2a645edf0105c9602583861e934877a"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 20,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "42ae9241a42fc935fa5ceaa1f275c937ff06ff3451984831902af770af86589f"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 20,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "6c169f3dbc7c41130d9fe8e82350e755617f429c246f775f31865786302a4c3a"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 21
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "94755889513b735ae24c6eeefea905b95aecc737df0444b09314b5ad579ffa8f"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 21,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "07838b20538c2a55397711eb1084778399c413272f9ac2ebe4f24fafb90878e6"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 21,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "49f5bf34531ff309f57bee6205575d47e8469374e52e331dffe8b5d8831507fe"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 22
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "ed86bd43709bf633ece4abf13381cbb90f7d38c3e6ebb086ac612bedc105b33d"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 22,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "ba44e95c6d2cae6b38ba98052e06b3c848b26a38c0cc6fd64fa3ed66d295a11c"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 22,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "65e9535d26fe55aade19836edc0b1fbadc1c4088da2f3d9b65636f3abc1b76b7"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 23
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "f685c15090105c75d989f15ab5fc38b3f323fc9c87be2f353fd4fdc7157acf92"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 23,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "1861300a421bc51f13e46cbde29841422dac244865f39f60f340d6ab124043cb"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 23,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "d3c247977fa60a06cedb82aba3c3bd7345b1750602c74a8da31a45649358121d"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 24
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "9fa788bc00ac4b5f15c7da7a2b9f46c5933c889c8a83640b330d035c1889b8c7"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 24,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "796e6779ce532bf24158d043e1d41196d59f6aa0862beb0a4695aa28849fdf17"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 24,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "8a4507ff0554e0309bae898afce6be8b4b7c21c18f3d333ae56838b1c8387c43"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 25
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "d6d7e793a3cd5d725a57bc4c46e91ca9bc2c02c20943ccfbe4cf978deb8125b5"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 25,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "72e1abdff9ad9e0c8e03ebec3333edbbd0c438d4fdd3730d1f21f40fec7ea20a"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 25,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "9a30e733156dc2752de36677721691658fa177241800fc5c8f494a9fdfd8ba64"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 26
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "e369e5c7374e6a023897dd3e56f209ba3770b8785afee00f3be32bcfbbb43f82"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 26,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "660409aba0a0938057543af1f1295148b8fc1719c8077c05899bfd4aabd6bbff"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 26,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "36e3cc892a6dc33caefee811505c437b29e1897bdf034767d98e118c5f5e4c2d"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 27
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "4a9ed584761007e4a8f7d81724c7e78cd3d390d0d83a580a2ccb7f4b987d7a2d"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 27,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "478e58feb2c91a3d91c0234e2fcf962caf5a280e63928fb5b3eb4ce742391783"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 27,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "fef4dcfcb0c0af2b023458f93005f35e3fe3ead3c162d1c5250a3527ed316ab3"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 28
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "dfb4a2248312f70b7f1916ca31cf61eccd1f4823dd6c41e8e352d658e0a37c96"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 28,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "405f6d8d5900d51507caf228eb0a8e9a4fcd3ba44a632f2074ae6fc0803261c6"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 28,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "9fad293bd2358b6c20117d759ee79e1cd40bcc7150242ed66cf32966208ed61a"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 29
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "c7b07cdbd965e0c2310fc01a318491f0a9034d2828f70e9daf7a2183737d74cd"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 29,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "8b518c65fe1a8a8af424307242d8b0e9cff3162dff42a5cbc515cf7eb775146f"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 29,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "db6e7cd03963e85130e1732aba555dabe9db8570e8ffd1e84c4f8257d5b61205"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 30
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "5da0325363251def7c4ae8084b738bf8d3dba818c29edd03c1024daf4b589491"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 30,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "b694e71d00d2dd3d2c7876b8c907e008775d2e468c7e0b3315eff921c29c5894"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 30,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "4ab60e34a22b834dcbc1ef50d9adab519997f158d291716ce7b9f957e60938e0"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 31
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "9f020ac40ecaa10b747b50b4345ed9a2db69f3037b82a50131933762e2793841"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 31,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "00b8cec34d8af4f0e896d1988b3b9170657ced2bd5a7fd97e36e04cd2bfa2689"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 31,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "2307b2725465d4644b4b61088ee0fea24b797896312bf3e891395024e593ceaf"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 32
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "94d6bef8e076b421049e28aaaa95b00a653034c4695a19c1df12453e266a03a6"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 32,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "ad7c53f46ea77594aa371553b85aea237f166fe3840bbdf44f9f5999eb51160a"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 32,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "3a82b4845e270b3d2bd4866d0ea4dde3cd9dbb3f889e529949989979f2c7555e"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 33
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "f0ddba1d58842c4fb430dbf627fe7671549ad57d804179f014f38dc95cc86e12"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 33,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "c90e4b5f25d3b7530be76a0476b57cd22ca4aab54eea7b3bd8674c2830aa7837"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 33,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "a15539f0f7c58fbab0501ca4fb000ab413ce8f88d4fb352a2bcb9a29e3b15c33"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 34
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "ed2bfa3bdabd0bcbc92db3adce5e876e1697948f6e1d395b2ff442a7da7277cc"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 34,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "c4e8633c252fa7de6ef906b1a29d5e03b4192b15aaaa071a3c9727e4ff290afb"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 34,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "6869200e2a97d9e184624f0400ba972403ab7c11f0bea8e290b07ac1232473d1"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 35
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "897251a3e33cf3c73b7eed26b7ee653a78fc79f811ef555846692ba9de3d9fac"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 35,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "98cd46a1d221fca527c877417639a152b844b8ead0dd783472138e834c0ed993"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 35,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "c9f9f21ea512a3a2ed681b73d7323895367b7afa34b4a75df794927d516296fd"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 36
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "158a5c2afee3878d4e335cbd55bf2c4672db6ee5f1cdc2a2b63e0dacf7834053"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 36,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "d21c5161a19f0b6be3dd6764a066f9e137bfba4e0e301e86b495026c01774e9a"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 36,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "e43391ea5327c005d5f1a240db95913e6b741d3acac2b7d048e8e3b0e7afe184"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 37
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "634b97e082e4ba3b17734fd6d586ca31e27b791e4c6ac18291f3b6c29953638b"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 37,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "f654f7cfc69481ad02b6c39bc5ddd0a961c5a535ca7112db4c36bde0576871b3"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 37,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "37e5d3d08e6706ad49bfe613e7c7a829050ec2ef1b2e52a540277648e7f4f9c3"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 38
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "86567882e3f1a6e2692e7ba795dae5a6f2a34d5fcab1c26655a2131f9d835d96"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 38,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "dc2176a0834bece7f462f34ebe821b392b73b78d64359c4726d4ed204713d35f"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 38,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "a635e58b2916a848349ef473ee599b88a7fccc4bd9649dc348c517fcd025548b"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 39
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "41ba6bfb169e876c0624befff5028f67f2112762f0da8d230b5154465bcd5cd8"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 39,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "0d95031e4be3cd187db1ca4da48102d7467f008cc310eb2d54f6bddcfa3c7a86"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 39,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "f243c61f69aa7d768186d11c3becdb5a523d73a8b2c8045ddf8f01661cef3587"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 40
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "3bc2e516b0ed17e14fd6c2dd5f8d597589361a87950c02fd155a0ce9ba0825af"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 40,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "1571fa45b7ac7cddca36b8646b5c6c9e219ddd80f7f250a0264bcdd92ad2cfb8"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 40,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "d2d473d41226463738e3a8d127e72cdd08f51cee7bdda10747315758b5915c8c"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 41
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "3ae62149c33288d1279772dbc1811a1082aab8ec43e0310ebc4a90daf92e4434"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 41,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "38b2fce9228267302843f9b6588a386c4c99810a436f49de7dd0f56a9d33696b"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 41,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "f54f13afbef525070a708becc3712ec124a14e5bae656682037fc3388e558374"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 42
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "edb64d033dd75d24db7e29b27468566d79b9ad3f48b77c80cce5618d667e9aa9"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 42,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "8121ae9b2aa47b844c2d10c955fb8a63ab90021f551a2c2bcf2a4b4cb768f76e"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 42,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "6f1af2d3f16c8215ff206ad852d35a3a10c79aa96f4fc8d8da97e9e04be54345"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 43
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "df803e20d7328fc19c84d512738ea01c3420bfab9fea7d5f5bae3c8664c67b07"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 43,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "b1d3af7a8f9a04303c6255882ac678ee39fda5a9798dd2049b13cc042a521152"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 43,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "3b7e4d58a7b4b1bbbc4cfafc87e32f14e32cd29f55add98d634ff53918e08c5a"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 44
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "2cedfeec610bfdade888c4668ee3fdc391193d864940fd797f36cfc2b5900967"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 44,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "b59ed20d11d4a4699a7a2369499f844ac8050a90f1d015281d15c262d336878a"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 44,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "49fe9c22ab561345570d9f18ff1f4c6735adc71d37dce0166dc1aa0bc3965966"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 45
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "d621ed99c1123c9ad5a2daa5f5638d0fe9bc649fa4a8953a653c5b9cf8fd97c5"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 45,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "b99628f12d6513c004cf3944198f5202ea7f48f6962888b1ea1f580d1a0bd12e"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 45,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "2cbb94e48ea59a8f8f3b749c05670bd8ced1bbab6b76c54b741034d3902ede87"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 46
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "2a5cf036a50ceca101d6e69da874197d277499ac10961dd76ed7846b2f7985d2"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 46,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "1ca4dd23110c28e938b5b47e9e11826202877dc57dfe81688fc609351b134eb1"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 46,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "d75fe2e79f4ee6639dbc39fc54c463be25a84fa9e0b73cf804fd8e9c8e9d1743"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 47
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "0107cea19be07d03edf96e56aeda85bf7c58119134e25fa7836d0c674722a938"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 47,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "1a120e43c503dbcfd8203fd5431339dc54136e0a6447752a71e9b467edc03361"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 47,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "7f3bd884d85bc8e28732e4a38e8aa1b6eafc55c5e4dc348fd0f07db0ecb0cacf"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 48
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "777595204e3111077d2518a60a2a387d348e5cd7b65956254f8d324e299c2236"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 48,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "b089759669ec56d7e7d834df37e703def87d8ebd1bd0911602409281e70530fc"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 48,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "07c15060a78fa7e3de7bcd31d08d9a81d1040bf4dbe753076270b1e5c2064af7"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 49
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "d328a764aac6f2b1a05d7083141a8c9b8c7909977eacd8f7e34fb8db67256fe7"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 49,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "c6214b32aa9fee6d4df473f54297e39474bd90b97703142e5ccbc2fe3534736e"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 49,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "8b1781ed58f04c51578b1210694ff838532c69102c6f153cc8016de7e92f6259"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 50
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "f2bbc488376b2cb0d683cfcddc840202efa5ed6c9d08c4372b4e7d0c00a64481"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 50,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "10daa535bd634170c139d1fbc68bf66a1f5d4d6b06003a3d79fd381af9262f34"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 50,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "1562c2ad32b2e18bb3f2a0c783b20801491c4549e491179bd4aa2c4684bb7cbf"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 51
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "e2b7a1feac4055d646f59bac35d007c924b7b3b33ed244f3cd896d7d2070bac3"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 51,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "10df06b236cc634e9c60290b5825170e4d49d733ce48d2bd9331f3f7701a8c29"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 51,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "6fe734c606a62f1ab8631e54dc222c8be51f1e5f763a19750dc0c8d962b48c5f"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 52
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "c7231b5d932c11459675e4348f12f3e504bf857632777093f1be68b4c02163fd"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 52,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "b5ae89271b6dc107fd27ac2141cf99c0d4e67d5cb20d01c8755e5cfb08da604d"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 52,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "15d43d706477cfcf652252f107e45ff25c5e6302197aa685e79473f937d03eee"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 53
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "90bf648183693ccda832c2429980923c58446a6bce7626c3aa0300a5560160fe"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 53,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "725a3dda7bc3bd7cd95a9a161a350e062378ca5689d2a611022943c1e3514793"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 53,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "478b6eb0a3173d6d62d994818cd6df1b482ba377bdc0d4b07d6e08d68560e117"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 54
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "f0159d67b2f87604b8324b7d4189cdcb8bec0a76f11b24be6573038e6e394a5c"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 54,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "161a178092d183de3f4a1c0133a4a8bd1db232113e208420931fa7e9b2a78f06"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 54,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "e1c8010a9fff0da22c5df98c63a0e59d1ef738eb721e49f371975716ebaed284"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 55
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "828ad55ba0f50b4a1e2fc5f6739297bb039a504f1ab7ae985b05344b82d977ce"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 55,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "99811bcb9df9012d5310a82710367d9e6ef10ce7937cbb2764ec628a823169f9"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 55,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "8b5b827aaafd4d37b16e6f233639fcafc4b5ba809f9bd6c2203d61007ef6795b"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 56
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "63b00a648f10060c27aa8ace7ea3e784f600b5537d9c9c25ad1f176fa2b862c9"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 56,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "b238d39d67d394b674e486828feab9d5655b0263d9256d40e92ca34a1b07b34e"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 56,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "7d9e85b18f450ad94015a26cd401ccd876c3d4932b508999eaa5d83cadd998f0"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 57
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "eb43061a3651a7dcca13fe0b071a9b3bfeeb54d70df8325c95b28527b5353ce9"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 57,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "778f3199394dd9f0d8e94d7e1a561d20a66b17a61996e79152bc6561d2db0716"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 57,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "1b3520d1a2cf1aeb6b4dc483a6bf4183c554c465621431c6f06dfb59d264a408"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 58
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "c38c3ca8d602dc8803b55a4b86108fbb86d1d3656a3a28dcb08878c1fd1d94fa"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 58,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "1bee27fa1b65376cd590c1f5941059f84fc2ac9edccefcb65ed27d18052a849a"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 58,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "6064df5036a6b458bdf64565414b41ea5f7322d97c4583600c88c07cd9175493"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 59
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "de63946b3c017245ae566dd42efa7f4aab9637dfad267cf9f8b8bb0793fdbf08"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 59,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "4ac8359c582089e02c7534b3192ee0c94ae829d5f4f1b0bb39c0097fc1ec651e"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 59,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "eed48adaeb8fc0acf152830347e0d80a2dee7929e98ad0d1430164bb4b8a1d61"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 60
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "7d1c51a1554dc2544fd4f776525c30eef60613a954fb32c476dd7ef9ffb4024e"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 60,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "3c1b97b691a32c5bcb2a8a0cdfb4c192b9a1da82d1a9493b45a3ca696fbd0153"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 60,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "334ecf47d212652eebadb590108bfeffd8110999d551754430e3ba2dd82b6a28"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 61
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "350605a30a4e2a3d5a4776495fe124f12d35c33ccf6867b51a1ab1f65e4fbb04"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 61,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "d78bfd48cdba1a70181618aac46535f7a577d0a9669ba2349dffd02bd2598f85"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 61,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "f710fa0fcce279f8dad777f5c14a9c834bb838fb52d830befc1b24e415aa4a85"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 62
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "fe88607f0157024f335b173f3734d4059252e713b3660606970be0cb429523c5"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 62,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "c2b59510660dd4c6d85eca44f3fcc83aee40e2de152ed6eade7420003ab49d25"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 62,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "60482feea2eab4daaf25ce49d5b9375e9306abe22ddcef6581569f19eccb1681"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 63
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "3dd6aa01b9b5c2283b3bc0649ffc95b3f6691dd834afddae51eed8ba1937dd62"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 63,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "7d8b6eaaf19df50a26c552e272118cdd199c5d5a494fe409f54cc4e4a58b8d75"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "CHILD": 63,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "46956b3d5317e0297f5ab9bdd15b93466a618982eddabbaf3a9d22b1eddbf04f"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_probability_masses",
+    "signature": {
+      "Residual": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "V": 151936,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "8f2d78c721a6a7fdda7fa736b9b6b387b15744111d93e702a939bed07927cc71"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_bonus_sample",
+    "signature": {
+      "Residual": "*fp32",
+      "Mass": "*fp64",
+      "Uniforms": "*fp32",
+      "Bonuses": "*i32"
+    },
+    "constants": {
+      "V": 151936,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 256,
+    "ptx_sha256": "6fe39730b4611ed6e80d157bfdca6b6fb1ff62f13defb7b6f22a89cc6b5d6d36"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+    "kernel": "eagle_sampled_walk",
+    "signature": {
+      "Parents": "*i32",
+      "Slots": "*i32",
+      "Winner": "*i32",
+      "Bonuses": "*i32",
+      "Residual": "*fp32",
+      "Lengths": "*i32",
+      "Paths": "*i32",
+      "Bonus": "*i32",
+      "Compact": "*i32",
+      "Probability": "*fp32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "BLOCK": 64
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "119a0dac5758536f5aacb1f4f0f277eabb2774a820b2b2e140e86af1616115d3"
+  }
+]

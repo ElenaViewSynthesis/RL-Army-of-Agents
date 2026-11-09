@@ -1,0 +1,89 @@
+{
+  "schema": "stage5-cpu-verification-v2",
+  "created_utc": "2026-11-09T10:03:22.726297+00:00",
+  "scope": "CPU interpreter correctness only; no CUDA build, GPU timing or provenance acceptance",
+  "argv": [
+    "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/scripts/verify_stage5_cpu.py",
+    "--tasks",
+    "eagle_accept_tail_sampled",
+    "--fixtures",
+    "honest",
+    "--output",
+    "artifacts/task-stage5-sampled-fix-20261109"
+  ],
+  "harness_sha256": {
+    "__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "artifact_report.py": "fa3a5f7a78b921396ca0c130b6d809d6c970260d4bf0a70a8cc9ce2263483d64",
+    "backend.py": "e55b2a1372b6a1acfe5a62eb498929aa8ebb61a840293b39addae63b4b03081d",
+    "benchmark.py": "4d40754fe64826e082babe5b78e21aafb1fd7d06abeecaa593e070d3b19104ee",
+    "compile.py": "27051da7b8db0b82fbfb7ad4a431d011f7127a02013635c7fa957c5dae2e3a84",
+    "config.py": "4557d9c26ccab75f5ba521d6e1a8cdc8118cbfbf7a37aa70ea46b0f95d48e215",
+    "diagnose.py": "3cf6586cc422d14fbf0c0e900b328ced50bca1e35c9bc3b31940a5c43df510d6",
+    "diagnostic_fault.py": "f3e51fcab71093c7e91ab13ad35c2a45fe1e3374f62651d4df3c00419e95d073",
+    "diagnostic_review.py": "ad1d5c11ff8bb42cc7843abbba07a17b4927f9e7f3e86da9c1bea0ffd8ecbfa5",
+    "diagnostic_worker.py": "5d8296416019e770c1e3710387c4341159b656c52317dd1164c7bdf193f7f171",
+    "eagle_contracts.py": "21be02eeeb82f6d3e81e11eb46c30fbbc779727ea5beed3ef3a3923d65dd80b4",
+    "eagle_reference.py": "35627dbbbaf3063a629cb25ab4e7b49c99b5db3bde0db6a721295a793ad34edd",
+    "grpo.py": "57c2d630355c17765aa102e744673b4d038bf70a7a6eb13f8e0a9526b4b40728",
+    "profile_artifacts.py": "03b7f432310b6bc845bc24c99e13f0a2782144136eeb03d7634ad27bfdd7d04f",
+    "profile_diagnostic.py": "858dde2a825bc7e8aa960466e82f7306dc40d237efbb3c91e40fe214a80874f0",
+    "profiling.py": "ecc3a4960cee5e95bf005e42b14820f14c49a98593fa321a12ade85fa13fa034",
+    "provenance.py": "6e39c2c575667a8ddd8dc503449790f9fa787f7693b8f89a30bf7427f89b11d6",
+    "reward.py": "d1c70f6949d8ca6d0d67637aeb88e0db68c526398d1bde6dd582c2ffd26ddd82",
+    "rollout_env.py": "4486308b2d7ddacb3bbfa472382c3c29618c7b78e77c22e4a19154ba1be7c6bc",
+    "runtime.py": "35b724c9fa6231d679c2a631016c149ad5d00f70ce880000e92e6cb27de0370a",
+    "stats.py": "d5765d00fcac5ce5b1012560758279b3ccfb57be2331a7e1d084d8a7294c5b2d",
+    "task_catalog.py": "91560f8729626272fd8ddf0b4b5fe8e6ea4170a5bd2f308dd98972896331359a",
+    "task_ceiling.py": "338312d0eea1e559c3bcda3d0aa5a44b5c526eedec8ace4622abc6e6680e14a5",
+    "task_fixtures.py": "26c3aee71a46ce59b1e7be7313eb857908837df2fd9becbfb560603dda1a6afa",
+    "task_inputs.py": "bef416cee47a64158abcc192cec91381aa9c3d93cc0df961d4f4af52d6303d9a",
+    "task_policy.py": "6c0e3de52f0a67258a97c7ae5fa5469eda9682a70134092fe5c29d97b041f874",
+    "task_suite.py": "e75a337f7eb1b34c2f3c4582f29363ec7cffcca32224ca08891d42edc04753d3",
+    "task_verification.py": "204940979faa35e60415d4f15188e7e173ebc4bd861079cf270426a2997017ff",
+    "verification.py": "88db4066e31c40e9cebd2f162dd66d9c1571696ea80e5eedeaef73a65e019a99"
+  },
+  "rows": [
+    {
+      "task": "eagle_accept_tail_sampled",
+      "case": "b1_n1_treechain_v32000_seed17_float32",
+      "variant": "honest",
+      "argv": [
+        "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/.venv/bin/python",
+        "-B",
+        "-u",
+        "-c",
+        "import sys, runpy; sys.path.insert(0, '/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels'); import utils; sys.path = [p for p in sys.path if p != '/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels']; sys.path.insert(0, '/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifacts/task-stage5-sampled-fix-20261109/eagle_accept_tail_sampled/b1_n1_treechain_v32000_seed17_float32/honest'); sys.argv = ['utils.task_verification']; runpy.run_module('utils.task_verification', run_name='__main__')"
+      ],
+      "environment": {
+        "CUDA_AGENT_TASK": "eagle_accept_tail_sampled",
+        "CUDA_AGENT_TASK_CASE": "b1_n1_treechain_v32000_seed17_float32",
+        "CUDA_AGENT_DEVICE": "cpu",
+        "TRITON_INTERPRET": "1",
+        "OMP_NUM_THREADS": "2",
+        "MKL_NUM_THREADS": "2"
+      },
+      "source_sha256": {
+        "binding.cpp": "43da662b9aedb537a4cb2f04c57d92aeddbe018a9b5f7374ae28ec9bba0b3b62",
+        "binding_registry.h": "a829ca7d5de03049c439f30aa01f7f631c06418c31855cf19a67f23d69349e0f",
+        "kernels/__init__.py": "689439b8b419cf6908daa9f07cc1b9f19ef54498b2344a66cbf26bfb2c8e2912",
+        "kernels/accept_tail_sampled.cu": "ef8df0b8f3fc752dab4163039422f287699ad5d8a0c75ca8a1d40f6d434fe17e",
+        "kernels/accept_tail_sampled_binding.cpp": "3c83aebecec61dca20fd1fe6987e6c8d002b8296198d92173c462bf8bbfa4d2e",
+        "kernels/cuda/__init__.py": "689439b8b419cf6908daa9f07cc1b9f19ef54498b2344a66cbf26bfb2c8e2912",
+        "kernels/cuda/accept_tail_sampled.py": "3233c5a4c7424332f9db5056486743b6d76469232b7b4e05eb62f5de08376680",
+        "kernels/triton/__init__.py": "689439b8b419cf6908daa9f07cc1b9f19ef54498b2344a66cbf26bfb2c8e2912",
+        "kernels/triton/accept_tail_sampled.py": "0b5776b412b5a25e56731120f91385bb58f486d2a7d7b9b0dd22e5892f6a2d40",
+        "model.py": "3997f34530f0ea9677441777e855b20a9b94a816e69afc97459d65644996d523",
+        "model_new.py": "dea1be63efdfa3154823da54fca561ab803ae5c27279136086231dd5a1c2b4f5",
+        "model_new_cuda.py": "b872fe185404f101828a381a1798e1ab938d3675946a20f1a9ee449786b5e455",
+        "model_new_hack.py": "b0c90e4eb989ec6834412a5a9988ddbd58a51c688e4bfbc00bc094ee4ab11bd8",
+        "model_new_triton.py": "dea1be63efdfa3154823da54fca561ab803ae5c27279136086231dd5a1c2b4f5",
+        "model_new_wrong.py": "0234a7088a59245193690ad0cf809daa25200a9c4e42a4a3d7d0220830a2face",
+        "model_new_wrong_ancestor.py": "812c22149740c86e2fa4fc717f8c70df643f2c49a2ed6204dbc51abe1ebfc65e"
+      },
+      "log": "artifacts/task-stage5-sampled-fix-20261109/eagle_accept_tail_sampled/b1_n1_treechain_v32000_seed17_float32/honest/verification.log",
+      "status": "verified",
+      "exit_code": 0,
+      "wall_s": 71.67044838902075
+    }
+  ]
+}

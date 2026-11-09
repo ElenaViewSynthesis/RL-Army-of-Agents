@@ -1,0 +1,61 @@
+{"task": "eagle_tree_step", "tree": "chain", "n": 1, "status": "pass"}
+{"task": "eagle_tree_row_attention", "tree": "chain", "n": 1, "status": "pass"}
+{"task": "eagle_gdn_tree_conv", "tree": "chain", "n": 1, "status": "pass"}
+{"task": "eagle_mamba2_tree_conv", "tree": "chain", "n": 1, "status": "pass"}
+{"task": "eagle_gdn_tree_recurrence", "tree": "chain", "n": 1, "status": "pass"}
+{"task": "eagle_accept_tail", "tree": "chain", "n": 1, "status": "pass"}
+{"task": "eagle_accept_tail_sampled", "tree": "chain", "n": 1, "status": "pass"}
+{"task": "eagle_tree_step", "tree": "chain", "n": 8, "status": "pass"}
+{"task": "eagle_tree_row_attention", "tree": "chain", "n": 8, "status": "pass"}
+{"task": "eagle_gdn_tree_conv", "tree": "chain", "n": 8, "status": "pass"}
+{"task": "eagle_mamba2_tree_conv", "tree": "chain", "n": 8, "status": "pass"}
+{"task": "eagle_gdn_tree_recurrence", "tree": "chain", "n": 8, "status": "pass"}
+{"task": "eagle_accept_tail", "tree": "chain", "n": 8, "status": "pass"}
+{"task": "eagle_accept_tail_sampled", "tree": "chain", "n": 8, "status": "pass"}
+{"task": "eagle_tree_step", "tree": "wide", "n": 1, "status": "pass"}
+{"task": "eagle_tree_row_attention", "tree": "wide", "n": 1, "status": "pass"}
+{"task": "eagle_gdn_tree_conv", "tree": "wide", "n": 1, "status": "pass"}
+{"task": "eagle_mamba2_tree_conv", "tree": "wide", "n": 1, "status": "pass"}
+{"task": "eagle_gdn_tree_recurrence", "tree": "wide", "n": 1, "status": "pass"}
+{"task": "eagle_accept_tail", "tree": "wide", "n": 1, "status": "pass"}
+{"task": "eagle_accept_tail_sampled", "tree": "wide", "n": 1, "status": "pass"}
+{"task": "eagle_tree_step", "tree": "wide", "n": 8, "status": "pass"}
+{"task": "eagle_tree_row_attention", "tree": "wide", "n": 8, "status": "pass"}
+{"task": "eagle_gdn_tree_conv", "tree": "wide", "n": 8, "status": "pass"}
+{"task": "eagle_mamba2_tree_conv", "tree": "wide", "n": 8, "status": "pass"}
+{"task": "eagle_gdn_tree_recurrence", "tree": "wide", "n": 8, "status": "pass"}
+{"task": "eagle_accept_tail", "tree": "wide", "n": 8, "status": "pass"}
+{"task": "eagle_accept_tail_sampled", "tree": "wide", "n": 8, "status": "pass"}
+{"task": "eagle_tree_step", "tree": "balanced", "n": 1, "status": "pass"}
+{"task": "eagle_tree_row_attention", "tree": "balanced", "n": 1, "status": "pass"}
+{"task": "eagle_gdn_tree_conv", "tree": "balanced", "n": 1, "status": "pass"}
+{"task": "eagle_mamba2_tree_conv", "tree": "balanced", "n": 1, "status": "pass"}
+{"task": "eagle_gdn_tree_recurrence", "tree": "balanced", "n": 1, "status": "pass"}
+{"task": "eagle_accept_tail", "tree": "balanced", "n": 1, "status": "pass"}
+{"task": "eagle_accept_tail_sampled", "tree": "balanced", "n": 1, "status": "pass"}
+{"task": "eagle_tree_step", "tree": "balanced", "n": 8, "status": "pass"}
+{"task": "eagle_tree_row_attention", "tree": "balanced", "n": 8, "status": "pass"}
+{"task": "eagle_gdn_tree_conv", "tree": "balanced", "n": 8, "status": "pass"}
+{"task": "eagle_mamba2_tree_conv", "tree": "balanced", "n": 8, "status": "pass"}
+{"task": "eagle_gdn_tree_recurrence", "tree": "balanced", "n": 8, "status": "pass"}
+{"task": "eagle_accept_tail", "tree": "balanced", "n": 8, "status": "pass"}
+{"task": "eagle_accept_tail_sampled", "tree": "balanced", "n": 8, "status": "pass"}
+{"task": "eagle_tree_step", "tree": "ragged", "n": 1, "status": "pass"}
+{"task": "eagle_tree_row_attention", "tree": "ragged", "n": 1, "status": "pass"}
+{"task": "eagle_gdn_tree_conv", "tree": "ragged", "n": 1, "status": "pass"}
+{"task": "eagle_mamba2_tree_conv", "tree": "ragged", "n": 1, "status": "pass"}
+{"task": "eagle_gdn_tree_recurrence", "tree": "ragged", "n": 1, "status": "pass"}
+{"task": "eagle_accept_tail", "tree": "ragged", "n": 1, "status": "pass"}
+{"task": "eagle_accept_tail_sampled", "tree": "ragged", "n": 1, "status": "pass"}
+{"task": "eagle_tree_step", "tree": "ragged", "n": 8, "status": "pass"}
+{"task": "eagle_tree_row_attention", "tree": "ragged", "n": 8, "status": "pass"}
+{"task": "eagle_gdn_tree_conv", "tree": "ragged", "n": 8, "status": "pass"}
+{"task": "eagle_mamba2_tree_conv", "tree": "ragged", "n": 8, "status": "pass"}
+{"task": "eagle_gdn_tree_recurrence", "tree": "ragged", "n": 8, "status": "pass"}
+{"task": "eagle_accept_tail", "tree": "ragged", "n": 8, "status": "pass"}
+{"task": "eagle_accept_tail_sampled", "tree": "ragged", "n": 8, "status": "pass"}
+{"task": "eagle_candidate_topk", "v": 17, "status": "ties-pass"}
+{"task": "eagle_candidate_topk", "v": 1031, "status": "ties-pass"}
+{"task": "eagle_candidate_topk", "v": 17, "status": "random-pass"}
+{"task": "eagle_candidate_topk", "v": 1031, "status": "random-pass"}
+STAGE5_INTERPRETER_PROBES_OK

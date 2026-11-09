@@ -1,0 +1,10 @@
+{
+  "python": "3.13.9 (main, Nov 19 2025, 22:47:49) [Clang 21.1.4 ]",
+  "platform": "Linux-6.18.54.1-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+  "torch": "2.14.1+cpu",
+  "triton": "3.8.0",
+  "numpy": "2.5.4",
+  "cuda_available": false,
+  "nvcc": null,
+  "scope": "local software compiler/interpreter; no GPU launch"
+}

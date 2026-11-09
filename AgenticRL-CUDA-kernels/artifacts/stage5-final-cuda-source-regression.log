@@ -1,0 +1,11 @@
+.......{"suite/task": "row_softmax", "suite/case": "b64_h128_float32", "suite/stage": 1, "suite/backend": "triton", "suite/fixture": "honest", "suite/purpose": "eval", "suite/eval_only": false, "suite/contract_only": false, "suite/status": "unavailable", "suite/reason": "CPU evaluation: GPU measurements and GPU candidate acceptance unavailable"}
+{"suite/task": "row_softmax", "suite/case": "b64_h128_float32", "suite/stage": 1, "suite/backend": "triton", "suite/fixture": "hack", "suite/purpose": "eval", "suite/eval_only": false, "suite/contract_only": false, "suite/status": "unavailable", "suite/reason": "CPU evaluation: GPU measurements and GPU candidate acceptance unavailable"}
+{"suite/task": "row_softmax", "suite/case": "b64_h128_float32", "suite/stage": 1, "suite/backend": "triton", "suite/fixture": "wrong", "suite/purpose": "eval", "suite/eval_only": false, "suite/contract_only": false, "suite/status": "unavailable", "suite/reason": "CPU evaluation: GPU measurements and GPU candidate acceptance unavailable"}
+{"suite/task": "row_softmax", "suite/case": "b64_h128_float32", "suite/stage": 1, "suite/backend": "cuda", "suite/fixture": "honest", "suite/purpose": "eval", "suite/eval_only": false, "suite/contract_only": false, "suite/status": "unavailable", "suite/reason": "CPU evaluation: GPU measurements and GPU candidate acceptance unavailable"}
+{"suite/task": "row_softmax", "suite/case": "b64_h128_float32", "suite/stage": 1, "suite/backend": "cuda", "suite/fixture": "hack", "suite/purpose": "eval", "suite/eval_only": false, "suite/contract_only": false, "suite/status": "unavailable", "suite/reason": "CPU evaluation: GPU measurements and GPU candidate acceptance unavailable"}
+{"suite/task": "row_softmax", "suite/case": "b64_h128_float32", "suite/stage": 1, "suite/backend": "cuda", "suite/fixture": "wrong", "suite/purpose": "eval", "suite/eval_only": false, "suite/contract_only": false, "suite/status": "unavailable", "suite/reason": "CPU evaluation: GPU measurements and GPU candidate acceptance unavailable"}
+..ssssss.........ssssss.
+----------------------------------------------------------------------
+Ran 31 tests in 23.135s
+
+OK (skipped=12)

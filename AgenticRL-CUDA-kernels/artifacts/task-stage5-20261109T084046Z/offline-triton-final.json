@@ -1,0 +1,1144 @@
+[
+  {
+    "task": "eagle_candidate_topk",
+    "case": "smoke",
+    "source_sha256": "ea4183be71f7baf328eba68c19c162db027d44e403e4458a909e21e524d04420",
+    "kernel": "eagle_vocab_score",
+    "signature": {
+      "X": "*bf16",
+      "W": "*bf16",
+      "Scores": "*fp32"
+    },
+    "constants": {
+      "H": 4096,
+      "V": 32000,
+      "D": 4096
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 16,
+    "ptx_sha256": "93cf41092d5f36e2e637ac764e7226345a3c697cf9145f04e7b54c0540447c88"
+  },
+  {
+    "task": "eagle_candidate_topk",
+    "case": "smoke",
+    "source_sha256": "ea4183be71f7baf328eba68c19c162db027d44e403e4458a909e21e524d04420",
+    "kernel": "eagle_shard_select",
+    "signature": {
+      "Scores": "*fp32",
+      "Ids": "*i32",
+      "Values": "*fp32"
+    },
+    "constants": {
+      "V": 32000,
+      "K": 8,
+      "SHARDS": 32,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 16,
+    "ptx_sha256": "565861d4befb2c3d747a0891b9ea604ce2bf1409d038a4115b4f928f10d7859c"
+  },
+  {
+    "task": "eagle_candidate_topk",
+    "case": "smoke",
+    "source_sha256": "ea4183be71f7baf328eba68c19c162db027d44e403e4458a909e21e524d04420",
+    "kernel": "eagle_candidate_merge",
+    "signature": {
+      "Ids": "*i32",
+      "Values": "*fp32",
+      "Out": "*i64"
+    },
+    "constants": {
+      "L": 256,
+      "K": 8,
+      "BLOCK": 256
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 16,
+    "ptx_sha256": "6d8d14f50b04fbf67f11769cb642d55b94a23b5c7d134e6390b93acff7d13de2"
+  },
+  {
+    "task": "eagle_candidate_topk",
+    "case": "smoke",
+    "source_sha256": "ea4183be71f7baf328eba68c19c162db027d44e403e4458a909e21e524d04420",
+    "kernel": "eagle_candidate_rescore",
+    "signature": {
+      "X": "*bf16",
+      "W": "*bf16",
+      "Ids": "*i64",
+      "Out": "*fp32"
+    },
+    "constants": {
+      "H": 4096,
+      "K": 8,
+      "D": 4096
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 16,
+    "ptx_sha256": "ebe653c0df2386071a11ed7b1eaff2baf7df17be3a9d67ca68e82a1679f8eee2"
+  },
+  {
+    "task": "eagle_candidate_topk",
+    "case": "large",
+    "source_sha256": "ea4183be71f7baf328eba68c19c162db027d44e403e4458a909e21e524d04420",
+    "kernel": "eagle_vocab_score",
+    "signature": {
+      "X": "*bf16",
+      "W": "*bf16",
+      "Scores": "*fp32"
+    },
+    "constants": {
+      "H": 4096,
+      "V": 151936,
+      "D": 4096
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 16,
+    "ptx_sha256": "3897477210dbd35eee868b064f27862712e2a17c5b195391bddff3fc9229e15d"
+  },
+  {
+    "task": "eagle_candidate_topk",
+    "case": "large",
+    "source_sha256": "ea4183be71f7baf328eba68c19c162db027d44e403e4458a909e21e524d04420",
+    "kernel": "eagle_shard_select",
+    "signature": {
+      "Scores": "*fp32",
+      "Ids": "*i32",
+      "Values": "*fp32"
+    },
+    "constants": {
+      "V": 151936,
+      "K": 16,
+      "SHARDS": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 16,
+    "ptx_sha256": "a92cb99e13313e39bc97e7dd93f02692d8c1b7813cf1a46efc9ffd3c45fe4fef"
+  },
+  {
+    "task": "eagle_candidate_topk",
+    "case": "large",
+    "source_sha256": "ea4183be71f7baf328eba68c19c162db027d44e403e4458a909e21e524d04420",
+    "kernel": "eagle_candidate_merge",
+    "signature": {
+      "Ids": "*i32",
+      "Values": "*fp32",
+      "Out": "*i64"
+    },
+    "constants": {
+      "L": 2384,
+      "K": 16,
+      "BLOCK": 4096
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 16,
+    "ptx_sha256": "83cc38fdfb3685f0fc69ba0740ce07b4dd579c9a75b5286ec67c61f8d5ef91df"
+  },
+  {
+    "task": "eagle_candidate_topk",
+    "case": "large",
+    "source_sha256": "ea4183be71f7baf328eba68c19c162db027d44e403e4458a909e21e524d04420",
+    "kernel": "eagle_candidate_rescore",
+    "signature": {
+      "X": "*bf16",
+      "W": "*bf16",
+      "Ids": "*i64",
+      "Out": "*fp32"
+    },
+    "constants": {
+      "H": 4096,
+      "K": 16,
+      "D": 4096
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 16,
+    "ptx_sha256": "76ca124030b6f1735f0a2b27b751c479672af7953b4d94423e997bc8aba5790f"
+  },
+  {
+    "task": "eagle_tree_step",
+    "case": "smoke",
+    "source_sha256": "88eb2badee42a03af5cdaf9bff6c1c0de6520c48f713a929dd30128f8e19455c",
+    "kernel": "eagle_frontier_select",
+    "signature": {
+      "Scores": "*fp32",
+      "Children": "*fp32",
+      "Parents": "*i32",
+      "Out": "*fp32",
+      "ParentIds": "*i32",
+      "Paths": "*i32",
+      "Flat": "*i32"
+    },
+    "constants": {
+      "N": 1,
+      "K": 4,
+      "BLOCK": 4
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "6a25d44e30f678d15db43152ef46a72260a4da947aa382ddf6c061b695804a3e"
+  },
+  {
+    "task": "eagle_tree_step",
+    "case": "large",
+    "source_sha256": "88eb2badee42a03af5cdaf9bff6c1c0de6520c48f713a929dd30128f8e19455c",
+    "kernel": "eagle_frontier_select",
+    "signature": {
+      "Scores": "*fp32",
+      "Children": "*fp32",
+      "Parents": "*i32",
+      "Out": "*fp32",
+      "ParentIds": "*i32",
+      "Paths": "*i32",
+      "Flat": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "K": 8,
+      "BLOCK": 512
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 16,
+    "ptx_sha256": "a534bd56d7279d8dfea58e6a74d9ff95ef83fef65afb7dbde85acd8f432568cb"
+  },
+  {
+    "task": "eagle_tree_row_attention",
+    "case": "smoke",
+    "source_sha256": "81bf38b0c20cb67f879d460a2156537d190f2c6c51a2863a399090f0876ec144",
+    "kernel": "eagle_ancestor_table",
+    "signature": {
+      "Parents": "*i32",
+      "Paths": "*i32"
+    },
+    "constants": {
+      "N": 1,
+      "BLOCK": 1
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "55733482b93b1a14050f42d795012bc480bfa4bb05758d3f5e85d95a19fcab9f"
+  },
+  {
+    "task": "eagle_tree_row_attention",
+    "case": "smoke",
+    "source_sha256": "81bf38b0c20cb67f879d460a2156537d190f2c6c51a2863a399090f0876ec144",
+    "kernel": "eagle_attention_splits",
+    "signature": {
+      "Q": "*bf16",
+      "K": "*bf16",
+      "V": "*bf16",
+      "TK": "*bf16",
+      "TV": "*bf16",
+      "Paths": "*i32",
+      "Part": "*fp32",
+      "Maximum": "*fp32",
+      "Denom": "*fp32"
+    },
+    "constants": {
+      "N": 1,
+      "S": 512,
+      "HQ": 8,
+      "HK": 8,
+      "D": 64,
+      "WINDOW": 512,
+      "SPLITS": 5,
+      "DEPTH": 1,
+      "BLOCK": 128
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 512,
+    "ptx_sha256": "f86792dec8ed823d1dff010a1e0f8caacdf1b921a1b393a4bf570c23637f3027"
+  },
+  {
+    "task": "eagle_tree_row_attention",
+    "case": "smoke",
+    "source_sha256": "81bf38b0c20cb67f879d460a2156537d190f2c6c51a2863a399090f0876ec144",
+    "kernel": "eagle_attention_merge",
+    "signature": {
+      "Part": "*fp32",
+      "Maximum": "*fp32",
+      "Denom": "*fp32",
+      "Out": "*bf16"
+    },
+    "constants": {
+      "N": 1,
+      "D": 64,
+      "SPLITS": 5,
+      "BLOCK": 8
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 512,
+    "ptx_sha256": "9642503878c32ea8af17e2ba8211733f17b5212967f8b5b3360ee98a10626a67"
+  },
+  {
+    "task": "eagle_tree_row_attention",
+    "case": "large",
+    "source_sha256": "81bf38b0c20cb67f879d460a2156537d190f2c6c51a2863a399090f0876ec144",
+    "kernel": "eagle_ancestor_table",
+    "signature": {
+      "Parents": "*i32",
+      "Paths": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "BLOCK": 64
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "6dd8c089b332a98a7eebc267a69b659e1f6ef240a44edcc2d70afb35a5f3e222"
+  },
+  {
+    "task": "eagle_tree_row_attention",
+    "case": "large",
+    "source_sha256": "81bf38b0c20cb67f879d460a2156537d190f2c6c51a2863a399090f0876ec144",
+    "kernel": "eagle_attention_splits",
+    "signature": {
+      "Q": "*bf16",
+      "K": "*bf16",
+      "V": "*bf16",
+      "TK": "*bf16",
+      "TV": "*bf16",
+      "Paths": "*i32",
+      "Part": "*fp32",
+      "Maximum": "*fp32",
+      "Denom": "*fp32"
+    },
+    "constants": {
+      "N": 64,
+      "S": 32768,
+      "HQ": 64,
+      "HK": 8,
+      "D": 128,
+      "WINDOW": 4096,
+      "SPLITS": 33,
+      "DEPTH": 64,
+      "BLOCK": 128
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 256,
+    "ptx_sha256": "143406b41efa3d7a6e176444c677bf49b551c12d34e06e8b91fe03405115220c"
+  },
+  {
+    "task": "eagle_tree_row_attention",
+    "case": "large",
+    "source_sha256": "81bf38b0c20cb67f879d460a2156537d190f2c6c51a2863a399090f0876ec144",
+    "kernel": "eagle_attention_merge",
+    "signature": {
+      "Part": "*fp32",
+      "Maximum": "*fp32",
+      "Denom": "*fp32",
+      "Out": "*bf16"
+    },
+    "constants": {
+      "N": 64,
+      "D": 128,
+      "SPLITS": 33,
+      "BLOCK": 64
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 8,
+    "ptx_sha256": "156b9dcf90e4e19f6562117a51847c0c93624291b989422653c46c90740ab115"
+  },
+  {
+    "task": "eagle_tree_verify_attention",
+    "case": "large",
+    "source_sha256": "81bf38b0c20cb67f879d460a2156537d190f2c6c51a2863a399090f0876ec144",
+    "kernel": "eagle_attention_splits",
+    "signature": {
+      "Q": "*bf16",
+      "K": "*bf16",
+      "V": "*bf16",
+      "TK": "*bf16",
+      "TV": "*bf16",
+      "Paths": "*i32",
+      "Part": "*fp32",
+      "Maximum": "*fp32",
+      "Denom": "*fp32"
+    },
+    "constants": {
+      "N": 64,
+      "S": 32768,
+      "HQ": 64,
+      "HK": 8,
+      "D": 128,
+      "WINDOW": 32768,
+      "SPLITS": 257,
+      "DEPTH": 64,
+      "BLOCK": 128
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 256,
+    "ptx_sha256": "48633d4fbac7c2599e12498a3a6721214d5f9407da94e90a55471d5b24ce6d3c"
+  },
+  {
+    "task": "eagle_tree_verify_attention",
+    "case": "large",
+    "source_sha256": "81bf38b0c20cb67f879d460a2156537d190f2c6c51a2863a399090f0876ec144",
+    "kernel": "eagle_attention_merge",
+    "signature": {
+      "Part": "*fp32",
+      "Maximum": "*fp32",
+      "Denom": "*fp32",
+      "Out": "*bf16"
+    },
+    "constants": {
+      "N": 64,
+      "D": 128,
+      "SPLITS": 257,
+      "BLOCK": 512
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 512,
+    "ptx_sha256": "f049e32b609bd4d631d51ffcfe6b25b97b059d4891a33adbf3094bd23ed861c9"
+  },
+  {
+    "task": "eagle_gdn_tree_conv",
+    "case": "smoke",
+    "source_sha256": "2a6cf69e7878a0d611829cb459073f5a18679d5b93c9b2ce2106be13142d9423",
+    "kernel": "eagle_conv_windows",
+    "signature": {
+      "Parents": "*i32",
+      "Windows": "*i32"
+    },
+    "constants": {
+      "N": 1
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "bc1f095ee232bf4de82f0933f299617cb665c1d4343d6d653200d49a4560022d"
+  },
+  {
+    "task": "eagle_gdn_tree_conv",
+    "case": "smoke",
+    "source_sha256": "2a6cf69e7878a0d611829cb459073f5a18679d5b93c9b2ce2106be13142d9423",
+    "kernel": "eagle_causal_conv",
+    "signature": {
+      "X": "*bf16",
+      "History": "*bf16",
+      "W": "*fp32",
+      "Bias": "*fp32",
+      "Windows": "*i32",
+      "Out": "*fp32"
+    },
+    "constants": {
+      "N": 1,
+      "C": 192,
+      "MAMBA": false,
+      "BLOCK": 128
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "536e80629035ce47ce59083214c08ff4c99a70ce163ab0772bc3adc62a384697"
+  },
+  {
+    "task": "eagle_gdn_tree_conv",
+    "case": "large",
+    "source_sha256": "2a6cf69e7878a0d611829cb459073f5a18679d5b93c9b2ce2106be13142d9423",
+    "kernel": "eagle_conv_windows",
+    "signature": {
+      "Parents": "*i32",
+      "Windows": "*i32"
+    },
+    "constants": {
+      "N": 64
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "4eee6e4d88c0371b3f63c8700be5fc40de77cda7059d6e4db103ff4f1bc72e34"
+  },
+  {
+    "task": "eagle_gdn_tree_conv",
+    "case": "large",
+    "source_sha256": "2a6cf69e7878a0d611829cb459073f5a18679d5b93c9b2ce2106be13142d9423",
+    "kernel": "eagle_causal_conv",
+    "signature": {
+      "X": "*bf16",
+      "History": "*bf16",
+      "W": "*fp32",
+      "Bias": "*fp32",
+      "Windows": "*i32",
+      "Out": "*fp32"
+    },
+    "constants": {
+      "N": 64,
+      "C": 384,
+      "MAMBA": false,
+      "BLOCK": 128
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "44437d4aa70705e06d1ce8feaec255826fe418427d93af911c9407123b5c99d5"
+  },
+  {
+    "task": "eagle_mamba2_tree_conv",
+    "case": "smoke",
+    "source_sha256": "2a6cf69e7878a0d611829cb459073f5a18679d5b93c9b2ce2106be13142d9423",
+    "kernel": "eagle_causal_conv",
+    "signature": {
+      "X": "*bf16",
+      "History": "*bf16",
+      "W": "*fp32",
+      "Bias": "*fp32",
+      "Windows": "*i32",
+      "Out": "*fp32"
+    },
+    "constants": {
+      "N": 1,
+      "C": 192,
+      "MAMBA": true,
+      "BLOCK": 128
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "22eaefb901b189c7872793b6888cd0abd4dd904584713809848a48ca4a1e3a94"
+  },
+  {
+    "task": "eagle_mamba2_tree_conv",
+    "case": "large",
+    "source_sha256": "2a6cf69e7878a0d611829cb459073f5a18679d5b93c9b2ce2106be13142d9423",
+    "kernel": "eagle_causal_conv",
+    "signature": {
+      "X": "*bf16",
+      "History": "*bf16",
+      "W": "*fp32",
+      "Bias": "*fp32",
+      "Windows": "*i32",
+      "Out": "*fp32"
+    },
+    "constants": {
+      "N": 64,
+      "C": 384,
+      "MAMBA": true,
+      "BLOCK": 128
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "6fc9c1eb071fe86a7819b254fa81508e4a332ac4ef0ccc96ca1a9d6ef97f9b03"
+  },
+  {
+    "task": "eagle_gdn_tree_recurrence",
+    "case": "smoke",
+    "source_sha256": "ff6d8a3305b55701f11171e66e005b465a6c8b21c6e2f7f6d5b350025825f8a8",
+    "kernel": "eagle_gdn_walk",
+    "signature": {
+      "Q": "*fp32",
+      "K": "*fp32",
+      "V": "*fp32",
+      "G": "*fp32",
+      "Initial": "*fp32",
+      "Parents": "*i32",
+      "States": "*fp32",
+      "Out": "*fp32"
+    },
+    "constants": {
+      "N": 1,
+      "H": 1,
+      "DK": 64,
+      "DV": 64,
+      "TILE": 16
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 256,
+    "ptx_sha256": "c2da57558228978386177d72f5cd6231dbd920afaeaf32c47988808561bdbdc5"
+  },
+  {
+    "task": "eagle_gdn_tree_recurrence",
+    "case": "smoke",
+    "source_sha256": "ff6d8a3305b55701f11171e66e005b465a6c8b21c6e2f7f6d5b350025825f8a8",
+    "kernel": "eagle_chain_firstchild",
+    "signature": {
+      "Parents": "*i32",
+      "First": "*i32"
+    },
+    "constants": {
+      "N": 1,
+      "BLOCK": 1
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "900cff6d582dfce2339c190dd295ef0abf1cb8670c55785b5f64b5d27a6a57cf"
+  },
+  {
+    "task": "eagle_gdn_tree_recurrence",
+    "case": "smoke",
+    "source_sha256": "ff6d8a3305b55701f11171e66e005b465a6c8b21c6e2f7f6d5b350025825f8a8",
+    "kernel": "eagle_chain_owner",
+    "signature": {
+      "First": "*i32",
+      "Owner": "*i32"
+    },
+    "constants": {
+      "N": 1
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "b0abf77fc674c9688800e7f2116508070e1b9fb0422b75d42bfc9ad00db53ad0"
+  },
+  {
+    "task": "eagle_gdn_tree_recurrence",
+    "case": "smoke",
+    "source_sha256": "ff6d8a3305b55701f11171e66e005b465a6c8b21c6e2f7f6d5b350025825f8a8",
+    "kernel": "eagle_gdn_chain_replay",
+    "signature": {
+      "Q": "*fp32",
+      "K": "*fp32",
+      "V": "*fp32",
+      "G": "*fp32",
+      "Initial": "*fp32",
+      "Paths": "*i32",
+      "First": "*i32",
+      "Owner": "*i32",
+      "States": "*fp32",
+      "Out": "*fp32"
+    },
+    "constants": {
+      "N": 1,
+      "H": 1,
+      "DK": 64,
+      "DV": 64,
+      "TILE": 16
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 256,
+    "ptx_sha256": "1697ef6dd5e88b842b30f01fba3cfe4f96710d0d7a65f0850f19876248a02e25"
+  },
+  {
+    "task": "eagle_gdn_tree_recurrence",
+    "case": "large",
+    "source_sha256": "ff6d8a3305b55701f11171e66e005b465a6c8b21c6e2f7f6d5b350025825f8a8",
+    "kernel": "eagle_gdn_walk",
+    "signature": {
+      "Q": "*fp32",
+      "K": "*fp32",
+      "V": "*fp32",
+      "G": "*fp32",
+      "Initial": "*fp32",
+      "Parents": "*i32",
+      "States": "*fp32",
+      "Out": "*fp32"
+    },
+    "constants": {
+      "N": 64,
+      "H": 4,
+      "DK": 128,
+      "DV": 128,
+      "TILE": 16
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 512,
+    "ptx_sha256": "9398acc95aa558a2310f73e376361e18fdfec24712dbd5a65cb360d010ba1264"
+  },
+  {
+    "task": "eagle_gdn_tree_recurrence",
+    "case": "large",
+    "source_sha256": "ff6d8a3305b55701f11171e66e005b465a6c8b21c6e2f7f6d5b350025825f8a8",
+    "kernel": "eagle_chain_firstchild",
+    "signature": {
+      "Parents": "*i32",
+      "First": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "BLOCK": 64
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 8,
+    "ptx_sha256": "34c178715d80366f57be2b9a86a2a00d0d5f3c90d6542427f2f9ecd7efb5969a"
+  },
+  {
+    "task": "eagle_gdn_tree_recurrence",
+    "case": "large",
+    "source_sha256": "ff6d8a3305b55701f11171e66e005b465a6c8b21c6e2f7f6d5b350025825f8a8",
+    "kernel": "eagle_chain_owner",
+    "signature": {
+      "First": "*i32",
+      "Owner": "*i32"
+    },
+    "constants": {
+      "N": 64
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "5bca7692b4e5c0a5bbe8bfc62720d9cb4eb7c86d795ba202472245a5480ea809"
+  },
+  {
+    "task": "eagle_gdn_tree_recurrence",
+    "case": "large",
+    "source_sha256": "ff6d8a3305b55701f11171e66e005b465a6c8b21c6e2f7f6d5b350025825f8a8",
+    "kernel": "eagle_gdn_chain_replay",
+    "signature": {
+      "Q": "*fp32",
+      "K": "*fp32",
+      "V": "*fp32",
+      "G": "*fp32",
+      "Initial": "*fp32",
+      "Paths": "*i32",
+      "First": "*i32",
+      "Owner": "*i32",
+      "States": "*fp32",
+      "Out": "*fp32"
+    },
+    "constants": {
+      "N": 64,
+      "H": 4,
+      "DK": 128,
+      "DV": 128,
+      "TILE": 16
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 512,
+    "ptx_sha256": "b3fc92be66572627a22222bd6c942b9a0a574f924eada8302334e7c6057a9a47"
+  },
+  {
+    "task": "eagle_accept_tail",
+    "case": "smoke",
+    "source_sha256": "6803c3707b2e5a230adadc2169ca746d875a57062b51b153a313415e140cc25e",
+    "kernel": "eagle_greedy_walk",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Targets": "*i32",
+      "Slots": "*i32",
+      "Lengths": "*i32",
+      "Paths": "*i32",
+      "Bonus": "*i32",
+      "Compact": "*i32"
+    },
+    "constants": {
+      "N": 1,
+      "BLOCK": 1
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "3a71ff56264845b382679c88ea3ba256cce5fc8d0c194c466a784d0e4a3c67c1"
+  },
+  {
+    "task": "eagle_accept_tail",
+    "case": "large",
+    "source_sha256": "6803c3707b2e5a230adadc2169ca746d875a57062b51b153a313415e140cc25e",
+    "kernel": "eagle_greedy_walk",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Targets": "*i32",
+      "Slots": "*i32",
+      "Lengths": "*i32",
+      "Paths": "*i32",
+      "Bonus": "*i32",
+      "Compact": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "BLOCK": 64
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 8,
+    "ptx_sha256": "6b04799b362d4a7684ba58eae7c2e1daec063ad8b215cee20a0847453e342631"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "smoke",
+    "source_sha256": "27f7281fb8e231526ac21a9e775fb1ed4188996916385ec81fc8afc5c730b4db",
+    "kernel": "eagle_sample_init",
+    "signature": {
+      "Target": "*fp32",
+      "Residual": "*fp32",
+      "Winner": "*i32",
+      "Bonuses": "*i32"
+    },
+    "constants": {
+      "N": 1,
+      "V": 32000,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "60c5493974667189e3f29fa712ce95e4c09d3d4e75132c451d2bfb89fceed55a"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "smoke",
+    "source_sha256": "27f7281fb8e231526ac21a9e775fb1ed4188996916385ec81fc8afc5c730b4db",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32",
+      "CHILD": "i32"
+    },
+    "constants": {
+      "N": 1,
+      "V": 32000
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "3106ef8a149ede63bceb1ea1f34d6a2cafab26c185c872459768cdc119fff4d4"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "smoke",
+    "source_sha256": "27f7281fb8e231526ac21a9e775fb1ed4188996916385ec81fc8afc5c730b4db",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "CHILD": "i32"
+    },
+    "constants": {
+      "N": 1,
+      "V": 32000,
+      "TILES": 32,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "9e5ce2ba50eeddbd0737644a074958ebd9af3995aa62776a8e17cd319319a180"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "smoke",
+    "source_sha256": "27f7281fb8e231526ac21a9e775fb1ed4188996916385ec81fc8afc5c730b4db",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32",
+      "CHILD": "i32"
+    },
+    "constants": {
+      "N": 1,
+      "V": 32000,
+      "TILES": 32,
+      "MASSBLOCK": 32,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "e227523750afe89da86a71d4b51c94d9049eced06eb5a733af7db45a3bedc867"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "smoke",
+    "source_sha256": "27f7281fb8e231526ac21a9e775fb1ed4188996916385ec81fc8afc5c730b4db",
+    "kernel": "eagle_probability_masses",
+    "signature": {
+      "Residual": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "V": 32000,
+      "TILES": 32,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "32a406084616d2e9ef8fa1e327dd964c5e0fb0d6dc9e62872c7446a974d01711"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "smoke",
+    "source_sha256": "27f7281fb8e231526ac21a9e775fb1ed4188996916385ec81fc8afc5c730b4db",
+    "kernel": "eagle_bonus_sample",
+    "signature": {
+      "Residual": "*fp32",
+      "Mass": "*fp64",
+      "Uniforms": "*fp32",
+      "Bonuses": "*i32"
+    },
+    "constants": {
+      "V": 32000,
+      "TILES": 32,
+      "MASSBLOCK": 32,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 256,
+    "ptx_sha256": "6af6e6922c79455284c25178f32ad30c149e71c2a23f4813862f1b46773e33ca"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "smoke",
+    "source_sha256": "27f7281fb8e231526ac21a9e775fb1ed4188996916385ec81fc8afc5c730b4db",
+    "kernel": "eagle_sampled_walk",
+    "signature": {
+      "Parents": "*i32",
+      "Slots": "*i32",
+      "Winner": "*i32",
+      "Bonuses": "*i32",
+      "Residual": "*fp32",
+      "Lengths": "*i32",
+      "Paths": "*i32",
+      "Bonus": "*i32",
+      "Compact": "*i32",
+      "Probability": "*fp32"
+    },
+    "constants": {
+      "N": 1,
+      "V": 32000,
+      "BLOCK": 1
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "5130f3de85772474810e7f601b2d07ef83f6bf6fe8b0291bd6c2ca2f4671325e"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "27f7281fb8e231526ac21a9e775fb1ed4188996916385ec81fc8afc5c730b4db",
+    "kernel": "eagle_sample_init",
+    "signature": {
+      "Target": "*fp32",
+      "Residual": "*fp32",
+      "Winner": "*i32",
+      "Bonuses": "*i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "6ca12aad3e11a540ddf481a959d70ba76f90c8523a624016db4ad144e57d7d78"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "27f7281fb8e231526ac21a9e775fb1ed4188996916385ec81fc8afc5c730b4db",
+    "kernel": "eagle_rejection_decision",
+    "signature": {
+      "Tokens": "*i32",
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Uniforms": "*fp32",
+      "Winner": "*i32",
+      "Flags": "*i32",
+      "CHILD": "i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "32fdcdd95bd0433c2d2734d651342a1334ca1e7ead58c400a0cc6ed6500b829a"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "27f7281fb8e231526ac21a9e775fb1ed4188996916385ec81fc8afc5c730b4db",
+    "kernel": "eagle_residual_chunks",
+    "signature": {
+      "Parents": "*i32",
+      "Draft": "*fp32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "CHILD": "i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "fd5b5b908e2a5cf5914675219f58cefb3072a7aaf5b7e514d005452de4533362"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "27f7281fb8e231526ac21a9e775fb1ed4188996916385ec81fc8afc5c730b4db",
+    "kernel": "eagle_residual_normalize",
+    "signature": {
+      "Parents": "*i32",
+      "Residual": "*fp32",
+      "Scratch": "*fp32",
+      "Mass": "*fp64",
+      "Flags": "*i32",
+      "CHILD": "i32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "ac26da234b1ce80625a044c980b802a097e453240b06a2608dc172c3ccd2efcc"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "27f7281fb8e231526ac21a9e775fb1ed4188996916385ec81fc8afc5c730b4db",
+    "kernel": "eagle_probability_masses",
+    "signature": {
+      "Residual": "*fp32",
+      "Mass": "*fp64"
+    },
+    "constants": {
+      "V": 151936,
+      "TILES": 149,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 32,
+    "ptx_sha256": "8f2d78c721a6a7fdda7fa736b9b6b387b15744111d93e702a939bed07927cc71"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "27f7281fb8e231526ac21a9e775fb1ed4188996916385ec81fc8afc5c730b4db",
+    "kernel": "eagle_bonus_sample",
+    "signature": {
+      "Residual": "*fp32",
+      "Mass": "*fp64",
+      "Uniforms": "*fp32",
+      "Bonuses": "*i32"
+    },
+    "constants": {
+      "V": 151936,
+      "TILES": 149,
+      "MASSBLOCK": 256,
+      "BLOCK": 1024
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 256,
+    "ptx_sha256": "6fe39730b4611ed6e80d157bfdca6b6fb1ff62f13defb7b6f22a89cc6b5d6d36"
+  },
+  {
+    "task": "eagle_accept_tail_sampled",
+    "case": "large",
+    "source_sha256": "27f7281fb8e231526ac21a9e775fb1ed4188996916385ec81fc8afc5c730b4db",
+    "kernel": "eagle_sampled_walk",
+    "signature": {
+      "Parents": "*i32",
+      "Slots": "*i32",
+      "Winner": "*i32",
+      "Bonuses": "*i32",
+      "Residual": "*fp32",
+      "Lengths": "*i32",
+      "Paths": "*i32",
+      "Bonus": "*i32",
+      "Compact": "*i32",
+      "Probability": "*fp32"
+    },
+    "constants": {
+      "N": 64,
+      "V": 151936,
+      "BLOCK": 64
+    },
+    "target": "cuda sm90 warp32",
+    "scope": "offline compiler only; no execution",
+    "status": "compiled",
+    "shared_bytes": 0,
+    "ptx_sha256": "119a0dac5758536f5aacb1f4f0f277eabb2774a820b2b2e140e86af1616115d3"
+  }
+]

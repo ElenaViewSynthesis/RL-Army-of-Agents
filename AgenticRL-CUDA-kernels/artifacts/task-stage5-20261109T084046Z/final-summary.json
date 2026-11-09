@@ -1,0 +1,105 @@
+{
+  "scope": "CPU correctness and offline compilation only; no GPU acceptance",
+  "cpu_smoke": [
+    {
+      "task": "eagle_candidate_topk",
+      "variant": "honest",
+      "status": "timeout",
+      "log": "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifacts/task-stage5-20261109T084046Z/eagle_candidate_topk/honest/verification.log"
+    },
+    {
+      "task": "eagle_tree_step",
+      "variant": "honest",
+      "status": "verified",
+      "log": "artifacts/task-stage5-final-fixes-20261109/eagle_tree_step/b1_n1_treechain_top_k4_float32/honest/verification.log"
+    },
+    {
+      "task": "eagle_tree_row_attention",
+      "variant": "honest",
+      "status": "verified",
+      "log": "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifacts/task-stage5-20261109T084046Z/eagle_tree_row_attention/honest/verification.log"
+    },
+    {
+      "task": "eagle_tree_verify_attention",
+      "variant": "honest",
+      "status": "verified",
+      "log": "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifacts/task-stage5-20261109T084046Z/eagle_tree_verify_attention/honest/verification.log"
+    },
+    {
+      "task": "eagle_gdn_tree_conv",
+      "variant": "honest",
+      "status": "verified",
+      "log": "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifacts/task-stage5-20261109T084046Z/eagle_gdn_tree_conv/honest/verification.log"
+    },
+    {
+      "task": "eagle_mamba2_tree_conv",
+      "variant": "honest",
+      "status": "verified",
+      "log": "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifacts/task-stage5-20261109T084046Z/eagle_mamba2_tree_conv/honest/verification.log"
+    },
+    {
+      "task": "eagle_gdn_tree_recurrence",
+      "variant": "honest",
+      "status": "verified",
+      "log": "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifacts/task-stage5-20261109T084046Z/eagle_gdn_tree_recurrence/honest/verification.log"
+    },
+    {
+      "task": "eagle_accept_tail",
+      "variant": "honest",
+      "status": "verified",
+      "log": "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifacts/task-stage5-20261109T084046Z/eagle_accept_tail/honest/verification.log"
+    },
+    {
+      "task": "eagle_accept_tail_sampled",
+      "variant": "honest",
+      "status": "verified",
+      "log": "artifacts/task-stage5-final-fixes-20261109/eagle_accept_tail_sampled/b1_n1_treechain_v32000_seed17_float32/honest/verification.log"
+    },
+    {
+      "task": "eagle_gdn_tree_recurrence",
+      "variant": "chain_replay",
+      "status": "verified",
+      "log": "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifacts/task-stage5-20261109T084046Z/eagle_gdn_tree_recurrence/chain_replay/verification.log"
+    }
+  ],
+  "tests": {
+    "system": {
+      "ran": 249,
+      "skipped": 56,
+      "status": "OK",
+      "log": "artifacts/stage5-system-tests-final.log"
+    },
+    "venv": {
+      "ran": 254,
+      "skipped": 28,
+      "status": "OK",
+      "log": "artifacts/stage5-venv-tests-final.log"
+    }
+  },
+  "offline_triton": {
+    "compiled": 48,
+    "failed": 0,
+    "target": "sm90",
+    "manifest": "artifacts/task-stage5-20261109T084046Z/offline-triton-final.json"
+  },
+  "gpu_launched": false,
+  "new_dependencies": false,
+  "new_rollout_config_fields": false,
+  "limitations": [
+    "catalog-size candidate top-k CPU interpreter timeout after 600s",
+    "CUDA C++ compilation unavailable: nvcc/GPU absent",
+    "GPU numeric/provenance/timing behavior and larger-case execution unverified"
+  ],
+  "frozen_source": {
+    "path": "artifacts/task-stage5-source-20261109T131446Z",
+    "files": 285,
+    "git_revision": "fd56edbfc557a4be4ecd8aaa6965d8e35ed4d48d"
+  },
+  "final_cuda_source_regression": {
+    "ran": 31,
+    "skipped": 12,
+    "status": "OK",
+    "log": "artifacts/stage5-final-cuda-source-regression.log",
+    "scope": "catalog/measurement/integer contracts; not a CUDA build"
+  }
+}

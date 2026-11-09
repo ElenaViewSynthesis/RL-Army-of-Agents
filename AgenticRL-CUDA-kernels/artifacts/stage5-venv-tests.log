@@ -1,0 +1,86 @@
+.....................ss...........................................sssssssss......sFE.<string>:0: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7ebfe5369210>
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+...F......{"function_call_id": "fc-synthetic"}
+..........s..........................sssssssssssssss{"backend": "triton", "measured": false, "reason": "CPU (no device events)"}
+.{"backend": "triton", "measured": false, "reason": "empty_profile:eager", "profile": {"timing_measured": false, "t_eager_us": null, "t_compile_us": null, "t_gen_us": null, "provenance": null, "provenance/agent": null, "provenance/library": null, "provenance/torch": null, "provenance/memory": null, "timing_reason": "empty_profile:eager", "profile/eager_events": 0}}
+.{"backend": "triton", "measured": true, "agent_kernel_names": ["axpby_kernel"], "profile": {"timing_measured": true, "t_eager_us": 100.0, "t_compile_us": 80.0, "t_gen_us": 50.0, "provenance": 0.9, "provenance/agent": 0.8, "provenance/library": 0.0, "provenance/torch": 0.1, "provenance/memory": 0.1, "kernel_us/axpby_kernel_0d1d2d": 5.0, "kernel_us/at::native::vectorized_elementwise_kernel": 1.0}, "t_gen_us": 50.0, "provenance": 0.9, "provenance/agent": 0.8, "provenance/library": 0.0, "provenance/torch": 0.1, "provenance/memory": 0.1, "kernels": {"axpby_kernel_0d1d2d": {"us": 5.0, "class": "agent"}, "at::native::vectorized_elementwise_kernel": {"us": 1.0, "class": "torch"}}, "unmatched_agent_names": []}
+.{"backend": "triton", "measured": true, "agent_kernel_names": ["axpby_kernel"], "profile": {"timing_measured": true, "t_eager_us": 100.0, "t_compile_us": 80.0, "t_gen_us": 50.0, "provenance": 0.9, "provenance/agent": 0.8, "provenance/library": 0.0, "provenance/torch": 0.1, "provenance/memory": 0.1, "kernel_us/prefix_axpby_kernel_suffix": 5.0}, "t_gen_us": 50.0, "provenance": 0.9, "provenance/agent": 0.8, "provenance/library": 0.0, "provenance/torch": 0.1, "provenance/memory": 0.1, "kernels": {"prefix_axpby_kernel_suffix": {"us": 5.0, "class": "torch"}}, "unmatched_agent_names": ["axpby_kernel"]}
+.{"backend": "cuda", "unavailable": "package not installed: fake"}
+.{"backend": "triton", "measured": true, "agent_kernel_names": ["axpby_kernel"], "profile": {"timing_measured": true, "t_eager_us": 100.0, "t_compile_us": 80.0, "t_gen_us": 50.0, "provenance": 0.9, "provenance/agent": 0.8, "provenance/library": 0.0, "provenance/torch": 0.1, "provenance/memory": 0.1, "kernel_us/mystery_kernel": 2.0}, "t_gen_us": 50.0, "provenance": 0.9, "provenance/agent": 0.8, "provenance/library": 0.0, "provenance/torch": 0.1, "provenance/memory": 0.1, "kernels": {"mystery_kernel": {"us": 2.0, "class": "torch"}}, "unmatched_agent_names": ["axpby_kernel"]}
+.....................................{"suite/task": "row_softmax", "suite/case": "b64_h128_float32", "suite/stage": 1, "suite/backend": "triton", "suite/fixture": "honest", "suite/purpose": "eval", "suite/eval_only": false, "suite/contract_only": false, "suite/status": "unavailable", "suite/reason": "CPU evaluation: GPU measurements and GPU candidate acceptance unavailable"}
+{"suite/task": "row_softmax", "suite/case": "b64_h128_float32", "suite/stage": 1, "suite/backend": "triton", "suite/fixture": "hack", "suite/purpose": "eval", "suite/eval_only": false, "suite/contract_only": false, "suite/status": "unavailable", "suite/reason": "CPU evaluation: GPU measurements and GPU candidate acceptance unavailable"}
+{"suite/task": "row_softmax", "suite/case": "b64_h128_float32", "suite/stage": 1, "suite/backend": "triton", "suite/fixture": "wrong", "suite/purpose": "eval", "suite/eval_only": false, "suite/contract_only": false, "suite/status": "unavailable", "suite/reason": "CPU evaluation: GPU measurements and GPU candidate acceptance unavailable"}
+{"suite/task": "row_softmax", "suite/case": "b64_h128_float32", "suite/stage": 1, "suite/backend": "cuda", "suite/fixture": "honest", "suite/purpose": "eval", "suite/eval_only": false, "suite/contract_only": false, "suite/status": "unavailable", "suite/reason": "CPU evaluation: GPU measurements and GPU candidate acceptance unavailable"}
+{"suite/task": "row_softmax", "suite/case": "b64_h128_float32", "suite/stage": 1, "suite/backend": "cuda", "suite/fixture": "hack", "suite/purpose": "eval", "suite/eval_only": false, "suite/contract_only": false, "suite/status": "unavailable", "suite/reason": "CPU evaluation: GPU measurements and GPU candidate acceptance unavailable"}
+{"suite/task": "row_softmax", "suite/case": "b64_h128_float32", "suite/stage": 1, "suite/backend": "cuda", "suite/fixture": "wrong", "suite/purpose": "eval", "suite/eval_only": false, "suite/contract_only": false, "suite/status": "unavailable", "suite/reason": "CPU evaluation: GPU measurements and GPU candidate acceptance unavailable"}
+................................................................CPU interpreter: scalar/empty/tail/matrix shapes, 3 dtypes, 4 alphas passed
+.
+======================================================================
+ERROR: test_candidate_ties_rescoring_and_frontier_ties (tests.test_eagle_stage5.EagleReferences.test_candidate_ties_rescoring_and_frontier_ties)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/tests/test_eagle_stage5.py", line 109, in test_candidate_ties_rescoring_and_frontier_ties
+    values,parents,paths,flat=tree_step(torch.zeros(1,3),torch.zeros(1,3,2),torch.tensor([[-1,0,0]],dtype=torch.int32))
+    ^^^^^^^^^^^^^^^^^^^^
+ValueError: too many values to unpack (expected 3)
+
+======================================================================
+FAIL: test_branching_and_chain_replay_against_references (tests.test_eagle_stage5.EagleInterpreter.test_branching_and_chain_replay_against_references)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/tests/test_eagle_stage5.py", line 218, in test_branching_and_chain_replay_against_references
+    Path(target).write_text(process.stdout+process.stderr)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 1 != 0 : {"task": "eagle_tree_step", "tree": "chain", "n": 1, "status": "pass"}
+{"task": "eagle_tree_row_attention", "tree": "chain", "n": 1, "status": "pass"}
+{"task": "eagle_gdn_tree_conv", "tree": "chain", "n": 1, "status": "pass"}
+{"task": "eagle_mamba2_tree_conv", "tree": "chain", "n": 1, "status": "pass"}
+{"task": "eagle_gdn_tree_recurrence", "tree": "chain", "n": 1, "status": "pass"}
+{"task": "eagle_accept_tail", "tree": "chain", "n": 1, "status": "pass"}
+{"task": "eagle_accept_tail_sampled", "tree": "chain", "n": 1, "status": "pass"}
+{"task": "eagle_tree_step", "tree": "chain", "n": 8, "status": "pass"}
+{"task": "eagle_tree_row_attention", "tree": "chain", "n": 8, "status": "pass"}
+{"task": "eagle_gdn_tree_conv", "tree": "chain", "n": 8, "status": "pass"}
+{"task": "eagle_mamba2_tree_conv", "tree": "chain", "n": 8, "status": "pass"}
+{"task": "eagle_gdn_tree_recurrence", "tree": "chain", "n": 8, "status": "pass"}
+{"task": "eagle_accept_tail", "tree": "chain", "n": 8, "status": "pass"}
+{"task": "eagle_accept_tail_sampled", "tree": "chain", "n": 8, "status": "pass"}
+{"task": "eagle_tree_step", "tree": "wide", "n": 1, "status": "pass"}
+{"task": "eagle_tree_row_attention", "tree": "wide", "n": 1, "status": "pass"}
+{"task": "eagle_gdn_tree_conv", "tree": "wide", "n": 1, "status": "pass"}
+{"task": "eagle_mamba2_tree_conv", "tree": "wide", "n": 1, "status": "pass"}
+{"task": "eagle_gdn_tree_recurrence", "tree": "wide", "n": 1, "status": "pass"}
+{"task": "eagle_accept_tail", "tree": "wide", "n": 1, "status": "pass"}
+{"task": "eagle_accept_tail_sampled", "tree": "wide", "n": 1, "status": "pass"}
+{"task": "eagle_tree_step", "tree": "wide", "n": 8, "status": "pass"}
+{"task": "eagle_tree_row_attention", "tree": "wide", "n": 8, "status": "pass"}
+{"task": "eagle_gdn_tree_conv", "tree": "wide", "n": 8, "status": "pass"}
+{"task": "eagle_mamba2_tree_conv", "tree": "wide", "n": 8, "status": "pass"}
+{"task": "eagle_gdn_tree_recurrence", "tree": "wide", "n": 8, "status": "pass"}
+{"task": "eagle_accept_tail", "tree": "wide", "n": 8, "status": "pass"}
+{"task": "eagle_accept_tail_sampled", "tree": "wide", "n": 8, "status": "pass"}
+Traceback (most recent call last):
+  File "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/tests/eagle_interpreter_probe.py", line 24, in <module>
+    check_equal(actual,expected)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/utils/task_verification.py", line 19, in check_equal
+    verification.check_equal(actual, expected)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/utils/verification.py", line 27, in check_equal
+    assert len(actual) == len(expected), f"{len(actual)=} != {len(expected)=}"
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: len(actual)=4 != len(expected)=3
+
+
+======================================================================
+FAIL: test_logical_bytes_equal_actual_reference_tensors (tests.test_eagle_stage5.EagleReferences.test_logical_bytes_equal_actual_reference_tensors)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/tests/test_eagle_stage5.py", line 204, in test_logical_bytes_equal_actual_reference_tensors
+    actual=sum(t.numel()*t.element_size() for t in (*inputs,*result))
+AssertionError: 120 != 132 : eagle_tree_step
+
+----------------------------------------------------------------------
+Ran 254 tests in 1004.601s
+
+FAILED (failures=2, errors=1, skipped=28)
