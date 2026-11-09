@@ -7,6 +7,9 @@ def make_inputs(task_name):
     import torch
 
     item = active_case(task_name)
+    if task_name.startswith("eagle_"):
+        from utils.eagle_reference import make_inputs as eagle_inputs
+        return eagle_inputs(task_name, item)
     p = item.params
     dtype = getattr(torch, item.dtype)
     randn = lambda *shape: torch.randn(*shape, dtype=dtype)

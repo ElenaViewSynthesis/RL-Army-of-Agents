@@ -204,6 +204,17 @@ TASKS = {
 }
 
 
+from utils.eagle_contracts import stage5_tasks
+
+SOURCES["eagle4"] = {
+    "suite": "EAGLE-4 documented kernel behavior (evaluation-only adaptation)",
+    "url": "https://github.com/eagle-hq/EAGLE-4/blob/main/docs/kernels.md",
+    "license": "Eagle 4 Source-Available License",
+    "license_url": "https://github.com/eagle-hq/EAGLE-4/blob/main/LICENSE",
+}
+TASKS.update(stage5_tasks(Task, case))
+
+
 def get_task(name):
     if name not in TASKS:
         raise ValueError(f"Unknown suite task: {name}")
@@ -238,7 +249,7 @@ def select_cases(task_name, selection="smoke"):
             return (get_case(task_name, "m4096_n4096_k4096_bfloat16"),)
         if task_name == "flash_attention_fwd":
             return task.cases[-1:]
-        return task.cases[:1]
+        return task.cases[-1:] if task.stage == 5 else task.cases[:1]
     return (get_case(task_name, selection),)
 
 
@@ -247,10 +258,13 @@ def validate_usage(task_name, purpose):
     if purpose not in ("eval", "train"):
         raise ValueError("purpose must be eval or train")
     if purpose == "train" and task.eval_only:
-        raise ValueError(f"{task_name} is eval-only; GPU MODE training reciprocity is not cleared")
+        raise ValueError(f"{task_name} is eval-only; source license training clearance is not recorded")
 
 
 def workload(task_name, item):
+    if task_name.startswith("eagle_"):
+        from utils.eagle_contracts import workload as eagle_workload
+        return eagle_workload(task_name, item)
     p = item.params
     size = {"float32": 4, "float16": 2, "bfloat16": 2, "int32": 4,
             "int8": 1, "float8_e4m3fn": 1}[item.dtype]

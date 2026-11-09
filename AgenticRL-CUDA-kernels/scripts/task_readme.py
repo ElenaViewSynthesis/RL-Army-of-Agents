@@ -174,12 +174,24 @@ def render(task_name, records=(), evidence=None, limitations=()):
     note = DETAILS.get(task_name, "")
     if task_name == "moe_dense_gemm":
         note = DENSE_DETAILS
+    if task.stage == 5:
+        note = ("See [Stage 5 contracts](../../EAGLE4_STAGE5.md) for the exact layouts, "
+                "math, tie rules, history conventions, workload counts and source deviations. "
+                "CUDA and Triton sources are provided; GPU acceptance is not yet measured. "
+                "Use `--fixtures all` for the wrong-ancestor control and, for GDN on Triton, chain replay.")
     license_note = (
         "\n**Held-out evaluation only.** GPU MODE's June 9 Researcher Reciprocity License "
         "covers evaluation/benchmarking for training as Training Use. This modified "
         "problem-family adaptation is blocked from `purpose=train` until reciprocity is "
         "cleared. Labeling an RL feedback run 'eval' does not clear those obligations.\n"
         if task.eval_only else "")
+    if task.stage == 5:
+        license_note = ("\n**Evaluation only; training clearance not recorded.** This project includes or is derived "
+                        "from Eagle 4 technology developed by Eagle AI Corp. It is not an official Eagle AI Corp project. "
+                        "The Eagle 4 Source-Available License is not OSI-approved. See "
+                        "[LICENSE](../../legal/eagle4/LICENSE), [NOTICE](../../legal/eagle4/NOTICE), "
+                        "[Trademark Policy](../../legal/eagle4/TRADEMARKS.md) and "
+                        "[conditions/acceptance notice](../../EAGLE4_STAGE5.md#source-license-and-attribution).\n")
     baselines, ceilings = [], []
     for record in records:
         if (record.get("suite/task") != task_name or record.get("suite/fixture") != "honest"

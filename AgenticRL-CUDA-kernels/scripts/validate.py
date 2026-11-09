@@ -24,7 +24,7 @@ def main():
     parser.add_argument("--device", choices=("cpu", "cuda"), default="cpu")
     parser.add_argument("--timeout-s", type=float, default=180)
     parser.add_argument("--backends", help="Comma-separated selection; default all backends")
-    parser.add_argument("--suite", help="Progressive task names, all, bootstrap, or stage1..stage4")
+    parser.add_argument("--suite", help="Progressive task names, all, bootstrap, or stage1..stage5")
     parser.add_argument("--case-set", default="smoke", help="smoke, all, acceptance, or one exact case id")
     parser.add_argument("--fixtures", default="honest,hack,wrong")
     parser.add_argument("--purpose", choices=("eval", "train"), default="eval")

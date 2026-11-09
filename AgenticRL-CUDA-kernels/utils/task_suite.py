@@ -20,6 +20,7 @@ from utils.task_policy import apply_task_policy, diagnostic_rates, gemm_ceiling_
 
 ROOT = Path(__file__).resolve().parent.parent
 VARIANTS = ("honest", "hack", "wrong")
+EXTRA_VARIANTS = ("wrong_ancestor", "chain_replay")
 
 
 @contextlib.contextmanager
@@ -57,8 +58,10 @@ def scaffold(task_name, backend, variant, destination):
     get_task(task_name)
     if backend not in BACKENDS:
         raise ValueError(f"Unknown backend {backend}")
-    if variant not in VARIANTS:
+    if variant not in (*VARIANTS, *EXTRA_VARIANTS):
         raise ValueError(f"Unknown fixture variant {variant}")
+    if variant == "chain_replay" and (task_name != "eagle_gdn_tree_recurrence" or backend != "triton"):
+        raise FileNotFoundError("chain_replay is the GDN Triton alternate solution")
     source = ROOT / "tasks" / task_name
     candidate = source / (f"model_new_{backend}.py" if variant == "honest" else f"model_new_{variant}.py")
     if not candidate.is_file():
@@ -70,7 +73,7 @@ def scaffold(task_name, backend, variant, destination):
         if not (destination / name).is_file():
             shutil.copy2(ROOT / name, destination / name)
     text = candidate.read_text()
-    if variant != "honest":
+    if variant not in ("honest", "chain_replay"):
         if text.count('BACKEND = "triton"') != 1:
             raise ValueError("Negative fixture must contain one trusted backend placeholder")
         text = text.replace('BACKEND = "triton"', f"BACKEND = {backend!r}", 1)
@@ -81,7 +84,7 @@ def scaffold(task_name, backend, variant, destination):
 
 
 def expected_outcome(result, variant):
-    if variant == "honest":
+    if variant in ("honest", "chain_replay"):
         return (result.get("env/verify_ok") is True and result.get("reward/base", -1) > 0
                 and result.get("task/policy_violation") is None)
     if variant == "hack":
@@ -103,7 +106,7 @@ def evaluate_case(task_name, case_id, backend, variant, destination, *, device="
                   purpose="eval", cfg=None, cold_start=False):
     started = time.monotonic()
     spec, item = get_task(task_name), get_case(task_name, case_id)
-    if variant not in VARIANTS:
+    if variant not in (*VARIANTS, *EXTRA_VARIANTS):
         raise ValueError(f"Unknown fixture variant {variant}")
     result = {"suite/task": task_name, "suite/case": case_id, "suite/stage": spec.stage,
               "suite/backend": backend, "suite/fixture": variant, "suite/purpose": purpose,
@@ -129,7 +132,7 @@ def evaluate_case(task_name, case_id, backend, variant, destination, *, device="
         return result
     requested = cfg or RolloutConfig()
     config = dataclasses.replace(
-        requested, backend=backend, benchmark=requested.benchmark and variant == "honest",
+        requested, backend=backend, benchmark=requested.benchmark and variant in ("honest", "chain_replay"),
         exact_integer_outputs=True,
         provenance_threshold=max(requested.provenance_threshold,
                                  1.0 if task_name == "gemm_tensor_core" else .9))
@@ -232,7 +235,7 @@ def select_tasks(names):
     for name in names:
         if name == "all":
             result.extend(TASKS)
-        elif name in ("bootstrap", "stage1", "stage2", "stage3", "stage4"):
+        elif name in ("bootstrap", "stage1", "stage2", "stage3", "stage4", "stage5"):
             stage = 0 if name == "bootstrap" else int(name[-1])
             result.extend(task.name for task in TASKS.values() if task.stage == stage)
         else:
@@ -243,7 +246,7 @@ def select_tasks(names):
 def run_suite(names, output, *, case_set="smoke", backends=None, variants=VARIANTS,
               device="cuda", purpose="eval", timeout_s=600, benchmark=False, cold_start=False):
     names = select_tasks(names)
-    if not names or not variants or set(variants) - set(VARIANTS):
+    if not names or not variants or set(variants) - set((*VARIANTS, *EXTRA_VARIANTS, "all")):
         raise ValueError("Task and fixture selections must be nonempty and valid")
     if backends is not None and (not backends or set(backends) - set(BACKENDS)):
         raise ValueError("Backend selections must be nonempty and valid")
@@ -262,7 +265,12 @@ def run_suite(names, output, *, case_set="smoke", backends=None, variants=VARIAN
         chosen = tuple(backends) if backends else spec.backends or ("triton",)
         for item in select_cases(name, case_set):
             for backend in chosen:
-                for variant in variants:
+                selected_variants = variants
+                if "all" in variants:
+                    selected_variants = (*VARIANTS,
+                        *(("wrong_ancestor",) if (ROOT / "tasks" / name / "model_new_wrong_ancestor.py").is_file() else ()),
+                        *(("chain_replay",) if name == "eagle_gdn_tree_recurrence" and backend == "triton" else ()))
+                for variant in selected_variants:
                     destination = root / name / item.id / backend / variant
                     result = evaluate_case(name, item.id, backend, variant, destination,
                                            device=device, purpose=purpose, cfg=config, cold_start=cold_start)

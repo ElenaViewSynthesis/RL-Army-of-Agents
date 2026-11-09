@@ -11,12 +11,12 @@ from pathlib import Path
 from utils.task_suite import ROOT, select_tasks
 
 
-PACKAGES = ("utils", "scripts", "cloud", "tracking", "kernels", "tests", "Architecture-decision")
+PACKAGES = ("utils", "scripts", "cloud", "tracking", "kernels", "tests", "Architecture-decision", "legal")
 SUFFIXES = frozenset((".py", ".cpp", ".cu", ".h", ".md", ".txt", ".sh"))
 EXCLUDED = frozenset(("__pycache__", ".cache", ".artifacts", "build", ".git", ".venv"))
 ROOT_FILES = (
     "AGENTS.md", "README.md", "VALIDATION.md", "KNOWN_ISSUES.md", "Benchmark_diagnostics_task.md",
-    "SKILL.md", "SKILL_CUDA.md", "SKILL_TRITON.md", "SKILL_TILELANG.md", "SKILL_CUTILE.md", "SKILL_CUTEDSL.md",
+    "EAGLE4_STAGE5.md", "SKILL.md", "SKILL_CUDA.md", "SKILL_TRITON.md", "SKILL_TILELANG.md", "SKILL_CUTILE.md", "SKILL_CUTEDSL.md",
     "model.py", "model_new.py", "model_new_triton.py", "model_new_tilelang.py",
     "model_new_cutile.py", "model_new_cutedsl.py", "binding.cpp", "binding_registry.h",
     "requirements.txt", "requirements-gpu.txt", "requirements-tilelang.txt",
@@ -32,7 +32,8 @@ def freeze(destination, task_names):
     paths = [ROOT / name for name in ROOT_FILES if (ROOT / name).is_file()]
     for folder in (*PACKAGES, *(f"tasks/{name}" for name in names)):
         for path in (ROOT / folder).rglob("*"):
-            if (path.is_file() and path.suffix in SUFFIXES
+            if (path.is_file() and (path.suffix in SUFFIXES or path.name in ("LICENSE", "NOTICE")
+                                             or (folder == "legal" and path.name == "source.json"))
                     and not any(part in EXCLUDED for part in path.relative_to(ROOT).parts)):
                 paths.append(path)
     paths.append(ROOT / "artifacts" / "upstream.json")
