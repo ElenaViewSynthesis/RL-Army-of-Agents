@@ -278,7 +278,7 @@
   CPU activities, recorded shapes and memory events, so its kernel times are
   more perturbed than the reward profiler's and are diagnostics only. Artifacts
   live in the candidate-writable workdir and are never a trusted reward input.
-- **Progressive task suite: open items after the H200 runs.** Every task
+- **Progressive task suite: open items after the H200 runs.** Every stage 0–4 task
   with a reference solution passes on H200 for its smoke case and one larger
   or acceptance case, including the `gemm_tensor_core` CuTe DSL backend after its C-store fix
   (`task-cute-fix-{smoke,acceptance}-20261109T030234Z`). That kernel is
@@ -291,3 +291,23 @@
   those rely on the GPU. INT8/FP8 are contract-only by design. GPU
   MODE-derived tasks are evaluation-only, and the "local" source has no
   repository license (NOASSERTION).
+
+- **Stage 5: implemented evaluation-only adaptations, GPU acceptance pending.**
+  Nine EAGLE-4 documentation-derived tasks now have Triton and CUDA sources;
+  GDN recurrence has an alternate first-child-chain replay fixture. The actual
+  root source-available license permits the requested noncommercial evaluation
+  subject to its conditions; pinned documentation/legal texts and attribution
+  are in `legal/eagle4/` and `EAGLE4_STAGE5.md`. The third-party LICENSES texts
+  do not relicense Eagle materials. All nine tasks refuse training use.
+  Eight tasks plus the alternate recurrence fixture pass five strict CPU smoke
+  checks. Full-size candidate top-k timed out after 600 seconds in the CPU
+  interpreter; its correctness remains unverified at catalog size, although
+  small synthetic tie/random probes pass. The sampled mask error was fixed and
+  rechecked; it was not an interpreter limitation. All 48 final smoke/large
+  Triton compiler configurations compile offline for sm90, without device
+  execution. CUDA C++ has not compiled here (nvcc/GPU absent), and no GPU
+  provenance, timing or full-grid acceptance is claimed. Expanded B=32/N=64/
+  32768-context cases can consume substantial memory; smoke first and explicit
+  case selection remain necessary for the next approved GPU run. Raw evidence
+  and final suite summaries are in VALIDATION.md. No state-equality tolerance,
+  reward or RolloutConfig change was needed.

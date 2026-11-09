@@ -2,7 +2,7 @@
 
 - The Triton tensor-core GEMM runs at 85.4% of cuBLAS on a 4096³ bf16
   multiply, well above the 60% gate. The fixed CUDA version also passes.
-- Every stage 4 task passes on the H200, even though most of them failed or
+- Every stage 4 task with an implemented backend passes on the H200, even though most of them failed or
   didn't finish on the CPU interpreter. Those CPU failures were interpreter
   limits, not kernel bugs.
 - The CuTe DSL tensor-core GEMM now compiles and passes on the H200 (smoke

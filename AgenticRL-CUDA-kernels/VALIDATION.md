@@ -2068,3 +2068,159 @@ The CuTe DSL kernel is now correct but slow: about 2.5× slower than eager at
 stage and a 64 × 64 × 32 tile. The ≥ 60% cuBLAS acceptance gate applies only
 to the Triton backend, so these rows pass. Evidence:
 `artifacts/task-cute-fix-20261109T030234Z/`.
+
+## Stage 5 EAGLE-4 evaluation workloads (2026-11-09)
+
+Source/license review preceded implementation. The actual documentation, root
+Eagle 4 Source-Available License, incorporated trademark policy, NOTICE,
+third-party notices and LICENSES texts are pinned at upstream commit
+`14fb79a5a4562ebe671444d7841253b889301040` in `legal/eagle4/`; the manifest
+records exact URLs, SHA-256 and retrieval time. Section 2 permits the requested
+noncommercial evaluation/benchmark adaptations subject to the license. These
+files are source-available, not OSI-approved open source. Attribution, source,
+commercial/competitive and notice obligations remain. All nine tasks are
+`eval_only=True`; this implementation does not clear training use.
+
+The complete contracts, license acceptance/attribution notices, source deviations,
+case grids, fixture variants and accounting conventions are in `EAGLE4_STAGE5.md`.
+No eagle_harness implementation source was fetched or ported. The documented
+batch-1 greedy walk was extended locally to B=8/32 and sampled acceptance; Mamba2
+conv uses the common width-4 tree windows, without selective state update. The
+GDN walk/chain replay use the existing floating tolerance, not bitwise state
+comparison. No RolloutConfig fields, reward semantics, tolerances, stock upstream
+files or dependencies changed.
+
+Added nine self-contained `tasks/eagle_*/` directories (Torch reference, authored
+Triton and CUDA sources/bindings, Torch-op and wrong-output controls, plus
+wrong-ancestor controls for all eight tree tasks). Recurrence also has a Triton
+`model_new_chain_replay.py`. Added `utils/eagle_contracts.py`,
+`utils/eagle_reference.py`, `scripts/verify_stage5_cpu.py`, regression tests,
+source/legal preservation and stage/fixture support in the existing catalog,
+input dispatcher, suite and source freezer. The expanded catalog has 3,618 Stage
+5 cases; it is not a claim of 3,618 tested cases.
+
+Local runtime: WSL2, Python 3.13.9, Torch 2.14.1+cpu, Triton 3.8.0, NumPy 2.5.4;
+CUDA unavailable, nvcc absent. Raw versions: `artifacts/task-stage5-20261109T084046Z/runtime-cpu.json`.
+
+### Strict CPU interpreter smoke checks
+
+The first pass used the exact subprocess argv and environment in
+`artifacts/task-stage5-20261109T084046Z/manifest.json`, with actual copied
+candidates under each task/fixture directory and raw `verification.log` files.
+Its `verify_stage5.py` driver is preserved there. Each subprocess ran
+`utils.task_verification` (stock verification plus exact integer comparisons)
+through a scaffolded workdir with `CUDA_AGENT_DEVICE=cpu`, `TRITON_INTERPRET=1`,
+`PYTHONDONTWRITEBYTECODE=1`, OMP/MKL threads=2 and a 600-second timeout.
+The initial harness was not a pre-frozen tree; that manifest explicitly separates
+end-of-run repository hashes from the copied candidates that actually executed.
+
+| Task/fixture | Smoke CPU result |
+|---|---|
+| eagle_candidate_topk / honest | **unverified**: 600-second interpreter timeout; no pass claimed |
+| eagle_tree_step / honest | 5/5 after exposing exact selected flat child IDs; final-fixes evidence below |
+| eagle_tree_row_attention / honest | 5/5 |
+| eagle_tree_verify_attention / honest | 5/5 |
+| eagle_gdn_tree_conv / honest | 5/5 |
+| eagle_mamba2_tree_conv / honest | 5/5 |
+| eagle_gdn_tree_recurrence / honest | 5/5 |
+| eagle_gdn_tree_recurrence / chain_replay | 5/5 |
+| eagle_accept_tail / honest | 5/5 |
+| eagle_accept_tail_sampled / honest | 5/5 after fixing the store mask to Boolean; final-fixes evidence below |
+
+The first sampled run failed on an integer-valued tl.store mask. Its raw failure
+is retained, rather than labeled interpreter-unsupported. The fix is shared by
+CPU and GPU paths. The subsequent mask-fix smoke evidence is
+`artifacts/task-stage5-sampled-fix-20261109/`. A final code review also made CHILD
+a runtime argument to avoid recompiling the rejection kernels for every child,
+and added selected flat child IDs to tree-step outputs so ties are observable.
+Both affected tasks were rechecked against their final sources:
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m scripts.verify_stage5_cpu \
+  --tasks eagle_tree_step,eagle_accept_tail_sampled --fixtures honest \
+  --output artifacts/task-stage5-final-fixes-20261109
+# Both rows verified: 5/5 checks each; manifests include pre-run source/harness hashes.
+```
+
+The logs are under `artifacts/task-stage5-final-fixes-20261109/` and the launcher
+stdout is `artifacts/stage5-final-fixes.log`. The 600-second top-k timeout was not
+worked around by substituting a CPU implementation, changing precision, shrinking
+the catalog smoke case or loosening comparison. Small **synthetic** random/tie
+selection probes (including a shard boundary) pass separately; they do not
+validate the full catalog top-k case.
+
+### Branching, controls and offline compilation
+
+`tests/eagle_interpreter_probe.py`, executed by the virtualenv test suite in an
+isolated CPU interpreter subprocess, compares the authored tree kernels against
+references for N=1/8, B=2 and chain/wide/balanced/ragged parents. It compares GDN
+walk and chain replay, and checks top-k random scores and stable ties at small
+synthetic vocabularies. Exact parent/window/path metadata checks are included.
+The final log is `artifacts/task-stage5-20261109T084046Z/branching-probes-final.log`.
+Reference tests additionally cover ties, full windows, sibling exclusion,
+request-history windows, Mamba channel layout, parent-versus-previous-node state,
+rejection residual correction, seeded reproducibility, exact large slot IDs,
+Torch-op controls verifying, both wrong controls failing, and logical-byte counts
+against actual input/output tensors.
+
+Offline compilation used meta tensors and an explicit CUDA sm90/warp32 compiler
+target; it never initialized a GPU execution context or launched a kernel:
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -B \
+  artifacts/task-stage5-20261109T084046Z/compile_eagle_triton_final.py
+# COMPILATION_DONE 48 0
+```
+
+All 48 distinct smoke/largest-shape Triton configurations compiled. The raw log
+is `artifacts/stage5-offline-compile-final.log`; source signatures, constexprs,
+PTX hashes and compiler results are in
+`artifacts/task-stage5-20261109T084046Z/offline-triton-final.json`.
+The earlier 237-configuration compile (before removing child-index specialization)
+is retained separately and is not the final-source gate. Compilation alone does
+not verify runtime resource use, numerical output, timing, CUDA C++ builds or
+provenance.
+
+### Final local suites and remaining limits
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover \
+  > artifacts/stage5-system-tests-final.log 2>&1
+# Ran 249 tests in 236.617s
+# OK (skipped=56)
+PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 \
+  STAGE5_PROBE_OUTPUT=artifacts/task-stage5-20261109T084046Z/branching-probes-final.log \
+  .venv/bin/python -m unittest discover > artifacts/stage5-venv-tests-final.log 2>&1
+# Ran 254 tests in 943.844s
+# OK (skipped=28)
+```
+
+Only the final logs above gate the final output contract. Earlier exploratory
+logs are retained; an earlier concurrent suite observed the tree-step arity/byte
+contract while it was being updated and is not final-source acceptance.
+
+The system suite skips Torch-dependent references/interpreter checks and GPU or
+missing optional-package checks. The virtualenv runs the new reference and
+interpreter checks; its new GPU test explicitly skips because CUDA is unavailable.
+No GPU fixture has been accepted, no GPU timing/bandwidth/TFLOP/s is reported, and
+no paid Modal invocation or live W&B/Weave write was made.
+
+Open verification work: full-size top-k correctness, all CUDA C++ builds, device
+numeric behavior/provenance, and larger catalog cases. The CUDA sources are
+conservative correctness fixtures, not performance claims. Source freezes retain
+all legal notices. A GPU smoke run and then one selected larger case per task
+need separate user approval; no new tolerance or RolloutConfig decision is needed.
+
+Final CUDA-source review flattened the candidate vocabulary launch into grid.x,
+so the 128256/151936 vocabulary cases do not use the limited grid.y dimension.
+This CUDA-only index/launch change followed the broad suites; Python/reference
+contracts were unchanged. CUDA remains uncompiled and unexecuted locally. The
+applicable catalog, measurement and integer-verification regression checks pass:
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 python3 -m unittest tests.test_task_catalog \
+  tests.test_task_measurement tests.test_task_integer_verification \
+  > artifacts/stage5-final-cuda-source-regression.log 2>&1
+# Ran 31 tests in 23.135s
+# OK (skipped=12)
+```

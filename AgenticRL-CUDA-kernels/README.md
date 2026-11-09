@@ -86,7 +86,7 @@ Under the DAPO and CISPO presets, a rollout that finishes inside the last `overl
 
 ### Kernel tasks the agent works on
 
-Beyond the stock 1 × 128 `axpby` fixture, `tasks/` holds a progressive curriculum of 20 workloads. Each task folder has a trusted `model.py` reference, which takes its shapes and dtypes from `utils/task_catalog.py` so a candidate workdir cannot redefine them. Every task also has two negative controls: a Torch-op hack and a wrong-output fixture. Tasks with a reference solution add CUDA and/or Triton kernels. The agent's job on every task is the same: write a `model_new.py` whose authored kernels match the reference and beat eager and `torch.compile`.
+Beyond the stock 1 × 128 `axpby` fixture, `tasks/` holds a progressive curriculum of 29 workloads. Each task folder has a trusted `model.py` reference, which takes its shapes and dtypes from `utils/task_catalog.py` so a candidate workdir cannot redefine them. Every task also has two negative controls: a Torch-op hack and a wrong-output fixture. Tasks with a reference solution add CUDA and/or Triton kernels. The agent's job on every task is the same: write a `model_new.py` whose authored kernels match the reference and beat eager and `torch.compile`.
 
 | Stage | Focus | H200 status |
 |---|---|---|
@@ -95,7 +95,7 @@ Beyond the stock 1 × 128 `axpby` fixture, `tasks/` holds a progressive curricul
 | 2 | Normalization, fused optimizer and tensor-core GEMM: RMSNorm, LayerNorm + residual + GELU, log-softmax gather, fused AdamW, bf16 GEMM | pass (after the CUDA GEMM build fix and the CuTe DSL C-store fix) |
 | 3 | Packed-reduction kernels against the repository-authored RL contracts: GRPO group normalization, CISPO weight clipping, packed variable-length reduction | pass |
 | 4 | Attention, grouped GEMM, sampling, residual RMSNorm, decode attention and Dense-MoE; INT8/FP8 as contracts only | pass (grouped GEMM is Triton-only by design) |
-| 5 (planned) | EAGLE-4 speculative-decoding kernels: candidate top-k, draft-tree expansion, tree attention, GDN tree conv and recurrence, greedy acceptance | not started; brief in [EAGLE4_kernels_task.md](EAGLE4_kernels_task.md) |
+| 5 | Nine evaluation-only speculative-tree workloads, including sampled acceptance and Mamba2 conv; GDN walk and chain replay | implemented; CPU evidence in VALIDATION.md; GPU acceptance unverified |
 
 | Stage | Task | Reference solution | H200 result (honest scores, hack fails provenance, wrong fails verification) |
 |---|---|---|---|
@@ -119,17 +119,19 @@ Beyond the stock 1 × 128 `axpby` fixture, `tasks/` holds a progressive curricul
 | 4 | `topk_sampling` | Triton, CUDA | pass (smoke; 32 × 128256 vocabulary, k = 32) |
 | 4 | `fp8_gemm`\*† | none by design | — |
 | 4 | `int8_gemm`\*† | none by design | — |
-| 5 | `eagle_candidate_topk`‡ | not yet written | — |
-| 5 | `eagle_tree_step`‡ | not yet written | — |
-| 5 | `eagle_tree_row_attention`‡ | not yet written | — |
-| 5 | `eagle_tree_verify_attention`‡ | not yet written | — |
-| 5 | `eagle_gdn_tree_conv`‡ | not yet written | — |
-| 5 | `eagle_gdn_tree_recurrence`‡ | not yet written | — |
-| 5 | `eagle_accept_tail`‡ | not yet written | — |
+| 5 | `eagle_candidate_topk`‡ | Triton, CUDA | GPU unverified |
+| 5 | `eagle_tree_step`‡ | Triton, CUDA | GPU unverified |
+| 5 | `eagle_tree_row_attention`‡ | Triton, CUDA | GPU unverified |
+| 5 | `eagle_tree_verify_attention`‡ | Triton, CUDA | GPU unverified |
+| 5 | `eagle_gdn_tree_conv`‡ | Triton, CUDA | GPU unverified |
+| 5 | `eagle_mamba2_tree_conv`‡ | Triton, CUDA | GPU unverified |
+| 5 | `eagle_gdn_tree_recurrence`‡ | Triton, CUDA; alternate Triton chain replay | GPU unverified |
+| 5 | `eagle_accept_tail`‡ | Triton, CUDA | GPU unverified |
+| 5 | `eagle_accept_tail_sampled`‡ | Triton, CUDA | GPU unverified |
 
 \* Evaluation-only: adapted from GPU MODE reference kernels, whose license does not clear training use (`--purpose train` is refused).
 † Contract only by design: the INT8/FP8 workloads are specified (inputs, reference, checks), but Stage 4 deliberately enables no backend for them; their `ModelNew` raises `unavailable`.
-‡ Planned, not in `tasks/` or the catalog yet: engine-free contracts adapted from the [EAGLE-4 kernels documentation](https://github.com/eagle-hq/EAGLE-4/blob/main/docs/kernels.md). EAGLE-4 is under the "Eagle 4 Source-Available License", so these will be implemented from the documented behaviour only and marked evaluation-only until training use is cleared. See [EAGLE4_kernels_task.md](EAGLE4_kernels_task.md).
+‡ Evaluation-only adaptations of documented EAGLE-4 behavior. This project includes or is derived from Eagle 4 technology developed by Eagle AI Corp. It is not an official Eagle AI Corp project. The Eagle 4 Source-Available License is not OSI-approved; its [LICENSE](legal/eagle4/LICENSE), [NOTICE](legal/eagle4/NOTICE), [Trademark Policy](legal/eagle4/TRADEMARKS.md), acceptance conditions and exact repository-defined contracts are recorded in [EAGLE4_STAGE5.md](EAGLE4_STAGE5.md). All nine tasks refuse training use. Expanded grids and source presence are not GPU acceptance. Use `--fixtures all` to include wrong-ancestor controls and GDN chain replay.
 
 Runs: `task-stage1-20261109T004826Z` (stages 0–1, 24/24), `task-stage23-20261109T013032Z` (stages 2–3, 51/54; the 3 failures are the CUDA tensor-core GEMM build, since fixed), `task-stage4-smoke-20261109T020100Z` (stage 4, 33 passed, 3 unavailable for grouped GEMM CUDA), the larger-case batch `…-20261109T021131Z` (all pass except the CuTe DSL GEMM retest), and `task-cute-fix-{smoke,acceptance}-20261109T030234Z` (CuTe DSL GEMM after its fix: 3/3 each). Each run used a frozen source; [VALIDATION.md](VALIDATION.md) lists which files changed afterwards. Under the CPU interpreter, bf16 `tl.dot` kernels fail and `topk_sampling` is too slow, so those tasks rely on the GPU results. "Pass" covers the listed cases on one H200, and kernel attribution is name-based.
 

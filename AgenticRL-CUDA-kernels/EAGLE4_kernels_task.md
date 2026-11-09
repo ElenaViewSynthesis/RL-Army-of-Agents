@@ -70,8 +70,8 @@ SGLang/vLLM integration, the Gluon backend, Mamba2 selective state update.
 - Register each task in utils/task_catalog.py (stage 5, cases, sources,
   backends) with a correct workload() FLOP/byte convention or "unavailable".
 - Integer outputs use exact comparison via
-  RolloutConfig.exact_integer_outputs / utils/task_verification.py. That mode
-  is still awaiting the user's approval, so say so in your report. Do NOT
+  RolloutConfig.exact_integer_outputs / utils/task_verification.py. That task-only mode
+  was approved on 2026-11-09 (see HANDOFF_CODEX.md and VALIDATION.md). Do NOT
   change floating-point tolerances (atol/rtol 1e-2); ASK if a kernel cannot
   meet them.
 - Kernel names must be authored and creditable (>= 4 characters, no generic
