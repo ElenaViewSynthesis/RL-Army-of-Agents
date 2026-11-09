@@ -1970,3 +1970,69 @@ Evidence: [step2-h200-20261108T225125Z](artifacts/step2-h200-20261108T225125Z/)
 (session log, pre-launch checksums, and the run folder with the acceptance
 review, results, kernel names, environment, stage logs, benchmark samples and
 profile artifacts).
+
+## Progressive task suite (2026-11-09)
+
+`tasks/` holds 20 workloads in stages 0–4 (README, "Kernel tasks the agent
+works on"). They are evaluated by `python -m scripts.validate --suite ...`
+(`utils/task_suite.py`) and on Modal by `cloud/modal_tasks.py`, from a frozen
+source tree (`scripts/freeze_task_suite.py`). Two task-only gates were
+approved by the user on 2026-11-09: the `authored-only-no-library-v1`
+provenance gate (`utils/task_policy.py`) and exact integer-output comparison
+(`RolloutConfig.exact_integer_outputs`, `utils/task_verification.py`). The
+stock rollout keeps its reward and tolerances.
+
+**H200, stages 0–1: run `task-stage1-20261109T004826Z`.** Smoke case, CUDA
+and Triton, honest/hack/wrong fixtures: status `pass`, 24 passed, 0 failed,
+0 unavailable. Every honest solution scored (`correct` to
+`faster_than_both`), every Torch-op hack failed `provenance`, and every
+wrong-output control failed `verification`. The frozen source (175 files) is
+in `artifacts/task-suite-source-20261109T002404Z-stage1/`, and the evidence is
+in `artifacts/task-stage1-20261109T004826Z/`. After that run, `utils/task_policy.py`,
+`utils/task_suite.py`, `utils/task_fixtures.py`, `utils/verification.py`,
+`utils/config.py` and `utils/rollout_env.py` changed (cuBLAS ceiling record
+validation, candidate source hashes, exact integer mode, fixture generator).
+The stage 0–1 kernels and task files did not. The run does not cover those
+harness changes.
+
+**CPU interpreter.** Codex's manifests under `artifacts/task-stage1-20261108T234354Z/`,
+`task-stage2-*`, `task-stage4-*` and `task-gemm-tc-fix-*` record per-task
+verification. Stages 0–3 pass 5/5, except `gemm_tensor_core` (the interpreter
+mis-evaluates bf16 `tl.dot`). In stage 4, only `decode_attention` passes.
+`flash_attention_fwd`, `grouped_gemm` and `moe_dense_gemm` fail under the
+interpreter's bf16 `tl.dot`; `residual_rmsnorm` has 35 of 131072 elements out
+of tolerance; and `topk_sampling` did not finish. None of those causes is
+confirmed.
+
+**H200, stages 2–4 and larger cases.** Each run used a frozen source
+(`task-source-manifest.json` in its evidence):
+
+| Run | Scope | Result |
+|---|---|---|
+| `task-stage23-20261109T013032Z` | stages 2–3, smoke, CUDA + Triton | 51 passed, 3 failed: `gemm_tensor_core` CUDA did not compile (the `(T)0` padding under `__CUDA_NO_HALF_CONVERSIONS__`), fixed in `task-gemm-tc-fix-20261109T013750Z` |
+| `task-stage4-smoke-20261109T020100Z` | stage 4, smoke | 33 passed, 3 unavailable (`grouped_gemm` CUDA is not provided by contract) |
+| `task-flagship-acceptance-20261109T021131Z` | `gemm_tensor_core` + `flash_attention_fwd` acceptance | 12 passed; Triton GEMM 4096³ bf16 at 0.854 of cuBLAS (gate ≥ 0.6) |
+| `task-cute-retest-20261109T021131Z` | `gemm_tensor_core` CuTe DSL, smoke | fail: CuTe DSL compile error |
+| `task-decode-long-…`, `task-flash-middle-…`, `task-grouped-large-…`, `task-grpo-nontrivial-…`, `task-layernorm-bf16-…`, `task-moe-shared-…`, `task-packed-sum-…`, `task-residual-large-…`, `task-sampling-k32-…`, `task-scan-large-exact-…` (all `-20261109T021131Z`) | one larger case each | all pass (3–6 rows each) |
+
+Source match against the committed tree. The stage 2–4 smoke runs and the
+larger-case batch differ from it only in `utils/task_suite.py` (a second
+protected-file check after the cuBLAS ceiling stage, which can only turn a
+pass into a fail), `tests/test_task_measurement.py`, and
+`tasks/gemm_tensor_core/kernels/cutedsl/gemm_tensor_core.py` (rewritten after
+the CuTe DSL failure; not GPU-tested). The stage 2–3 run also predates the
+CUDA GEMM fix, and its `scripts/task_readme.py`/`tests/test_task_sampling.py`
+differ. For the larger-case batch only the durable results and launch
+receipts were saved, not the full per-case logs.
+
+**Test suites** (WSL, inside `AgenticRL-CUDA-kernels/`; logs in
+`artifacts/task-suite-tests-20261109/`):
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover
+# Ran 233 tests in 119.145s
+# OK (skipped=46)
+PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m unittest discover
+# Ran 238 tests in 437.862s
+# OK (skipped=27)
+```

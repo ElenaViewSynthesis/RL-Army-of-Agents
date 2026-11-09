@@ -84,11 +84,58 @@ flowchart LR
 
 Under the DAPO and CISPO presets, a rollout that finishes inside the last `overlong_buffer_turns` before `max_turns` loses up to 1 point (linear). The base reward never changes.
 
+### Kernel tasks the agent works on
+
+Beyond the stock 1 × 128 `axpby` fixture, `tasks/` holds a progressive curriculum of 20 workloads. Each task folder has a trusted `model.py` reference, which takes its shapes and dtypes from `utils/task_catalog.py` so a candidate workdir cannot redefine them. Every task also has two negative controls: a Torch-op hack and a wrong-output fixture. Tasks with a reference solution add CUDA and/or Triton kernels. The agent's job on every task is the same: write a `model_new.py` whose authored kernels match the reference and beat eager and `torch.compile`.
+
+| Stage | Focus | H200 status |
+|---|---|---|
+| 0 | Bootstrap: GEMM with a fused divide-sum-scale epilogue | pass |
+| 1 | Reductions and scans: row softmax, masked mean, prefix sum | pass |
+| 2 | Normalization, fused optimizer and tensor-core GEMM: RMSNorm, LayerNorm + residual + GELU, log-softmax gather, fused AdamW, bf16 GEMM | pass after the CUDA GEMM build fix; CuTe DSL GEMM open |
+| 3 | Packed-reduction kernels against the repository-authored RL contracts: GRPO group normalization, CISPO weight clipping, packed variable-length reduction | pass |
+| 4 | Attention, grouped GEMM, sampling, residual RMSNorm, decode attention and Dense-MoE; INT8/FP8 as contracts only | pass (grouped GEMM is Triton-only by design) |
+
+| Stage | Task | Reference solution | H200 result (honest scores, hack fails provenance, wrong fails verification) |
+|---|---|---|---|
+| 0 | `gemm_div_sum_scale` | Triton, CUDA | pass (smoke) |
+| 1 | `row_softmax` | Triton, CUDA | pass (smoke) |
+| 1 | `masked_mean`\* | Triton, CUDA | pass (smoke) |
+| 1 | `prefix_sum`\* | Triton, CUDA | pass (smoke; n = 10⁷ int32, exact) |
+| 2 | `rmsnorm` | Triton, CUDA | pass (smoke) |
+| 2 | `layernorm_residual_gelu` | Triton, CUDA | pass (smoke; 512 × 8192 bf16) |
+| 2 | `log_softmax_gather` | Triton, CUDA | pass (smoke) |
+| 2 | `fused_adamw` | Triton, CUDA | pass (smoke) |
+| 2 | `gemm_tensor_core` | Triton, CUDA, CuTe DSL | Triton and CUDA pass acceptance (4096³ bf16; Triton at 85.4% of cuBLAS, gate ≥ 60%); CuTe DSL failed to compile, later fix untested |
+| 3 | `grpo_group_norm` | Triton, CUDA | pass (smoke; 512 × 16 groups) |
+| 3 | `cispo_clip_weight` | Triton, CUDA | pass (smoke) |
+| 3 | `packed_varlen_reduction` | Triton, CUDA | pass (smoke; 512 × 8192 sum) |
+| 4 | `decode_attention` | Triton, CUDA | pass (smoke; 8192-token context) |
+| 4 | `flash_attention_fwd` | Triton, CUDA | pass (smoke, 1024-token and acceptance cases) |
+| 4 | `grouped_gemm` | Triton | pass (smoke; 8 groups × 1024²) |
+| 4 | `moe_dense_gemm` | Triton, CUDA | pass (smoke; 64 tokens, 8 experts, shared expert) |
+| 4 | `residual_rmsnorm` | Triton, CUDA | pass (smoke; 4 × 2048 × 8192 bf16) |
+| 4 | `topk_sampling` | Triton, CUDA | pass (smoke; 32 × 128256 vocabulary, k = 32) |
+| 4 | `fp8_gemm`\*† | none by design | — |
+| 4 | `int8_gemm`\*† | none by design | — |
+
+\* Evaluation-only: adapted from GPU MODE reference kernels, whose license does not clear training use (`--purpose train` is refused).
+† Contract only by design: the INT8/FP8 workloads are specified (inputs, reference, checks), but Stage 4 deliberately enables no backend for them; their `ModelNew` raises `unavailable`.
+
+Runs: `task-stage1-20261109T004826Z` (stages 0–1, 24/24), `task-stage23-20261109T013032Z` (stages 2–3, 51/54; the 3 failures are the CUDA tensor-core GEMM build, since fixed), `task-stage4-smoke-20261109T020100Z` (stage 4, 33 passed, 3 unavailable for grouped GEMM CUDA), and the larger-case batch `…-20261109T021131Z` (all pass except the CuTe DSL GEMM retest). Each run used a frozen source; [VALIDATION.md](VALIDATION.md) lists which files changed afterwards. Under the CPU interpreter, bf16 `tl.dot` kernels fail and `topk_sampling` is too slow, so those tasks rely on the GPU results. "Pass" covers the listed cases on one H200, and kernel attribution is name-based.
+
+- **Reference solution:** the repo ships an authored fixture as a candidate reference solution for the task. Acceptance requires the honest fixture to score, the hack to fail provenance, and the wrong-output control to fail verification. Only its measured GPU cases are verified; source presence is not acceptance.
+- **No verified solution yet:** the task still defines its inputs, PyTorch reference and checks, and an agent can attempt it, but its suite rows cannot be trusted as `passed` until a GPU run confirms the reference solution.
+
+Tasks run through `python -m scripts.validate --suite <names|stageN|all> --device cuda` (or `cloud/modal_tasks.py` on Modal). They use two task-only gates, both approved on 2026-11-09: the provenance gate `authored-only-no-library-v1` (any library kernel time is a violation, the authored share must be at least 90%, memory time is excluded, and `gemm_tensor_core` requires 100% authored), and exact comparison for integer outputs (`RolloutConfig.exact_integer_outputs`, via `utils/task_verification.py`; floating-point tolerances are unchanged). Both are off for the stock rollout, whose reward is unchanged.
+
 ---
 
 ## CUDA vs Triton: how different is it?
 
 Both backends solve the same task (`model.py` → a faster `ModelNew`) and go through the same verification and profiler. What changes is how the kernel is written, built and *credited*.
+
+The library-credit descriptions below are **stock evaluator policy**; the new task suite forbids prewritten library candidate kernels for every backend.
 
 | | CUDA C++ backend | Triton backend |
 |---|---|---|
@@ -151,7 +198,7 @@ For element-wise kernels like axpby, both backends are judged the same way. For 
 - **On Triton**, the GEMM has to be authored with `tl.dot` tiles. Any cuBLAS, CUTLASS or cuDNN kernel in the trace counts *against* the 90% gate, so the agent cannot fall back on a vendor library.
 - **The bar is the same on both.** The reward compares against eager PyTorch and `torch.compile` of the reference model, and those normally dispatch matmuls to vendor GEMM libraries. To score 2 or 3, a kernel must beat that by more than 5%. The realistic win is usually **fusion**: computing the GEMM and its epilogue (bias, scaling, reductions) in one kernel instead of round-tripping intermediates through memory.
 
-**Status:** only the axpby example ships today. The optional fused Level-2 GEMM kernel (`gemm_div_sum_scale`, via `tl.dot`) was deferred to prioritise the pipeline and its tests (see [KNOWN_ISSUES.md](KNOWN_ISSUES.md)). No GEMM, cuBLAS, CUTLASS or cuDNN times exist yet.
+**Status:** the root default task remains the axpby example. The progressive GEMM is implemented under `tasks/gemm_div_sum_scale`; its measured coverage is recorded in that task's README. Baselines exist only where explicitly recorded; no blanket vendor-ceiling claim is made here.
 
 ---
 
