@@ -1,0 +1,17 @@
+{
+  "run_id": "task-layernorm-bf16-20261109T021131Z",
+  "function_call_id": "fc-01M6Z2WCVD57TNVZT69PKNQ8B4",
+  "source": "/tmp/task-suite-acceptance-source-20261109T021131Z",
+  "source_manifest_sha256": "d9d15ba0f3c25e1bb7e3b72a5beb72c5e236d9e2d6a12dc9ade9306d3b7ecf2c",
+  "source_files": 425,
+  "builder_requested": "2025.06",
+  "workspace_default_changed": false,
+  "tasks": "layernorm_residual_gelu",
+  "case_set": "b512_h8192_bfloat16",
+  "backends": "cuda,triton",
+  "fixtures": "honest,hack,wrong",
+  "benchmark": true,
+  "cold_start": true,
+  "volume": "agenticrl-cuda-artifacts",
+  "remote": "/artifacts/task-layernorm-bf16-20261109T021131Z"
+}

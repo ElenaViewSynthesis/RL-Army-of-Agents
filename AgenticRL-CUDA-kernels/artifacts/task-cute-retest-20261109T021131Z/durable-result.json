@@ -1,0 +1,17 @@
+{
+  "run_id": "task-cute-retest-20261109T021131Z",
+  "execution": {
+    "command": "python -m scripts.validate --suite gemm_tensor_core --device cuda --purpose eval --case-set smoke --fixtures honest,hack,wrong --timeout-s 600 --suite-out /artifacts/task-cute-retest-20261109T021131Z/suite --backends cutedsl --benchmark --cold-start",
+    "returncode": 1,
+    "timed_out": false,
+    "wall_s": 31.219831301
+  },
+  "counts": {
+    "passed": 2,
+    "failed": 1,
+    "unavailable": 0
+  },
+  "status": "fail",
+  "source_mismatches": [],
+  "scope": "selected workload cases only; no stock AXPBY acceptance or timing-cause claim"
+}

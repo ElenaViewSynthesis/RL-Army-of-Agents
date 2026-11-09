@@ -1,0 +1,17 @@
+{
+  "run_id": "task-flagship-acceptance-20261109T021131Z",
+  "execution": {
+    "command": "python -m scripts.validate --suite gemm_tensor_core,flash_attention_fwd --device cuda --purpose eval --case-set acceptance --fixtures honest,hack,wrong --timeout-s 600 --suite-out /artifacts/task-flagship-acceptance-20261109T021131Z/suite --backends cuda,triton --benchmark --cold-start",
+    "returncode": 0,
+    "timed_out": false,
+    "wall_s": 343.331925038
+  },
+  "counts": {
+    "passed": 12,
+    "failed": 0,
+    "unavailable": 0
+  },
+  "status": "pass",
+  "source_mismatches": [],
+  "scope": "selected workload cases only; no stock AXPBY acceptance or timing-cause claim"
+}

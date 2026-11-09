@@ -1,0 +1,17 @@
+{
+  "run_id": "task-moe-shared-20261109T021131Z",
+  "execution": {
+    "command": "python -m scripts.validate --suite moe_dense_gemm --device cuda --purpose eval --case-set t64_h512_i512_e8_top_k2_sharedtrue_bfloat16 --fixtures honest,hack,wrong --timeout-s 600 --suite-out /artifacts/task-moe-shared-20261109T021131Z/suite --backends cuda,triton --benchmark --cold-start",
+    "returncode": 0,
+    "timed_out": false,
+    "wall_s": 160.29765080099992
+  },
+  "counts": {
+    "passed": 6,
+    "failed": 0,
+    "unavailable": 0
+  },
+  "status": "pass",
+  "source_mismatches": [],
+  "scope": "selected workload cases only; no stock AXPBY acceptance or timing-cause claim"
+}

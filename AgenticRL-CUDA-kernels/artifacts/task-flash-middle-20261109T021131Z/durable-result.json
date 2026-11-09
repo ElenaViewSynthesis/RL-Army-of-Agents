@@ -1,0 +1,17 @@
+{
+  "run_id": "task-flash-middle-20261109T021131Z",
+  "execution": {
+    "command": "python -m scripts.validate --suite flash_attention_fwd --device cuda --purpose eval --case-set b4_h8_s1024_d64_bfloat16 --fixtures honest,hack,wrong --timeout-s 600 --suite-out /artifacts/task-flash-middle-20261109T021131Z/suite --backends cuda,triton --benchmark --cold-start",
+    "returncode": 0,
+    "timed_out": false,
+    "wall_s": 162.95037519800002
+  },
+  "counts": {
+    "passed": 6,
+    "failed": 0,
+    "unavailable": 0
+  },
+  "status": "pass",
+  "source_mismatches": [],
+  "scope": "selected workload cases only; no stock AXPBY acceptance or timing-cause claim"
+}

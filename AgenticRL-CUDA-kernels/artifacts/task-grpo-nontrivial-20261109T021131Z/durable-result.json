@@ -1,0 +1,17 @@
+{
+  "run_id": "task-grpo-nontrivial-20261109T021131Z",
+  "execution": {
+    "command": "python -m scripts.validate --suite grpo_group_norm --device cuda --purpose eval --case-set b512_g16_float32 --fixtures honest,hack,wrong --timeout-s 600 --suite-out /artifacts/task-grpo-nontrivial-20261109T021131Z/suite --backends cuda,triton --benchmark --cold-start",
+    "returncode": 0,
+    "timed_out": false,
+    "wall_s": 151.14152026400006
+  },
+  "counts": {
+    "passed": 6,
+    "failed": 0,
+    "unavailable": 0
+  },
+  "status": "pass",
+  "source_mismatches": [],
+  "scope": "selected workload cases only; no stock AXPBY acceptance or timing-cause claim"
+}

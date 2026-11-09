@@ -1,0 +1,17 @@
+{
+  "run_id": "task-grouped-large-20261109T021131Z",
+  "execution": {
+    "command": "python -m scripts.validate --suite grouped_gemm --device cuda --purpose eval --case-set g8_n1024_k1024_bfloat16 --fixtures honest,hack,wrong --timeout-s 600 --suite-out /artifacts/task-grouped-large-20261109T021131Z/suite --backends triton --benchmark --cold-start",
+    "returncode": 0,
+    "timed_out": false,
+    "wall_s": 58.33329297
+  },
+  "counts": {
+    "passed": 3,
+    "failed": 0,
+    "unavailable": 0
+  },
+  "status": "pass",
+  "source_mismatches": [],
+  "scope": "selected workload cases only; no stock AXPBY acceptance or timing-cause claim"
+}

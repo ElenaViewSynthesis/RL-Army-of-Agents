@@ -1,0 +1,17 @@
+{
+  "run_id": "task-moe-shared-20261109T021131Z",
+  "function_call_id": "fc-01M6Z2837HSHXVVJT7JXW7ZQ1X",
+  "source": "/tmp/task-suite-acceptance-source-20261109T021131Z",
+  "source_manifest_sha256": "d9d15ba0f3c25e1bb7e3b72a5beb72c5e236d9e2d6a12dc9ade9306d3b7ecf2c",
+  "source_files": 425,
+  "builder_requested": "2025.06",
+  "workspace_default_changed": false,
+  "tasks": "moe_dense_gemm",
+  "case_set": "t64_h512_i512_e8_top_k2_sharedtrue_bfloat16",
+  "backends": "cuda,triton",
+  "fixtures": "honest,hack,wrong",
+  "benchmark": true,
+  "cold_start": true,
+  "volume": "agenticrl-cuda-artifacts",
+  "remote": "/artifacts/task-moe-shared-20261109T021131Z"
+}

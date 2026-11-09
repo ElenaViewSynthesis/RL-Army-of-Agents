@@ -1,0 +1,17 @@
+{
+  "run_id": "task-layernorm-bf16-20261109T021131Z",
+  "execution": {
+    "command": "python -m scripts.validate --suite layernorm_residual_gelu --device cuda --purpose eval --case-set b512_h8192_bfloat16 --fixtures honest,hack,wrong --timeout-s 600 --suite-out /artifacts/task-layernorm-bf16-20261109T021131Z/suite --backends cuda,triton --benchmark --cold-start",
+    "returncode": 0,
+    "timed_out": false,
+    "wall_s": 140.88740798000003
+  },
+  "counts": {
+    "passed": 6,
+    "failed": 0,
+    "unavailable": 0
+  },
+  "status": "pass",
+  "source_mismatches": [],
+  "scope": "selected workload cases only; no stock AXPBY acceptance or timing-cause claim"
+}
