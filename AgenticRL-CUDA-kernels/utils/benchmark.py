@@ -12,6 +12,7 @@ is diagnostics; the reward metric (t_*_us) comes from utils.profiling.
 
 import argparse
 import json
+import os
 import time
 from pathlib import Path
 
@@ -32,6 +33,9 @@ def parse_args(argv=None):
                         help="Also capture and time CUDA-graph replays")
     parser.add_argument("--samples-json", type=Path,
                         help="Also write the summary and raw samples to this file")
+    parser.add_argument("--cold-start", action="store_true",
+                        default=os.environ.get("CUDA_AGENT_BENCH_COLD") == "1",
+                        help="Record the first post-initialization call separately; no cache flush")
     args = parser.parse_args(argv)
     if args.warmup_iters < 0:
         parser.error("--warmup-iters must be non-negative")
@@ -125,8 +129,12 @@ def run_benchmark(args):
             model, inputs = callables[name]
             torch.cuda.synchronize()
             t0 = time.perf_counter()
-            model(*inputs)
-            torch.cuda.synchronize()
+            if getattr(args, "cold_start", False):
+                event_us, wall_us = _time_calls(lambda: model(*inputs), 1)
+                samples[name].update(cold_event_us=event_us, cold_wall_us=wall_us)
+            else:
+                model(*inputs)
+                torch.cuda.synchronize()
             samples[name]["prepare_s"] = time.perf_counter() - t0
             for _ in range(args.warmup_iters):
                 model(*inputs)
@@ -164,6 +172,13 @@ def run_benchmark(args):
               "bench/seed": args.seed,
               "bench/order": "|".join(order)}
     record.update(stats.summarize_bench(samples, args.rounds))
+    if getattr(args, "cold_start", False):
+        record["bench/cold_definition"] = (
+            "first forward after initialize_models in this process; context initialized; "
+            "includes lazy compilation; not cache-flushed")
+        for name in impls:
+            for kind in ("event", "wall"):
+                record[f"bench/{name}/cold_{kind}_us"] = samples[name][f"cold_{kind}_us"]
     if args.cuda_graphs:
         record["bench/graph_all_capturable"] = all(
             s["graph_capturable"] for s in samples.values())
