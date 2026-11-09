@@ -1,0 +1,159 @@
+{
+  "summary": {
+    "bench/available": true,
+    "bench/device_index": 0,
+    "bench/device_name": "NVIDIA H200",
+    "bench/device_capability": "9.0",
+    "bench/device_uuid": "cf53da05-285c-0da7-97a9-43dc1b38646b",
+    "bench/warmup_iters": 10,
+    "bench/rounds": 6,
+    "bench/iters_per_round": 10,
+    "bench/seed": 0,
+    "bench/order": "eager,compile,generated|compile,generated,eager|generated,eager,compile|eager,compile,generated|compile,generated,eager|generated,eager,compile",
+    "bench/eager/event_cv": 0.15607781568401272,
+    "bench/eager/event_us_n": 6,
+    "bench/eager/event_us_median": 46.94720059633255,
+    "bench/eager/event_us_min": 41.27359986305237,
+    "bench/eager/event_us_max": 60.45439839363098,
+    "bench/eager/event_us_p25": 42.72719919681549,
+    "bench/eager/event_us_p75": 53.07760089635849,
+    "bench/eager/wall_cv": 0.15553192173692176,
+    "bench/eager/wall_us_n": 6,
+    "bench/eager/wall_us_median": 47.81380000622448,
+    "bench/eager/wall_us_min": 42.00000000764703,
+    "bench/eager/wall_us_max": 61.367299986159196,
+    "bench/eager/wall_us_p25": 43.44517499816902,
+    "bench/eager/wall_us_p75": 54.051649993880346,
+    "bench/eager/prepare_s": 0.09483515100009754,
+    "bench/eager/warmup_iters": 10,
+    "bench/compile/event_cv": 0.17047291145109147,
+    "bench/compile/event_us_n": 6,
+    "bench/compile/event_us_median": 33.905600011348724,
+    "bench/compile/event_us_min": 30.49919903278351,
+    "bench/compile/event_us_max": 47.37280011177063,
+    "bench/compile/event_us_p25": 32.34879970550537,
+    "bench/compile/event_us_p75": 35.45520082116127,
+    "bench/compile/wall_cv": 0.1676641020377938,
+    "bench/compile/wall_us_n": 6,
+    "bench/compile/wall_us_median": 34.68859999884444,
+    "bench/compile/wall_us_min": 31.23069998309802,
+    "bench/compile/wall_us_max": 48.20839999410964,
+    "bench/compile/wall_us_p25": 33.13094999271016,
+    "bench/compile/wall_us_p75": 36.17447499664195,
+    "bench/compile/prepare_s": 1.4336485409999113,
+    "bench/compile/warmup_iters": 10,
+    "bench/generated/event_cv": 0.08578120398639973,
+    "bench/generated/event_us_n": 6,
+    "bench/generated/event_us_median": 20.639999955892563,
+    "bench/generated/event_us_min": 17.06880033016205,
+    "bench/generated/event_us_max": 21.68000042438507,
+    "bench/generated/event_us_p25": 19.461599737405777,
+    "bench/generated/event_us_p75": 21.23280018568039,
+    "bench/generated/wall_cv": 0.08404020253416893,
+    "bench/generated/wall_us_n": 6,
+    "bench/generated/wall_us_median": 21.36884999117683,
+    "bench/generated/wall_us_min": 17.78109999577282,
+    "bench/generated/wall_us_max": 22.459100000560284,
+    "bench/generated/wall_us_p25": 20.179950001875113,
+    "bench/generated/wall_us_p75": 22.018500004605812,
+    "bench/generated/prepare_s": 0.16836660700005268,
+    "bench/generated/warmup_iters": 10,
+    "bench/generated/event_wall_ratio": 0.9658919391738344,
+    "bench/cold_definition": "first forward after initialize_models in this process; context initialized; includes lazy compilation; not cache-flushed",
+    "bench/eager/cold_event_us": 94707.93914794922,
+    "bench/eager/cold_wall_us": 94733.05599999549,
+    "bench/compile/cold_event_us": 1433558.10546875,
+    "bench/compile/cold_wall_us": 1433593.7249998096,
+    "bench/generated/cold_event_us": 168302.8106689453,
+    "bench/generated/cold_wall_us": 168325.33100000548
+  },
+  "raw": {
+    "samples": {
+      "eager": {
+        "event_us": [
+          60.45439839363098,
+          54.044800996780396,
+          43.71840059757233,
+          41.27359986305237,
+          42.396798729896545,
+          50.17600059509277
+        ],
+        "wall_us": [
+          61.367299986159196,
+          55.0092999901608,
+          44.448900007409975,
+          42.00000000764703,
+          43.110599995088705,
+          51.17870000503899
+        ],
+        "prepare_s": 0.09483515100009754,
+        "warmup_iters": 10,
+        "cold_event_us": 94707.93914794922,
+        "cold_wall_us": 94733.05599999549
+      },
+      "compile": {
+        "event_us": [
+          47.37280011177063,
+          34.31040048599243,
+          33.50079953670502,
+          31.964799761772156,
+          30.49919903278351,
+          35.836800932884216
+        ],
+        "wall_us": [
+          48.20839999410964,
+          35.07129999889003,
+          34.30589999879885,
+          32.73929999068059,
+          31.23069998309802,
+          36.54219999589259
+        ],
+        "prepare_s": 1.4336485409999113,
+        "warmup_iters": 10,
+        "cold_event_us": 1433558.10546875,
+        "cold_wall_us": 1433593.7249998096
+      },
+      "generated": {
+        "event_us": [
+          21.276800334453583,
+          19.222399592399597,
+          21.68000042438507,
+          20.179200172424316,
+          21.10079973936081,
+          17.06880033016205
+        ],
+        "wall_us": [
+          22.075500010032556,
+          19.94320000449079,
+          22.459100000560284,
+          20.89019999402808,
+          21.84749998832558,
+          17.78109999577282
+        ],
+        "prepare_s": 0.16836660700005268,
+        "warmup_iters": 10,
+        "cold_event_us": 168302.8106689453,
+        "cold_wall_us": 168325.33100000548
+      }
+    },
+    "order": [
+      "eager,compile,generated",
+      "compile,generated,eager",
+      "generated,eager,compile",
+      "eager,compile,generated",
+      "compile,generated,eager",
+      "generated,eager,compile"
+    ]
+  },
+  "command_args": {
+    "json": true,
+    "warmup_iters": 10,
+    "rounds": 6,
+    "iters_per_round": 10,
+    "backend": "triton",
+    "seed": 0,
+    "cuda_graphs": false,
+    "samples_json": null,
+    "cold_start": true
+  }
+}

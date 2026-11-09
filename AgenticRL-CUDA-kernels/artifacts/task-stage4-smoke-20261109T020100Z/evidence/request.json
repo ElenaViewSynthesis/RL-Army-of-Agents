@@ -1,0 +1,18 @@
+{
+  "run_id": "task-stage4-smoke-20261109T020100Z",
+  "tasks": [
+    "flash_attention_fwd",
+    "grouped_gemm",
+    "topk_sampling",
+    "residual_rmsnorm",
+    "decode_attention",
+    "moe_dense_gemm"
+  ],
+  "case_set": "smoke",
+  "backends": "cuda,triton",
+  "fixtures": "honest,hack,wrong",
+  "timeout_s": 600,
+  "benchmark": true,
+  "cold_start": true,
+  "gpu_requested": "H200"
+}

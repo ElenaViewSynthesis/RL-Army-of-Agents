@@ -1,0 +1,20 @@
+{
+  "run_id": "task-stage4-smoke-20261109T020100Z",
+  "app_id": "ap-QRLMSmAblEF5kW2GoVR8s2",
+  "function_call_id": "fc-01M6Z0JEB49RQ3G743941CP86E",
+  "source": "/tmp/task-suite-all-source-20261109T015605Z",
+  "source_manifest_sha256": "f5c20270d79bb4578d1577fa4208cd586cafb845d511349ac5e14a32c72b5f60",
+  "source_files": 425,
+  "builder_requested": "2025.06",
+  "workspace_default_changed": false,
+  "tasks": "flash_attention_fwd,grouped_gemm,topk_sampling,residual_rmsnorm,decode_attention,moe_dense_gemm",
+  "case_set": "smoke",
+  "backends": "cuda,triton",
+  "coverage_note": "Modal entrypoint defaults forced CUDA and Triton; grouped_gemm has no CUDA fixture and those cells must remain unavailable",
+  "fixtures": "honest,hack,wrong",
+  "benchmark": true,
+  "cold_start": true,
+  "volume": "agenticrl-cuda-artifacts",
+  "remote": "/artifacts/task-stage4-smoke-20261109T020100Z",
+  "status": "spawned; GPU outcomes pending"
+}

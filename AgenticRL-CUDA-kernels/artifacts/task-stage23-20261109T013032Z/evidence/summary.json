@@ -1,0 +1,17 @@
+{
+  "run_id": "task-stage23-20261109T013032Z",
+  "execution": {
+    "command": "python -m scripts.validate --suite prefix_sum,gemm_tensor_core,rmsnorm,log_softmax_gather,fused_adamw,layernorm_residual_gelu,grpo_group_norm,cispo_clip_weight,packed_varlen_reduction --device cuda --purpose eval --case-set smoke --fixtures honest,hack,wrong --timeout-s 600 --suite-out /artifacts/task-stage23-20261109T013032Z/suite --backends cuda,triton --benchmark --cold-start",
+    "returncode": 1,
+    "timed_out": false,
+    "wall_s": 1455.2531684799999
+  },
+  "counts": {
+    "passed": 51,
+    "failed": 3,
+    "unavailable": 0
+  },
+  "status": "fail",
+  "source_mismatches": [],
+  "scope": "selected workload cases only; no stock AXPBY acceptance or timing-cause claim"
+}

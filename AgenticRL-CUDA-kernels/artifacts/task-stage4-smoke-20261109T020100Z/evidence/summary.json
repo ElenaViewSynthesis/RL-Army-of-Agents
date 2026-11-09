@@ -1,0 +1,17 @@
+{
+  "run_id": "task-stage4-smoke-20261109T020100Z",
+  "execution": {
+    "command": "python -m scripts.validate --suite flash_attention_fwd,grouped_gemm,topk_sampling,residual_rmsnorm,decode_attention,moe_dense_gemm --device cuda --purpose eval --case-set smoke --fixtures honest,hack,wrong --timeout-s 600 --suite-out /artifacts/task-stage4-smoke-20261109T020100Z/suite --backends cuda,triton --benchmark --cold-start",
+    "returncode": 0,
+    "timed_out": false,
+    "wall_s": 688.473522547
+  },
+  "counts": {
+    "passed": 33,
+    "failed": 0,
+    "unavailable": 3
+  },
+  "status": "partial",
+  "source_mismatches": [],
+  "scope": "selected workload cases only; no stock AXPBY acceptance or timing-cause claim"
+}

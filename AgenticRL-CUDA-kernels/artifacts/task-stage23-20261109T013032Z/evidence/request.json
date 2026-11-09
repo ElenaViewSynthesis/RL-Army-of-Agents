@@ -1,0 +1,21 @@
+{
+  "run_id": "task-stage23-20261109T013032Z",
+  "tasks": [
+    "prefix_sum",
+    "gemm_tensor_core",
+    "rmsnorm",
+    "log_softmax_gather",
+    "fused_adamw",
+    "layernorm_residual_gelu",
+    "grpo_group_norm",
+    "cispo_clip_weight",
+    "packed_varlen_reduction"
+  ],
+  "case_set": "smoke",
+  "backends": "cuda,triton",
+  "fixtures": "honest,hack,wrong",
+  "timeout_s": 600,
+  "benchmark": true,
+  "cold_start": true,
+  "gpu_requested": "H200"
+}

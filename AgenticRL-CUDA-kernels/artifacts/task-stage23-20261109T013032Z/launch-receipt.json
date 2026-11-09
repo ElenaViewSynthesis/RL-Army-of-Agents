@@ -1,0 +1,31 @@
+{
+  "run_id": "task-stage23-20261109T013032Z",
+  "app_id": "ap-yvOtPiQMfrp7GsLPccmFum",
+  "function_call_id": "fc-01M6YYWYF4T23YRX8H8PGKSGEY",
+  "source": "/tmp/task-suite-stage23-source-20261109T013032Z",
+  "source_manifest_sha256": "d80301ade8dcb14c6ea73bd8e127f5f617597c61b0b6905ea9a8b148b9ae805d",
+  "source_files": 262,
+  "source_verified_before_launch": true,
+  "builder_requested": "2025.06",
+  "workspace_default_changed": false,
+  "tasks": [
+    "prefix_sum",
+    "gemm_tensor_core",
+    "rmsnorm",
+    "log_softmax_gather",
+    "fused_adamw",
+    "layernorm_residual_gelu",
+    "grpo_group_norm",
+    "cispo_clip_weight",
+    "packed_varlen_reduction"
+  ],
+  "case_set": "smoke",
+  "backends": "cuda,triton",
+  "fixtures": "honest,hack,wrong",
+  "benchmark": true,
+  "cold_start": true,
+  "exact_integer_outputs": true,
+  "volume": "agenticrl-cuda-artifacts",
+  "remote": "/artifacts/task-stage23-20261109T013032Z",
+  "status": "spawned; GPU outcomes pending"
+}
