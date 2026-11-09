@@ -13,6 +13,7 @@ ALGOS = ("grpo", "dapo", "cispo")
 class RolloutConfig:
     backend: str = "auto"
     iters: int = 10
+    exact_integer_outputs: bool = False
     benchmark: bool = False
     bench_warmup_iters: int = 10
     bench_rounds: int = 6
@@ -68,7 +69,8 @@ class RolloutConfig:
         low_ok = (0 <= self.clip_low <= 1) if self.algo == "cispo" else (0 <= self.clip_low < 1)
         if not low_ok or self.clip_high < 0 or self.kl_coef < 0:
             raise ValueError("Invalid clip range or kl_coef")
-        for name in ("benchmark", "cuda_graphs", "diagnostics", "filter_tied_groups"):
+        for name in ("benchmark", "cuda_graphs", "diagnostics", "filter_tied_groups",
+                     "exact_integer_outputs"):
             if not isinstance(getattr(self, name), bool):
                 raise ValueError(f"{name} must be bool")
         if not isinstance(self.seed, int) or not isinstance(self.run_name, str):

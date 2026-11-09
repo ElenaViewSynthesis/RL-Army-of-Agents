@@ -118,6 +118,7 @@ saves the sampler output (enabled in the Modal test runner).
 |---|---|---|---|---|---|---|---|
 | `cfg:cfg/backend` | config | cfg | str | 1 | never | config | environment |
 | `cfg:cfg/iters` | config | cfg | int | 1 | never | config | environment |
+| `cfg:cfg/exact_integer_outputs` | config | cfg | bool | 1 | not recorded in historical configs | verification/config; forced true only by progressive suite | environment |
 | `cfg:cfg/benchmark` | config | cfg | bool | 1 | never | config | environment |
 | `cfg:cfg/bench_warmup_iters` | config | cfg | int | 1 | never | config | environment |
 | `cfg:cfg/bench_rounds` | config | cfg | int | 1 | never | config | environment |
@@ -390,8 +391,10 @@ saves the sampler output (enabled in the Modal test runner).
 | `results:case_configs/*/bench_iters_per_round` | table | case_configs | int | 1 | historical artifact did not persist it | config | environment |
 | `results:config/cuda_graphs` | config | config | bool | 1 | historical artifact did not persist it | config | environment |
 | `results:config/diagnostics` | config | config | bool | 1 | historical artifact did not persist it | config | environment |
+| `results:config/exact_integer_outputs` | config | config | bool | 1 | historical artifact did not persist it | config | environment |
 | `results:case_configs/*/cuda_graphs` | table | case_configs | bool | 1 | historical artifact did not persist it | config | environment |
 | `results:case_configs/*/diagnostics` | table | case_configs | bool | 1 | historical artifact did not persist it | config | environment |
+| `results:case_configs/*/exact_integer_outputs` | table | case_configs | bool | 1 | historical artifact did not persist it | config | environment |
 | `results:config/timeout_s` | config | config | float | s | historical artifact did not persist it | config | environment |
 | `results:case_configs/*/timeout_s` | table | case_configs | float | s | historical artifact did not persist it | config | environment |
 | `results:config/provenance_threshold` | config | config | float | 1 | historical artifact did not persist it | config | environment |
@@ -444,8 +447,10 @@ saves the sampler output (enabled in the Modal test runner).
 | `names:case_configs/*/bench_iters_per_round` | table | case_configs | int | 1 | historical artifact did not persist it | config | environment |
 | `names:config/cuda_graphs` | config | config | bool | 1 | historical artifact did not persist it | config | environment |
 | `names:config/diagnostics` | config | config | bool | 1 | historical artifact did not persist it | config | environment |
+| `names:config/exact_integer_outputs` | config | config | bool | 1 | historical artifact did not persist it | config | environment |
 | `names:case_configs/*/cuda_graphs` | table | case_configs | bool | 1 | historical artifact did not persist it | config | environment |
 | `names:case_configs/*/diagnostics` | table | case_configs | bool | 1 | historical artifact did not persist it | config | environment |
+| `names:case_configs/*/exact_integer_outputs` | table | case_configs | bool | 1 | historical artifact did not persist it | config | environment |
 | `names:config/timeout_s` | config | config | float | s | historical artifact did not persist it | config | environment |
 | `names:case_configs/*/timeout_s` | table | case_configs | float | s | historical artifact did not persist it | config | environment |
 | `names:config/provenance_threshold` | config | config | float | 1 | historical artifact did not persist it | config | environment |
@@ -488,6 +493,7 @@ saves the sampler output (enabled in the Modal test runner).
 | `results:group_configs/*/bench_iters_per_round` | config | group_configs | int | 1 | historical artifact did not persist it | diagnostic | environment |
 | `results:group_configs/*/cuda_graphs` | config | group_configs | bool | 1 | historical artifact did not persist it | diagnostic | environment |
 | `results:group_configs/*/diagnostics` | config | group_configs | bool | 1 | historical artifact did not persist it | diagnostic | environment |
+| `results:group_configs/*/exact_integer_outputs` | config | group_configs | bool | 1 | historical artifact did not persist it | diagnostic | environment |
 | `results:group_configs/*/timeout_s` | config | group_configs | float | s | historical artifact did not persist it | diagnostic | environment |
 | `results:group_configs/*/provenance_threshold` | config | group_configs | float | 1 | historical artifact did not persist it | diagnostic | environment |
 | `results:group_configs/*/speedup_margin` | config | group_configs | float | 1 | historical artifact did not persist it | diagnostic | environment |

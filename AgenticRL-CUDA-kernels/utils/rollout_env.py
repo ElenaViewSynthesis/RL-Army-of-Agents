@@ -174,8 +174,9 @@ def run_task(workdir: str, cfg: RolloutConfig, turns_used: int | None = None, *,
         env.setdefault("TORCHINDUCTOR_CACHE_DIR", str(path / ".cache" / "inductor"))
         env["PYTHONDONTWRITEBYTECODE"] = "1"
         deadline = start + cfg.timeout_s
+        verification_module = "utils.task_verification" if cfg.exact_integer_outputs else "utils.verification"
         stages = (("compile", "utils.compile", ["--backend", backend, "--seed", str(cfg.seed)]),
-                  ("verification", "utils.verification", ["--seed", str(cfg.seed)]),
+                  ("verification", verification_module, ["--seed", str(cfg.seed)]),
                   ("profiling", "utils.profiling", ["--backend", backend, "--iters", str(cfg.iters),
                                                     "--seed", str(cfg.seed), "--json"]))
         if cfg.diagnostics:

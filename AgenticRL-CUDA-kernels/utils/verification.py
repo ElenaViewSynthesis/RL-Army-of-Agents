@@ -91,10 +91,11 @@ def build_inputs():
     return torch_inputs, cuda_inputs
 
 
-def main():
+def main(*, compare=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--seed', type=int, default=0)
     args = parser.parse_args()
+    compare = check_equal if compare is None else compare
     torch.manual_seed(args.seed)
     torch_model, cuda_model = initialize_models()
     num_checks = 5
@@ -105,7 +106,7 @@ def main():
             torch_output = torch_model(*torch_inputs)
             with block_torch_functional():
                 cuda_output = cuda_model(*cuda_inputs)
-            check_equal(cuda_output, torch_output)
+            compare(cuda_output, torch_output)
             print(f"[PASS] check {i + 1}/{num_checks}")
 
     if torch.device(DEVICE).type == "cuda":
