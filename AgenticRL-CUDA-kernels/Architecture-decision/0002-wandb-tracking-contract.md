@@ -685,3 +685,31 @@ forward in a benchmark process, not flushed hardware caches.
 | `result:ceiling/torch_version` | table | ceiling | str | version | unavailable | diagnostic | task suite |
 | `result:ceiling/cuda_version` | table | ceiling | str | version | unavailable | diagnostic | task suite |
 | `result:ceiling/nvcc_version` | table | ceiling | str | version output | unavailable | diagnostic | task suite |
+
+### Task-suite W&B runs (`tracking/suite_log.py`)
+
+One W&B run per downloaded task-suite evidence folder (run id
+`h200-<suite run_id>`, job type `task-suite-h200`). Suite rows are evaluation
+records, not training metrics: they live in the `suite_rows` table, and the
+row keys keep their `result:` classification above (`log/*` and `artifact/*`
+are dropped). Counts are logged once at iteration 0.
+
+| Source:key | Category | Namespace | Type | Unit | Null/absence condition | Role | Owner |
+|---|---|---|---|---|---|---|---|
+| `suite_wandb:suite/request` | config | suite | JSON object | request | never | identity | task suite |
+| `suite_wandb:suite/case_set` | config | suite | str | case selection | never | identity | task suite |
+| `suite_wandb:suite/backends` | config | suite | str | backend list | never | identity | task suite |
+| `suite_wandb:suite/fixtures` | config | suite | str | fixture list | never | identity | task suite |
+| `suite_wandb:suite/tasks` | config | suite | list[str] | task ids | never | identity | task suite |
+| `suite_wandb:suite/gpu_requested` | config | suite | str | requested GPU class | not recorded | diagnostic | task suite |
+| `suite_wandb:source/manifest_sha256` | config | source | str | SHA-256 | no manifest downloaded | provenance | task suite |
+| `suite_wandb:source/git_revision` | config | source | str | git commit | no manifest downloaded | provenance | task suite |
+| `suite_wandb:source/files` | config | source | int | files | no manifest downloaded | provenance | task suite |
+| `suite_wandb:suite/passed` | summary | suite | int | rows | never | coverage | task suite |
+| `suite_wandb:suite/failed` | summary | suite | int | rows | never | coverage | task suite |
+| `suite_wandb:suite/unavailable` | summary | suite | int | rows | never | coverage | task suite |
+| `suite_wandb:suite/status` | summary | suite | str | pass/partial/fail | never | coverage | task suite |
+| `suite_wandb:suite/source_mismatches` | summary | suite | int | files | never | provenance | task suite |
+| `suite_wandb:suite/wall_s` | summary | suite | float | s | execution record missing | deadline diagnostic | task suite |
+| `suite_wandb:suite_rows` | table | suite | wandb.Table | rows | never | evaluation record | task suite |
+
