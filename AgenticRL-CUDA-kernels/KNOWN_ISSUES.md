@@ -292,7 +292,17 @@
   MODE-derived tasks are evaluation-only, and the "local" source has no
   repository license (NOASSERTION).
 
-- **Stage 5: implemented evaluation-only adaptations, GPU acceptance pending.**
+- **Stage 5 on H200: smoke passes; largest-case acceptance pending a rerun.**
+  Smoke run `task-stage5-gpu-smoke-20261109T190928Z` passed 71/71 (all nine
+  tasks, CUDA and Triton, all fixtures; the first Stage 5 CUDA C++ builds).
+  The largest-case run `task-stage5-gpu-acceptance-20261109T190928Z` was
+  stopped after 14 rows on two confirmed bugs, both fixed and not yet rerun on
+  a GPU. (1) The Triton candidate top-k launched the vocabulary on grid axis 1
+  (151936 > 65535 limit). (2) The trusted tree references walked trees with
+  per-element host syncs, so at 32 × 64 nodes the eager baseline overflowed
+  the 4 MiB profiler stdout tail and the hack fixture timed out. They are now
+  vectorized and match the original loops exactly.
+- **Stage 5 (earlier notes): implemented evaluation-only adaptations.**
   Nine EAGLE-4 documentation-derived tasks now have Triton and CUDA sources;
   GDN recurrence has an alternate first-child-chain replay fixture. The actual
   root source-available license permits the requested noncommercial evaluation

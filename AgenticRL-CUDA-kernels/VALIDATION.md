@@ -2224,3 +2224,45 @@ PYTHONDONTWRITEBYTECODE=1 python3 -m unittest tests.test_task_catalog \
 # Ran 31 tests in 23.135s
 # OK (skipped=12)
 ```
+
+### Stage 5 on H200 (2026-11-09)
+
+Both runs used one frozen source, `/tmp/task-stage5-gpu-source-20261109T190928Z`
+(285 files, manifest SHA-256 `b57a4ace261736d5eeecb480922388b95eff58abe13da67c7c8d172aca5c1169`,
+git `166bf02`).
+
+```bash
+cd /tmp/task-stage5-gpu-source-20261109T190928Z && PYTHONPATH=$PWD   <repo>/.venv/bin/modal run [--detach] cloud/modal_tasks.py --tasks stage5   --case-set {smoke|acceptance} --backends cuda,triton --fixtures all --timeout-s 900
+```
+
+**Phase 1, smoke (`task-stage5-gpu-smoke-20261109T190928Z`):** status
+`pass`, 71 passed, 0 failed, 0 unavailable, no source mismatches, 2637 s.
+These were the first Stage 5 CUDA C++ builds. Honest and chain-replay
+solutions scored; hacks failed `provenance`; wrong and wrong-ancestor
+controls failed `verification`. The local client was killed by host memory
+pressure mid-run, but the remote job completed and wrote its summary.
+
+**Phase 2, largest cases (`task-stage5-gpu-acceptance-20261109T190928Z`,
+detached):** stopped on purpose after 14 rows (`progress-stopped.jsonl`).
+- `eagle_candidate_topk` (32 × 151936 vocabulary): CUDA passes all three
+  fixtures. Triton honest fails `Triton Error [CUDA]: invalid argument`:
+  `eagle_vocab_score[(b, v)]` puts 151936 programs on grid axis 1, whose limit
+  is 65535. Fixed by launching `(v, b)` and swapping the program ids.
+- `eagle_tree_step` (32 × 64 ragged): honest fails at profiling on both
+  backends (`JSONDecodeError: Extra data`), and the hack times out (901 s);
+  the wrong and wrong-ancestor controls pass. Cause: the trusted references in
+  `utils/eagle_reference.py` walked trees with per-element `int(tensor)` host
+  syncs. The eager baseline then produced so many profiler events that its
+  single JSON record exceeded the harness's 4 MiB stdout tail, and the hack
+  (which calls the reference) ran out of time. Fixed by vectorizing
+  `ancestors`, `tree_conv`, `recurrence`, `accept` and `accept_sampled`
+  across the batch, with no host syncs.
+  `tests/test_eagle_reference_vectorized.py` checks them against the
+  original loops (frozen in `tests/fixtures/eagle_reference_loop.py`), and
+  every output is bit-for-bit equal (7 tests OK). The eager baseline for
+  these tasks is now a real GPU reference, so "faster than eager" means more.
+
+Local suites after the fixes (`artifacts/task-stage5-reference-fix-20261109/`):
+system Python `Ran 262 tests in 348.337s` / `OK (skipped=63)`. The venv suite
+was killed by host memory pressure before finishing, with no failures up to
+that point. The equivalence tests passed in the venv on their own.

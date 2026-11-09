@@ -95,7 +95,7 @@ Beyond the stock 1 × 128 `axpby` fixture, `tasks/` holds a progressive curricul
 | 2 | Normalization, fused optimizer and tensor-core GEMM: RMSNorm, LayerNorm + residual + GELU, log-softmax gather, fused AdamW, bf16 GEMM | pass (after the CUDA GEMM build fix and the CuTe DSL C-store fix) |
 | 3 | Packed-reduction kernels against the repository-authored RL contracts: GRPO group normalization, CISPO weight clipping, packed variable-length reduction | pass |
 | 4 | Attention, grouped GEMM, sampling, residual RMSNorm, decode attention and Dense-MoE; INT8/FP8 as contracts only | pass (grouped GEMM is Triton-only by design) |
-| 5 | Nine evaluation-only speculative-tree workloads, including sampled acceptance and Mamba2 conv; GDN walk and chain replay | implemented; CPU evidence in VALIDATION.md; GPU acceptance unverified |
+| 5 | Nine evaluation-only speculative-tree workloads, including sampled acceptance and Mamba2 conv; GDN walk and chain replay | H200 smoke: 71/71 pass, CUDA and Triton, all fixtures; largest-case run stopped on two fixed bugs, rerun pending |
 
 | Stage | Task | Reference solution | H200 result (honest scores, hack fails provenance, wrong fails verification) |
 |---|---|---|---|
@@ -119,15 +119,15 @@ Beyond the stock 1 × 128 `axpby` fixture, `tasks/` holds a progressive curricul
 | 4 | `topk_sampling` | Triton, CUDA | pass (smoke; 32 × 128256 vocabulary, k = 32) |
 | 4 | `fp8_gemm`\*† | none by design | — |
 | 4 | `int8_gemm`\*† | none by design | — |
-| 5 | `eagle_candidate_topk`‡ | Triton, CUDA | GPU unverified |
-| 5 | `eagle_tree_step`‡ | Triton, CUDA | GPU unverified |
-| 5 | `eagle_tree_row_attention`‡ | Triton, CUDA | GPU unverified |
-| 5 | `eagle_tree_verify_attention`‡ | Triton, CUDA | GPU unverified |
-| 5 | `eagle_gdn_tree_conv`‡ | Triton, CUDA | GPU unverified |
-| 5 | `eagle_mamba2_tree_conv`‡ | Triton, CUDA | GPU unverified |
-| 5 | `eagle_gdn_tree_recurrence`‡ | Triton, CUDA; alternate Triton chain replay | GPU unverified |
-| 5 | `eagle_accept_tail`‡ | Triton, CUDA | GPU unverified |
-| 5 | `eagle_accept_tail_sampled`‡ | Triton, CUDA | GPU unverified |
+| 5 | `eagle_candidate_topk`‡ | Triton, CUDA | H200 smoke pass; largest case pending |
+| 5 | `eagle_tree_step`‡ | Triton, CUDA | H200 smoke pass; largest case pending |
+| 5 | `eagle_tree_row_attention`‡ | Triton, CUDA | H200 smoke pass; largest case pending |
+| 5 | `eagle_tree_verify_attention`‡ | Triton, CUDA | H200 smoke pass; largest case pending |
+| 5 | `eagle_gdn_tree_conv`‡ | Triton, CUDA | H200 smoke pass; largest case pending |
+| 5 | `eagle_mamba2_tree_conv`‡ | Triton, CUDA | H200 smoke pass; largest case pending |
+| 5 | `eagle_gdn_tree_recurrence`‡ | Triton, CUDA; alternate Triton chain replay | H200 smoke pass; largest case pending |
+| 5 | `eagle_accept_tail`‡ | Triton, CUDA | H200 smoke pass; largest case pending |
+| 5 | `eagle_accept_tail_sampled`‡ | Triton, CUDA | H200 smoke pass; largest case pending |
 
 \* Evaluation-only: adapted from GPU MODE reference kernels, whose license does not clear training use (`--purpose train` is refused).
 † Contract only by design: the INT8/FP8 workloads are specified (inputs, reference, checks), but Stage 4 deliberately enables no backend for them; their `ModelNew` raises `unavailable`.
