@@ -1,0 +1,5 @@
+# Optional CuTe DSL backend (GPU only). Install on top of requirements.txt.
+# The [cu13] extra pulls nvidia-cutlass-dsl-libs-cu13 plus cuda-bindings, matching
+# a CUDA 13 driver and torch+cu130 build; use the extra-less package (cu12 libs)
+# for CUDA 12 torch builds.
+nvidia-cutlass-dsl[cu13]==4.8.1

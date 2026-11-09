@@ -1,0 +1,17 @@
+{
+  "run_id": "task-stage1-20261109T004826Z",
+  "execution": {
+    "command": "python -m scripts.validate --suite gemm_div_sum_scale,row_softmax,masked_mean,prefix_sum --device cuda --purpose eval --case-set smoke --fixtures honest,hack,wrong --timeout-s 600 --suite-out /artifacts/task-stage1-20261109T004826Z/suite --backends cuda,triton --benchmark --cold-start",
+    "returncode": 0,
+    "timed_out": false,
+    "wall_s": 577.3587906930001
+  },
+  "counts": {
+    "passed": 24,
+    "failed": 0,
+    "unavailable": 0
+  },
+  "status": "pass",
+  "source_mismatches": [],
+  "scope": "selected workload cases only; no stock AXPBY acceptance or timing-cause claim"
+}

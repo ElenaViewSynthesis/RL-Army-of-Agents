@@ -1,0 +1,16 @@
+{
+  "run_id": "task-stage1-20261109T004826Z",
+  "tasks": [
+    "gemm_div_sum_scale",
+    "row_softmax",
+    "masked_mean",
+    "prefix_sum"
+  ],
+  "case_set": "smoke",
+  "backends": "cuda,triton",
+  "fixtures": "honest,hack,wrong",
+  "timeout_s": 600,
+  "benchmark": true,
+  "cold_start": true,
+  "gpu_requested": "H200"
+}

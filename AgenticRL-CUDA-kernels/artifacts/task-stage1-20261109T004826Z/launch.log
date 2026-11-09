@@ -1,0 +1,32 @@
+Note that running a local entrypoint in detached mode only keeps the last triggered Modal function alive after the parent process has been killed or disconnected.
+✓ Initialized. View run at 
+https://modal.com/apps/elenamylocuda/main/ap-fCEmYpC6BUGdvWhWevOKgb
+✓ Created objects.
+├── ✓ Uploaded 
+│   /tmp/task-suite-stage1-source-20261109T002404Z/cloud/modal_tasks.py
+├── ✓ Uploaded 
+│   /tmp/task-suite-stage1-source-20261109T002404Z/artifacts/upstream.json
+├── ✓ Uploaded /tmp/task-suite-stage1-source-20261109T002404Z
+└── ✓ Created Function evaluate.
+{"run_id": "task-stage1-20261109T004826Z", "function_call_id": "fc-01M6YWEFVW519SS7B542TY90JH", "volume": "agenticrl-cuda-artifacts", "remote": "/artifacts/task-stage1-20261109T004826Z"}
+{"function_call_id": "fc-01M6YWEFVW519SS7B542TY90JH"}
+{"completed": 1, "last_task": "gemm_div_sum_scale", "last_status": "passed"}
+{"completed": 2, "last_task": "gemm_div_sum_scale", "last_status": "passed"}
+{"completed": 4, "last_task": "gemm_div_sum_scale", "last_status": "passed"}
+{"completed": 6, "last_task": "gemm_div_sum_scale", "last_status": "passed"}
+{"completed": 6, "last_task": "gemm_div_sum_scale", "last_status": "passed"}
+{"completed": 7, "last_task": "row_softmax", "last_status": "passed"}
+{"completed": 9, "last_task": "row_softmax", "last_status": "passed"}
+{"completed": 10, "last_task": "row_softmax", "last_status": "passed"}
+{"completed": 12, "last_task": "row_softmax", "last_status": "passed"}
+{"completed": 13, "last_task": "masked_mean", "last_status": "passed"}
+{"completed": 14, "last_task": "masked_mean", "last_status": "passed"}
+{"completed": 15, "last_task": "masked_mean", "last_status": "passed"}
+{"completed": 17, "last_task": "masked_mean", "last_status": "passed"}
+{"completed": 18, "last_task": "masked_mean", "last_status": "passed"}
+{"completed": 19, "last_task": "prefix_sum", "last_status": "passed"}
+{"completed": 21, "last_task": "prefix_sum", "last_status": "passed"}
+{"completed": 22, "last_task": "prefix_sum", "last_status": "passed"}
+{"run_id": "task-stage1-20261109T004826Z", "execution": {"command": "python -m scripts.validate --suite gemm_div_sum_scale,row_softmax,masked_mean,prefix_sum --device cuda --purpose eval --case-set smoke --fixtures honest,hack,wrong --timeout-s 600 --suite-out /artifacts/task-stage1-20261109T004826Z/suite --backends cuda,triton --benchmark --cold-start", "returncode": 0, "timed_out": false, "wall_s": 577.3587906930001}, "counts": {"passed": 24, "failed": 0, "unavailable": 0}, "status": "pass", "source_mismatches": [], "scope": "selected workload cases only; no stock AXPBY acceptance or timing-cause claim"}
+✓ App completed. View run at 
+https://modal.com/apps/elenamylocuda/main/ap-fCEmYpC6BUGdvWhWevOKgb
