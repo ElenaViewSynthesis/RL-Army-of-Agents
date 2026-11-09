@@ -23,7 +23,8 @@ def paths_for(parents):
 
 @triton.jit
 def eagle_vocab_score(X, W, Scores, H: tl.constexpr, V: tl.constexpr, D: tl.constexpr):
-    batch, token = tl.program_id(0), tl.program_id(1)
+    # Vocabulary on grid axis 0 (limit 2**31 - 1); axis 1 is capped at 65535.
+    token, batch = tl.program_id(0), tl.program_id(1)
     h=tl.arange(0,D)
     x=tl.load(X+batch*H+h,h<H,other=0).to(tl.float32)
     w=tl.load(W+token*H+h,h<H,other=0).to(tl.float32)
@@ -73,7 +74,7 @@ def forward(hidden,weight,top_k):
     values=torch.empty_like(ids,dtype=torch.float32)
     output=torch.empty((b,top_k),device=hidden.device,dtype=torch.int64)
     exact=torch.empty_like(output,dtype=torch.float32)
-    eagle_vocab_score[(b,v)](hidden,weight,scores,h,v,triton.next_power_of_2(h),enable_fp_fusion=False)
+    eagle_vocab_score[(v,b)](hidden,weight,scores,h,v,triton.next_power_of_2(h),enable_fp_fusion=False)
     eagle_shard_select[(b,shards)](scores,ids,values,v,top_k,shards,1024)
     eagle_candidate_merge[(b,)](ids,values,output,shards*top_k,top_k,triton.next_power_of_2(shards*top_k))
     eagle_candidate_rescore[(b,top_k)](hidden,weight,output,exact,h,top_k,triton.next_power_of_2(h),enable_fp_fusion=False)
