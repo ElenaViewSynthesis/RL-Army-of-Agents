@@ -88,6 +88,26 @@ Under the DAPO and CISPO presets, a rollout that finishes inside the last `overl
 
 Beyond the stock 1 × 128 `axpby` fixture, `tasks/` holds a progressive curriculum of 29 workloads. Each task folder has a trusted `model.py` reference, which takes its shapes and dtypes from `utils/task_catalog.py` so a candidate workdir cannot redefine them. Every task also has two negative controls: a Torch-op hack and a wrong-output fixture. Tasks with a reference solution add CUDA and/or Triton kernels. The agent's job on every task is the same: write a `model_new.py` whose authored kernels match the reference and beat eager and `torch.compile`.
 
+#### Headline kernels (stages 4–5)
+
+The hardest workloads are the attention, sampling, MoE and speculative-decoding kernels. Two of them run attention over a **32,768-token (32k) context**: EAGLE-4 tree row attention and tree verify attention, at 32 sequences × 64 query heads (8 KV heads) × head_dim 128 × 64-node draft trees.
+
+| Stage | Kernel | What it computes | Largest case | Why it is hard |
+|---|---|---|---|---|
+| 5 | `eagle_tree_verify_attention` | Verify pass: every draft-tree node attends to the full committed context plus its tree ancestors | **32k context**, b32, 64 q / 8 kv heads, d128, 64 nodes, bf16 | Split-K over 32,768 keys with a tree-causal mask; offsets pass 2³¹, so they need 64-bit indexing |
+| 5 | `eagle_tree_row_attention` | Draft attention: a 4,096-token sliding window over a **32k context**, plus tree ancestors | 32k context, window 4096, same heads and tree | Window plus ancestor mask, GQA head mapping, fp32 softmax merged across splits |
+| 5 | `eagle_candidate_topk` | Sharded vocabulary top-k, then exact fp32 re-scoring of the k candidates | 32 × 151,936 vocabulary × 4,096 hidden, k = 16 | 4.9M dot products per call; the vocabulary must sit on grid axis 0 (axis 1 is capped at 65,535) |
+| 5 | `eagle_gdn_tree_recurrence` | Tree gated delta rule (GDN): each node's state is its parent's state updated by the node | b32, 64 nodes, 4 heads, 128 × 128 state, fp32 | Sequential over the tree; the alternate chain-replay solution must match the node walk |
+| 5 | `eagle_accept_tail_sampled` | Seeded rejection-sampling acceptance of draft tokens against target probabilities | b32, 64 nodes, 151,936 vocabulary | Residual distribution updates per row; integer outputs must match exactly |
+| 5 | `eagle_tree_step`, `eagle_gdn_tree_conv`, `eagle_mamba2_tree_conv`, `eagle_accept_tail` | Tree expansion and ancestor tables, tree causal conv1d (GDN and Mamba2 layouts), greedy acceptance | b32, 64-node ragged trees | Ancestor-table construction and exact integer outputs |
+| 4 | `flash_attention_fwd` | Causal flash attention forward, fp32 softmax, bf16 output | b4 × 8 heads × 2,048 tokens × d64 | Online softmax tiling |
+| 4 | `decode_attention` | GQA decode attention over a KV cache | 4 × 8,192-token context, 32 q / 8 kv heads | Memory-bound split over the cache |
+| 4 | `topk_sampling` | Top-k / top-p sampling with stable ties | 32 × 128,256 vocabulary, k = 32 | Large-vocabulary selection, deterministic ties |
+| 4 | `moe_dense_gemm` | Dense-MoE expert GEMMs with top-k routing and a shared expert | 64 tokens, 8 experts, top-2, shared expert | Expert masking; only selected experts may contribute |
+| 4 | `grouped_gemm`, `residual_rmsnorm` | Grouped GEMM; residual add + RMSNorm | 8 groups × 1,024²; 4 × 2,048 × 8,192 bf16 | Triton-only grouped tiling; bandwidth-bound fused norm |
+
+Stage 4 sizes are the largest cases run on the H200 (`…-20261109T021131Z` batch and stage 4 acceptance). Stage 5 sizes are each task's catalog acceptance case. The EAGLE-4 tasks (stage 5) are written from EAGLE-4's documented kernel behaviour and are evaluation-only (see footnote ‡).
+
 | Stage | Focus | H200 status |
 |---|---|---|
 | 0 | Bootstrap: GEMM with a fused divide-sum-scale epilogue | pass |
@@ -95,7 +115,7 @@ Beyond the stock 1 × 128 `axpby` fixture, `tasks/` holds a progressive curricul
 | 2 | Normalization, fused optimizer and tensor-core GEMM: RMSNorm, LayerNorm + residual + GELU, log-softmax gather, fused AdamW, bf16 GEMM | pass (after the CUDA GEMM build fix and the CuTe DSL C-store fix) |
 | 3 | Packed-reduction kernels against the repository-authored RL contracts: GRPO group normalization, CISPO weight clipping, packed variable-length reduction | pass |
 | 4 | Attention, grouped GEMM, sampling, residual RMSNorm, decode attention and Dense-MoE; INT8/FP8 as contracts only | pass (grouped GEMM is Triton-only by design) |
-| 5 | Nine evaluation-only speculative-tree workloads, including sampled acceptance and Mamba2 conv; GDN walk and chain replay | H200 smoke: 71/71 pass, CUDA and Triton, all fixtures; largest-case run stopped on two fixed bugs, rerun pending |
+| 5 | EAGLE-4 speculative decoding: nine evaluation-only tree workloads, including 32k-context tree row and verify attention, candidate top-k over a 151,936 vocabulary, sampled acceptance, Mamba2 conv, and GDN walk plus chain replay | H200 smoke: 71/71 pass, CUDA and Triton, all fixtures. Largest cases: 52/71 on the last finished run; the 19 failures are fixed and a rerun is in progress |
 | 6 (planned) | Multi-LoRA serving kernels as engine-free tasks: BGMV and SGMV shrink/expand, segment metadata, fused SGMV | not started; brief in [MULTI_LORA_kernels_task.md](MULTI_LORA_kernels_task.md) |
 
 | Stage | Task | Reference solution | H200 result (honest scores, hack fails provenance, wrong fails verification) |
@@ -120,21 +140,21 @@ Beyond the stock 1 × 128 `axpby` fixture, `tasks/` holds a progressive curricul
 | 4 | `topk_sampling` | Triton, CUDA | pass (smoke; 32 × 128256 vocabulary, k = 32) |
 | 4 | `fp8_gemm`\*† | none by design | — |
 | 4 | `int8_gemm`\*† | none by design | — |
-| 5 | `eagle_candidate_topk`‡ | Triton, CUDA | H200 smoke pass; largest case pending |
-| 5 | `eagle_tree_step`‡ | Triton, CUDA | H200 smoke pass; largest case pending |
-| 5 | `eagle_tree_row_attention`‡ | Triton, CUDA | H200 smoke pass; largest case pending |
-| 5 | `eagle_tree_verify_attention`‡ | Triton, CUDA | H200 smoke pass; largest case pending |
-| 5 | `eagle_gdn_tree_conv`‡ | Triton, CUDA | H200 smoke pass; largest case pending |
-| 5 | `eagle_mamba2_tree_conv`‡ | Triton, CUDA | H200 smoke pass; largest case pending |
-| 5 | `eagle_gdn_tree_recurrence`‡ | Triton, CUDA; alternate Triton chain replay | H200 smoke pass; largest case pending |
-| 5 | `eagle_accept_tail`‡ | Triton, CUDA | H200 smoke pass; largest case pending |
-| 5 | `eagle_accept_tail_sampled`‡ | Triton, CUDA | H200 smoke pass; largest case pending |
+| 5 | `eagle_candidate_topk`‡ | Triton, CUDA | H200 smoke pass; largest case (32 × 151,936) pass on both backends |
+| 5 | `eagle_tree_step`‡ | Triton, CUDA | H200 smoke pass; largest case pass on both backends |
+| 5 | `eagle_tree_row_attention`‡ | Triton, CUDA | H200 smoke pass; **32k context**: honest pass on both backends, hack row hit the fixed profiler overflow; rerun in progress |
+| 5 | `eagle_tree_verify_attention`‡ | Triton, CUDA | H200 smoke pass; **32k context**: honest hit the fixed int32 offset overflow; rerun in progress |
+| 5 | `eagle_gdn_tree_conv`‡ | Triton, CUDA | H200 smoke pass; largest case pass on both backends |
+| 5 | `eagle_mamba2_tree_conv`‡ | Triton, CUDA | H200 smoke pass; largest case pass on both backends |
+| 5 | `eagle_gdn_tree_recurrence`‡ | Triton, CUDA; alternate Triton chain replay | H200 smoke pass; largest case hit the fixed profiler overflow; rerun in progress |
+| 5 | `eagle_accept_tail`‡ | Triton, CUDA | H200 smoke pass; largest case hit the fixed profiler overflow; rerun in progress |
+| 5 | `eagle_accept_tail_sampled`‡ | Triton, CUDA | H200 smoke pass; largest case hit the fixed profiler overflow; rerun in progress |
 
 \* Evaluation-only: adapted from GPU MODE reference kernels, whose license does not clear training use (`--purpose train` is refused).
 † Contract only by design: the INT8/FP8 workloads are specified (inputs, reference, checks), but Stage 4 deliberately enables no backend for them; their `ModelNew` raises `unavailable`.
 ‡ Evaluation-only adaptations of documented EAGLE-4 behavior. This project includes or is derived from Eagle 4 technology developed by Eagle AI Corp. It is not an official Eagle AI Corp project. The Eagle 4 Source-Available License is not OSI-approved; its [LICENSE](legal/eagle4/LICENSE), [NOTICE](legal/eagle4/NOTICE), [Trademark Policy](legal/eagle4/TRADEMARKS.md), acceptance conditions and exact repository-defined contracts are recorded in [EAGLE4_STAGE5.md](EAGLE4_STAGE5.md). All nine tasks refuse training use. Expanded grids and source presence are not GPU acceptance. Use `--fixtures all` to include wrong-ancestor controls and GDN chain replay.
 
-Runs: `task-stage1-20261109T004826Z` (stages 0–1, 24/24), `task-stage23-20261109T013032Z` (stages 2–3, 51/54; the 3 failures are the CUDA tensor-core GEMM build, since fixed), `task-stage4-smoke-20261109T020100Z` (stage 4, 33 passed, 3 unavailable for grouped GEMM CUDA), the larger-case batch `…-20261109T021131Z` (all pass except the CuTe DSL GEMM retest), and `task-cute-fix-{smoke,acceptance}-20261109T030234Z` (CuTe DSL GEMM after its fix: 3/3 each). Each run used a frozen source; [VALIDATION.md](VALIDATION.md) lists which files changed afterwards. Under the CPU interpreter, bf16 `tl.dot` kernels fail and `topk_sampling` is too slow, so those tasks rely on the GPU results. "Pass" covers the listed cases on one H200, and kernel attribution is name-based.
+Runs: `task-stage1-20261109T004826Z` (stages 0–1, 24/24), `task-stage23-20261109T013032Z` (stages 2–3, 51/54; the 3 failures are the CUDA tensor-core GEMM build, since fixed), `task-stage4-smoke-20261109T020100Z` (stage 4, 33 passed, 3 unavailable for grouped GEMM CUDA), the larger-case batch `…-20261109T021131Z` (all pass except the CuTe DSL GEMM retest), `task-cute-fix-{smoke,acceptance}-20261109T030234Z` (CuTe DSL GEMM after its fix: 3/3 each), `task-stage5-gpu-smoke-20261109T190928Z` (stage 5 smoke, 71/71), `task-stage5-gpu-acceptance-20261109T222837Z` (stage 5 largest cases, 52/71 before the int32 and profiler-record fixes), and the rerun `task-stage5-gpu-acceptance-20261110T002043Z` (in progress). Stage 5 evidence is under `artifacts/runs/`. Each run used a frozen source; [VALIDATION.md](VALIDATION.md) lists which files changed afterwards. Under the CPU interpreter, bf16 `tl.dot` kernels fail and `topk_sampling` is too slow, so those tasks rely on the GPU results. "Pass" covers the listed cases on one H200, and kernel attribution is name-based.
 
 - **Reference solution:** the repo ships an authored fixture as a candidate reference solution for the task. Acceptance requires the honest fixture to score, the hack to fail provenance, and the wrong-output control to fail verification. Only its measured GPU cases are verified; source presence is not acceptance.
 - **No verified solution yet:** the task still defines its inputs, PyTorch reference and checks, and an agent can attempt it, but its suite rows cannot be trusted as `passed` until a GPU run confirms the reference solution.
