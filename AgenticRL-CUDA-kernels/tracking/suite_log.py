@@ -96,15 +96,28 @@ def log_suite(payload, entity=ENTITY, project=PROJECT, wandb_module=None):
     return getattr(run, "url", run.id)
 
 
-def readback(payload, entity=ENTITY, project=PROJECT, api=None):
-    """Return a list of mismatches between the logged run and the payload (empty = OK)."""
-    api = api or importlib.import_module("wandb").Api()
-    run = api.run(f"{entity}/{project}/{payload['wandb_id']}")
-    problems = [key for key, value in payload["summary"].items()
-                if key != "suite/wall_s" and run.summary.get(key) != value]
-    for key in ("source/manifest_sha256", "source/git_revision"):
-        if run.config.get(key) != payload["config"][key]:
-            problems.append(key)
+def readback(payload, entity=ENTITY, project=PROJECT, api=None, attempts=18, delay_s=10.0, sleep=None):
+    """Return a list of mismatches between the logged run and the payload (empty = OK).
+
+    The W&B API served a just-finished run's summary after one to two
+    minutes (2026-11-10), so a mismatch is re-read with a fresh API client up
+    to `attempts` times, `delay_s` apart (three minutes by default).
+    """
+    import time
+    sleep = sleep or time.sleep
+    problems = []
+    for attempt in range(attempts):
+        client = api or importlib.import_module("wandb").Api()
+        run = client.run(f"{entity}/{project}/{payload['wandb_id']}")
+        problems = [key for key, value in payload["summary"].items()
+                    if key != "suite/wall_s" and run.summary.get(key) != value]
+        for key in ("source/manifest_sha256", "source/git_revision"):
+            if run.config.get(key) != payload["config"][key]:
+                problems.append(key)
+        if not problems:
+            return []
+        if attempt + 1 < attempts:
+            sleep(delay_s)
     return problems
 
 

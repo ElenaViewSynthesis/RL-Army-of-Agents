@@ -73,7 +73,21 @@ class SuiteLogTests(unittest.TestCase):
         api = types.SimpleNamespace(run=lambda path: fake_run)
         self.assertEqual(suite_log.readback(payload, "ent", "proj", api), [])
         fake_run.summary["suite/passed"] = 1
-        self.assertEqual(suite_log.readback(payload, "ent", "proj", api), ["suite/passed"])
+        waits = []
+        self.assertEqual(suite_log.readback(payload, "ent", "proj", api, attempts=3, sleep=waits.append),
+                         ["suite/passed"])
+        self.assertEqual(len(waits), 2)
+
+    def test_readback_waits_for_a_lagging_summary(self):
+        # The live API served an empty summary just after finish (2026-11-10).
+        payload = suite_log.suite_payload(self.folder)
+        full = {**payload["summary"]}
+        states = [{}, {}, full]
+        api = types.SimpleNamespace(run=lambda path: types.SimpleNamespace(
+            summary=states.pop(0) if len(states) > 1 else states[0], config=payload["config"]))
+        waits = []
+        self.assertEqual(suite_log.readback(payload, "ent", "proj", api, attempts=5, sleep=waits.append), [])
+        self.assertEqual(len(waits), 2)
 
     def test_failed_suite_finishes_nonzero(self):
         folder = write_evidence(Path(self.tmp.name) / "failed", ("passed", "failed"))
