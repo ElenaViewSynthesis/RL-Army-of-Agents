@@ -215,6 +215,16 @@ SOURCES["eagle4"] = {
 TASKS.update(stage5_tasks(Task, case))
 
 
+from utils.lora_contracts import stage6_tasks
+for _key, _repo, _branch in (("punica", "punica-ai/punica", "591b59899f0a20760821785d06b331c8a2e5cb86"),
+                             ("slora", "S-LoRA/S-LoRA", "c1ddf488781ea7f551cd0bb07bfd097124c93411"),
+                             ("vllm", "vllm-project/vllm", "4e3463c87493ebd2c5d5fbe4be6469911e23e2bf")):
+    SOURCES[_key] = {"suite": _key, "url": f"https://github.com/{_repo}",
+                     "license": "Apache-2.0",
+                     "license_url": f"https://github.com/{_repo}/blob/{_branch}/LICENSE"}
+TASKS.update(stage6_tasks(Task, case))
+
+
 def get_task(name):
     if name not in TASKS:
         raise ValueError(f"Unknown suite task: {name}")
@@ -244,12 +254,14 @@ def select_cases(task_name, selection="smoke"):
         return task.cases
     if selection == "smoke":
         return task.cases[:1]
+    if selection == "stratified" and task.stage == 6:
+        return task.cases
     if selection == "acceptance":
         if task_name == "gemm_tensor_core":
             return (get_case(task_name, "m4096_n4096_k4096_bfloat16"),)
         if task_name == "flash_attention_fwd":
             return task.cases[-1:]
-        return task.cases[-1:] if task.stage == 5 else task.cases[:1]
+        return task.cases[-1:] if task.stage in (5, 6) else task.cases[:1]
     return (get_case(task_name, selection),)
 
 
@@ -262,6 +274,9 @@ def validate_usage(task_name, purpose):
 
 
 def workload(task_name, item):
+    if task_name.startswith("lora_"):
+        from utils.lora_contracts import workload as lora_workload
+        return lora_workload(task_name, item)
     if task_name.startswith("eagle_"):
         from utils.eagle_contracts import workload as eagle_workload
         return eagle_workload(task_name, item)

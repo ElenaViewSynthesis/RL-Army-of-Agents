@@ -10,6 +10,9 @@ def make_inputs(task_name):
     if task_name.startswith("eagle_"):
         from utils.eagle_reference import make_inputs as eagle_inputs
         return eagle_inputs(task_name, item)
+    if task_name.startswith("lora_"):
+        from utils.lora_reference import make_inputs as lora_inputs
+        return lora_inputs(task_name, item)
     p = item.params
     dtype = getattr(torch, item.dtype)
     randn = lambda *shape: torch.randn(*shape, dtype=dtype)

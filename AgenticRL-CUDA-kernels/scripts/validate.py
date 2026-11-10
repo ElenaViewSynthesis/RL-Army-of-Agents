@@ -24,12 +24,13 @@ def main():
     parser.add_argument("--device", choices=("cpu", "cuda"), default="cpu")
     parser.add_argument("--timeout-s", type=float, default=180)
     parser.add_argument("--backends", help="Comma-separated selection; default all backends")
-    parser.add_argument("--suite", help="Progressive task names, all, bootstrap, or stage1..stage5")
-    parser.add_argument("--case-set", default="smoke", help="smoke, all, acceptance, or one exact case id")
+    parser.add_argument("--suite", help="Progressive task names, all, bootstrap, or stage1..stage6")
+    parser.add_argument("--case-set", default="smoke", help="smoke, stratified (Stage 6), all, acceptance, or one exact case id")
     parser.add_argument("--fixtures", default="honest,hack,wrong")
     parser.add_argument("--purpose", choices=("eval", "train"), default="eval")
     parser.add_argument("--suite-out", help="New output directory; existing evidence is never overwritten")
     parser.add_argument("--benchmark", action="store_true", help="Opt-in diagnostic benchmark for the suite")
+    parser.add_argument("--cuda-graphs", action="store_true", help="Diagnostic graph capture and replay; requires --benchmark")
     parser.add_argument("--cold-start", action="store_true", help="Separate first-forward diagnostic sample")
     args = parser.parse_args()
     if args.suite:
@@ -43,7 +44,7 @@ def main():
                                case_set=args.case_set, purpose=args.purpose,
                                backends=args.backends.split(",") if args.backends else None,
                                variants=args.fixtures.split(","), timeout_s=args.timeout_s,
-                               benchmark=args.benchmark, cold_start=args.cold_start)
+                               benchmark=args.benchmark, cold_start=args.cold_start, cuda_graphs=args.cuda_graphs)
         except (ValueError, FileExistsError) as exc:
             parser.error(str(exc))
         print(json.dumps({"suite/status": report["status"], "suite/output": output,

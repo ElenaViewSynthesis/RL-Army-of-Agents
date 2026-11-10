@@ -14,7 +14,7 @@ from utils.task_suite import case_environment, evaluate_case, expected_outcome, 
 
 class TaskCatalogTests(unittest.TestCase):
     def test_known_curriculum_and_case_identifiers(self):
-        self.assertEqual(len(TASKS), 29)
+        self.assertEqual(len(TASKS), 35)
         self.assertEqual([t.name for t in TASKS.values() if t.stage == 0], ["gemm_div_sum_scale"])
         for task in TASKS.values():
             self.assertTrue(task.cases)
@@ -49,7 +49,7 @@ class TaskCatalogTests(unittest.TestCase):
         self.assertEqual(select_cases("flash_attention_fwd", "acceptance")[0].params["s"], 2048)
         self.assertEqual(select_tasks(["bootstrap", "stage1"]),
                          ["gemm_div_sum_scale", "row_softmax", "masked_mean", "prefix_sum"])
-        self.assertEqual(len(select_tasks(["all", "stage1"])), 29)
+        self.assertEqual(len(select_tasks(["all", "stage1"])), 35)
 
     def test_synthetic_operation_and_byte_counts(self):
         description = workload("gemm_tensor_core", case("bfloat16", m=2, n=3, k=4))

@@ -242,6 +242,9 @@ def render(task_name, records=(), evidence=None, limitations=()):
                 "|---|---|---|---:|---:|---:|---:|---:|\n" + "\n".join(ceilings))
         if limitations:
             measured += "\n\nCaptured measurement limits:\n" + "\n".join(f"- {item}" for item in limitations)
+    verification_note = '- Verification uses five fresh random inputs; floating outputs keep atol=rtol=1e-2.\n  The progressive suite requires exact equality for integer outputs, including\n  token IDs and prefix sums. `utils.task_verification` exposes the same strict\n  check directly; stock `utils.verification` and AXPBY defaults stay unchanged.'
+    if task.stage == 6:
+        verification_note = '- Verification uses five fresh random inputs and exact integer equality for\n  every metadata output. This task has no floating relative gate. Stock and\n  Stages 0–5 keep their existing checks.' if task.name == "lora_segment_metadata" else '- Verification uses five fresh random inputs with the approved Stage 6 bound:\n  max absolute error <= 0.005 * checked max reference for fp16 activations,\n  or 0.01 for bf16, including fp32 shrink buffers. Skipped y rows are bit-exact\n  and excluded from the reductions; zero reference is exact and non-finites\n  fail. `utils.lora_verification` replaces the old float check for these tasks.\n  Integers stay exact. Stock and Stages 0–5 keep their existing checks.'
     return f"""# `{task.name}`
 
 ## Operator contract
@@ -279,10 +282,7 @@ are not a new blanket license for this repository.
   intentional Torch reference-compute attack; it must verify then fail provenance.
 - `model_new_wrong.py` intentionally returns NaNs or invalid integer sentinels;
   it must fail verification, not merely compilation.
-- Verification uses five fresh random inputs; floating outputs keep atol=rtol=1e-2.
-  The progressive suite requires exact equality for integer outputs, including
-  token IDs and prefix sums. `utils.task_verification` exposes the same strict
-  check directly; stock `utils.verification` and AXPBY defaults stay unchanged.
+{verification_note}
 - The suite alone applies authored-only provenance: at least 90% of non-memory
   device time, no library-kernel time, and 100% authored for gemm_tensor_core.
   Stock AXPBY attribution/reward rules are unchanged.

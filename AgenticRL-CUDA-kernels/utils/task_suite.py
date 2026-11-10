@@ -20,7 +20,7 @@ from utils.task_policy import apply_task_policy, diagnostic_rates, gemm_ceiling_
 
 ROOT = Path(__file__).resolve().parent.parent
 VARIANTS = ("honest", "hack", "wrong")
-EXTRA_VARIANTS = ("wrong_ancestor", "chain_replay")
+EXTRA_VARIANTS = ("wrong_ancestor", "chain_replay", "wrong_padding", "wrong_skip")
 
 
 @contextlib.contextmanager
@@ -119,6 +119,15 @@ def evaluate_case(task_name, case_id, backend, variant, destination, *, device="
     if backend not in spec.backends:
         result["suite/reason"] = "backend_fixture_not_provided"
         return result
+    if task_name.startswith("lora_") and variant in ("wrong_skip", "wrong_padding"):
+        from utils.lora_contracts import token_slots, slot_ranks
+        if variant == "wrong_skip" and -1 not in token_slots(item.params):
+            result["suite/reason"] = "control_not_applicable_no_skipped_tokens"
+            return result
+        padded = (item.params["rank"]+15)//16*16
+        if variant == "wrong_padding" and min(slot_ranks(item.params)) == padded:
+            result["suite/reason"] = "control_not_applicable_no_rank_padding"
+            return result
     reason = cuda_unavailable(device) or available_backends()[backend]
     if reason is None and backend == "cuda" and shutil.which("nvcc") is None:
         reason = "nvcc unavailable"
@@ -134,6 +143,7 @@ def evaluate_case(task_name, case_id, backend, variant, destination, *, device="
     config = dataclasses.replace(
         requested, backend=backend, benchmark=requested.benchmark and variant in ("honest", "chain_replay"),
         exact_integer_outputs=True,
+        relative_error_bounds=spec.stage == 6 and task_name != "lora_segment_metadata",
         provenance_threshold=max(requested.provenance_threshold,
                                  1.0 if task_name == "gemm_tensor_core" else .9))
     deadline = started + config.timeout_s
@@ -206,6 +216,26 @@ def evaluate_case(task_name, case_id, backend, variant, destination, *, device="
     if perf_required and result["suite/status"] == "passed" and result["task/performance_accepted"] is None:
         result.update({"suite/status": "unavailable",
                        "suite/reason": "cuBLAS ceiling not yet recorded"})
+    numerics = None
+    if task_name.startswith("lora_") and task_name != "lora_segment_metadata" and variant == "honest" and result.get("env/verify_ok"):
+        target = path / "lora-numerics.json"
+        env = os.environ.copy()
+        with case_environment(task_name, case_id, device):
+            env.update({key: os.environ[key] for key in
+                        ("CUDA_AGENT_TASK", "CUDA_AGENT_TASK_CASE", "CUDA_AGENT_DEVICE", "TRITON_INTERPRET")})
+            code, stdout, stderr, timed_out = _stage(
+                "utils.lora_diagnostics", ["--output", str(target)], path, env, deadline)
+        (path / "lora-numerics.stdout.log").write_text(stdout)
+        (path / "lora-numerics.stderr.log").write_text(stderr)
+        result["artifact/lora_numerics"] = str(target) if code == 0 and target.is_file() else None
+        result["suite/numerics_unavailable_reason"] = (None if result["artifact/lora_numerics"] else
+            "case_deadline" if timed_out else f"diagnostic_stage_exit_{code}")
+        if result["artifact/lora_numerics"]:
+            try:
+                numerics = json.loads(target.read_text())
+            except (OSError, ValueError):
+                result["artifact/lora_numerics"] = None
+                result["suite/numerics_unavailable_reason"] = "diagnostic_invalid_report"
     after = {name: hashlib.sha256((path / name).read_bytes()).hexdigest()
              if (path / name).is_file() else None for name in protected}
     if after != before:
@@ -217,6 +247,14 @@ def evaluate_case(task_name, case_id, backend, variant, destination, *, device="
     latency = result.get("bench/generated/event_us_median") if result.get("bench/available") else None
     result.update(diagnostic_rates(workload(task_name, item), latency))
     result["suite/wall_s"] = time.monotonic() - started
+    bounds_path = path / ".cache" / "relative-error-bounds.json"
+    bounds = None
+    if config.relative_error_bounds and bounds_path.is_file():
+        try:
+            bounds = json.loads(bounds_path.read_text())
+            result["artifact/relative_error_bounds"] = str(bounds_path)
+        except (OSError, ValueError):
+            pass  # Artifact content never determines a reward.
     payload = {"schema": "progressive-task-case-v1", "case": item.to_dict(),
                "config": config.to_dict(), "protected_sha256": before, "protected_sha256_after": after,
                "provenance_rules": PROVENANCE_RULESET,
@@ -225,7 +263,8 @@ def evaluate_case(task_name, case_id, backend, variant, destination, *, device="
                "candidate_sha256_after": hashlib.sha256((path / "model_new.py").read_bytes()).hexdigest(),
                "candidate_source_sha256": sources_before,
                "candidate_source_sha256_after": candidate_sources(path),
-               "profile": profile, "result": result}
+               "profile": profile, "result": result,
+               **({"verification_bounds": bounds} if bounds is not None else {}), **({"lora_numerics": numerics} if numerics else {})}
     (path / "suite-case.json").write_text(json.dumps(payload, indent=2, allow_nan=False) + "\n")
     return result
 
@@ -235,7 +274,7 @@ def select_tasks(names):
     for name in names:
         if name == "all":
             result.extend(TASKS)
-        elif name in ("bootstrap", "stage1", "stage2", "stage3", "stage4", "stage5"):
+        elif name in ("bootstrap", "stage1", "stage2", "stage3", "stage4", "stage5", "stage6"):
             stage = 0 if name == "bootstrap" else int(name[-1])
             result.extend(task.name for task in TASKS.values() if task.stage == stage)
         else:
@@ -244,12 +283,14 @@ def select_tasks(names):
 
 
 def run_suite(names, output, *, case_set="smoke", backends=None, variants=VARIANTS,
-              device="cuda", purpose="eval", timeout_s=600, benchmark=False, cold_start=False):
+              device="cuda", purpose="eval", timeout_s=600, benchmark=False, cold_start=False, cuda_graphs=False):
     names = select_tasks(names)
     if not names or not variants or set(variants) - set((*VARIANTS, *EXTRA_VARIANTS, "all")):
         raise ValueError("Task and fixture selections must be nonempty and valid")
     if backends is not None and (not backends or set(backends) - set(BACKENDS)):
         raise ValueError("Backend selections must be nonempty and valid")
+    if cuda_graphs and not benchmark:
+        raise ValueError("cuda_graphs requires the diagnostic benchmark")
     if cold_start and not benchmark:
         raise ValueError("cold_start requires the diagnostic benchmark")
     for name in names:
@@ -259,7 +300,7 @@ def run_suite(names, output, *, case_set="smoke", backends=None, variants=VARIAN
     root = Path(output)
     root.mkdir(parents=True, exist_ok=False)
     records = []
-    config = dataclasses.replace(RolloutConfig(), timeout_s=timeout_s, benchmark=benchmark)
+    config = dataclasses.replace(RolloutConfig(), timeout_s=timeout_s, benchmark=benchmark, cuda_graphs=cuda_graphs)
     for name in names:
         spec = get_task(name)
         chosen = tuple(backends) if backends else spec.backends or ("triton",)
@@ -269,6 +310,7 @@ def run_suite(names, output, *, case_set="smoke", backends=None, variants=VARIAN
                 if "all" in variants:
                     selected_variants = (*VARIANTS,
                         *(("wrong_ancestor",) if (ROOT / "tasks" / name / "model_new_wrong_ancestor.py").is_file() else ()),
+                        *tuple(v for v in ("wrong_padding", "wrong_skip") if (ROOT / "tasks" / name / f"model_new_{v}.py").is_file()),
                         *(("chain_replay",) if name == "eagle_gdn_tree_recurrence" and backend == "triton" else ()))
                 for variant in selected_variants:
                     destination = root / name / item.id / backend / variant
