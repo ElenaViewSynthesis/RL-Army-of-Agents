@@ -11,6 +11,7 @@ is diagnostics; the reward metric (t_*_us) comes from utils.profiling.
 """
 
 import argparse
+from dataclasses import dataclass
 import json
 import os
 import time
@@ -70,6 +71,17 @@ def _time_calls(call, iters):
     return start.elapsed_time(end) * 1000 / iters, wall_us / iters
 
 
+@dataclass
+class CapturedGraph:
+    """Own the static buffers for the entire replay lifetime, including outputs."""
+    graph: object
+    inputs: object
+    outputs: object
+
+    def replay(self):
+        return self.graph.replay()
+
+
 def _capture_graph(model, inputs, fresh, torch, torch_model, check_equal):
     """Side-stream warmup then capture; failure is data, never a crash."""
     entry = {"graph_capturable": False, "graph_error": None,
@@ -95,7 +107,7 @@ def _capture_graph(model, inputs, fresh, torch, torch_model, check_equal):
             entry["graph_replay_ok"] = True
         except Exception:
             entry["graph_replay_ok"] = False
-        return entry, graph
+        return entry, CapturedGraph(graph, static_inputs, static_out)
     except Exception as exc:
         entry["graph_error"] = f"{type(exc).__name__}: {exc}"[:512]
         return entry, None
@@ -141,9 +153,14 @@ def run_benchmark(args):
             torch.cuda.synchronize()
             if args.cuda_graphs:
                 fresh_torch, fresh_cuda = build_inputs()
+                fresh = fresh_cuda if name == "generated" else fresh_torch
+                compare = check_equal
+                if os.environ.get("CUDA_AGENT_RELATIVE_ERROR_BOUNDS") == "1":
+                    from utils.lora_verification import check_outputs
+                    compare = lambda actual, expected: check_outputs(
+                        os.environ["CUDA_AGENT_TASK"], actual, expected, fresh)
                 entry, graph = _capture_graph(
-                    model, inputs, fresh_cuda if name == "generated" else fresh_torch,
-                    torch, torch_model, check_equal)
+                    model, inputs, fresh, torch, torch_model, compare)
                 samples[name].update(entry)
                 graphs[name] = graph
         # Balanced rotation: each impl occupies each position equally often.
