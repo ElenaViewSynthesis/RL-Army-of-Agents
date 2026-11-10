@@ -1,0 +1,18 @@
+{
+  "url": "https://github.com/BytedTsinghua-SIA/CUDA-Agent",
+  "commit": "473025c8af7878e928525138b5cb327d6bcdf9dd",
+  "sha256": {
+    "SKILL.md": "3161860fb45dea51a688f3fe217ace664df6bd16808d8865824684a58a786d63",
+    "binding.cpp": "43da662b9aedb537a4cb2f04c57d92aeddbe018a9b5f7374ae28ec9bba0b3b62",
+    "binding_registry.h": "a829ca7d5de03049c439f30aa01f7f631c06418c31855cf19a67f23d69349e0f",
+    "kernels/axpby.cu": "44a6b0ac7d98319e3d3aafc1fa3cb65e57375a4e2b0aac2c6d1028de292380f8",
+    "kernels/axpby_binding.cpp": "90b24e3495c73a5884fb1d61384dab6a5ddd97ee74510692e3792822d3f0a3c9",
+    "model.py": "f92e69573f45f2043b0d2c63032b554653a8b935dddf71f5d7fb6c3190926ecf",
+    "model_new.py": "2318132d3b21c6701aea6b84a6b64bab2fbf2756474153583454f8574449e3eb",
+    "utils/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "utils/compile.py": "4bc806d8021fb430caebcffab3e32d5edc2b13abc8655544faa696fc7d699734",
+    "utils/compile.sh": "0707712752799cacc79930d3e5256994c13f511ea355e5346490d67e164af3d0",
+    "utils/profiling.py": "5e6fdd564262a296bb51a6e5fe86e16c216717a43d453c4cc6104e55000a577b",
+    "utils/verification.py": "c47e6b0810766c49e2c68e10374aed2a54224f31fc8a399158c079f4b9e8312f"
+  }
+}

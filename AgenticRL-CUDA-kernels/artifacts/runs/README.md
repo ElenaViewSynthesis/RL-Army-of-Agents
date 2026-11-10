@@ -11,3 +11,6 @@ run, named by its run ID (`task-<scope>-<UTC timestamp>`).
 - **Local test runs:** `system.log` (system Python) and `venv.log` (venv).
 
 Runs before 2026-11-09 remain at their original paths under `artifacts/`.
+
+Frozen source snapshots that are not tied to one run live under
+`artifacts/sources/` (Stage 5: `artifacts/sources/stage5/`).
