@@ -1,0 +1,20 @@
+id,task,backend,solution,case,result,gen_us,eager_us,compile_us
+eagle_candidate_topk CUDA,eagle_candidate_topk,CUDA,honest,b32_h4096_v151936_top_k16_bfloat16,correct,604808.91,4274.378,3337.528
+eagle_candidate_topk Triton,eagle_candidate_topk,Triton,honest,b32_h4096_v151936_top_k16_bfloat16,correct,9008.425,4271.365,3338.06
+eagle_tree_step CUDA,eagle_tree_step,CUDA,honest,b32_n64_treeragged_top_k8_float32,correct,11610.345,171.34,18.938
+eagle_tree_step Triton,eagle_tree_step,Triton,honest,b32_n64_treeragged_top_k8_float32,faster_than_eager,98.663,176.87,21.498
+eagle_tree_row_attention CUDA,eagle_tree_row_attention,CUDA,honest,b32_n64_treeragged_hkv8_ratio8_d128_s32768_window4096_bfloat16,correct,224276.412,30757.704,11034.459
+eagle_tree_row_attention Triton,eagle_tree_row_attention,Triton,honest,b32_n64_treeragged_hkv8_ratio8_d128_s32768_window4096_bfloat16,correct,134463.958,30753.976,11082.896
+eagle_tree_verify_attention CUDA,eagle_tree_verify_attention,CUDA,honest,b32_n64_treeragged_hkv8_ratio8_d128_s32768_window32768_bfloat16,correct,1703356.173,267099.779,97101.114
+eagle_tree_verify_attention Triton,eagle_tree_verify_attention,Triton,honest,b32_n64_treeragged_hkv8_ratio8_d128_s32768_window32768_bfloat16,correct,1035069.295,267080.333,97000.937
+eagle_gdn_tree_conv CUDA,eagle_gdn_tree_conv,CUDA,honest,b32_n64_treeragged_c384_bfloat16,faster_than_both,7.798,171.986,9.081
+eagle_gdn_tree_conv Triton,eagle_gdn_tree_conv,Triton,honest,b32_n64_treeragged_c384_bfloat16,faster_than_both,7.389,173.939,9.328
+eagle_mamba2_tree_conv CUDA,eagle_mamba2_tree_conv,CUDA,honest,b32_n64_treeragged_c384_bfloat16,faster_than_eager,26.083,185.022,8.138
+eagle_mamba2_tree_conv Triton,eagle_mamba2_tree_conv,Triton,honest,b32_n64_treeragged_c384_bfloat16,faster_than_eager,25.91,184.074,8.099
+eagle_gdn_tree_recurrence CUDA,eagle_gdn_tree_recurrence,CUDA,honest,b32_n64_treeragged_heads4_dk128_dv128_float32,faster_than_both,1611.329,5173.116,5393.957
+eagle_gdn_tree_recurrence Triton,eagle_gdn_tree_recurrence,Triton,honest,b32_n64_treeragged_heads4_dk128_dv128_float32,faster_than_both,449.612,5171.806,5445.077
+eagle_gdn_tree_recurrence Triton chain replay,eagle_gdn_tree_recurrence,Triton,chain replay,b32_n64_treeragged_heads4_dk128_dv128_float32,faster_than_both,521.19,5191.469,5427.914
+eagle_accept_tail CUDA,eagle_accept_tail,CUDA,honest,b32_n64_treeragged_int32,faster_than_both,9.626,1968.202,107.834
+eagle_accept_tail Triton,eagle_accept_tail,Triton,honest,b32_n64_treeragged_int32,faster_than_both,8.57,1969.671,107.699
+eagle_accept_tail_sampled CUDA,eagle_accept_tail_sampled,CUDA,honest,b32_n64_treeragged_v151936_seed17_float32,correct,46587.976,21252.425,4557.4
+eagle_accept_tail_sampled Triton,eagle_accept_tail_sampled,Triton,honest,b32_n64_treeragged_v151936_seed17_float32,faster_than_both,3318.24,21242.235,4649.233
