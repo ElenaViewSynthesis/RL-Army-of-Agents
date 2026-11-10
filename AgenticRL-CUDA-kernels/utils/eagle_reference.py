@@ -17,14 +17,19 @@ def ancestors(parents):
     """
     import torch
     b, n = parents.shape
-    links = parents.long()
-    rows = torch.empty((b, n, n), device=parents.device, dtype=torch.int32)
-    current = torch.arange(n, device=parents.device).expand(b, n)
-    for depth in range(n):
-        rows[:, :, depth] = current
-        current = torch.where(current >= 0, links.gather(1, current.clamp(min=0)),
-                              torch.full_like(current, -1))
-    return rows
+    # Binary lifting: rows[:, :, w + j] = 2**k-th ancestor of rows[:, :, j],
+    # so only ceil(log2(n)) doubling steps (about 6 for n = 64) launch kernels.
+    rows = torch.full((b, n, n), -1, device=parents.device, dtype=torch.long)
+    rows[:, :, 0] = torch.arange(n, device=parents.device)
+    jump, width = parents.long(), 1
+    while width < n:
+        span = min(width, n - width)
+        source = rows[:, :, :span]
+        lifted = jump.gather(1, source.clamp(min=0).reshape(b, -1)).reshape(b, n, span)
+        rows[:, :, width:width + span] = torch.where(source >= 0, lifted, torch.full_like(lifted, -1))
+        jump = torch.where(jump >= 0, jump.gather(1, jump.clamp(min=0)), jump)
+        width *= 2
+    return rows.to(torch.int32)
 
 
 def candidate_topk(hidden, weight, top_k):
