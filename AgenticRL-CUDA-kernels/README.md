@@ -115,7 +115,7 @@ Stage 4 sizes are the largest cases run on the H200 (`…-20261109T021131Z` batc
 | 2 | Normalization, fused optimizer and tensor-core GEMM: RMSNorm, LayerNorm + residual + GELU, log-softmax gather, fused AdamW, bf16 GEMM | pass (after the CUDA GEMM build fix and the CuTe DSL C-store fix) |
 | 3 | Packed-reduction kernels against the repository-authored RL contracts: GRPO group normalization, CISPO weight clipping, packed variable-length reduction | pass |
 | 4 | Attention, grouped GEMM, sampling, residual RMSNorm, decode attention and Dense-MoE; INT8/FP8 as contracts only | pass (grouped GEMM is Triton-only by design) |
-| 5 | EAGLE-4 speculative decoding: nine evaluation-only tree workloads, including 32k-context tree row and verify attention, candidate top-k over a 151,936 vocabulary, sampled acceptance, Mamba2 conv, and GDN walk plus chain replay | H200 smoke: 71/71 pass, CUDA and Triton, all fixtures. Largest cases: 52/71 on the last finished run; the 19 failures are fixed and a rerun is in progress |
+| 5 | EAGLE-4 speculative decoding: nine evaluation-only tree workloads, including 32k-context tree row and verify attention, candidate top-k over a 151,936 vocabulary, sampled acceptance, Mamba2 conv, and GDN walk plus chain replay | pass: smoke 71/71 and largest cases 71/71, CUDA and Triton, all fixtures |
 | 6 (planned) | Multi-LoRA serving kernels as engine-free tasks: BGMV and SGMV shrink/expand, segment metadata, fused SGMV | not started; brief in [MULTI_LORA_kernels_task.md](MULTI_LORA_kernels_task.md) |
 
 | Stage | Task | Reference solution | H200 result (honest scores, hack fails provenance, wrong fails verification) |
@@ -140,21 +140,21 @@ Stage 4 sizes are the largest cases run on the H200 (`…-20261109T021131Z` batc
 | 4 | `topk_sampling` | Triton, CUDA | pass (smoke; 32 × 128256 vocabulary, k = 32) |
 | 4 | `fp8_gemm`\*† | none by design | — |
 | 4 | `int8_gemm`\*† | none by design | — |
-| 5 | `eagle_candidate_topk`‡ | Triton, CUDA | H200 smoke pass; largest case (32 × 151,936) pass on both backends |
-| 5 | `eagle_tree_step`‡ | Triton, CUDA | H200 smoke pass; largest case pass on both backends |
-| 5 | `eagle_tree_row_attention`‡ | Triton, CUDA | H200 smoke pass; **32k context**: honest pass on both backends, hack row hit the fixed profiler overflow; rerun in progress |
-| 5 | `eagle_tree_verify_attention`‡ | Triton, CUDA | H200 smoke pass; **32k context**: honest hit the fixed int32 offset overflow; rerun in progress |
-| 5 | `eagle_gdn_tree_conv`‡ | Triton, CUDA | H200 smoke pass; largest case pass on both backends |
-| 5 | `eagle_mamba2_tree_conv`‡ | Triton, CUDA | H200 smoke pass; largest case pass on both backends |
-| 5 | `eagle_gdn_tree_recurrence`‡ | Triton, CUDA; alternate Triton chain replay | H200 smoke pass; largest case hit the fixed profiler overflow; rerun in progress |
-| 5 | `eagle_accept_tail`‡ | Triton, CUDA | H200 smoke pass; largest case hit the fixed profiler overflow; rerun in progress |
-| 5 | `eagle_accept_tail_sampled`‡ | Triton, CUDA | H200 smoke pass; largest case hit the fixed profiler overflow; rerun in progress |
+| 5 | `eagle_candidate_topk`‡ | Triton, CUDA | pass (smoke; largest 32 × 151,936 vocabulary × 4,096 hidden) |
+| 5 | `eagle_tree_step`‡ | Triton, CUDA | pass (smoke; largest 32 × 64-node trees) |
+| 5 | `eagle_tree_row_attention`‡ | Triton, CUDA | pass (smoke; largest **32k context**, window 4096) |
+| 5 | `eagle_tree_verify_attention`‡ | Triton, CUDA | pass (smoke; largest **32k context**) |
+| 5 | `eagle_gdn_tree_conv`‡ | Triton, CUDA | pass (smoke; largest 32 × 64 nodes × 384 channels) |
+| 5 | `eagle_mamba2_tree_conv`‡ | Triton, CUDA | pass (smoke; largest 32 × 64 nodes × 384 channels) |
+| 5 | `eagle_gdn_tree_recurrence`‡ | Triton, CUDA; alternate Triton chain replay | pass (smoke; largest 32 × 64 nodes × 4 heads × 128²), including chain replay |
+| 5 | `eagle_accept_tail`‡ | Triton, CUDA | pass (smoke; largest 32 × 64 nodes) |
+| 5 | `eagle_accept_tail_sampled`‡ | Triton, CUDA | pass (smoke; largest 32 × 64 nodes × 151,936 vocabulary) |
 
 \* Evaluation-only: adapted from GPU MODE reference kernels, whose license does not clear training use (`--purpose train` is refused).
 † Contract only by design: the INT8/FP8 workloads are specified (inputs, reference, checks), but Stage 4 deliberately enables no backend for them; their `ModelNew` raises `unavailable`.
 ‡ Evaluation-only adaptations of documented EAGLE-4 behavior. This project includes or is derived from Eagle 4 technology developed by Eagle AI Corp. It is not an official Eagle AI Corp project. The Eagle 4 Source-Available License is not OSI-approved; its [LICENSE](legal/eagle4/LICENSE), [NOTICE](legal/eagle4/NOTICE), [Trademark Policy](legal/eagle4/TRADEMARKS.md), acceptance conditions and exact repository-defined contracts are recorded in [EAGLE4_STAGE5.md](EAGLE4_STAGE5.md). All nine tasks refuse training use. Expanded grids and source presence are not GPU acceptance. Use `--fixtures all` to include wrong-ancestor controls and GDN chain replay.
 
-Runs: `task-stage1-20261109T004826Z` (stages 0–1, 24/24), `task-stage23-20261109T013032Z` (stages 2–3, 51/54; the 3 failures are the CUDA tensor-core GEMM build, since fixed), `task-stage4-smoke-20261109T020100Z` (stage 4, 33 passed, 3 unavailable for grouped GEMM CUDA), the larger-case batch `…-20261109T021131Z` (all pass except the CuTe DSL GEMM retest), `task-cute-fix-{smoke,acceptance}-20261109T030234Z` (CuTe DSL GEMM after its fix: 3/3 each), `task-stage5-gpu-smoke-20261109T190928Z` (stage 5 smoke, 71/71), `task-stage5-gpu-acceptance-20261109T222837Z` (stage 5 largest cases, 52/71 before the int32 and profiler-record fixes), and the rerun `task-stage5-gpu-acceptance-20261110T002043Z` (in progress). Stage 5 evidence is under `artifacts/runs/`. Each run used a frozen source; [VALIDATION.md](VALIDATION.md) lists which files changed afterwards. Under the CPU interpreter, bf16 `tl.dot` kernels fail and `topk_sampling` is too slow, so those tasks rely on the GPU results. "Pass" covers the listed cases on one H200, and kernel attribution is name-based.
+Runs: `task-stage1-20261109T004826Z` (stages 0–1, 24/24), `task-stage23-20261109T013032Z` (stages 2–3, 51/54; the 3 failures are the CUDA tensor-core GEMM build, since fixed), `task-stage4-smoke-20261109T020100Z` (stage 4, 33 passed, 3 unavailable for grouped GEMM CUDA), the larger-case batch `…-20261109T021131Z` (all pass except the CuTe DSL GEMM retest), `task-cute-fix-{smoke,acceptance}-20261109T030234Z` (CuTe DSL GEMM after its fix: 3/3 each), `task-stage5-gpu-smoke-20261109T190928Z` (stage 5 smoke, 71/71), `task-stage5-gpu-acceptance-20261109T222837Z` (stage 5 largest cases, 52/71 before the int32 and profiler-record fixes), and the rerun `task-stage5-gpu-acceptance-20261110T002043Z` (stage 5 largest cases after all fixes, 71/71). Stage 5 evidence is under `artifacts/runs/`. Each run used a frozen source; [VALIDATION.md](VALIDATION.md) lists which files changed afterwards. Under the CPU interpreter, bf16 `tl.dot` kernels fail and `topk_sampling` is too slow, so those tasks rely on the GPU results. "Pass" covers the listed cases on one H200, and kernel attribution is name-based.
 
 - **Reference solution:** the repo ships an authored fixture as a candidate reference solution for the task. Acceptance requires the honest fixture to score, the hack to fail provenance, and the wrong-output control to fail verification. Only its measured GPU cases are verified; source presence is not acceptance.
 - **No verified solution yet:** the task still defines its inputs, PyTorch reference and checks, and an agent can attempt it, but its suite rows cannot be trusted as `passed` until a GPU run confirms the reference solution.

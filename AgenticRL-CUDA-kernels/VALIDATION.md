@@ -2301,3 +2301,33 @@ Detached H200 run of the fixed tree (frozen source: 289 files, manifest
 Local suites after these fixes: system Python `Ran 264 tests in 352.512s` /
 `OK (skipped=63)`. Earlier, after the first two fixes, the venv suite ran
 `Ran 267 tests in 664.506s` / `OK (skipped=28)`.
+
+### Stage 5 largest cases, final: task-stage5-gpu-acceptance-20261110T002043Z
+
+Detached H200 run of commit `e48c177` (frozen source: 289 files, manifest
+`773e197c2cd5b95d191792fe33b08cf8575d0e6f4e1d81ab9726b3a17b460ec1`): status
+`pass`, **71 passed, 0 failed, 0 unavailable**, no source mismatches, 4774 s.
+Every honest and chain-replay solution scored, every hack failed
+`provenance`, and every wrong and wrong-ancestor control failed
+`verification`, on both backends. Evidence:
+`artifacts/runs/task-stage5-gpu-acceptance-20261110T002043Z/`.
+
+Honest results at the largest case (profiler device time per call):
+
+| Task | CUDA µs | Triton µs | Eager µs | Reward reason (CUDA / Triton) |
+|---|---|---|---|---|
+| candidate top-k (32 × 151,936) | 604,808.9 | 9,008.4 | 4,271–4,274 | correct / correct |
+| tree step | 11,610.3 | 98.7 | 171–177 | correct / faster_than_eager |
+| row attention (32k, window 4096) | 224,276.4 | 134,464.0 | 30,754–30,758 | correct / correct |
+| verify attention (32k) | 1,703,356.2 | 1,035,069.3 | 267,080–267,100 | correct / correct |
+| GDN tree conv | 7.8 | 7.4 | 172–174 | faster_than_both / faster_than_both |
+| Mamba2 tree conv | 26.1 | 25.9 | 184–185 | faster_than_eager / faster_than_eager |
+| GDN recurrence (chain replay: 521.2) | 1,611.3 | 449.6 | 5,172–5,191 | faster_than_both / faster_than_both |
+| greedy acceptance | 9.6 | 8.6 | 1,968–1,970 | faster_than_both / faster_than_both |
+| sampled acceptance | 46,588.0 | 3,318.2 | 21,242–21,252 | correct / faster_than_both |
+
+The attention and top-k solutions are correct but untuned: no tensor-core
+matmuls and no reuse of loaded keys or vocabulary rows (for example, one CUDA
+block per vocabulary entry for top-k, and one thread per sequence for CUDA
+tree step). The tree-walk tasks beat eager largely because the eager
+reference launches one small kernel per tree step.

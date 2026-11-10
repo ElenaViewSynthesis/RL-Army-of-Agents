@@ -292,12 +292,17 @@
   MODE-derived tasks are evaluation-only, and the "local" source has no
   repository license (NOASSERTION).
 
-- **Stage 5 largest cases: three more fixes, second rerun pending.** The
-  rerun `task-stage5-gpu-acceptance-20261109T222837Z` passed 52/71. The 19
-  failures were int32 offsets in verify attention and profiler-record
-  overflow from sequential references. Both are fixed (int64 offsets; the
-  per-event samples moved to a sidecar file, as approved; binary-lifting
-  ancestors) and not yet rerun on a GPU.
+- **Stage 5 largest cases pass after five fixes; the solutions are not
+  tuned.** Run `task-stage5-gpu-acceptance-20261110T002043Z` passed 71/71
+  on one H200. The five fixes: the Triton top-k grid axis, vectorized
+  references, int64 attention offsets, profiler samples in a sidecar file,
+  and binary-lifting ancestors. Several honest solutions are correct but
+  much slower than eager at the largest case: CUDA candidate top-k about
+  141×, CUDA tree step about 68×, and 32k row and verify attention about
+  4–7×. They exist to show each task is solvable and its gates work, not to
+  be fast (see the "Stage 5 kernel timings" dashboard and VALIDATION.md).
+  Coverage is smoke plus the largest catalog case per task, not the
+  stratified grid or Compute Sanitizer.
 - **Stage 5 on H200: smoke passes; largest-case acceptance pending a rerun.**
   Smoke run `task-stage5-gpu-smoke-20261109T190928Z` passed 71/71 (all nine
   tasks, CUDA and Triton, all fixtures; the first Stage 5 CUDA C++ builds).
