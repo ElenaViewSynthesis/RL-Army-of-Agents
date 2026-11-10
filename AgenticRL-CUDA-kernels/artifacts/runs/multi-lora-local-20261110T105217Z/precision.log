@@ -1,0 +1,6 @@
+test_reference_disables_reduced_precision_matmul (tests.test_lora_stage6.LoraReferences.test_reference_disables_reduced_precision_matmul) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.079s
+
+OK

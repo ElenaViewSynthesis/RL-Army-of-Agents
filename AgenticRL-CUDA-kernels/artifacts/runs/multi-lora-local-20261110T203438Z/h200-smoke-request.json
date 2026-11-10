@@ -1,0 +1,38 @@
+{
+  "approval_required": true,
+  "approval_source": "HANDOFF_CODEX_STAGE6_GATE.md and HANDOFF_CODEX_STAGE6_REPLAY_CRASHES.md",
+  "launch_owner": "Claude after review and user approval",
+  "launched": false,
+  "scope": "Stage 6 H200 smoke, both backends and all fixtures; no acceptance run",
+  "cwd": "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifacts/runs/multi-lora-local-20261110T203438Z/source",
+  "gpu_requested": "H200",
+  "command": [
+    "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/.venv/bin/modal",
+    "run",
+    "--detach",
+    "cloud/modal_tasks.py",
+    "--tasks",
+    "stage6",
+    "--case-set",
+    "smoke",
+    "--backends",
+    "cuda,triton",
+    "--fixtures",
+    "all",
+    "--cuda-graphs",
+    "--timeout-s",
+    "600",
+    "--run-id",
+    "stage6-smoke-repair-20261110T203438Z"
+  ],
+  "environment": {
+    "MODAL_GPU": "H200"
+  },
+  "benchmark": true,
+  "cold_start": true,
+  "cuda_graphs": true,
+  "expected_outputs": "agenticrl-cuda-artifacts:/stage6-smoke-repair-20261110T203438Z",
+  "download_destination": "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifacts/runs/stage6-smoke-repair-20261110T203438Z",
+  "limitations": "Local ownership repro and interpreter checks do not establish H200 causality, replay or numerical acceptance.",
+  "source_manifest_sha256": "9cfe049c4d076529bf627385db7e305eb8f562fb88231c5a0825419acc94ea8f"
+}

@@ -1,0 +1,22 @@
+{
+  "schema": "multi-lora-numerics-v1",
+  "task": "lora_shrink_sgmv",
+  "diagnostic_only": true,
+  "fp16_intermediate_expected_failure": false,
+  "honest": {
+    "finite": true,
+    "max_abs": 9.5367431640625e-06,
+    "p50_abs": 0.0,
+    "p99_abs": 4.291534423828125e-06,
+    "max_abs_over_max_ref": 1.188735683313206e-06,
+    "original_relative_bound": 0.005
+  },
+  "fp16_intermediate": {
+    "finite": true,
+    "max_abs": 0.0019469261169433594,
+    "p50_abs": 0.0,
+    "p99_abs": 0.0009768202435225248,
+    "max_abs_over_max_ref": 0.000242680389748391,
+    "original_relative_bound": 0.005
+  }
+}

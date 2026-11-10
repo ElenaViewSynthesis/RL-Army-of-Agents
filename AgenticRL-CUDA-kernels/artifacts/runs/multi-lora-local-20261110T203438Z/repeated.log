@@ -1,0 +1,6 @@
+test_stage6_and_stage5_shared_inputs_for_40_calls (tests.test_repeated_forward.RepeatedForwards.test_stage6_and_stage5_shared_inputs_for_40_calls) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 106.199s
+
+OK

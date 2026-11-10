@@ -1,0 +1,63 @@
+{
+  "schema": "stage6-local-validation-v1",
+  "gpu_executed": false,
+  "system_suite": {
+    "tests": 275,
+    "skipped": 67,
+    "status": "passed"
+  },
+  "runtime_suite": {
+    "tests": 281,
+    "skipped": 29,
+    "status": "passed"
+  },
+  "focused_pure": {
+    "tests": 6,
+    "status": "passed"
+  },
+  "focused_numerics": {
+    "tests": 6,
+    "status": "passed"
+  },
+  "focused_precision": {
+    "tests": 1,
+    "status": "passed"
+  },
+  "small_interpreter_probes": {
+    "count": 60,
+    "status": "passed"
+  },
+  "rank64_256_interpreter_probes": {
+    "count": 20,
+    "status": "passed"
+  },
+  "offline_compilation": {
+    "count": 28,
+    "architectures": [
+      "sm_75",
+      "sm_90"
+    ],
+    "status": "compiled_only"
+  },
+  "cpu_gpu_suite": {
+    "passed": 0,
+    "failed": 0,
+    "unavailable": 56
+  },
+  "unverified": [
+    "CUDA compilation",
+    "real GPU execution",
+    "graph capture/replay",
+    "real provenance",
+    "GPU timings and throughput"
+  ],
+  "open_decisions": [
+    "original relative-error metric as a gate",
+    "fp16-intermediate expected-failure gate",
+    "Modal H200 smoke authorization"
+  ],
+  "committed": false,
+  "frozen_source": "source-final",
+  "full_runtime_stage6_methods": 9,
+  "focused_post_change_scope": "Final pure/numeric/precision checks cover additions after full discovery collection."
+}

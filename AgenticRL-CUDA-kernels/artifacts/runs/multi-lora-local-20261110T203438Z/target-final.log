@@ -1,0 +1,35 @@
+test_fixed_helper_retains_buffers_across_rotating_replays (tests.test_graph_lifetime.GraphLifetime.test_fixed_helper_retains_buffers_across_rotating_replays) ... ok
+test_frozen_helper_reproduces_released_buffers (tests.test_graph_lifetime.GraphLifetime.test_frozen_helper_reproduces_released_buffers) ... ok
+test_boundary_and_over_boundary_replaces_old_assert_close (tests.test_lora_gate.GateMath.test_boundary_and_over_boundary_replaces_old_assert_close) ... ok
+test_integer_metadata_and_structure_stay_exact (tests.test_lora_gate.GateMath.test_integer_metadata_and_structure_stay_exact) ... ok
+test_mixed_ranks_and_controls (tests.test_lora_gate.GateMath.test_mixed_ranks_and_controls) ... ok
+test_nonfinite_padding_and_zero_reference (tests.test_lora_gate.GateMath.test_nonfinite_padding_and_zero_reference) ... ok
+test_skips_one_ulp_small_large_and_signed_zero_are_bit_exact (tests.test_lora_gate.GateMath.test_skips_one_ulp_small_large_and_signed_zero_are_bit_exact) ... ok
+test_actual_rollout_selects_only_opted_in_verifier (tests.test_lora_gate.GateRouting.test_actual_rollout_selects_only_opted_in_verifier) ... ok
+test_defaults_cli_and_torch_free (tests.test_lora_gate.GateRouting.test_defaults_cli_and_torch_free) ... ok
+test_suite_enables_gate_only_for_stage6_arithmetic (tests.test_lora_gate.GateRouting.test_suite_enables_gate_only_for_stage6_arithmetic) ... ok
+test_cispo_preset_and_is_weight_bounds (tests.test_config_reward_grpo.ConfigTests.test_cispo_preset_and_is_weight_bounds) ... ok
+test_environment_modules_import_without_site_packages (tests.test_config_reward_grpo.ConfigTests.test_environment_modules_import_without_site_packages) ... ok
+test_every_field_has_a_cli_flag (tests.test_config_reward_grpo.ConfigTests.test_every_field_has_a_cli_flag) ... ok
+test_invalid_configs (tests.test_config_reward_grpo.ConfigTests.test_invalid_configs) ... ok
+test_presets_and_independent_overrides (tests.test_config_reward_grpo.ConfigTests.test_presets_and_independent_overrides) ... ok
+test_identical_groups_under_every_preset (tests.test_config_reward_grpo.GroupTests.test_identical_groups_under_every_preset) ... ok
+test_multiple_groups_same_task_and_stats (tests.test_config_reward_grpo.GroupTests.test_multiple_groups_same_task_and_stats) ... ok
+test_normalization_filter_and_empty (tests.test_config_reward_grpo.GroupTests.test_normalization_filter_and_empty) ... ok
+test_reject_partial_and_invalid_groups (tests.test_config_reward_grpo.GroupTests.test_reject_partial_and_invalid_groups) ... ok
+test_configurable_margin (tests.test_config_reward_grpo.RewardTests.test_configurable_margin) ... ok
+test_gates_and_missing_measurements (tests.test_config_reward_grpo.RewardTests.test_gates_and_missing_measurements) ... ok
+test_milestone_exact_boundaries (tests.test_config_reward_grpo.RewardTests.test_milestone_exact_boundaries) ... ok
+test_turn_caps_and_dapo_shaping (tests.test_config_reward_grpo.RewardTests.test_turn_caps_and_dapo_shaping) ... ok
+test_full_config_shares_rules_and_group_stats_backfill (tests.test_tracking.ContractTests.test_full_config_shares_rules_and_group_stats_backfill) ... ok
+test_live_batch_stats_and_standalone_identity (tests.test_tracking.ContractTests.test_live_batch_stats_and_standalone_identity) ... ok
+test_old_config_rules_and_shares_are_unknown_not_reconstructed (tests.test_tracking.ContractTests.test_old_config_rules_and_shares_are_unknown_not_reconstructed) ... ok
+test_pipeline_keys_have_exactly_one_adr_category (tests.test_tracking.ContractTests.test_pipeline_keys_have_exactly_one_adr_category) ... ok
+test_profile_sink_does_not_change_result_or_reward (tests.test_tracking.ContractTests.test_profile_sink_does_not_change_result_or_reward) ... ok
+test_validate_persists_actual_case_and_group_configs (tests.test_tracking.ContractTests.test_validate_persists_actual_case_and_group_configs) ... ok
+test_weave_retains_raw_profile_and_stage_tails_without_sdks (tests.test_tracking.ContractTests.test_weave_retains_raw_profile_and_stage_tails_without_sdks) ... ok
+
+----------------------------------------------------------------------
+Ran 30 tests in 24.457s
+
+OK

@@ -1,0 +1,1445 @@
+{
+  "rows": [
+    {
+      "task": "lora_shrink_bgmv",
+      "rank": 64,
+      "dtype": "float16",
+      "device": "cpu",
+      "interpreter": true,
+      "shape_scope": "synthetic T7/H32/N19/L4/S3; not catalog GPU evidence",
+      "honest": {
+        "finite": true,
+        "max_abs": 2.384185791015625e-06,
+        "p50_abs": 0.0,
+        "p99_abs": 1.9073486328125e-06,
+        "max_abs_over_max_ref": 1.357388722901363e-07,
+        "original_relative_bound": 0.005
+      },
+      "fp16_intermediate": {
+        "finite": true,
+        "max_abs": 0.0038814544677734375,
+        "p50_abs": 0.00018930435180664062,
+        "p99_abs": 0.0030632787384092808,
+        "max_abs_over_max_ref": 0.0002209828840883419,
+        "original_relative_bound": 0.005
+      },
+      "relative_gate": {
+        "task": "lora_shrink_bgmv",
+        "activation_dtype": "torch.float16",
+        "outputs": [
+          {
+            "output": "output",
+            "kind": "relative",
+            "coefficient": 0.005,
+            "checked_elements": 1344,
+            "max_abs_ref": 17.564502716064453,
+            "max_abs_error": 2.384185791015625e-06,
+            "bound": 0.08782251358032227,
+            "ratio_to_bound": 2.714777445802726e-05,
+            "p50_normalized_error": 0.0,
+            "p99_normalized_error": 1.0859109783210904e-07,
+            "finite": true,
+            "skipped_rows_bit_exact": true,
+            "zero_reference_exact": true,
+            "passed": true
+          }
+        ],
+        "passed": true
+      },
+      "fp16_intermediate_gate": {
+        "task": "lora_shrink_bgmv",
+        "activation_dtype": "torch.float16",
+        "outputs": [
+          {
+            "output": "output",
+            "kind": "relative",
+            "coefficient": 0.005,
+            "checked_elements": 1344,
+            "max_abs_ref": 17.564502716064453,
+            "max_abs_error": 0.0038814544677734375,
+            "bound": 0.08782251358032227,
+            "ratio_to_bound": 0.04419657681766838,
+            "p50_normalized_error": 1.0777666459836823e-05,
+            "p99_normalized_error": 0.00017440164676228023,
+            "finite": true,
+            "skipped_rows_bit_exact": true,
+            "zero_reference_exact": true,
+            "passed": true
+          }
+        ],
+        "passed": true
+      },
+      "fp16_intermediate_expected_failure": false,
+      "status": "passed"
+    },
+    {
+      "task": "lora_expand_bgmv",
+      "rank": 64,
+      "dtype": "float16",
+      "device": "cpu",
+      "interpreter": true,
+      "shape_scope": "synthetic T7/H32/N19/L4/S3; not catalog GPU evidence",
+      "honest": {
+        "finite": true,
+        "max_abs": 0.0,
+        "p50_abs": 0.0,
+        "p99_abs": 0.0,
+        "max_abs_over_max_ref": 0.0,
+        "original_relative_bound": 0.005
+      },
+      "fp16_intermediate": {
+        "finite": true,
+        "max_abs": 0.015625,
+        "p50_abs": 0.0,
+        "p99_abs": 0.015625,
+        "max_abs_over_max_ref": 3.814697265625e-06,
+        "original_relative_bound": 0.005
+      },
+      "relative_gate": {
+        "task": "lora_expand_bgmv",
+        "activation_dtype": "torch.float16",
+        "outputs": [
+          {
+            "output": "output",
+            "kind": "relative",
+            "coefficient": 0.005,
+            "checked_elements": 525,
+            "max_abs_ref": 52.34375,
+            "max_abs_error": 0.0,
+            "bound": 0.26171875,
+            "ratio_to_bound": 0.0,
+            "p50_normalized_error": 0.0,
+            "p99_normalized_error": 0.0,
+            "finite": true,
+            "skipped_rows_bit_exact": true,
+            "zero_reference_exact": true,
+            "passed": true
+          }
+        ],
+        "passed": true
+      },
+      "fp16_intermediate_gate": {
+        "task": "lora_expand_bgmv",
+        "activation_dtype": "torch.float16",
+        "outputs": [
+          {
+            "output": "output",
+            "kind": "relative",
+            "coefficient": 0.005,
+            "checked_elements": 525,
+            "max_abs_ref": 52.34375,
+            "max_abs_error": 0.015625,
+            "bound": 0.26171875,
+            "ratio_to_bound": 0.05970149253731343,
+            "p50_normalized_error": 0.0,
+            "p99_normalized_error": 0.00029850746268656717,
+            "finite": true,
+            "skipped_rows_bit_exact": true,
+            "zero_reference_exact": true,
+            "passed": true
+          }
+        ],
+        "passed": true
+      },
+      "fp16_intermediate_expected_failure": false,
+      "status": "passed"
+    },
+    {
+      "task": "lora_shrink_sgmv",
+      "rank": 64,
+      "dtype": "float16",
+      "device": "cpu",
+      "interpreter": true,
+      "shape_scope": "synthetic T7/H32/N19/L4/S3; not catalog GPU evidence",
+      "honest": {
+        "finite": true,
+        "max_abs": 2.86102294921875e-06,
+        "p50_abs": 0.0,
+        "p99_abs": 1.9073486328125e-06,
+        "max_abs_over_max_ref": 1.824430437143263e-07,
+        "original_relative_bound": 0.005
+      },
+      "fp16_intermediate": {
+        "finite": true,
+        "max_abs": 0.0037698745727539062,
+        "p50_abs": 0.00018918514251708984,
+        "p99_abs": 0.00321763101965189,
+        "max_abs_over_max_ref": 0.0002403991172675773,
+        "original_relative_bound": 0.005
+      },
+      "relative_gate": {
+        "task": "lora_shrink_sgmv",
+        "activation_dtype": "torch.float16",
+        "outputs": [
+          {
+            "output": "output",
+            "kind": "relative",
+            "coefficient": 0.005,
+            "checked_elements": 1344,
+            "max_abs_ref": 15.681732177734375,
+            "max_abs_error": 2.86102294921875e-06,
+            "bound": 0.07840866088867188,
+            "ratio_to_bound": 3.648860874286526e-05,
+            "p50_normalized_error": 0.0,
+            "p99_normalized_error": 1.2162869580955088e-07,
+            "finite": true,
+            "skipped_rows_bit_exact": true,
+            "zero_reference_exact": true,
+            "passed": true
+          }
+        ],
+        "passed": true
+      },
+      "fp16_intermediate_gate": {
+        "task": "lora_shrink_sgmv",
+        "activation_dtype": "torch.float16",
+        "outputs": [
+          {
+            "output": "output",
+            "kind": "relative",
+            "coefficient": 0.005,
+            "checked_elements": 1344,
+            "max_abs_ref": 15.681732177734375,
+            "max_abs_error": 0.0037698745727539062,
+            "bound": 0.07840866088867188,
+            "ratio_to_bound": 0.048079823453515455,
+            "p50_normalized_error": 1.2064046265609828e-05,
+            "p99_normalized_error": 0.0002051833528263588,
+            "finite": true,
+            "skipped_rows_bit_exact": true,
+            "zero_reference_exact": true,
+            "passed": true
+          }
+        ],
+        "passed": true
+      },
+      "fp16_intermediate_expected_failure": false,
+      "status": "passed"
+    },
+    {
+      "task": "lora_expand_sgmv",
+      "rank": 64,
+      "dtype": "float16",
+      "device": "cpu",
+      "interpreter": true,
+      "shape_scope": "synthetic T7/H32/N19/L4/S3; not catalog GPU evidence",
+      "honest": {
+        "finite": true,
+        "max_abs": 0.0,
+        "p50_abs": 0.0,
+        "p99_abs": 0.0,
+        "max_abs_over_max_ref": 0.0,
+        "original_relative_bound": 0.005
+      },
+      "fp16_intermediate": {
+        "finite": true,
+        "max_abs": 0.03125,
+        "p50_abs": 0.0,
+        "p99_abs": 0.015625,
+        "max_abs_over_max_ref": 7.62939453125e-06,
+        "original_relative_bound": 0.005
+      },
+      "relative_gate": {
+        "task": "lora_expand_sgmv",
+        "activation_dtype": "torch.float16",
+        "outputs": [
+          {
+            "output": "output",
+            "kind": "relative",
+            "coefficient": 0.005,
+            "checked_elements": 525,
+            "max_abs_ref": 51.0,
+            "max_abs_error": 0.0,
+            "bound": 0.255,
+            "ratio_to_bound": 0.0,
+            "p50_normalized_error": 0.0,
+            "p99_normalized_error": 0.0,
+            "finite": true,
+            "skipped_rows_bit_exact": true,
+            "zero_reference_exact": true,
+            "passed": true
+          }
+        ],
+        "passed": true
+      },
+      "fp16_intermediate_gate": {
+        "task": "lora_expand_sgmv",
+        "activation_dtype": "torch.float16",
+        "outputs": [
+          {
+            "output": "output",
+            "kind": "relative",
+            "coefficient": 0.005,
+            "checked_elements": 525,
+            "max_abs_ref": 51.0,
+            "max_abs_error": 0.03125,
+            "bound": 0.255,
+            "ratio_to_bound": 0.12254901960784313,
+            "p50_normalized_error": 0.0,
+            "p99_normalized_error": 0.00030637254901960784,
+            "finite": true,
+            "skipped_rows_bit_exact": true,
+            "zero_reference_exact": true,
+            "passed": true
+          }
+        ],
+        "passed": true
+      },
+      "fp16_intermediate_expected_failure": false,
+      "status": "passed"
+    },
+    {
+      "task": "lora_fused_sgmv",
+      "rank": 64,
+      "dtype": "float16",
+      "device": "cpu",
+      "interpreter": true,
+      "shape_scope": "synthetic T7/H32/N19/L4/S3; not catalog GPU evidence",
+      "honest": {
+        "finite": true,
+        "max_abs": 0.0,
+        "p50_abs": 0.0,
+        "p99_abs": 0.0,
+        "max_abs_over_max_ref": 0.0,
+        "original_relative_bound": 0.005
+      },
+      "fp16_intermediate": {
+        "finite": true,
+        "max_abs": 0.0078125,
+        "p50_abs": 0.0,
+        "p99_abs": 0.00390625,
+        "max_abs_over_max_ref": 1.9073486328125e-06,
+        "original_relative_bound": 0.005
+      },
+      "relative_gate": {
+        "task": "lora_fused_sgmv",
+        "activation_dtype": "torch.float16",
+        "outputs": [
+          {
+            "output": "output",
+            "kind": "relative",
+            "coefficient": 0.005,
+            "checked_elements": 525,
+            "max_abs_ref": 14.6328125,
+            "max_abs_error": 0.0,
+            "bound": 0.0731640625,
+            "ratio_to_bound": 0.0,
+            "p50_normalized_error": 0.0,
+            "p99_normalized_error": 0.0,
+            "finite": true,
+            "skipped_rows_bit_exact": true,
+            "zero_reference_exact": true,
+            "passed": true
+          }
+        ],
+        "passed": true
+      },
+      "fp16_intermediate_gate": {
+        "task": "lora_fused_sgmv",
+        "activation_dtype": "torch.float16",
+        "outputs": [
+          {
+            "output": "output",
+            "kind": "relative",
+            "coefficient": 0.005,
+            "checked_elements": 525,
+            "max_abs_ref": 14.6328125,
+            "max_abs_error": 0.0078125,
+            "bound": 0.0731640625,
+            "ratio_to_bound": 0.10678056593699946,
+            "p50_normalized_error": 0.0,
+            "p99_normalized_error": 0.00026695141484249865,
+            "finite": true,
+            "skipped_rows_bit_exact": true,
+            "zero_reference_exact": true,
+            "passed": true
+          }
+        ],
+        "passed": true
+      },
+      "fp16_intermediate_expected_failure": false,
+      "status": "passed"
+    },
+    {
+      "task": "lora_shrink_bgmv",
+      "rank": 64,
+      "dtype": "bfloat16",
+      "device": "cpu",
+      "interpreter": true,
+      "shape_scope": "synthetic T7/H32/N19/L4/S3; not catalog GPU evidence",
+      "honest": {
+        "finite": true,
+        "max_abs": 1.9073486328125e-06,
+        "p50_abs": 0.0,
+        "p99_abs": 7.486404456358287e-07,
+        "max_abs_over_max_ref": 1.0276881804965748e-07,
+        "original_relative_bound": 0.01
+      },
+      "fp16_intermediate": {
+        "finite": true,
+        "max_abs": 0.007053375244140625,
+        "p50_abs": 0.0001519918441772461,
+        "p99_abs": 0.0027693661395460367,
+        "max_abs_over_max_ref": 0.0003800390891476334,
+        "original_relative_bound": 0.01
+      },
+      "relative_gate": {
+        "task": "lora_shrink_bgmv",
+        "activation_dtype": "torch.bfloat16",
+        "outputs": [
+          {
+            "output": "output",
+            "kind": "relative",
+            "coefficient": 0.01,
+            "checked_elements": 1344,
+            "max_abs_ref": 18.55960464477539,
+            "max_abs_error": 1.9073486328125e-06,
+            "bound": 0.1855960464477539,
+            "ratio_to_bound": 1.0276881804965748e-05,
+            "p50_normalized_error": 0.0,
+            "p99_normalized_error": 4.033676108448892e-08,
+            "finite": true,
+            "skipped_rows_bit_exact": true,
+            "zero_reference_exact": true,
+            "passed": true
+          }
+        ],
+        "passed": true
+      },
+      "fp16_intermediate_gate": {
+        "task": "lora_shrink_bgmv",
+        "activation_dtype": "torch.bfloat16",
+        "outputs": [
+          {
+            "output": "output",
+            "kind": "relative",
+            "coefficient": 0.01,
+            "checked_elements": 1344,
+            "max_abs_ref": 18.55960464477539,
+            "max_abs_error": 0.007053375244140625,
+            "bound": 0.1855960464477539,
+            "ratio_to_bound": 0.03800390891476334,
+            "p50_normalized_error": 8.18939018833208e-06,
+            "p99_normalized_error": 0.00014921467152310969,
+            "finite": true,
+            "skipped_rows_bit_exact": true,
+            "zero_reference_exact": true,
+            "passed": true
+          }
+        ],
+        "passed": true
+      },
+      "fp16_intermediate_expected_failure": false,
+      "status": "passed"
+    },
+    {
+      "task": "lora_expand_bgmv",
+      "rank": 64,
+      "dtype": "bfloat16",
+      "device": "cpu",
+      "interpreter": true,
+      "shape_scope": "synthetic T7/H32/N19/L4/S3; not catalog GPU evidence",
+      "honest": {
+        "finite": true,
+        "max_abs": 0.25,
+        "p50_abs": 0.0,
+        "p99_abs": 0.125,
+        "max_abs_over_max_ref": 6.103515625e-05,
+        "original_relative_bound": 0.01
+      },
+      "fp16_intermediate": {
+        "finite": true,
+        "max_abs": 0.0625,
+        "p50_abs": 0.0,
+        "p99_abs": 0.015625,
+        "max_abs_over_max_ref": 1.52587890625e-05,
+        "original_relative_bound": 0.01
+      },
+      "relative_gate": {
+        "task": "lora_expand_bgmv",
+        "activation_dtype": "torch.bfloat16",
+        "outputs": [
+          {
+            "output": "output",
+            "kind": "relative",
+            "coefficient": 0.01,
+            "checked_elements": 525,
+            "max_abs_ref": 48.25,
+            "max_abs_error": 0.25,
+            "bound": 0.4825,
+            "ratio_to_bound": 0.5181347150259068,
+            "p50_normalized_error": 0.0,
+            "p99_normalized_error": 0.0025906735751295338,
+            "finite": true,
+            "skipped_rows_bit_exact": true,
+            "zero_reference_exact": true,
+            "passed": true
+          }
+        ],
+        "passed": true
+      },
+      "fp16_intermediate_gate": {
+        "task": "lora_expand_bgmv",
+        "activation_dtype": "torch.bfloat16",
+        "outputs": [
+          {
+            "output": "output",
+            "kind": "relative",
+            "coefficient": 0.01,
+            "checked_elements": 525,
+            "max_abs_ref": 48.25,
+            "max_abs_error": 0.0625,
+            "bound": 0.4825,
+            "ratio_to_bound": 0.1295336787564767,
+            "p50_normalized_error": 0.0,
+            "p99_normalized_error": 0.0006476683937823834,
+            "finite": true,
+            "skipped_rows_bit_exact": true,
+            "zero_reference_exact": true,
+            "passed": true
+          }
+        ],
+        "passed": true
+      },
+      "fp16_intermediate_expected_failure": false,
+      "status": "passed"
+    },
+    {
+      "task": "lora_shrink_sgmv",
+      "rank": 64,
+      "dtype": "bfloat16",
+      "device": "cpu",
+      "interpreter": true,
+      "shape_scope": "synthetic T7/H32/N19/L4/S3; not catalog GPU evidence",
+      "honest": {
+        "finite": true,
+        "max_abs": 9.5367431640625e-07,
+        "p50_abs": 0.0,
+        "p99_abs": 8.511573810210393e-07,
+        "max_abs_over_max_ref": 4.5434215708207656e-08,
+        "original_relative_bound": 0.01
+      },
+      "fp16_intermediate": {
+        "finite": true,
+        "max_abs": 0.005847930908203125,
+        "p50_abs": 0.00017264485359191895,
+        "p99_abs": 0.0034974580630660057,
+        "max_abs_over_max_ref": 0.00027860261072272936,
+        "original_relative_bound": 0.01
+      },
+      "relative_gate": {
+        "task": "lora_shrink_sgmv",
+        "activation_dtype": "torch.bfloat16",
+        "outputs": [
+          {
+            "output": "output",
+            "kind": "relative",
+            "coefficient": 0.01,
+            "checked_elements": 1344,
+            "max_abs_ref": 20.990222930908203,
+            "max_abs_error": 9.5367431640625e-07,
+            "bound": 0.20990222930908203,
+            "ratio_to_bound": 4.543421570820765e-06,
+            "p50_normalized_error": 0.0,
+            "p99_normalized_error": 4.0550037519574607e-08,
+            "finite": true,
+            "skipped_rows_bit_exact": true,
+            "zero_reference_exact": true,
+            "passed": true
+          }
+        ],
+        "passed": true
+      },
+      "fp16_intermediate_gate": {
+        "task": "lora_shrink_sgmv",
+        "activation_dtype": "torch.bfloat16",
+        "outputs": [
+          {
+            "output": "output",
+            "kind": "relative",
+            "coefficient": 0.01,
+            "checked_elements": 1344,
+            "max_abs_ref": 20.990222930908203,
+            "max_abs_error": 0.005847930908203125,
+            "bound": 0.20990222930908203,
+            "ratio_to_bound": 0.027860261072272935,
+            "p50_normalized_error": 8.225012862426466e-06,
+            "p99_normalized_error": 0.0001666231709774952,
+            "finite": true,
+            "skipped_rows_bit_exact": true,
+            "zero_reference_exact": true,
+            "passed": true
+          }
+        ],
+        "passed": true
+      },
+      "fp16_intermediate_expected_failure": false,
+      "status": "passed"
+    },
+    {
+      "task": "lora_expand_sgmv",
+      "rank": 64,
+      "dtype": "bfloat16",
+      "device": "cpu",
+      "interpreter": true,
+      "shape_scope": "synthetic T7/H32/N19/L4/S3; not catalog GPU evidence",
+      "honest": {
+        "finite": true,
+        "max_abs": 0.25,
+        "p50_abs": 0.0,
+        "p99_abs": 0.125,
+        "max_abs_over_max_ref": 6.103515625e-05,
+        "original_relative_bound": 0.01
+      },
+      "fp16_intermediate": {
+        "finite": true,
+        "max_abs": 0.125,
+        "p50_abs": 0.0,
+        "p99_abs": 0.03125,
+        "max_abs_over_max_ref": 3.0517578125e-05,
+        "original_relative_bound": 0.01
+      },
+      "relative_gate": {
+        "task": "lora_expand_sgmv",
+        "activation_dtype": "torch.bfloat16",
+        "outputs": [
+          {
+            "output": "output",
+            "kind": "relative",
+            "coefficient": 0.01,
+            "checked_elements": 525,
+            "max_abs_ref": 54.0,
+            "max_abs_error": 0.25,
+            "bound": 0.54,
+            "ratio_to_bound": 0.4629629629629629,
+            "p50_normalized_error": 0.0,
+            "p99_normalized_error": 0.0023148148148148147,
+            "finite": true,
+            "skipped_rows_bit_exact": true,
+            "zero_reference_exact": true,
+            "passed": true
+          }
+        ],
+        "passed": true
+      },
+      "fp16_intermediate_gate": {
+        "task": "lora_expand_sgmv",
+        "activation_dtype": "torch.bfloat16",
+        "outputs": [
+          {
+            "output": "output",
+            "kind": "relative",
+            "coefficient": 0.01,
+            "checked_elements": 525,
+            "max_abs_ref": 54.0,
+            "max_abs_error": 0.125,
+            "bound": 0.54,
+            "ratio_to_bound": 0.23148148148148145,
+            "p50_normalized_error": 0.0,
+            "p99_normalized_error": 0.0005787037037037037,
+            "finite": true,
+            "skipped_rows_bit_exact": true,
+            "zero_reference_exact": true,
+            "passed": true
+          }
+        ],
+        "passed": true
+      },
+      "fp16_intermediate_expected_failure": false,
+      "status": "passed"
+    },
+    {
+      "task": "lora_fused_sgmv",
+      "rank": 64,
+      "dtype": "bfloat16",
+      "device": "cpu",
+      "interpreter": true,
+      "shape_scope": "synthetic T7/H32/N19/L4/S3; not catalog GPU evidence",
+      "honest": {
+        "finite": true,
+        "max_abs": 0.0625,
+        "p50_abs": 0.0,
+        "p99_abs": 0.0625,
+        "max_abs_over_max_ref": 1.52587890625e-05,
+        "original_relative_bound": 0.01
+      },
+      "fp16_intermediate": {
+        "finite": true,
+        "max_abs": 0.03125,
+        "p50_abs": 0.0,
+        "p99_abs": 0.0078125,
+        "max_abs_over_max_ref": 7.62939453125e-06,
+        "original_relative_bound": 0.01
+      },
+      "relative_gate": {
+        "task": "lora_fused_sgmv",
+        "activation_dtype": "torch.bfloat16",
+        "outputs": [
+          {
+            "output": "output",
+            "kind": "relative",
+            "coefficient": 0.01,
+            "checked_elements": 525,
+            "max_abs_ref": 14.3125,
+            "max_abs_error": 0.0625,
+            "bound": 0.143125,
+            "ratio_to_bound": 0.4366812227074236,
+            "p50_normalized_error": 0.0,
+            "p99_normalized_error": 0.004366812227074236,
+            "finite": true,
+            "skipped_rows_bit_exact": true,
+            "zero_reference_exact": true,
+            "passed": true
+          }
+        ],
+        "passed": true
+      },
+      "fp16_intermediate_gate": {
+        "task": "lora_fused_sgmv",
+        "activation_dtype": "torch.bfloat16",
+        "outputs": [
+          {
+            "output": "output",
+            "kind": "relative",
+            "coefficient": 0.01,
+            "checked_elements": 525,
+            "max_abs_ref": 14.3125,
+            "max_abs_error": 0.03125,
+            "bound": 0.143125,
+            "ratio_to_bound": 0.2183406113537118,
+            "p50_normalized_error": 0.0,
+            "p99_normalized_error": 0.0005458515283842794,
+            "finite": true,
+            "skipped_rows_bit_exact": true,
+            "zero_reference_exact": true,
+            "passed": true
+          }
+        ],
+        "passed": true
+      },
+      "fp16_intermediate_expected_failure": false,
+      "status": "passed"
+    },
+    {
+      "task": "lora_shrink_bgmv",
+      "rank": 256,
+      "dtype": "float16",
+      "device": "cpu",
+      "interpreter": true,
+      "shape_scope": "synthetic T7/H32/N19/L4/S3; not catalog GPU evidence",
+      "honest": {
+        "finite": true,
+        "max_abs": 3.814697265625e-06,
+        "p50_abs": 0.0,
+        "p99_abs": 1.9073486328125e-06,
+        "max_abs_over_max_ref": 1.5701594339889274e-07,
+        "original_relative_bound": 0.005
+      },
+      "fp16_intermediate": {
+        "finite": true,
+        "max_abs": 0.0075702667236328125,
+        "p50_abs": 0.00016877055168151855,
+        "p99_abs": 0.0035007016267627478,
+        "max_abs_over_max_ref": 0.0003115981396751026,
+        "original_relative_bound": 0.005
+      },
+      "relative_gate": {
+        "task": "lora_shrink_bgmv",
+        "activation_dtype": "torch.float16",
+        "outputs": [
+          {
+            "output": "output",
+            "kind": "relative",
+            "coefficient": 0.005,
+            "checked_elements": 5376,
+            "max_abs_ref": 24.294967651367188,
+            "max_abs_error": 3.814697265625e-06,
+            "bound": 0.12147483825683594,
+            "ratio_to_bound": 3.1403188679778545e-05,
+            "p50_normalized_error": 0.0,
+            "p99_normalized_error": 7.850797169944637e-08,
+            "finite": true,
+            "skipped_rows_bit_exact": true,
+            "zero_reference_exact": true,
+            "passed": true
+          }
+        ],
+        "passed": true
+      },
+      "fp16_intermediate_gate": {
+        "task": "lora_shrink_bgmv",
+        "activation_dtype": "torch.float16",
+        "outputs": [
+          {
+            "output": "output",
+            "kind": "relative",
+            "coefficient": 0.005,
+            "checked_elements": 5376,
+            "max_abs_ref": 24.294967651367188,
+            "max_abs_error": 0.0075702667236328125,
+            "bound": 0.12147483825683594,
+            "ratio_to_bound": 0.06231962793502052,
+            "p50_normalized_error": 6.946728808343199e-06,
+            "p99_normalized_error": 0.00014409156855787136,
+            "finite": true,
+            "skipped_rows_bit_exact": true,
+            "zero_reference_exact": true,
+            "passed": true
+          }
+        ],
+        "passed": true
+      },
+      "fp16_intermediate_expected_failure": false,
+      "status": "passed"
+    },
+    {
+      "task": "lora_expand_bgmv",
+      "rank": 256,
+      "dtype": "float16",
+      "device": "cpu",
+      "interpreter": true,
+      "shape_scope": "synthetic T7/H32/N19/L4/S3; not catalog GPU evidence",
+      "honest": {
+        "finite": true,
+        "max_abs": 0.001953125,
+        "p50_abs": 0.0,
+        "p99_abs": 0.0,
+        "max_abs_over_max_ref": 4.76837158203125e-07,
+        "original_relative_bound": 0.005
+      },
+      "fp16_intermediate": {
+        "finite": true,
+        "max_abs": 0.03125,
+        "p50_abs": 0.0,
+        "p99_abs": 0.015625,
+        "max_abs_over_max_ref": 7.62939453125e-06,
+        "original_relative_bound": 0.005
+      },
+      "relative_gate": {
+        "task": "lora_expand_bgmv",
+        "activation_dtype": "torch.float16",
+        "outputs": [
+          {
+            "output": "output",
+            "kind": "relative",
+            "coefficient": 0.005,
+            "checked_elements": 525,
+            "max_abs_ref": 54.8125,
+            "max_abs_error": 0.001953125,
+            "bound": 0.2740625,
+            "ratio_to_bound": 0.007126567844925884,
+            "p50_normalized_error": 0.0,
+            "p99_normalized_error": 0.0,
+            "finite": true,
+            "skipped_rows_bit_exact": true,
+            "zero_reference_exact": true,
+            "passed": true
+          }
+        ],
+        "passed": true
+      },
+      "fp16_intermediate_gate": {
+        "task": "lora_expand_bgmv",
+        "activation_dtype": "torch.float16",
+        "outputs": [
+          {
+            "output": "output",
+            "kind": "relative",
+            "coefficient": 0.005,
+            "checked_elements": 525,
+            "max_abs_ref": 54.8125,
+            "max_abs_error": 0.03125,
+            "bound": 0.2740625,
+            "ratio_to_bound": 0.11402508551881414,
+            "p50_normalized_error": 0.0,
+            "p99_normalized_error": 0.00028506271379703536,
+            "finite": true,
+            "skipped_rows_bit_exact": true,
+            "zero_reference_exact": true,
+            "passed": true
+          }
+        ],
+        "passed": true
+      },
+      "fp16_intermediate_expected_failure": false,
+      "status": "passed"
+    },
+    {
+      "task": "lora_shrink_sgmv",
+      "rank": 256,
+      "dtype": "float16",
+      "device": "cpu",
+      "interpreter": true,
+      "shape_scope": "synthetic T7/H32/N19/L4/S3; not catalog GPU evidence",
+      "honest": {
+        "finite": true,
+        "max_abs": 2.86102294921875e-06,
+        "p50_abs": 0.0,
+        "p99_abs": 1.430511474609375e-06,
+        "max_abs_over_max_ref": 1.6418786769872972e-07,
+        "original_relative_bound": 0.005
+      },
+      "fp16_intermediate": {
+        "finite": true,
+        "max_abs": 0.007541656494140625,
+        "p50_abs": 0.00015294551849365234,
+        "p99_abs": 0.0027940275613218546,
+        "max_abs_over_max_ref": 0.0004327992192538515,
+        "original_relative_bound": 0.005
+      },
+      "relative_gate": {
+        "task": "lora_shrink_sgmv",
+        "activation_dtype": "torch.float16",
+        "outputs": [
+          {
+            "output": "output",
+            "kind": "relative",
+            "coefficient": 0.005,
+            "checked_elements": 5376,
+            "max_abs_ref": 17.42530059814453,
+            "max_abs_error": 2.86102294921875e-06,
+            "bound": 0.08712650299072265,
+            "ratio_to_bound": 3.283757353974595e-05,
+            "p50_normalized_error": 0.0,
+            "p99_normalized_error": 8.209393384936486e-08,
+            "finite": true,
+            "skipped_rows_bit_exact": true,
+            "zero_reference_exact": true,
+            "passed": true
+          }
+        ],
+        "passed": true
+      },
+      "fp16_intermediate_gate": {
+        "task": "lora_shrink_sgmv",
+        "activation_dtype": "torch.float16",
+        "outputs": [
+          {
+            "output": "output",
+            "kind": "relative",
+            "coefficient": 0.005,
+            "checked_elements": 5376,
+            "max_abs_ref": 17.42530059814453,
+            "max_abs_error": 0.007541656494140625,
+            "bound": 0.08712650299072265,
+            "ratio_to_bound": 0.08655984385077031,
+            "p50_normalized_error": 8.777209760727926e-06,
+            "p99_normalized_error": 0.00016034313513011778,
+            "finite": true,
+            "skipped_rows_bit_exact": true,
+            "zero_reference_exact": true,
+            "passed": true
+          }
+        ],
+        "passed": true
+      },
+      "fp16_intermediate_expected_failure": false,
+      "status": "passed"
+    },
+    {
+      "task": "lora_expand_sgmv",
+      "rank": 256,
+      "dtype": "float16",
+      "device": "cpu",
+      "interpreter": true,
+      "shape_scope": "synthetic T7/H32/N19/L4/S3; not catalog GPU evidence",
+      "honest": {
+        "finite": true,
+        "max_abs": 0.0,
+        "p50_abs": 0.0,
+        "p99_abs": 0.0,
+        "max_abs_over_max_ref": 0.0,
+        "original_relative_bound": 0.005
+      },
+      "fp16_intermediate": {
+        "finite": true,
+        "max_abs": 0.03125,
+        "p50_abs": 0.0,
+        "p99_abs": 0.015625,
+        "max_abs_over_max_ref": 7.62939453125e-06,
+        "original_relative_bound": 0.005
+      },
+      "relative_gate": {
+        "task": "lora_expand_sgmv",
+        "activation_dtype": "torch.float16",
+        "outputs": [
+          {
+            "output": "output",
+            "kind": "relative",
+            "coefficient": 0.005,
+            "checked_elements": 525,
+            "max_abs_ref": 45.375,
+            "max_abs_error": 0.0,
+            "bound": 0.226875,
+            "ratio_to_bound": 0.0,
+            "p50_normalized_error": 0.0,
+            "p99_normalized_error": 0.0,
+            "finite": true,
+            "skipped_rows_bit_exact": true,
+            "zero_reference_exact": true,
+            "passed": true
+          }
+        ],
+        "passed": true
+      },
+      "fp16_intermediate_gate": {
+        "task": "lora_expand_sgmv",
+        "activation_dtype": "torch.float16",
+        "outputs": [
+          {
+            "output": "output",
+            "kind": "relative",
+            "coefficient": 0.005,
+            "checked_elements": 525,
+            "max_abs_ref": 45.375,
+            "max_abs_error": 0.03125,
+            "bound": 0.226875,
+            "ratio_to_bound": 0.13774104683195593,
+            "p50_normalized_error": 0.0,
+            "p99_normalized_error": 0.0003443526170798898,
+            "finite": true,
+            "skipped_rows_bit_exact": true,
+            "zero_reference_exact": true,
+            "passed": true
+          }
+        ],
+        "passed": true
+      },
+      "fp16_intermediate_expected_failure": false,
+      "status": "passed"
+    },
+    {
+      "task": "lora_fused_sgmv",
+      "rank": 256,
+      "dtype": "float16",
+      "device": "cpu",
+      "interpreter": true,
+      "shape_scope": "synthetic T7/H32/N19/L4/S3; not catalog GPU evidence",
+      "honest": {
+        "finite": true,
+        "max_abs": 0.0,
+        "p50_abs": 0.0,
+        "p99_abs": 0.0,
+        "max_abs_over_max_ref": 0.0,
+        "original_relative_bound": 0.005
+      },
+      "fp16_intermediate": {
+        "finite": true,
+        "max_abs": 0.0078125,
+        "p50_abs": 0.0,
+        "p99_abs": 0.00390625,
+        "max_abs_over_max_ref": 1.9073486328125e-06,
+        "original_relative_bound": 0.005
+      },
+      "relative_gate": {
+        "task": "lora_fused_sgmv",
+        "activation_dtype": "torch.float16",
+        "outputs": [
+          {
+            "output": "output",
+            "kind": "relative",
+            "coefficient": 0.005,
+            "checked_elements": 525,
+            "max_abs_ref": 20.6875,
+            "max_abs_error": 0.0,
+            "bound": 0.1034375,
+            "ratio_to_bound": 0.0,
+            "p50_normalized_error": 0.0,
+            "p99_normalized_error": 0.0,
+            "finite": true,
+            "skipped_rows_bit_exact": true,
+            "zero_reference_exact": true,
+            "passed": true
+          }
+        ],
+        "passed": true
+      },
+      "fp16_intermediate_gate": {
+        "task": "lora_fused_sgmv",
+        "activation_dtype": "torch.float16",
+        "outputs": [
+          {
+            "output": "output",
+            "kind": "relative",
+            "coefficient": 0.005,
+            "checked_elements": 525,
+            "max_abs_ref": 20.6875,
+            "max_abs_error": 0.0078125,
+            "bound": 0.1034375,
+            "ratio_to_bound": 0.0755287009063444,
+            "p50_normalized_error": 0.0,
+            "p99_normalized_error": 0.00033232628398791367,
+            "finite": true,
+            "skipped_rows_bit_exact": true,
+            "zero_reference_exact": true,
+            "passed": true
+          }
+        ],
+        "passed": true
+      },
+      "fp16_intermediate_expected_failure": false,
+      "status": "passed"
+    },
+    {
+      "task": "lora_shrink_bgmv",
+      "rank": 256,
+      "dtype": "bfloat16",
+      "device": "cpu",
+      "interpreter": true,
+      "shape_scope": "synthetic T7/H32/N19/L4/S3; not catalog GPU evidence",
+      "honest": {
+        "finite": true,
+        "max_abs": 1.9073486328125e-06,
+        "p50_abs": 0.0,
+        "p99_abs": 4.76837158203125e-07,
+        "max_abs_over_max_ref": 1.0518057453626673e-07,
+        "original_relative_bound": 0.01
+      },
+      "fp16_intermediate": {
+        "finite": true,
+        "max_abs": 0.0065860748291015625,
+        "p50_abs": 0.00015664100646972656,
+        "p99_abs": 0.0030522351153194904,
+        "max_abs_over_max_ref": 0.00036318852387372903,
+        "original_relative_bound": 0.01
+      },
+      "relative_gate": {
+        "task": "lora_shrink_bgmv",
+        "activation_dtype": "torch.bfloat16",
+        "outputs": [
+          {
+            "output": "output",
+            "kind": "relative",
+            "coefficient": 0.01,
+            "checked_elements": 5376,
+            "max_abs_ref": 18.1340389251709,
+            "max_abs_error": 1.9073486328125e-06,
+            "bound": 0.18134038925170898,
+            "ratio_to_bound": 1.0518057453626675e-05,
+            "p50_normalized_error": 0.0,
+            "p99_normalized_error": 2.6295143634066683e-08,
+            "finite": true,
+            "skipped_rows_bit_exact": true,
+            "zero_reference_exact": true,
+            "passed": true
+          }
+        ],
+        "passed": true
+      },
+      "fp16_intermediate_gate": {
+        "task": "lora_shrink_bgmv",
+        "activation_dtype": "torch.bfloat16",
+        "outputs": [
+          {
+            "output": "output",
+            "kind": "relative",
+            "coefficient": 0.01,
+            "checked_elements": 5376,
+            "max_abs_ref": 18.1340389251709,
+            "max_abs_error": 0.0065860748291015625,
+            "bound": 0.18134038925170898,
+            "ratio_to_bound": 0.0363188523873729,
+            "p50_normalized_error": 8.637954683790906e-06,
+            "p99_normalized_error": 0.00016831521440166086,
+            "finite": true,
+            "skipped_rows_bit_exact": true,
+            "zero_reference_exact": true,
+            "passed": true
+          }
+        ],
+        "passed": true
+      },
+      "fp16_intermediate_expected_failure": false,
+      "status": "passed"
+    },
+    {
+      "task": "lora_expand_bgmv",
+      "rank": 256,
+      "dtype": "bfloat16",
+      "device": "cpu",
+      "interpreter": true,
+      "shape_scope": "synthetic T7/H32/N19/L4/S3; not catalog GPU evidence",
+      "honest": {
+        "finite": true,
+        "max_abs": 0.25,
+        "p50_abs": 0.0,
+        "p99_abs": 0.125,
+        "max_abs_over_max_ref": 6.103515625e-05,
+        "original_relative_bound": 0.01
+      },
+      "fp16_intermediate": {
+        "finite": true,
+        "max_abs": 0.125,
+        "p50_abs": 0.0,
+        "p99_abs": 0.025937609374523163,
+        "max_abs_over_max_ref": 3.0517578125e-05,
+        "original_relative_bound": 0.01
+      },
+      "relative_gate": {
+        "task": "lora_expand_bgmv",
+        "activation_dtype": "torch.bfloat16",
+        "outputs": [
+          {
+            "output": "output",
+            "kind": "relative",
+            "coefficient": 0.01,
+            "checked_elements": 525,
+            "max_abs_ref": 53.75,
+            "max_abs_error": 0.25,
+            "bound": 0.5375,
+            "ratio_to_bound": 0.46511627906976744,
+            "p50_normalized_error": 0.0,
+            "p99_normalized_error": 0.002325581395348837,
+            "finite": true,
+            "skipped_rows_bit_exact": true,
+            "zero_reference_exact": true,
+            "passed": true
+          }
+        ],
+        "passed": true
+      },
+      "fp16_intermediate_gate": {
+        "task": "lora_expand_bgmv",
+        "activation_dtype": "torch.bfloat16",
+        "outputs": [
+          {
+            "output": "output",
+            "kind": "relative",
+            "coefficient": 0.01,
+            "checked_elements": 525,
+            "max_abs_ref": 53.75,
+            "max_abs_error": 0.125,
+            "bound": 0.5375,
+            "ratio_to_bound": 0.23255813953488372,
+            "p50_normalized_error": 0.0,
+            "p99_normalized_error": 0.0005813953488372093,
+            "finite": true,
+            "skipped_rows_bit_exact": true,
+            "zero_reference_exact": true,
+            "passed": true
+          }
+        ],
+        "passed": true
+      },
+      "fp16_intermediate_expected_failure": false,
+      "status": "passed"
+    },
+    {
+      "task": "lora_shrink_sgmv",
+      "rank": 256,
+      "dtype": "bfloat16",
+      "device": "cpu",
+      "interpreter": true,
+      "shape_scope": "synthetic T7/H32/N19/L4/S3; not catalog GPU evidence",
+      "honest": {
+        "finite": true,
+        "max_abs": 1.9073486328125e-06,
+        "p50_abs": 0.0,
+        "p99_abs": 4.76837158203125e-07,
+        "max_abs_over_max_ref": 1.0904333447538053e-07,
+        "original_relative_bound": 0.01
+      },
+      "fp16_intermediate": {
+        "finite": true,
+        "max_abs": 0.007282257080078125,
+        "p50_abs": 0.00017145276069641113,
+        "p99_abs": 0.003062725532799959,
+        "max_abs_over_max_ref": 0.00041632745102700283,
+        "original_relative_bound": 0.01
+      },
+      "relative_gate": {
+        "task": "lora_shrink_sgmv",
+        "activation_dtype": "torch.bfloat16",
+        "outputs": [
+          {
+            "output": "output",
+            "kind": "relative",
+            "coefficient": 0.01,
+            "checked_elements": 5376,
+            "max_abs_ref": 17.491657257080078,
+            "max_abs_error": 1.9073486328125e-06,
+            "bound": 0.1749165725708008,
+            "ratio_to_bound": 1.0904333447538052e-05,
+            "p50_normalized_error": 0.0,
+            "p99_normalized_error": 2.726083361884513e-08,
+            "finite": true,
+            "skipped_rows_bit_exact": true,
+            "zero_reference_exact": true,
+            "passed": true
+          }
+        ],
+        "passed": true
+      },
+      "fp16_intermediate_gate": {
+        "task": "lora_shrink_sgmv",
+        "activation_dtype": "torch.bfloat16",
+        "outputs": [
+          {
+            "output": "output",
+            "kind": "relative",
+            "coefficient": 0.01,
+            "checked_elements": 5376,
+            "max_abs_ref": 17.491657257080078,
+            "max_abs_error": 0.007282257080078125,
+            "bound": 0.1749165725708008,
+            "ratio_to_bound": 0.041632745102700285,
+            "p50_normalized_error": 9.801973488076002e-06,
+            "p99_normalized_error": 0.00017509633433384226,
+            "finite": true,
+            "skipped_rows_bit_exact": true,
+            "zero_reference_exact": true,
+            "passed": true
+          }
+        ],
+        "passed": true
+      },
+      "fp16_intermediate_expected_failure": false,
+      "status": "passed"
+    },
+    {
+      "task": "lora_expand_sgmv",
+      "rank": 256,
+      "dtype": "bfloat16",
+      "device": "cpu",
+      "interpreter": true,
+      "shape_scope": "synthetic T7/H32/N19/L4/S3; not catalog GPU evidence",
+      "honest": {
+        "finite": true,
+        "max_abs": 0.25,
+        "p50_abs": 0.0,
+        "p99_abs": 0.125,
+        "max_abs_over_max_ref": 6.103515625e-05,
+        "original_relative_bound": 0.01
+      },
+      "fp16_intermediate": {
+        "finite": true,
+        "max_abs": 0.125,
+        "p50_abs": 0.0,
+        "p99_abs": 0.025937609374523163,
+        "max_abs_over_max_ref": 3.0517578125e-05,
+        "original_relative_bound": 0.01
+      },
+      "relative_gate": {
+        "task": "lora_expand_sgmv",
+        "activation_dtype": "torch.bfloat16",
+        "outputs": [
+          {
+            "output": "output",
+            "kind": "relative",
+            "coefficient": 0.01,
+            "checked_elements": 525,
+            "max_abs_ref": 53.25,
+            "max_abs_error": 0.25,
+            "bound": 0.5325,
+            "ratio_to_bound": 0.4694835680751174,
+            "p50_normalized_error": 0.0,
+            "p99_normalized_error": 0.004131455399061012,
+            "finite": true,
+            "skipped_rows_bit_exact": true,
+            "zero_reference_exact": true,
+            "passed": true
+          }
+        ],
+        "passed": true
+      },
+      "fp16_intermediate_gate": {
+        "task": "lora_expand_sgmv",
+        "activation_dtype": "torch.bfloat16",
+        "outputs": [
+          {
+            "output": "output",
+            "kind": "relative",
+            "coefficient": 0.01,
+            "checked_elements": 525,
+            "max_abs_ref": 53.25,
+            "max_abs_error": 0.125,
+            "bound": 0.5325,
+            "ratio_to_bound": 0.2347417840375587,
+            "p50_normalized_error": 0.0,
+            "p99_normalized_error": 0.0005868544600938967,
+            "finite": true,
+            "skipped_rows_bit_exact": true,
+            "zero_reference_exact": true,
+            "passed": true
+          }
+        ],
+        "passed": true
+      },
+      "fp16_intermediate_expected_failure": false,
+      "status": "passed"
+    },
+    {
+      "task": "lora_fused_sgmv",
+      "rank": 256,
+      "dtype": "bfloat16",
+      "device": "cpu",
+      "interpreter": true,
+      "shape_scope": "synthetic T7/H32/N19/L4/S3; not catalog GPU evidence",
+      "honest": {
+        "finite": true,
+        "max_abs": 0.0625,
+        "p50_abs": 0.0,
+        "p99_abs": 0.0625,
+        "max_abs_over_max_ref": 1.52587890625e-05,
+        "original_relative_bound": 0.01
+      },
+      "fp16_intermediate": {
+        "finite": true,
+        "max_abs": 0.015625,
+        "p50_abs": 0.0,
+        "p99_abs": 0.0078125,
+        "max_abs_over_max_ref": 3.814697265625e-06,
+        "original_relative_bound": 0.01
+      },
+      "relative_gate": {
+        "task": "lora_fused_sgmv",
+        "activation_dtype": "torch.bfloat16",
+        "outputs": [
+          {
+            "output": "output",
+            "kind": "relative",
+            "coefficient": 0.01,
+            "checked_elements": 525,
+            "max_abs_ref": 12.3125,
+            "max_abs_error": 0.0625,
+            "bound": 0.123125,
+            "ratio_to_bound": 0.5076142131979695,
+            "p50_normalized_error": 0.0,
+            "p99_normalized_error": 0.005076142131979695,
+            "finite": true,
+            "skipped_rows_bit_exact": true,
+            "zero_reference_exact": true,
+            "passed": true
+          }
+        ],
+        "passed": true
+      },
+      "fp16_intermediate_gate": {
+        "task": "lora_fused_sgmv",
+        "activation_dtype": "torch.bfloat16",
+        "outputs": [
+          {
+            "output": "output",
+            "kind": "relative",
+            "coefficient": 0.01,
+            "checked_elements": 525,
+            "max_abs_ref": 12.3125,
+            "max_abs_error": 0.015625,
+            "bound": 0.123125,
+            "ratio_to_bound": 0.12690355329949238,
+            "p50_normalized_error": 0.0,
+            "p99_normalized_error": 0.0011167512690355272,
+            "finite": true,
+            "skipped_rows_bit_exact": true,
+            "zero_reference_exact": true,
+            "passed": true
+          }
+        ],
+        "passed": true
+      },
+      "fp16_intermediate_expected_failure": false,
+      "status": "passed"
+    }
+  ],
+  "diagnostic_only": true
+}

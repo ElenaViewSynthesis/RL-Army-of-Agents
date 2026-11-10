@@ -1,0 +1,13 @@
+test_active_work_excludes_padding_and_skips (tests.test_lora_stage6.LoraContracts.test_active_work_excludes_padding_and_skips) ... ok
+test_catalog_coverage_and_permissive_sources (tests.test_lora_stage6.LoraContracts.test_catalog_coverage_and_permissive_sources) ... ok
+test_scaffolds_and_authored_names (tests.test_lora_stage6.LoraContracts.test_scaffolds_and_authored_names) ... ok
+test_torch_free_imports (tests.test_lora_stage6.LoraContracts.test_torch_free_imports) ... ok
+test_graph_replay_after_slot_and_adapter_changes (tests.test_lora_stage6.LoraGPU.test_graph_replay_after_slot_and_adapter_changes) ... skipped 'CUDA GPU unavailable; Stage 6 builds, provenance and graph replay unverified'
+test_cpu_interpreter (tests.test_lora_stage6.LoraReferences.test_cpu_interpreter) ... ok
+test_poison_skip_and_half_diagnostic (tests.test_lora_stage6.LoraReferences.test_poison_skip_and_half_diagnostic) ... ok
+test_references_match_independent_loop (tests.test_lora_stage6.LoraReferences.test_references_match_independent_loop) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 228.714s
+
+OK (skipped=1)

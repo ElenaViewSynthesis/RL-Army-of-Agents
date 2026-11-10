@@ -1,0 +1,28 @@
+{
+  "comparison": "archived H200 source manifest vs current working files",
+  "changed_existing": [
+    "Architecture-decision/0002-wandb-tracking-contract.md",
+    "KNOWN_ISSUES.md",
+    "MULTI_LORA_STAGE6.md",
+    "MULTI_LORA_kernels_task.md",
+    "README.md",
+    "VALIDATION.md",
+    "scripts/task_readme.py",
+    "tests/lora_interpreter_probe.py",
+    "utils/benchmark.py",
+    "utils/config.py",
+    "utils/lora_diagnostics.py",
+    "utils/rollout_env.py",
+    "utils/task_suite.py"
+  ],
+  "unexpected_changes": [],
+  "protected_upstream_checks": {
+    "model.py": true,
+    "model_new.py": true,
+    "binding.cpp": true,
+    "binding_registry.h": true,
+    "kernels/axpby.cu": true,
+    "kernels/axpby_binding.cpp": true,
+    "SKILL.md": true
+  }
+}

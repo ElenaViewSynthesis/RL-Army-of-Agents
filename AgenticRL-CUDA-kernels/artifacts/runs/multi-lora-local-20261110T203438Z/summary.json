@@ -1,0 +1,55 @@
+{
+  "scope": "Stage 6 relative verification gate and shared graph buffer ownership repair",
+  "suites": {
+    "system": {
+      "tests": 299,
+      "seconds": 399.525,
+      "skipped": 77,
+      "raw_summary": "Ran 299 tests in 399.525s\n\nOK (skipped=77)"
+    },
+    "runtime": {
+      "tests": 305,
+      "seconds": 1866.756,
+      "skipped": 29,
+      "raw_summary": "Ran 305 tests in 1866.756s\n\nOK (skipped=29)"
+    }
+  },
+  "stage6_interpreter_cases": 60,
+  "repeated_forward_scenarios": 66,
+  "repeated_forward_calls": 2640,
+  "input_mutation_reproduced": false,
+  "graph_ownership_defect_reproduced": true,
+  "h200_root_cause_confirmed": false,
+  "h200_fix_validated": false,
+  "supplemental_rank_probes": 32,
+  "honest_bound_failures_observed": 0,
+  "maximum_observed_fraction_of_bound": 0.5649717514124294,
+  "remaining_risks": [
+    "CUDA native and compiled-reference repeated-call behavior",
+    "Actual H200 graph replay with retained buffers",
+    "Full GPU catalog numerical acceptance under the new gate"
+  ],
+  "task_forward_abi_changed": false,
+  "input_mutability_contract_changed": false,
+  "numerical_criterion": "Approved Stage 6 relative criterion replaces legacy float check only",
+  "final_focused_checks": "Discovery overlapped implementation; final config position and portable reproduction fixture covered by final-routing.log and self-contained-repro.log.",
+  "committed": false,
+  "modal_launched": false,
+  "freeze": {
+    "frozen_files": 271,
+    "tasks": [
+      "lora_shrink_bgmv",
+      "lora_expand_bgmv",
+      "lora_segment_metadata",
+      "lora_shrink_sgmv",
+      "lora_expand_sgmv",
+      "lora_fused_sgmv"
+    ],
+    "source_manifest_sha256": "9cfe049c4d076529bf627385db7e305eb8f562fb88231c5a0825419acc94ea8f",
+    "hash_mismatches": [],
+    "all_seven_protected_files_match_upstream": true,
+    "new_regressions_and_legal_files_included": true,
+    "modal_launched": false
+  },
+  "frozen_graph_tests": "Ran 2 tests in 0.030s; OK"
+}

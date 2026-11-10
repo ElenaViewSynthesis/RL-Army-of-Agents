@@ -1,0 +1,6 @@
+test_modal_graph_option_is_forwarded_without_launching_modal (tests.test_lora_stage6.LoraContracts.test_modal_graph_option_is_forwarded_without_launching_modal) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.015s
+
+OK

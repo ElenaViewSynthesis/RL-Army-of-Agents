@@ -1,0 +1,12 @@
+lora_shrink_bgmv float16 passed
+lora_expand_bgmv float16 passed
+lora_segment_metadata float16 passed
+lora_shrink_sgmv float16 passed
+lora_expand_sgmv float16 passed
+lora_fused_sgmv float16 passed
+lora_shrink_bgmv bfloat16 passed
+lora_expand_bgmv bfloat16 passed
+lora_segment_metadata bfloat16 passed
+lora_shrink_sgmv bfloat16 passed
+lora_expand_sgmv bfloat16 passed
+lora_fused_sgmv bfloat16 passed

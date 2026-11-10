@@ -1,0 +1,58 @@
+[
+  {
+    "task": "lora_shrink_bgmv",
+    "backend": "cuda",
+    "phase": "timed graph replay call, followed by synchronize",
+    "frozen_source_line": 160,
+    "implementation_that_faulted": "not identified by traceback"
+  },
+  {
+    "task": "lora_shrink_bgmv",
+    "backend": "triton",
+    "phase": "timed graph replay call, followed by synchronize",
+    "frozen_source_line": 160,
+    "implementation_that_faulted": "not identified by traceback"
+  },
+  {
+    "task": "lora_expand_bgmv",
+    "backend": "cuda",
+    "phase": "timed graph replay call, followed by synchronize",
+    "frozen_source_line": 160,
+    "implementation_that_faulted": "not identified by traceback"
+  },
+  {
+    "task": "lora_expand_bgmv",
+    "backend": "triton",
+    "phase": "timed graph replay call, followed by synchronize",
+    "frozen_source_line": 160,
+    "implementation_that_faulted": "not identified by traceback"
+  },
+  {
+    "task": "lora_expand_sgmv",
+    "backend": "cuda",
+    "phase": "timed graph replay call, followed by synchronize",
+    "frozen_source_line": 160,
+    "implementation_that_faulted": "not identified by traceback"
+  },
+  {
+    "task": "lora_expand_sgmv",
+    "backend": "triton",
+    "phase": "timed graph replay call, followed by synchronize",
+    "frozen_source_line": 160,
+    "implementation_that_faulted": "not identified by traceback"
+  },
+  {
+    "task": "lora_fused_sgmv",
+    "backend": "cuda",
+    "phase": "timed graph replay call, followed by synchronize",
+    "frozen_source_line": 160,
+    "implementation_that_faulted": "not identified by traceback"
+  },
+  {
+    "task": "lora_fused_sgmv",
+    "backend": "triton",
+    "phase": "timed graph replay call, followed by synchronize",
+    "frozen_source_line": 160,
+    "implementation_that_faulted": "not identified by traceback"
+  }
+]

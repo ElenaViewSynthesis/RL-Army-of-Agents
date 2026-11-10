@@ -1,0 +1,6 @@
+test_catalog_coverage_and_permissive_sources (tests.test_lora_stage6.LoraContracts.test_catalog_coverage_and_permissive_sources) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.014s
+
+OK

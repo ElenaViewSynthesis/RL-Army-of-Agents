@@ -1,0 +1,268 @@
+{
+  "run_id": "stage6-smoke-20261110T105217Z",
+  "suite_counts": {
+    "passed": 46,
+    "failed": 0,
+    "unavailable": 10
+  },
+  "per_task": {
+    "lora_shrink_bgmv": {
+      "passed": 8,
+      "unavailable": 2
+    },
+    "lora_expand_bgmv": {
+      "passed": 8,
+      "unavailable": 2
+    },
+    "lora_segment_metadata": {
+      "passed": 6
+    },
+    "lora_shrink_sgmv": {
+      "passed": 8,
+      "unavailable": 2
+    },
+    "lora_expand_sgmv": {
+      "passed": 8,
+      "unavailable": 2
+    },
+    "lora_fused_sgmv": {
+      "passed": 8,
+      "unavailable": 2
+    }
+  },
+  "source_mismatches_remote": [],
+  "source_mismatches_downloaded": [],
+  "honest_rows": 12,
+  "honest_gates_passed": 12,
+  "honest_provenance": [
+    {
+      "task": "lora_shrink_bgmv",
+      "backend": "cuda",
+      "fraction": 1.0
+    },
+    {
+      "task": "lora_shrink_bgmv",
+      "backend": "triton",
+      "fraction": 1.0
+    },
+    {
+      "task": "lora_expand_bgmv",
+      "backend": "cuda",
+      "fraction": 1.0
+    },
+    {
+      "task": "lora_expand_bgmv",
+      "backend": "triton",
+      "fraction": 1.0
+    },
+    {
+      "task": "lora_segment_metadata",
+      "backend": "cuda",
+      "fraction": 1.0
+    },
+    {
+      "task": "lora_segment_metadata",
+      "backend": "triton",
+      "fraction": 1.0
+    },
+    {
+      "task": "lora_shrink_sgmv",
+      "backend": "cuda",
+      "fraction": 1.0
+    },
+    {
+      "task": "lora_shrink_sgmv",
+      "backend": "triton",
+      "fraction": 1.0
+    },
+    {
+      "task": "lora_expand_sgmv",
+      "backend": "cuda",
+      "fraction": 1.0
+    },
+    {
+      "task": "lora_expand_sgmv",
+      "backend": "triton",
+      "fraction": 1.0
+    },
+    {
+      "task": "lora_fused_sgmv",
+      "backend": "cuda",
+      "fraction": 1.0
+    },
+    {
+      "task": "lora_fused_sgmv",
+      "backend": "triton",
+      "fraction": 1.0
+    }
+  ],
+  "benchmark_unavailable": [
+    {
+      "task": "lora_shrink_bgmv",
+      "backend": "cuda",
+      "reason": "benchmark stage exited 1"
+    },
+    {
+      "task": "lora_shrink_bgmv",
+      "backend": "triton",
+      "reason": "benchmark stage exited 1"
+    },
+    {
+      "task": "lora_expand_bgmv",
+      "backend": "cuda",
+      "reason": "benchmark stage exited 1"
+    },
+    {
+      "task": "lora_expand_bgmv",
+      "backend": "triton",
+      "reason": "benchmark stage exited 1"
+    },
+    {
+      "task": "lora_expand_sgmv",
+      "backend": "cuda",
+      "reason": "benchmark stage exited 1"
+    },
+    {
+      "task": "lora_expand_sgmv",
+      "backend": "triton",
+      "reason": "benchmark stage exited 1"
+    },
+    {
+      "task": "lora_fused_sgmv",
+      "backend": "cuda",
+      "reason": "benchmark stage exited 1"
+    },
+    {
+      "task": "lora_fused_sgmv",
+      "backend": "triton",
+      "reason": "benchmark stage exited 1"
+    }
+  ],
+  "graphs": [
+    {
+      "task": "lora_shrink_bgmv",
+      "backend": "cuda",
+      "eager/graph_capturable": null,
+      "eager/graph_replay_ok": null,
+      "compile/graph_capturable": null,
+      "compile/graph_replay_ok": null,
+      "generated/graph_capturable": null,
+      "generated/graph_replay_ok": null
+    },
+    {
+      "task": "lora_shrink_bgmv",
+      "backend": "triton",
+      "eager/graph_capturable": null,
+      "eager/graph_replay_ok": null,
+      "compile/graph_capturable": null,
+      "compile/graph_replay_ok": null,
+      "generated/graph_capturable": null,
+      "generated/graph_replay_ok": null
+    },
+    {
+      "task": "lora_expand_bgmv",
+      "backend": "cuda",
+      "eager/graph_capturable": null,
+      "eager/graph_replay_ok": null,
+      "compile/graph_capturable": null,
+      "compile/graph_replay_ok": null,
+      "generated/graph_capturable": null,
+      "generated/graph_replay_ok": null
+    },
+    {
+      "task": "lora_expand_bgmv",
+      "backend": "triton",
+      "eager/graph_capturable": null,
+      "eager/graph_replay_ok": null,
+      "compile/graph_capturable": null,
+      "compile/graph_replay_ok": null,
+      "generated/graph_capturable": null,
+      "generated/graph_replay_ok": null
+    },
+    {
+      "task": "lora_segment_metadata",
+      "backend": "cuda",
+      "eager/graph_capturable": true,
+      "eager/graph_replay_ok": true,
+      "compile/graph_capturable": true,
+      "compile/graph_replay_ok": true,
+      "generated/graph_capturable": true,
+      "generated/graph_replay_ok": true
+    },
+    {
+      "task": "lora_segment_metadata",
+      "backend": "triton",
+      "eager/graph_capturable": true,
+      "eager/graph_replay_ok": true,
+      "compile/graph_capturable": true,
+      "compile/graph_replay_ok": true,
+      "generated/graph_capturable": true,
+      "generated/graph_replay_ok": true
+    },
+    {
+      "task": "lora_shrink_sgmv",
+      "backend": "cuda",
+      "eager/graph_capturable": true,
+      "eager/graph_replay_ok": true,
+      "compile/graph_capturable": true,
+      "compile/graph_replay_ok": true,
+      "generated/graph_capturable": true,
+      "generated/graph_replay_ok": true
+    },
+    {
+      "task": "lora_shrink_sgmv",
+      "backend": "triton",
+      "eager/graph_capturable": true,
+      "eager/graph_replay_ok": true,
+      "compile/graph_capturable": true,
+      "compile/graph_replay_ok": true,
+      "generated/graph_capturable": true,
+      "generated/graph_replay_ok": true
+    },
+    {
+      "task": "lora_expand_sgmv",
+      "backend": "cuda",
+      "eager/graph_capturable": null,
+      "eager/graph_replay_ok": null,
+      "compile/graph_capturable": null,
+      "compile/graph_replay_ok": null,
+      "generated/graph_capturable": null,
+      "generated/graph_replay_ok": null
+    },
+    {
+      "task": "lora_expand_sgmv",
+      "backend": "triton",
+      "eager/graph_capturable": null,
+      "eager/graph_replay_ok": null,
+      "compile/graph_capturable": null,
+      "compile/graph_replay_ok": null,
+      "generated/graph_capturable": null,
+      "generated/graph_replay_ok": null
+    },
+    {
+      "task": "lora_fused_sgmv",
+      "backend": "cuda",
+      "eager/graph_capturable": null,
+      "eager/graph_replay_ok": null,
+      "compile/graph_capturable": null,
+      "compile/graph_replay_ok": null,
+      "generated/graph_capturable": null,
+      "generated/graph_replay_ok": null
+    },
+    {
+      "task": "lora_fused_sgmv",
+      "backend": "triton",
+      "eager/graph_capturable": null,
+      "eager/graph_replay_ok": null,
+      "compile/graph_capturable": null,
+      "compile/graph_replay_ok": null,
+      "generated/graph_capturable": null,
+      "generated/graph_replay_ok": null
+    }
+  ],
+  "unavailable_reasons": {
+    "control_not_applicable_no_skipped_tokens": 10
+  },
+  "scope": "Frozen FP16 smoke cases only; not acceptance, bf16 or full-grid coverage.",
+  "complete_validation_ok": false
+}

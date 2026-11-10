@@ -1,0 +1,3 @@
+honest exit 0 passed True
+wrong_padding exit 1 passed False
+wrong_skip exit 1 passed False

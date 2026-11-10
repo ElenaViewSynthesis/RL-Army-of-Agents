@@ -1,0 +1,23 @@
+{
+  "cwd": "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels",
+  "commands": {
+    "system-suite.log": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -v",
+    "runtime-suite.log": "PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 .venv/bin/python -m unittest discover -v",
+    "targeted.log": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m unittest -v tests.test_lora_stage6",
+    "final-numerics.log": "PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 .venv/bin/python -m unittest -v tests.test_lora_stage6.LoraReferences",
+    "final-pure.log": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest -v tests.test_lora_stage6.LoraContracts",
+    "offline-compile-final.log": "PYTHONDONTWRITEBYTECODE=1 TRITON_INTERPRET=0 TRITON_CACHE_DIR=/tmp/lora-stage6/triton-cache .venv/bin/python -m scripts.compile_lora_offline --output /tmp/lora-stage6/offline-compile-final.json",
+    "cpu-suite-final-catalog.log": "PYTHONDONTWRITEBYTECODE=1 python3 -m scripts.validate --suite stage6 --device cpu --fixtures all --suite-out /tmp/lora-stage6/cpu-suite-final-catalog",
+    "rank-probe.log": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. TRITON_INTERPRET=1 OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 .venv/bin/python /tmp/lora-stage6/rank_probe.py",
+    "precision.log": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m unittest -v tests.test_lora_stage6.LoraReferences.test_reference_disables_reduced_precision_matmul"
+  },
+  "scope": "Full discovery collected tests during implementation. Final pure/numeric checks cover subsequent additions. No GPU execution, provenance or timing is claimed.",
+  "system_python": "3.12.3",
+  "runtime_python": "3.13.9",
+  "runtime_torch": "2.14.1+cpu",
+  "runtime_triton": "3.8.0",
+  "post_checks": {
+    "input-contract.log": "Torch caller default changed to float64: x/A remain fp16, idx/ranks int32, scales fp32.",
+    "native-symbols.log": "Synthetic signature policy checks only: native CUDA half signatures are agent; c10::Half signatures remain Torch."
+  }
+}

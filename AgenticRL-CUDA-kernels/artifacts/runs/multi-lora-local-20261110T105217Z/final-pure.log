@@ -1,0 +1,11 @@
+test_active_work_excludes_padding_and_skips (tests.test_lora_stage6.LoraContracts.test_active_work_excludes_padding_and_skips) ... ok
+test_catalog_coverage_and_permissive_sources (tests.test_lora_stage6.LoraContracts.test_catalog_coverage_and_permissive_sources) ... ok
+test_malformed_numeric_diagnostic_cannot_change_reward (tests.test_lora_stage6.LoraContracts.test_malformed_numeric_diagnostic_cannot_change_reward) ... ok
+test_modal_graph_option_is_forwarded_without_launching_modal (tests.test_lora_stage6.LoraContracts.test_modal_graph_option_is_forwarded_without_launching_modal) ... ok
+test_scaffolds_and_authored_names (tests.test_lora_stage6.LoraContracts.test_scaffolds_and_authored_names) ... ok
+test_torch_free_imports (tests.test_lora_stage6.LoraContracts.test_torch_free_imports) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 77.379s
+
+OK

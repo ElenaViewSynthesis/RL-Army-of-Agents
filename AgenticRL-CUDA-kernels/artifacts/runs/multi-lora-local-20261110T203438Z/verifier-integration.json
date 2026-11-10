@@ -1,0 +1,204 @@
+[
+  {
+    "variant": "honest",
+    "exit_code": 0,
+    "report": {
+      "schema": "stage6-relative-bounds-v1",
+      "task": "lora_shrink_bgmv",
+      "checks": [
+        {
+          "task": "lora_shrink_bgmv",
+          "activation_dtype": "torch.float16",
+          "outputs": [
+            {
+              "output": "output",
+              "kind": "relative",
+              "coefficient": 0.005,
+              "checked_elements": 48,
+              "max_abs_ref": 8.267632484436035,
+              "max_abs_error": 2.384185791015625e-06,
+              "bound": 0.04133816242218018,
+              "ratio_to_bound": 5.76751759467755e-05,
+              "p50_normalized_error": 0.0,
+              "p99_normalized_error": 2.714337967995122e-07,
+              "finite": true,
+              "skipped_rows_bit_exact": true,
+              "zero_reference_exact": true,
+              "passed": true
+            }
+          ],
+          "passed": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "activation_dtype": "torch.float16",
+          "outputs": [
+            {
+              "output": "output",
+              "kind": "relative",
+              "coefficient": 0.005,
+              "checked_elements": 48,
+              "max_abs_ref": 11.328960418701172,
+              "max_abs_error": 1.9073486328125e-06,
+              "bound": 0.056644802093505864,
+              "ratio_to_bound": 3.367208573990536e-05,
+              "p50_normalized_error": 0.0,
+              "p99_normalized_error": 1.4857807832733246e-07,
+              "finite": true,
+              "skipped_rows_bit_exact": true,
+              "zero_reference_exact": true,
+              "passed": true
+            }
+          ],
+          "passed": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "activation_dtype": "torch.float16",
+          "outputs": [
+            {
+              "output": "output",
+              "kind": "relative",
+              "coefficient": 0.005,
+              "checked_elements": 48,
+              "max_abs_ref": 5.68811559677124,
+              "max_abs_error": 1.430511474609375e-06,
+              "bound": 0.028440577983856203,
+              "ratio_to_bound": 5.029825608401418e-05,
+              "p50_normalized_error": 0.0,
+              "p99_normalized_error": 2.514912804200709e-07,
+              "finite": true,
+              "skipped_rows_bit_exact": true,
+              "zero_reference_exact": true,
+              "passed": true
+            }
+          ],
+          "passed": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "activation_dtype": "torch.float16",
+          "outputs": [
+            {
+              "output": "output",
+              "kind": "relative",
+              "coefficient": 0.005,
+              "checked_elements": 48,
+              "max_abs_ref": 11.296977996826172,
+              "max_abs_error": 1.5497207641601562e-06,
+              "bound": 0.056484889984130864,
+              "ratio_to_bound": 2.743602341432447e-05,
+              "p50_normalized_error": 0.0,
+              "p99_normalized_error": 1.3222052822364834e-07,
+              "finite": true,
+              "skipped_rows_bit_exact": true,
+              "zero_reference_exact": true,
+              "passed": true
+            }
+          ],
+          "passed": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "activation_dtype": "torch.float16",
+          "outputs": [
+            {
+              "output": "output",
+              "kind": "relative",
+              "coefficient": 0.005,
+              "checked_elements": 48,
+              "max_abs_ref": 8.94335651397705,
+              "max_abs_error": 1.430511474609375e-06,
+              "bound": 0.044716782569885254,
+              "ratio_to_bound": 3.199048304456413e-05,
+              "p50_normalized_error": 0.0,
+              "p99_normalized_error": 1.5995241522282064e-07,
+              "finite": true,
+              "skipped_rows_bit_exact": true,
+              "zero_reference_exact": true,
+              "passed": true
+            }
+          ],
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    "stdout": "[PASS] check 1/5\n[PASS] check 2/5\n[PASS] check 3/5\n[PASS] check 4/5\n[PASS] check 5/5\n[PASS] verify success\n",
+    "stderr": ""
+  },
+  {
+    "variant": "wrong_padding",
+    "exit_code": 1,
+    "report": {
+      "schema": "stage6-relative-bounds-v1",
+      "task": "lora_shrink_bgmv",
+      "checks": [
+        {
+          "task": "lora_shrink_bgmv",
+          "activation_dtype": "torch.float16",
+          "outputs": [
+            {
+              "output": "output",
+              "kind": "relative",
+              "coefficient": 0.005,
+              "checked_elements": 48,
+              "max_abs_ref": 8.267632484436035,
+              "max_abs_error": null,
+              "bound": 0.04133816242218018,
+              "ratio_to_bound": null,
+              "p50_normalized_error": null,
+              "p99_normalized_error": null,
+              "finite": false,
+              "skipped_rows_bit_exact": true,
+              "zero_reference_exact": true,
+              "passed": false
+            }
+          ],
+          "passed": false
+        }
+      ],
+      "passed": false,
+      "error": "AssertionError: {'task': 'lora_shrink_bgmv', 'activation_dtype': 'torch.float16', 'outputs': [{'output': 'output', 'kind': 'relative', 'coefficient': 0.005, 'checked_elements': 48, 'max_abs_ref': 8.267632484436035, 'max_abs_error': None, 'bound': 0.04133816242218018, 'ratio_to_bound': None, 'p50_normalized_error': None, 'p99_normalized_error': None, 'finite': False, 'skipped_rows_bit_exact': True, 'zero_reference_exact': True, 'passed': False}], 'passed': False}"
+    },
+    "stdout": "",
+    "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n    import sys, runpy; sys.path.insert(0, '/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels'); import utils; sys.path = [p for p in sys.path if p != '/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels']; sys.path.insert(0, '/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifacts/tmp/relative-verifier-0xmjs84p/wrong_padding'); sys.argv = ['utils.lora_verification', '--seed', '17']; runpy.run_module('utils.lora_verification', run_name='__main__')\n                                                                                                                                                                                                                                                                                                                                                                                                                                                          ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<frozen runpy>\", line 229, in run_module\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/utils/lora_verification.py\", line 126, in <module>\n    main()\n    ~~~~^^\n  File \"/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/utils/lora_verification.py\", line 114, in main\n    assert report['passed'], str(report)\n           ~~~~~~^^^^^^^^^^\nAssertionError: {'task': 'lora_shrink_bgmv', 'activation_dtype': 'torch.float16', 'outputs': [{'output': 'output', 'kind': 'relative', 'coefficient': 0.005, 'checked_elements': 48, 'max_abs_ref': 8.267632484436035, 'max_abs_error': None, 'bound': 0.04133816242218018, 'ratio_to_bound': None, 'p50_normalized_error': None, 'p99_normalized_error': None, 'finite': False, 'skipped_rows_bit_exact': True, 'zero_reference_exact': True, 'passed': False}], 'passed': False}\n"
+  },
+  {
+    "variant": "wrong_skip",
+    "exit_code": 1,
+    "report": {
+      "schema": "stage6-relative-bounds-v1",
+      "task": "lora_shrink_bgmv",
+      "checks": [
+        {
+          "task": "lora_shrink_bgmv",
+          "activation_dtype": "torch.float16",
+          "outputs": [
+            {
+              "output": "output",
+              "kind": "relative",
+              "coefficient": 0.005,
+              "checked_elements": 48,
+              "max_abs_ref": 8.267632484436035,
+              "max_abs_error": 100000.0,
+              "bound": 0.04133816242218018,
+              "ratio_to_bound": 2419072.211742643,
+              "p50_normalized_error": 0.0,
+              "p99_normalized_error": 12095.361058713213,
+              "finite": true,
+              "skipped_rows_bit_exact": true,
+              "zero_reference_exact": true,
+              "passed": false
+            }
+          ],
+          "passed": false
+        }
+      ],
+      "passed": false,
+      "error": "AssertionError: {'task': 'lora_shrink_bgmv', 'activation_dtype': 'torch.float16', 'outputs': [{'output': 'output', 'kind': 'relative', 'coefficient': 0.005, 'checked_elements': 48, 'max_abs_ref': 8.267632484436035, 'max_abs_error': 100000.0, 'bound': 0.04133816242218018, 'ratio_to_bound': 2419072.211742643, 'p50_normalized_error': 0.0, 'p99_normalized_error': 12095.361058713213, 'finite': True, 'skipped_rows_bit_exact': True, 'zero_reference_exact': True, 'passed': False}], 'passed': False}"
+    },
+    "stdout": "",
+    "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n    import sys, runpy; sys.path.insert(0, '/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels'); import utils; sys.path = [p for p in sys.path if p != '/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels']; sys.path.insert(0, '/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifacts/tmp/relative-verifier-0xmjs84p/wrong_skip'); sys.argv = ['utils.lora_verification', '--seed', '17']; runpy.run_module('utils.lora_verification', run_name='__main__')\n                                                                                                                                                                                                                                                                                                                                                                                                                                                       ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<frozen runpy>\", line 229, in run_module\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/utils/lora_verification.py\", line 126, in <module>\n    main()\n    ~~~~^^\n  File \"/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/utils/lora_verification.py\", line 114, in main\n    assert report['passed'], str(report)\n           ~~~~~~^^^^^^^^^^\nAssertionError: {'task': 'lora_shrink_bgmv', 'activation_dtype': 'torch.float16', 'outputs': [{'output': 'output', 'kind': 'relative', 'coefficient': 0.005, 'checked_elements': 48, 'max_abs_ref': 8.267632484436035, 'max_abs_error': 100000.0, 'bound': 0.04133816242218018, 'ratio_to_bound': 2419072.211742643, 'p50_normalized_error': 0.0, 'p99_normalized_error': 12095.361058713213, 'finite': True, 'skipped_rows_bit_exact': True, 'zero_reference_exact': True, 'passed': False}], 'passed': False}\n"
+  }
+]

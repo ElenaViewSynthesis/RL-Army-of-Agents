@@ -1,0 +1,15 @@
+{
+  "system_suite": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover",
+  "runtime_suite": "PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 STAGE6_REPEAT_LOG=/tmp/stage6-repair/full-repeated-probes.log .venv/bin/python -m unittest discover",
+  "repeated": "PYTHONDONTWRITEBYTECODE=1 STAGE6_REPEAT_LOG=/tmp/stage6-repair/repeated-probes.log OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 .venv/bin/python -m unittest -v tests.test_repeated_forward",
+  "unit": "PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 .venv/bin/python -m unittest -v tests.test_lora_gate tests.test_graph_lifetime",
+  "rank_probe": "PYTHONPATH=. PYTHONDONTWRITEBYTECODE=1 TRITON_INTERPRET=1 OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 .venv/bin/python /tmp/stage6-repair/rank_probe.py",
+  "mixed_probe": "PYTHONPATH=. PYTHONDONTWRITEBYTECODE=1 TRITON_INTERPRET=1 OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 .venv/bin/python /tmp/stage6-repair/mixed_rank_probe.py",
+  "verifier_integration": "PYTHONPATH=. PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 .venv/bin/python /tmp/stage6-repair/verifier_integration.py",
+  "replay_phase": "python3 /tmp/stage6-repair/prove_phase.py",
+  "interpreter": "PYTHONDONTWRITEBYTECODE=1 TRITON_INTERPRET=1 OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 .venv/bin/python tests/lora_interpreter_probe.py",
+  "freeze": "PYTHONDONTWRITEBYTECODE=1 python3 -m scripts.freeze_task_suite --tasks stage6 --output artifacts/runs/multi-lora-local-20261110T203438Z/source",
+  "freeze_verify": "PYTHONDONTWRITEBYTECODE=1 python3 /tmp/stage6-repair/verify_freeze.py",
+  "frozen_graph_tests": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest -v tests.test_graph_lifetime (cwd: source/)",
+  "frozen_imports": "PYTHONDONTWRITEBYTECODE=1 python3 -S -c 'import sys; from utils import benchmark,config,lora_verification,task_suite; assert \"torch\" not in sys.modules; assert config.RolloutConfig(\"triton\",10,False,True).benchmark; print(\"Frozen parent modules import without Torch; positional compatibility passed\")' (cwd: source/)"
+}

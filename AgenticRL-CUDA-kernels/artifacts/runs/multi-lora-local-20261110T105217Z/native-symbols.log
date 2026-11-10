@@ -1,0 +1,7 @@
+SYNTHETIC signature contract: void lora_cuda_shrink<__half>(...) agent
+SYNTHETIC signature contract: void lora_cuda_shrink<__nv_bfloat16>(...) agent
+SYNTHETIC signature contract: void lora_cuda_expand<__half>(...) agent
+SYNTHETIC signature contract: void lora_cuda_expand<__nv_bfloat16>(...) agent
+SYNTHETIC signature contract: void lora_cuda_copy<__half>(...) agent
+SYNTHETIC signature contract: void lora_cuda_copy<__nv_bfloat16>(...) agent
+Native CUDA symbol policy checks pass; real symbols unverified

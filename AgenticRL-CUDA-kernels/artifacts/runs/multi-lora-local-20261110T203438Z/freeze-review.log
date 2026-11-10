@@ -1,0 +1,16 @@
+{
+  "frozen_files": 271,
+  "tasks": [
+    "lora_shrink_bgmv",
+    "lora_expand_bgmv",
+    "lora_segment_metadata",
+    "lora_shrink_sgmv",
+    "lora_expand_sgmv",
+    "lora_fused_sgmv"
+  ],
+  "source_manifest_sha256": "9cfe049c4d076529bf627385db7e305eb8f562fb88231c5a0825419acc94ea8f",
+  "hash_mismatches": [],
+  "all_seven_protected_files_match_upstream": true,
+  "new_regressions_and_legal_files_included": true,
+  "modal_launched": false
+}

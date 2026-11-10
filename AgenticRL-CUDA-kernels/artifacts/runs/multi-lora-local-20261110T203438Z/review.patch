@@ -1,0 +1,1109 @@
+--- a/utils/benchmark.py
++++ b/utils/benchmark.py
+@@ -11,6 +11,7 @@
+ """
+ 
+ import argparse
++from dataclasses import dataclass
+ import json
+ import os
+ import time
+@@ -68,6 +69,17 @@
+     torch.cuda.synchronize()
+     wall_us = (time.perf_counter() - t0) * 1e6
+     return start.elapsed_time(end) * 1000 / iters, wall_us / iters
++
++
++@dataclass
++class CapturedGraph:
++    """Own the static buffers for the entire replay lifetime, including outputs."""
++    graph: object
++    inputs: object
++    outputs: object
++
++    def replay(self):
++        return self.graph.replay()
+ 
+ 
+ def _capture_graph(model, inputs, fresh, torch, torch_model, check_equal):
+@@ -95,7 +107,7 @@
+             entry["graph_replay_ok"] = True
+         except Exception:
+             entry["graph_replay_ok"] = False
+-        return entry, graph
++        return entry, CapturedGraph(graph, static_inputs, static_out)
+     except Exception as exc:
+         entry["graph_error"] = f"{type(exc).__name__}: {exc}"[:512]
+         return entry, None
+@@ -141,9 +153,14 @@
+             torch.cuda.synchronize()
+             if args.cuda_graphs:
+                 fresh_torch, fresh_cuda = build_inputs()
++                fresh = fresh_cuda if name == "generated" else fresh_torch
++                compare = check_equal
++                if os.environ.get("CUDA_AGENT_RELATIVE_ERROR_BOUNDS") == "1":
++                    from utils.lora_verification import check_outputs
++                    compare = lambda actual, expected: check_outputs(
++                        os.environ["CUDA_AGENT_TASK"], actual, expected, fresh)
+                 entry, graph = _capture_graph(
+-                    model, inputs, fresh_cuda if name == "generated" else fresh_torch,
+-                    torch, torch_model, check_equal)
++                    model, inputs, fresh, torch, torch_model, compare)
+                 samples[name].update(entry)
+                 graphs[name] = graph
+         # Balanced rotation: each impl occupies each position equally often.
+--- a/utils/config.py
++++ b/utils/config.py
+@@ -37,6 +37,7 @@
+     seed: int = 0
+     run_name: str = ""
+     tags: list[str] = field(default_factory=list)
++    relative_error_bounds: bool = False
+ 
+     def __post_init__(self):
+         for name, choices in {"backend": BACKEND_CHOICES,
+@@ -70,7 +71,7 @@
+         if not low_ok or self.clip_high < 0 or self.kl_coef < 0:
+             raise ValueError("Invalid clip range or kl_coef")
+         for name in ("benchmark", "cuda_graphs", "diagnostics", "filter_tied_groups",
+-                     "exact_integer_outputs"):
++                     "exact_integer_outputs", "relative_error_bounds"):
+             if not isinstance(getattr(self, name), bool):
+                 raise ValueError(f"{name} must be bool")
+         if not isinstance(self.seed, int) or not isinstance(self.run_name, str):
+--- a/utils/rollout_env.py
++++ b/utils/rollout_env.py
+@@ -173,8 +173,10 @@
+                 env.setdefault(var, str(path / ".cache" / subdir))
+         env.setdefault("TORCHINDUCTOR_CACHE_DIR", str(path / ".cache" / "inductor"))
+         env["PYTHONDONTWRITEBYTECODE"] = "1"
++        env["CUDA_AGENT_RELATIVE_ERROR_BOUNDS"] = "1" if cfg.relative_error_bounds else "0"
+         deadline = start + cfg.timeout_s
+-        verification_module = "utils.task_verification" if cfg.exact_integer_outputs else "utils.verification"
++        verification_module = ("utils.lora_verification" if cfg.relative_error_bounds else
++                               "utils.task_verification" if cfg.exact_integer_outputs else "utils.verification")
+         stages = (("compile", "utils.compile", ["--backend", backend, "--seed", str(cfg.seed)]),
+                   ("verification", verification_module, ["--seed", str(cfg.seed)]),
+                   ("profiling", "utils.profiling", ["--backend", backend, "--iters", str(cfg.iters),
+--- a/utils/task_suite.py
++++ b/utils/task_suite.py
+@@ -143,6 +143,7 @@
+     config = dataclasses.replace(
+         requested, backend=backend, benchmark=requested.benchmark and variant in ("honest", "chain_replay"),
+         exact_integer_outputs=True,
++        relative_error_bounds=spec.stage == 6 and task_name != "lora_segment_metadata",
+         provenance_threshold=max(requested.provenance_threshold,
+                                  1.0 if task_name == "gemm_tensor_core" else .9))
+     deadline = started + config.timeout_s
+@@ -246,6 +247,14 @@
+     latency = result.get("bench/generated/event_us_median") if result.get("bench/available") else None
+     result.update(diagnostic_rates(workload(task_name, item), latency))
+     result["suite/wall_s"] = time.monotonic() - started
++    bounds_path = path / ".cache" / "relative-error-bounds.json"
++    bounds = None
++    if config.relative_error_bounds and bounds_path.is_file():
++        try:
++            bounds = json.loads(bounds_path.read_text())
++            result["artifact/relative_error_bounds"] = str(bounds_path)
++        except (OSError, ValueError):
++            pass  # Artifact content never determines a reward.
+     payload = {"schema": "progressive-task-case-v1", "case": item.to_dict(),
+                "config": config.to_dict(), "protected_sha256": before, "protected_sha256_after": after,
+                "provenance_rules": PROVENANCE_RULESET,
+@@ -254,7 +263,8 @@
+                "candidate_sha256_after": hashlib.sha256((path / "model_new.py").read_bytes()).hexdigest(),
+                "candidate_source_sha256": sources_before,
+                "candidate_source_sha256_after": candidate_sources(path),
+-               "profile": profile, "result": result, **({"lora_numerics": numerics} if numerics else {})}
++               "profile": profile, "result": result,
++               **({"verification_bounds": bounds} if bounds is not None else {}), **({"lora_numerics": numerics} if numerics else {})}
+     (path / "suite-case.json").write_text(json.dumps(payload, indent=2, allow_nan=False) + "\n")
+     return result
+ 
+--- /dev/null
++++ b/utils/lora_verification.py
+@@ -0,0 +1,126 @@
++"""Approved Stage 6 relative verification. Torch is imported only on use.
++
++The subprocess exit status gates verification. Reports only explain that decision;
++candidate-writable report files are never read back to compute rewards.
++"""
++
++
++def bit_equal(actual, expected):
++    import torch
++    return (actual.shape == expected.shape and actual.dtype == expected.dtype
++            and torch.equal(actual.contiguous().view(torch.uint8),
++                            expected.contiguous().view(torch.uint8)))
++
++
++def evaluate_outputs(name, actual, expected, inputs):
++    import torch
++    from utils.task_catalog import get_task
++    assert get_task(name).stage == 6, "Relative bounds are Stage 6 only"
++    metadata = name == "lora_segment_metadata"
++    shrink = "shrink" in name
++    dtype = inputs[0].dtype if shrink or "fused" in name else inputs[2].dtype if not metadata else None
++    if not metadata:
++        assert dtype in (torch.float16, torch.bfloat16), "fp16/bf16 activations required"
++    c = .01 if dtype == torch.bfloat16 else .005
++    records = []
++    idx = None if metadata else inputs[2] if shrink else inputs[4] if "fused" in name else inputs[3]
++    y = None if metadata or shrink else inputs[3] if "fused" in name else inputs[2]
++
++    def walk(a, b, path):
++        assert type(a) is type(b), f"{path}: output type mismatch"
++        if isinstance(b, torch.Tensor):
++            assert a.shape == b.shape and a.dtype == b.dtype and a.device == b.device, f"{path}: tensor metadata mismatch"
++            if not b.is_floating_point():
++                passed = torch.equal(a, b)
++                records.append({"output": path, "kind": "integer_exact", "passed": passed})
++                return
++            active = torch.ones_like(b, dtype=torch.bool)
++            skipped_exact = True
++            if y is not None:
++                assert b.shape == y.shape, "y output shape mismatch"
++                skipped = idx == -1
++                skipped_exact = bit_equal(a[skipped], y[skipped])
++                active = (idx != -1)[:, None].expand_as(b)
++            aa, bb = a[active].double(), b[active].double()
++            finite = bool(torch.isfinite(aa).all() and torch.isfinite(bb).all())
++            ref_max = (bb.abs().max().item() if bb.numel() else 0.) if bool(torch.isfinite(bb).all()) else None
++            error = (aa - bb).abs()
++            max_error = error.max().item() if error.numel() and finite else 0. if finite else None
++            bound = c * ref_max if ref_max is not None else None
++            zero_exact = torch.equal(aa, bb) if ref_max == 0 else True
++            passed = bool(skipped_exact and finite and zero_exact and max_error <= bound)
++            normalized = error / ref_max if ref_max else error
++            quantiles = (torch.quantile(normalized, torch.tensor([.5, .99], dtype=torch.float64, device=b.device)).tolist()
++                         if normalized.numel() and finite else [None, None])
++            records.append({"output": path, "kind": "relative", "coefficient": c,
++                            "checked_elements": bb.numel(), "max_abs_ref": ref_max,
++                            "max_abs_error": max_error, "bound": bound,
++                            "ratio_to_bound": max_error / bound if finite and bound else None,
++                            "p50_normalized_error": quantiles[0], "p99_normalized_error": quantiles[1],
++                            "finite": finite, "skipped_rows_bit_exact": skipped_exact,
++                            "zero_reference_exact": bool(zero_exact), "passed": passed})
++        elif isinstance(b, (tuple, list)):
++            assert len(a) == len(b), f"{path}: output length mismatch"
++            for i, (av, bv) in enumerate(zip(a, b)):
++                walk(av, bv, f"{path}/{i}")
++        elif isinstance(b, dict):
++            assert a.keys() == b.keys(), f"{path}: dictionary mismatch"
++            for key in b:
++                walk(a[key], b[key], f"{path}/{key}")
++        else:
++            assert a == b, f"{path}: scalar mismatch"
++    walk(actual, expected, "output")
++    return {"task": name, "activation_dtype": str(dtype), "outputs": records,
++            "passed": all(row["passed"] for row in records)}
++
++
++def check_outputs(name, actual, expected, inputs):
++    report = evaluate_outputs(name, actual, expected, inputs)
++    assert report["passed"], str(report)
++    return report
++
++
++def main():
++    import argparse
++    import json
++    import os
++    from pathlib import Path
++    import torch
++    from utils import verification as v
++    from utils.task_catalog import get_task
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument('--seed', type=int, default=0)
++    args = parser.parse_args()
++    name = os.environ['CUDA_AGENT_TASK']
++    assert get_task(name).stage == 6, "Relative bounds are Stage 6 only"
++    target = Path('.cache/relative-error-bounds.json')
++    target.parent.mkdir(parents=True, exist_ok=True)
++    payload = {"schema": "stage6-relative-bounds-v1", "task": name, "checks": [], "passed": False}
++    def save():
++        target.write_text(json.dumps(payload, indent=2, allow_nan=False) + '\n')
++    save()
++    torch.manual_seed(args.seed)
++    try:
++        reference, candidate = v.initialize_models()
++        with torch.no_grad():
++            for i in range(5):
++                trusted, supplied = v.build_inputs()
++                expected = reference(*trusted)
++                with v.block_torch_functional():
++                    actual = candidate(*supplied)
++                report = evaluate_outputs(name, actual, expected, trusted)
++                payload['checks'].append(report)
++                save()
++                assert report['passed'], str(report)
++                print(f'[PASS] check {i + 1}/5')
++        payload['passed'] = True
++        save()
++        print('[PASS] verify success')
++    except Exception as exc:
++        payload['error'] = f'{type(exc).__name__}: {exc}'[:4096]
++        save()
++        raise
++
++
++if __name__ == '__main__':
++    main()
+--- a/utils/lora_diagnostics.py
++++ b/utils/lora_diagnostics.py
+@@ -1,4 +1,4 @@
+-"""Optional numerical distributions; never a tolerance or reward gate."""
++"""Supplemental distributions; enforcement lives in utils.lora_verification."""
+ 
+ 
+ def error_distribution(actual, reference, dtype):
+@@ -23,6 +23,7 @@
+     import torch
+     from utils.verification import initialize_models, build_inputs
+     from utils.lora_reference import forward
++    from utils.lora_verification import evaluate_outputs
+     parser=argparse.ArgumentParser(description=__doc__)
+     parser.add_argument('--output',type=Path,required=True)
+     args=parser.parse_args()
+@@ -35,8 +36,13 @@
+         actual=candidate(*other)
+         half=forward(name,*inputs,half=True)
+     dtype=inputs[0].dtype if 'shrink' in name or 'fused' in name else inputs[2].dtype
++    honest_bounds=evaluate_outputs(name,actual,expected,inputs)
++    half_bounds=evaluate_outputs(name,half,expected,inputs)
+     report={"schema":"multi-lora-numerics-v1","task":name,
+             "diagnostic_only":True,"fp16_intermediate_expected_failure":False,
++            "honest_gate":honest_bounds,
++            "fp16_intermediate_gate":half_bounds,
++            "fp16_intermediate_would_fail_relative_bound":not half_bounds["passed"],
+             "honest":error_distribution(actual,expected,dtype),
+             "fp16_intermediate":error_distribution(half,expected,dtype)}
+     args.output.write_text(json.dumps(report,indent=2,allow_nan=False)+'\n')
+--- /dev/null
++++ b/tests/test_graph_lifetime.py
+@@ -0,0 +1,58 @@
++"""CPU ownership repro for capture helper; fake graphs use weak buffer references."""
++import ast
++import contextlib
++import gc
++import types
++import unittest
++import weakref
++from tests.support import ROOT
++from utils.benchmark import _capture_graph
++
++
++class Buffer:
++    def clone(self):return Buffer()
++    def copy_(self,other):pass
++
++
++class Graph:
++    def replay(self):
++        if any(ref() is None for ref in self.refs):
++            raise RuntimeError('captured buffer was released')
++
++
++class GraphLifetime(unittest.TestCase):
++    def capture(self,helper):
++        state=types.SimpleNamespace(active=None)
++        @contextlib.contextmanager
++        def capture(graph):
++            state.active=graph
++            try:yield
++            finally:state.active=None
++        stream=types.SimpleNamespace(wait_stream=lambda other:None)
++        cuda=types.SimpleNamespace(Stream=lambda:stream,current_stream=lambda:stream,
++             stream=lambda stream:contextlib.nullcontext(),graph=capture,CUDAGraph=Graph,synchronize=lambda:None)
++        def model(*inputs):
++            output=Buffer()
++            if state.active is not None:state.active.refs=[weakref.ref(x) for x in (*inputs,output)]
++            return output
++        return helper(model,[Buffer()],[Buffer()],types.SimpleNamespace(cuda=cuda),model,lambda a,b:None)
++
++    def test_frozen_helper_reproduces_released_buffers(self):
++        path=ROOT/'tests/fixtures/benchmark_capture_before_repair.py'
++        tree=ast.parse(path.read_text());node=next(n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name=='_capture_graph')
++        namespace={};exec(compile(ast.Module(body=[node],type_ignores=[]),str(path),'exec'),namespace)
++        entry,graph=self.capture(namespace['_capture_graph'])
++        self.assertTrue(entry['graph_replay_ok'])
++        gc.collect()
++        with self.assertRaisesRegex(RuntimeError,'released'):graph.replay()
++
++    def test_fixed_helper_retains_buffers_across_rotating_replays(self):
++        handles=[self.capture(_capture_graph)[1] for _ in range(3)]
++        refs=[ref for h in handles for ref in h.graph.refs]
++        gc.collect()
++        for _ in range(40):
++            for h in handles:h.replay()
++        self.assertTrue(all(ref() is not None for ref in refs))
++        del h
++        handles.clear();gc.collect()
++        self.assertTrue(all(ref() is None for ref in refs))
+--- /dev/null
++++ b/tests/fixtures/benchmark_capture_before_repair.py
+@@ -0,0 +1,34 @@
++"""Archived pre-repair helper; regression fixture, not production code.
++Source: H200 stage6-smoke-20261110T105217Z frozen utils/benchmark.py.
++Full source SHA256: 4d40754fe64826e082babe5b78e21aafb1fd7d06abeecaa593e070d3b19104ee
++"""
++
++def _capture_graph(model, inputs, fresh, torch, torch_model, check_equal):
++    """Side-stream warmup then capture; failure is data, never a crash."""
++    entry = {"graph_capturable": False, "graph_error": None,
++             "graph_replay_ok": None, "graph_us": []}
++    try:
++        static_inputs = [t.clone() for t in inputs]
++        side = torch.cuda.Stream()
++        side.wait_stream(torch.cuda.current_stream())
++        with torch.cuda.stream(side):
++            for _ in range(3):
++                model(*static_inputs)
++        torch.cuda.current_stream().wait_stream(side)
++        graph = torch.cuda.CUDAGraph()
++        with torch.cuda.graph(graph):
++            static_out = model(*static_inputs)
++        entry["graph_capturable"] = True
++        try:
++            for dst, src in zip(static_inputs, fresh):
++                dst.copy_(src)
++            graph.replay()
++            torch.cuda.synchronize()
++            check_equal(static_out, torch_model(*fresh))
++            entry["graph_replay_ok"] = True
++        except Exception:
++            entry["graph_replay_ok"] = False
++        return entry, graph
++    except Exception as exc:
++        entry["graph_error"] = f"{type(exc).__name__}: {exc}"[:512]
++        return entry, None
+--- /dev/null
++++ b/tests/test_lora_gate.py
+@@ -0,0 +1,147 @@
++"""Synthetic tests for the approved Stage 6 verification mode."""
++import dataclasses
++import importlib.util
++import json
++import subprocess
++import sys
++import unittest
++from pathlib import Path
++from unittest.mock import patch
++from tests.support import ROOT, scratch
++from utils.config import RolloutConfig
++from utils.lora_verification import evaluate_outputs, check_outputs
++try:
++    import torch
++except ImportError:
++    torch = None
++
++
++class GateRouting(unittest.TestCase):
++    def test_defaults_cli_and_torch_free(self):
++        self.assertFalse(RolloutConfig().relative_error_bounds)
++        legacy_positional=RolloutConfig("triton",10,False,True)
++        self.assertTrue(legacy_positional.benchmark)
++        self.assertFalse(legacy_positional.relative_error_bounds)
++        args=RolloutConfig.add_args(__import__('argparse').ArgumentParser()).parse_args(['--relative-error-bounds'])
++        self.assertTrue(RolloutConfig.from_args(args).relative_error_bounds)
++        result=subprocess.run([sys.executable,'-S','-c',
++            'import sys;import utils.lora_verification,utils.config;assert "torch" not in sys.modules'],cwd=ROOT,capture_output=True,text=True)
++        self.assertEqual(result.returncode,0,result.stderr)
++
++    def test_actual_rollout_selects_only_opted_in_verifier(self):
++        from utils.rollout_env import run_task
++        for relative,integer,module in ((False,False,'utils.verification'),(False,True,'utils.task_verification'),
++                                       (True,True,'utils.lora_verification')):
++            seen=[]
++            def stage(mod,*args):
++                seen.append(mod)
++                return (0,'compile ok','',False) if len(seen)==1 else (1,'','synthetic stop',False)
++            with scratch() as tmp, patch('utils.rollout_env._stage',side_effect=stage):
++                result=run_task(tmp,dataclasses.replace(RolloutConfig(),backend='triton',
++                    exact_integer_outputs=integer,relative_error_bounds=relative))
++            self.assertEqual(seen,['utils.compile',module])
++            self.assertEqual(result['reward/reason'],'verification')
++
++    def test_suite_enables_gate_only_for_stage6_arithmetic(self):
++        from utils.task_catalog import get_task
++        from utils.task_suite import evaluate_case
++        for name,enabled in (('gemm_div_sum_scale',False),('row_softmax',False),
++                             ('rmsnorm',False),('grpo_group_norm',False),
++                             ('residual_rmsnorm',False),('eagle_tree_step',False),
++                             ('lora_shrink_bgmv',True),('lora_segment_metadata',False)):
++            captured=[]
++            def run(path,cfg,**kwargs):
++                captured.append(cfg)
++                return {'env/verify_ok':False,'reward/value':-1,'reward/reason':'verification'}
++            with scratch() as tmp,patch('utils.task_suite.cuda_unavailable',return_value=None), \
++                    patch('utils.task_suite.available_backends',return_value={'triton':None}), \
++                    patch('utils.task_suite.run_task',side_effect=run):
++                evaluate_case(name,get_task(name).cases[0].id,'triton','wrong',Path(tmp)/'case',
++                              cfg=dataclasses.replace(RolloutConfig(),relative_error_bounds=True))
++            self.assertEqual(captured[0].relative_error_bounds,enabled)
++
++
++@unittest.skipIf(torch is None,'Torch required for synthetic relative-bound tests')
++class GateMath(unittest.TestCase):
++    def args(self,dtype=torch.float16 if torch else None,idx=None):
++        idx=torch.tensor([0,-1] if idx is None else idx,dtype=torch.int32)
++        return [torch.ones(len(idx),2,dtype=dtype),None,None,torch.zeros(len(idx),2,dtype=dtype),idx]
++
++    def test_boundary_and_over_boundary_replaces_old_assert_close(self):
++        for dtype,maximum in ((torch.float16,200.),(torch.bfloat16,100.)):
++            args=self.args(dtype,idx=[0])
++            expected=torch.tensor([[maximum,0.]],dtype=torch.float32)
++            actual=expected.clone();actual[0,1]=1.
++            check_outputs('lora_shrink_bgmv',actual[None],expected[None],[args[0],None,args[4]])
++            actual[0,1]=1.00001
++            with self.assertRaises(AssertionError):check_outputs('lora_shrink_bgmv',actual[None],expected[None],[args[0],None,args[4]])
++            from utils.task_verification import check_equal as legacy_check
++            with self.assertRaises(AssertionError):
++                at_bound=expected.clone();at_bound[0,1]=1.
++                legacy_check(at_bound,expected)
++            # Shrink uses activation coefficient even though its output is fp32.
++            shargs=[args[0],None,args[4]]
++            check_outputs('lora_shrink_bgmv',expected[None],expected[None],shargs)
++
++    def test_skips_one_ulp_small_large_and_signed_zero_are_bit_exact(self):
++        for dtype,ulp in ((torch.float16,4.),(torch.bfloat16,32.)):
++            args=self.args(dtype);args[3][1]=4096
++            expected=args[3].clone();expected[0]=1
++            for change in (ulp,32.,10000.):
++                actual=expected.clone();actual[1,0]+=change
++                report=evaluate_outputs('lora_fused_sgmv',actual,expected,args)
++                self.assertFalse(report['passed'])
++                self.assertEqual(report['outputs'][0]['max_abs_ref'],1.)
++                self.assertFalse(report['outputs'][0]['skipped_rows_bit_exact'])
++            args[3][1]=0;expected[1]=0;actual=expected.clone();actual[1,0]=-0.
++            self.assertFalse(evaluate_outputs('lora_fused_sgmv',actual,expected,args)['passed'])
++
++    def test_nonfinite_padding_and_zero_reference(self):
++        args=self.args(idx=[0]);expected=torch.zeros(1,1,16)
++        for value in (float('nan'),float('inf'),-float('inf'),.00001):
++            actual=expected.clone();actual[0,0,15]=value
++            with self.assertRaises(AssertionError):check_outputs('lora_shrink_bgmv',actual,expected,[args[0],None,args[4]])
++        args=self.args(idx=[-1,-1]);args[3].fill_(4096)
++        check_outputs('lora_fused_sgmv',args[3].clone(),args[3],args)
++        actual=args[3].clone();actual[0,0]+=4
++        with self.assertRaises(AssertionError):check_outputs('lora_fused_sgmv',actual,args[3],args)
++        report=evaluate_outputs('lora_fused_sgmv',args[3],args[3],args)
++        self.assertEqual(report['outputs'][0]['checked_elements'],0)
++        json.dumps(report,allow_nan=False)
++
++    def test_integer_metadata_and_structure_stay_exact(self):
++        args=[torch.tensor([0,-1],dtype=torch.int32),torch.tensor([8],dtype=torch.int32)]
++        expected=(torch.tensor([0,1],dtype=torch.int32),)
++        check_outputs('lora_segment_metadata',expected,expected,args)
++        with self.assertRaises(AssertionError):check_outputs('lora_segment_metadata',(expected[0]+1,),expected,args)
++
++    def test_mixed_ranks_and_controls(self):
++        from utils.lora_reference import make_inputs,forward
++        from utils.lora_controls import control
++        from utils.lora_contracts import LORA_TASKS
++        from tests.test_lora_stage6 import tiny
++        for dtype in ('float16','bfloat16'):
++            for name in LORA_TASKS:
++                args=make_inputs(name,tiny(dtype));expected=forward(name,*args)
++                check_outputs(name,expected,expected,args)
++                if name=='lora_segment_metadata':continue
++                for variant in ('wrong_skip','wrong_padding'):
++                    with self.assertRaises(AssertionError):check_outputs(name,control(name,variant,*args),expected,args)
++
++    def test_case_json_retains_gate_failure_without_using_report_for_rewards(self):
++        from utils.task_catalog import get_task
++        from utils.task_suite import evaluate_case
++        def run(path,cfg,**kwargs):
++            target=Path(path)/'.cache/relative-error-bounds.json'
++            target.parent.mkdir(exist_ok=True)
++            target.write_text(json.dumps({'passed':False,'checks':[{'passed':False,'outputs':[{'bound':1.,'max_abs_ref':200.,'passed':False}]}]}))
++            return {'env/verify_ok':False,'reward/value':-1.,'reward/reason':'verification'}
++        with scratch() as tmp,patch('utils.task_suite.cuda_unavailable',return_value=None), \
++                patch('utils.task_suite.available_backends',return_value={'triton':None}), \
++                patch('utils.task_suite.run_task',side_effect=run):
++            target=Path(tmp)/'case'
++            result=evaluate_case('lora_shrink_bgmv',get_task('lora_shrink_bgmv').cases[0].id,'triton','wrong',target)
++            payload=json.loads((target/'suite-case.json').read_text())
++            self.assertFalse(payload['verification_bounds']['passed'])
++            self.assertEqual(result['reward/value'],-1.)
++            self.assertIn('artifact/relative_error_bounds',result)
+--- /dev/null
++++ b/tests/test_repeated_forward.py
+@@ -0,0 +1,22 @@
++"""CPU interpreter regressions for repeated, immutable model inputs."""
++import importlib.util
++import os
++import subprocess
++import sys
++import unittest
++from pathlib import Path
++from tests.support import ROOT
++
++
++@unittest.skipUnless(all(importlib.util.find_spec(p) for p in ('torch','triton','numpy')),
++                     'Torch, Triton and NumPy required for repeated CPU forwards')
++class RepeatedForwards(unittest.TestCase):
++    def test_stage6_and_stage5_shared_inputs_for_40_calls(self):
++        process=subprocess.run([sys.executable,'-B',str(ROOT/'tests/repeated_forward_probe.py')],cwd=ROOT,
++            capture_output=True,text=True,timeout=900,
++            env={**os.environ,'CUDA_AGENT_DEVICE':'cpu','TRITON_INTERPRET':'1',
++                 'OMP_NUM_THREADS':'2','MKL_NUM_THREADS':'2','PYTHONDONTWRITEBYTECODE':'1'})
++        target=os.environ.get('STAGE6_REPEAT_LOG')
++        if target:Path(target).write_text(process.stdout+process.stderr)
++        self.assertEqual(process.returncode,0,process.stdout+process.stderr)
++        self.assertIn('REPEATED_FORWARD_PROBES_OK',process.stdout)
+--- /dev/null
++++ b/tests/repeated_forward_probe.py
+@@ -0,0 +1,79 @@
++"""Repeated synthetic CPU forwards: immutable inputs, stable outputs, no GPU evidence."""
++import importlib.util
++import json
++import sys
++from pathlib import Path
++import torch
++ROOT=Path(__file__).resolve().parents[1]
++sys.path.insert(0,str(ROOT))
++from utils.task_catalog import case
++from utils.lora_contracts import LORA_TASKS
++from utils.lora_reference import make_inputs,forward
++from utils.lora_verification import bit_equal,check_outputs
++
++
++def load(path,name):
++    spec=importlib.util.spec_from_file_location(name,path)
++    module=importlib.util.module_from_spec(spec);sys.modules[name]=module;spec.loader.exec_module(module)
++    return module
++
++
++def clone(value):
++    if isinstance(value,torch.Tensor):return value.clone()
++    return type(value)(clone(x) for x in value)
++
++
++def equal(a,b):
++    if isinstance(a,torch.Tensor):return bit_equal(a,b)
++    return len(a)==len(b) and all(equal(x,y) for x,y in zip(a,b))
++
++
++def repeat(label,fn,args,expected,gate=None):
++    before=clone(args);baseline=None;last=None
++    for i in range(40):
++        actual=fn(*args)
++        assert equal(args,before),(label,'mutated input',i)
++        if gate:gate(actual,expected,args)
++        else:
++            from utils.task_verification import check_equal
++            check_equal(actual,expected)
++        if baseline is None:baseline=clone(actual)
++        assert equal(actual,baseline),(label,'unstable output',i)
++        if last is not None:assert equal(last,baseline),(label,'previous output overwritten',i)
++        last=actual
++    print(json.dumps({'label':label,'calls':40,'input_bytes_unchanged':True,'outputs_bit_stable':True}),flush=True)
++
++
++def main():
++    torch.set_num_threads(2);torch.manual_seed(17)
++    candidate=load(ROOT/'tasks/lora_shrink_bgmv/kernels/triton/lora.py','repeat_lora_kernel')
++    for dtype in ('float16','bfloat16'):
++        for pattern in ('mixed','none'):
++            for name in LORA_TASKS:
++                item=case(dtype,tokens=7,hidden=16,out=9,rank=16,slots=4,slices=2,pattern=pattern,mixed=True)
++                args=make_inputs(name,item)
++                module=load(ROOT/'tasks'/name/'model.py','repeat_reference_'+name)
++                reference=module.Model();expected=reference(*args)
++                gate=lambda a,b,x,n=name:check_outputs(n,a,b,x)
++                repeat(f'{name}/{dtype}/{pattern}/reference',reference,args,expected,gate)
++                repeat(f'{name}/{dtype}/{pattern}/triton',lambda *x,n=name:candidate.forward(n,*x),args,expected,gate)
++    from utils import eagle_reference as ref
++    functions={'eagle_tree_step':ref.tree_step,'eagle_candidate_topk':ref.candidate_topk,
++               'eagle_tree_row_attention':ref.attention,'eagle_tree_verify_attention':ref.attention,
++               'eagle_gdn_tree_conv':ref.tree_conv,'eagle_mamba2_tree_conv':ref.tree_conv,
++               'eagle_gdn_tree_recurrence':ref.recurrence,'eagle_accept_tail':ref.accept,
++               'eagle_accept_tail_sampled':ref.accept_sampled}
++    p=dict(b=1,n=3,tree='balanced',h=64,v=17,top_k=2,hkv=1,ratio=1,d=64,s=16,window=16,c=8,heads=1,dk=64,dv=64,seed=17)
++    for name,fn in functions.items():
++        dtype='bfloat16' if 'attention' in name or 'conv' in name or 'topk' in name else 'int32' if name=='eagle_accept_tail' else 'float32'
++        args=ref.make_inputs(name,case(dtype,**p))
++        kwargs={'window':16} if 'attention' in name else {'mamba':True} if 'mamba2' in name else {}
++        if name=='eagle_candidate_topk':kwargs={'top_k':2}
++        expected=fn(*args,**kwargs)
++        module=load(ROOT/'tasks'/name/'kernels/triton'/f'{name.removeprefix("eagle_")}.py','repeat_'+name)
++        repeat(name+'/reference',lambda *x,f=fn,k=kwargs:f(*x,**k),args,expected)
++        repeat(name+'/triton',lambda *x,m=module,k=kwargs:m.forward(*x,**k),args,expected)
++    print('REPEATED_FORWARD_PROBES_OK',flush=True)
++
++
++if __name__=='__main__':main()
+--- a/tests/lora_interpreter_probe.py
++++ b/tests/lora_interpreter_probe.py
+@@ -18,6 +18,7 @@
+     from tests.test_lora_stage6 import tiny
+     from utils.lora_contracts import LORA_TASKS
+     from utils.lora_reference import make_inputs, forward
++    from utils.lora_verification import check_outputs
+     candidate=load_kernel()
+     torch.set_num_threads(2)
+     for dtype in ('float16','bfloat16'):
+@@ -26,11 +27,7 @@
+                 args=make_inputs(name,tiny(dtype,pattern))
+                 actual=candidate.forward(name,*args)
+                 expected=forward(name,*args)
+-                if isinstance(actual,tuple):
+-                    for a,b in zip(actual,expected):
+-                        torch.testing.assert_close(a,b,atol=0,rtol=0)
+-                else:
+-                    torch.testing.assert_close(actual,expected,atol=1e-2,rtol=1e-2)
++                check_outputs(name,actual,expected,args)
+                 print(name,dtype,pattern,'PASS',flush=True)
+     print('STAGE6_INTERPRETER_OK')
+ 
+--- a/Architecture-decision/0002-wandb-tracking-contract.md
++++ b/Architecture-decision/0002-wandb-tracking-contract.md
+@@ -119,6 +119,7 @@
+ | `cfg:cfg/backend` | config | cfg | str | 1 | never | config | environment |
+ | `cfg:cfg/iters` | config | cfg | int | 1 | never | config | environment |
+ | `cfg:cfg/exact_integer_outputs` | config | cfg | bool | 1 | not recorded in historical configs | verification/config; forced true only by progressive suite | environment |
++| `cfg:cfg/relative_error_bounds` | config | cfg | bool | 1 | not recorded in historical configs | Stage 6 relative verification/config; forced true only for Stage 6 arithmetic | environment |
+ | `cfg:cfg/benchmark` | config | cfg | bool | 1 | never | config | environment |
+ | `cfg:cfg/bench_warmup_iters` | config | cfg | int | 1 | never | config | environment |
+ | `cfg:cfg/bench_rounds` | config | cfg | int | 1 | never | config | environment |
+@@ -394,9 +395,11 @@
+ | `results:config/cuda_graphs` | config | config | bool | 1 | historical artifact did not persist it | config | environment |
+ | `results:config/diagnostics` | config | config | bool | 1 | historical artifact did not persist it | config | environment |
+ | `results:config/exact_integer_outputs` | config | config | bool | 1 | historical artifact did not persist it | config | environment |
++| `results:config/relative_error_bounds` | config | config | bool | 1 | historical artifact did not persist it | config | environment |
+ | `results:case_configs/*/cuda_graphs` | table | case_configs | bool | 1 | historical artifact did not persist it | config | environment |
+ | `results:case_configs/*/diagnostics` | table | case_configs | bool | 1 | historical artifact did not persist it | config | environment |
+ | `results:case_configs/*/exact_integer_outputs` | table | case_configs | bool | 1 | historical artifact did not persist it | config | environment |
++| `results:case_configs/*/relative_error_bounds` | table | case_configs | bool | 1 | historical artifact did not persist it | config | environment |
+ | `results:config/timeout_s` | config | config | float | s | historical artifact did not persist it | config | environment |
+ | `results:case_configs/*/timeout_s` | table | case_configs | float | s | historical artifact did not persist it | config | environment |
+ | `results:config/provenance_threshold` | config | config | float | 1 | historical artifact did not persist it | config | environment |
+@@ -450,9 +453,11 @@
+ | `names:config/cuda_graphs` | config | config | bool | 1 | historical artifact did not persist it | config | environment |
+ | `names:config/diagnostics` | config | config | bool | 1 | historical artifact did not persist it | config | environment |
+ | `names:config/exact_integer_outputs` | config | config | bool | 1 | historical artifact did not persist it | config | environment |
++| `names:config/relative_error_bounds` | config | config | bool | 1 | historical artifact did not persist it | config | environment |
+ | `names:case_configs/*/cuda_graphs` | table | case_configs | bool | 1 | historical artifact did not persist it | config | environment |
+ | `names:case_configs/*/diagnostics` | table | case_configs | bool | 1 | historical artifact did not persist it | config | environment |
+ | `names:case_configs/*/exact_integer_outputs` | table | case_configs | bool | 1 | historical artifact did not persist it | config | environment |
++| `names:case_configs/*/relative_error_bounds` | table | case_configs | bool | 1 | historical artifact did not persist it | config | environment |
+ | `names:config/timeout_s` | config | config | float | s | historical artifact did not persist it | config | environment |
+ | `names:case_configs/*/timeout_s` | table | case_configs | float | s | historical artifact did not persist it | config | environment |
+ | `names:config/provenance_threshold` | config | config | float | 1 | historical artifact did not persist it | config | environment |
+@@ -496,6 +501,7 @@
+ | `results:group_configs/*/cuda_graphs` | config | group_configs | bool | 1 | historical artifact did not persist it | diagnostic | environment |
+ | `results:group_configs/*/diagnostics` | config | group_configs | bool | 1 | historical artifact did not persist it | diagnostic | environment |
+ | `results:group_configs/*/exact_integer_outputs` | config | group_configs | bool | 1 | historical artifact did not persist it | diagnostic | environment |
++| `results:group_configs/*/relative_error_bounds` | config | group_configs | bool | 1 | historical artifact did not persist it | diagnostic | environment |
+ | `results:group_configs/*/timeout_s` | config | group_configs | float | s | historical artifact did not persist it | diagnostic | environment |
+ | `results:group_configs/*/provenance_threshold` | config | group_configs | float | 1 | historical artifact did not persist it | diagnostic | environment |
+ | `results:group_configs/*/speedup_margin` | config | group_configs | float | 1 | historical artifact did not persist it | diagnostic | environment |
+--- a/MULTI_LORA_kernels_task.md
++++ b/MULTI_LORA_kernels_task.md
+@@ -65,7 +65,7 @@
+   output and fails verification. Do not change this.
+ - **idx = -1 tokens** get zero work and zero writes. The trusted inputs give
+   those rows of y_in large sentinel values and make the LoRA delta large, so
+-  any write to them fails the standard tolerance.
++  any byte change to them fails the exact skipped-row verification gate.
+ - Adapters with a dtype different from the model's are cast once, by the
+   trusted input builder, never inside the kernel.
+ - No host syncs (`.item()`, `.tolist()`, `.nonzero()`) and no data-dependent
+@@ -123,11 +123,22 @@
+ 
+ ## Tolerances and gates
+ 
+-- Use the existing verification: atol/rtol 1e-2, with integer outputs
+-  exact (`exact_integer_outputs`, approved). The original brief's relative
+-  bounds (bf16 ≤ 1e-2·max|ref|, fp16 ≤ 5e-3·max|ref|) are a different
+-  metric. Record them as diagnostics in the case JSON, and **ASK** before
+-  making them a gate or changing tolerances.
++- **Approved Stage 6 arithmetic verification:** for every floating output,
++  `max(abs(actual-ref)) <= c * max(abs(ref))`, where activation dtype selects
++  c=0.005 (fp16) or c=0.01 (bf16), including fp32 shrink buffers. This replaces
++  the old per-element atol/rtol check for Stage 6 only.
++- Skipped rows of y (`idx=-1`) must be bit-identical to y_in and are excluded
++  from both reductions. Actual NaN/inf where reference is finite fails.
++  A zero checked reference requires exact equality; an all-skipped batch
++  still checks every skipped y byte.
++- Metadata and all integer outputs stay exact. Stock and Stages 0–5 retain
++  their existing comparison paths. The suite forces `relative_error_bounds`
++  only for Stage 6 arithmetic; it defaults off and has a matching CLI flag.
++- Case JSON includes per-output bound, checked reference maximum, errors and
++  decision from the verification subprocess. Its exit status gates rewards;
++  candidate-writable report files never feed a reward.
++- The fp16-intermediate fixture remains diagnostic only; record whether it
++  would violate the approved bound, without an expected-failure gate.
+ - The authored-only provenance gate applies: no cuBLAS/cuDNN time in honest
+   solutions.
+ 
+--- a/MULTI_LORA_STAGE6.md
++++ b/MULTI_LORA_STAGE6.md
+@@ -95,7 +95,8 @@
+ process writes `lora-numerics.json` and embeds its distributions in
+ `suite-case.json`: max/p50/p99 absolute error, max-error/max-reference ratio,
+ and the original dtype-specific bound (.01 bf16/.005 fp16). Honest and half
+-intermediate errors appear side by side. No tolerance or reward is changed.
++intermediate errors appear side by side. The approved relative rule below gates
++Stage 6 arithmetic verification; the fp16-intermediate comparison stays diagnostic.
+ At rank below 64 this comparison is descriptive only; the rank≥64 catalog cases
+ provide the requested accuracy study when executed. No error numbers are
+ invented for unexecuted cases.
+@@ -124,3 +125,29 @@
+ Both CUDA compilation and Triton real-device execution need GPU validation.
+ CPU interpreter execution is not GPU provenance, sm_75 support, graph replay,
+ latency or H200 acceptance evidence. No Modal run is launched by this change.
++
++
++## Approved verification and replay repair (2026-11-10)
++
++`RolloutConfig.relative_error_bounds` defaults off. The progressive suite enables
++it only for Stage 6 arithmetic and selects `utils.lora_verification` in the same
++verification subprocess stage. For each float output the maximum absolute error
++must be at most 0.005 times the checked reference maximum (fp16 activations), or
++0.01 (bf16 activations), even when shrink returns fp32. Skipped y rows are checked
++bit-for-bit against y_in and excluded from reductions; zero reference requires
++exact equality. Non-finite errors fail; integers retain exact verification.
++This replaces the prior per-element floating check, without changing the stock
++or Stage 0–5 paths, speed reward or provenance semantics. Detailed gate decisions
++are recorded in `.cache/relative-error-bounds.json` and `suite-case.json`.
++Diagnostics include the half intermediate's hypothetical decision but do not
++turn it into a failure fixture or acceptance count.
++
++The benchmark capture helper now returns an owning `CapturedGraph` handle that
++keeps static input clones and captured outputs alive for all timed replays.
++A CPU weak-reference repro fails on the archived helper and passes on the fix.
++Repeated CPU reference/Triton calls preserve every input byte for 40 iterations;
++no caller mutation was found in these probes. Native CUDA paths and the actual
++H200 crash resolution require another approved GPU run. Torch graph-pool output
++allocations remain supported; this fix preserves buffers and does not change
++forward signatures or introduce in-place y updates. See the PyTorch 2.14
++[graph lifetime and allocator contract](https://docs.pytorch.org/docs/2.14/notes/cuda.html#graph-memory-management).
+--- a/README.md
++++ b/README.md
+@@ -154,7 +154,7 @@
+ | 3 | Packed-reduction kernels against the repository-authored RL contracts: GRPO group normalization, CISPO weight clipping, packed variable-length reduction | pass |
+ | 4 | Attention, grouped GEMM, sampling, residual RMSNorm, decode attention and Dense-MoE; INT8/FP8 as contracts only | pass (grouped GEMM is Triton-only by design) |
+ | 5 | EAGLE-4 speculative decoding: nine evaluation-only tree workloads, including 32k-context tree row and verify attention, candidate top-k over a 151,936 vocabulary, sampled acceptance, Mamba2 conv, and GDN walk plus chain replay | pass: smoke 71/71 and largest cases 71/71, CUDA and Triton, all fixtures |
+-| 6 | Multi-LoRA BGMV and SGMV shrink/expand, stable segment metadata, fp32-scratch fused SGMV | Implemented; CPU reference/interpreter probes pass, GPU unverified. [Contracts](MULTI_LORA_STAGE6.md) |
++| 6 | Multi-LoRA serving: six tasks, including fused SGMV, with Triton and CUDA kernels: BGMV and SGMV shrink/expand, stable segment metadata, and fp32-scratch fused SGMV | H200 fp16 smoke: correctness and provenance pass; eight benchmark stages crashed. [Review](artifacts/runs/stage6-smoke-20261110T105217Z/REVIEW.md). [Contracts](MULTI_LORA_STAGE6.md) |
+ 
+ | Stage | Task | Reference solution | H200 result (honest scores, hack fails provenance, wrong fails verification) |
+ |---|---|---|---|
+@@ -187,6 +187,12 @@
+ | 5 | `eagle_gdn_tree_recurrence`‡ | Triton, CUDA; alternate Triton chain replay | pass (smoke; largest 32 × 64 nodes × 4 heads × 128²), including chain replay |
+ | 5 | `eagle_accept_tail`‡ | Triton, CUDA | pass (smoke; largest 32 × 64 nodes) |
+ | 5 | `eagle_accept_tail_sampled`‡ | Triton, CUDA | pass (smoke; largest 32 × 64 nodes × 151,936 vocabulary) |
++| 6 | `lora_shrink_bgmv` | Triton split-K, CUDA | H200 fp16 smoke: gates pass; benchmark stage crashed |
++| 6 | `lora_expand_bgmv` | Triton tiled, CUDA | H200 fp16 smoke: gates pass; benchmark stage crashed |
++| 6 | `lora_segment_metadata` | Triton counts/scan/scatter, CUDA | H200 fp16 smoke: gates pass; graph replay pass |
++| 6 | `lora_shrink_sgmv` | Triton segment GEMM, CUDA | H200 fp16 smoke: gates pass; graph replay pass |
++| 6 | `lora_expand_sgmv` | Triton segment GEMM, CUDA | H200 fp16 smoke: gates pass; benchmark stage crashed |
++| 6 | `lora_fused_sgmv` | Triton and CUDA, fp32 scratch | H200 fp16 smoke: gates pass; benchmark stage crashed |
+ 
+ \* Evaluation-only: adapted from GPU MODE reference kernels, whose license does not clear training use (`--purpose train` is refused).
+ † Contract only by design: the INT8/FP8 workloads are specified (inputs, reference, checks), but Stage 4 deliberately enables no backend for them; their `ModelNew` raises `unavailable`.
+@@ -199,21 +205,9 @@
+ 
+ Tasks run through `python -m scripts.validate --suite <names|stageN|all> --device cuda` (or `cloud/modal_tasks.py` on Modal). They use two task-only gates, both approved on 2026-11-09: the provenance gate `authored-only-no-library-v1` (any library kernel time is a violation, the authored share must be at least 90%, memory time is excluded, and `gemm_tensor_core` requires 100% authored), and exact comparison for integer outputs (`RolloutConfig.exact_integer_outputs`, via `utils/task_verification.py`; floating-point tolerances are unchanged). Both are off for the stock rollout, whose reward is unchanged.
+ 
+----
+-
+-Stage 6 task status (no GPU results claimed):
+-
+-| Task | Reference solutions | Validation |
+-|---|---|---|
+-| `lora_shrink_bgmv` | Triton split-K, CUDA | GPU unverified |
+-| `lora_expand_bgmv` | Triton tiled, CUDA | GPU unverified |
+-| `lora_segment_metadata` | Triton counts/scan/scatter, CUDA | GPU unverified; integer exact |
+-| `lora_shrink_sgmv` | Triton segment GEMM, CUDA | GPU unverified |
+-| `lora_expand_sgmv` | Triton segment GEMM, CUDA | GPU unverified |
+-| `lora_fused_sgmv` | Triton/CUDA fp32 scratch | GPU unverified |
+-
+-See [Stage 6](MULTI_LORA_STAGE6.md) for interfaces, deterministic stratification,
+-poisoned padding, negative controls, error distributions and reproduction.
++Stage 6 results above are from the fp16 smoke run `stage6-smoke-20261110T105217Z` only ([review](artifacts/runs/stage6-smoke-20261110T105217Z/REVIEW.md)): every honest kernel verified with authored provenance 1.0, and every hack and wrong control was caught, but 8 of 12 honest benchmark stages crashed during their timed rounds (illegal memory access or a PyTorch index-out-of-bounds assert), before any CUDA-graph result was recorded; the likely cause, a forward pass mutating its inputs, is being fixed. See [MULTI_LORA_STAGE6.md](MULTI_LORA_STAGE6.md) for interfaces, deterministic stratification, poisoned padding, negative controls, error distributions and reproduction.
++
++---
+ 
+ ## CUDA vs Triton: how different is it?
+ 
+@@ -698,3 +692,12 @@
+ plus Torch-op fixtures verified but received 0% provenance and reward -1.
+ The fresh environment artifact packaging was also verified remotely.
+ See VALIDATION.md for raw artifacts and remaining attribution limits.
++
++
++Stage 6 correction pending GPU review: the approved activation-dependent global
++relative bound now gates arithmetic verification (fp16 0.005, bf16 0.01). Skipped
++y rows are exact and excluded from the bound. Stock/Stages 0–5 are unchanged.
++The replay helper retains static buffers for the capture lifetime. Local
++regression evidence and remaining GPU limits are recorded in VALIDATION.md.
++The earlier H200 smoke used the old floating check; it does not validate this
++new gate or replay repair. No rerun is launched as part of the repair.
+--- a/VALIDATION.md
++++ b/VALIDATION.md
+@@ -2435,3 +2435,108 @@
+ reported CRLF whitespace in pre-existing, untouched files; those were preserved.
+ Six protected upstream file hashes still match `artifacts/upstream.json`.
+ No commit was created.
++
++
++## Stage 6 H200 smoke: stage6-smoke-20261110T105217Z (2026-11-10)
++
++The explicitly approved prepared request ran on Modal and completed in
++1435.068760015 seconds (remote suite wall time), exit 0. Evidence:
++`artifacts/runs/stage6-smoke-20261110T105217Z/REVIEW.md` and raw `suite/suite.json`.
++Launcher command and durable function-call ID are under the sibling `-launch/`
++directory. Uploaded source is retained with its manifest in the run's `source/`.
++
++Core outcome: **46 passed, 0 failed, 10 unavailable**. All twelve honest CUDA
++and Triton cells verified and measured authored provenance **1.0**. The ten
++unavailable cells are wrong-skip controls with all-active inputs. Metadata and
++SGMV shrink passed benchmark/graph capture/replay on both backends. Eight
++other honest benchmark stages failed during timed graph replay with illegal
++memory access/device asserts; Modal also logged XID 31/43. Thus this is not
++complete graph/performance acceptance. Correctness/provenance counts do not
++silently imply successful diagnostics. Failed timings remain unavailable.
++
++Only FP16, rank-8, one-slot, one-slice smoke cases were run. BGMV T=1 and SGMV
++T=512 do not establish bf16, mixed ranks, skipped-row or largest-case coverage.
++No acceptance/stratified run was launched, and no commit was created. Source
++review suggests a possible graph static-input lifetime defect; see REVIEW.md.
++This is not a confirmed root-cause or a validated fix.
++
++
++Full evidence download retained 3,127 files (98,283,984 bytes). Every transfer
++size was checked; all 265 frozen-source hashes and the prepared/source manifest
++match, with zero remote or local source mismatches. Runtime: NVIDIA H200,
++compute capability 9.0, UUID `GPU-db3c235c-a227-8f2d-7397-35d960f26a6f`, driver
++610.57.04, Python 3.12.1, Torch 2.14.1+cu130, Triton 3.8.0, nvcc 13.3.
++The Modal recursive CLI download encountered a directory collision; a file-only
++SDK download retained the full run without altering remote artifacts. Download
++inventory and scripts are in the sibling `-launch/` directory. `review.json`
++explicitly records `complete_validation_ok: false` for the graph benchmark gaps.
++
++
++## Stage 6 relative gate and benchmark repair (2026-11-10; CPU-only)
++
++Both linked handoffs are implemented locally. `relative_error_bounds` is off
++by default and forced only for Stage 6 arithmetic. Its verifier replaces the
++old per-element float check with the approved activation-dependent relative
++bound, exact skipped y rows, exact zero-reference handling, non-finite rejection
++and exact integers. All six ADR config row types and the CLI are present.
++Case JSON includes verification bounds and decisions. Diagnostic fp16 storage
++is still not an expected-failure gate; its hypothetical decision is recorded.
++Stock and Stage 0–5 verification, task forward signatures and input immutability
++semantics are unchanged. This implements the already approved Stage 6 criterion;
++it does not change speed rewards or provenance rules.
++
++The confirmed CPU ownership repro fails on the archived helper: cloned static
++inputs and the captured output are collected after `_capture_graph` returns.
++An owning `CapturedGraph` handle preserves them for all timed replays. No shared
++reference/Triton forward mutated its inputs in 2,640 repeated calls (66 small
++scenarios × 40), and returned outputs stayed bit-identical. This does not rule
++out native CUDA or CUDA-compiled reference defects. Actual H200 root cause and
++repair effectiveness remain unverified; no GPU run is launched here.
++
++All eight old tracebacks were audited against the downloaded frozen helper:
++`run_benchmark:160` calls `_time_calls(graph.replay,...)`; the failure surfaces
++at its final synchronization (line 68). Thus the precise wording is: benchmark
++stage crashed during timed rounds while replaying a captured graph. The
++traceback does not name which implementation's graph was active. Missing graph
++fields reflect lost benchmark-stage output, not proof of a pre-capture failure.
++The derived smoke REVIEW.md contains this clarification; raw smoke results,
++source snapshots and legacy correctness/provenance measurements are unchanged.
++
++Local evidence: `artifacts/runs/multi-lora-local-20261110T203438Z/`. `commands.json` records exact invocations.
++The 11 focused gate/lifetime regressions passed (`Ran 11 tests in 61.538s`, `OK`).
++The self-contained archived-helper repro passed (`Ran 2 tests in 0.017s`, `OK`).
++The permanent repeated-call test passed (`Ran 1 test in 106.199s`, `OK`).
++The verifier subprocess exited 0 for honest and 1 for both wrong-padding and
++wrong-skip controls. All 32 rank-64/256 and mixed-rank supplemental interpreter
++probes met the approved bound; the largest observed fraction of bound was
++0.5649717514124294. No tested honest case required relaxation. GPU or larger
++catalog cases remain at risk until reviewed hardware evidence exists.
++
++The system discovery run completed:
++
++```text
++Ran 299 tests in 399.525s
++OK (skipped=77)
++```
++
++The installed-runtime discovery run also completed:
++
++```text
++Ran 305 tests in 1866.756s
++
++OK (skipped=29)
++```
++
++The final 60-case Stage 6 interpreter sweep passed under the new gate.
++The runtime discovery run also repeated all 66 immutable-input scenarios
++(2,640 forwards). Skips cover unavailable GPU/backend packages and
++optional integrations; these are not GPU acceptance. Existing SQLite
++ResourceWarnings are retained in the raw logs.
++
++Discovery overlapped the repair work. Final config positional
++compatibility and the portable archived-helper fixture were
++checked separately afterward (`final-routing.log`: 5 tests, OK;
++`self-contained-repro.log`: 2 tests, OK).
++
++No commit or Modal launch was performed. Claude reviews the frozen
++source and prepared request and launches only after user approval.
+--- a/KNOWN_ISSUES.md
++++ b/KNOWN_ISSUES.md
+@@ -333,17 +333,48 @@
+   and final suite summaries are in VALIDATION.md. No state-equality tolerance,
+   reward or RolloutConfig change was needed.
+ 
+-- **Stage 6 multi-LoRA: GPU validation pending.** Six standalone tasks have
++- **Stage 6 multi-LoRA: initial local validation scope.** Six standalone tasks have
+   vectorized trusted references, Triton and conservative CUDA candidates,
+   stable segment metadata, mixed-rank NaN padding, skip sentinels and negative
+   controls. CPU reference/interpreter checks pass, as do 28 offline Triton
+   compiler configurations for sm_75/sm_90; see `MULTI_LORA_STAGE6.md`.
+-  No GPU, nvcc, device provenance, graph replay, H200 timings or sm_75 runtime
+-  behavior has been validated for these new sources. CUDA segment kernels are
++  Those initial checks did not validate GPU, nvcc, device provenance, graph
++  replay, H200 timings or sm_75 runtime behavior. The later smoke and repair
++  limits are recorded below. CUDA segment kernels are
+   correctness-first and do not yet share weight tiles. The fused task uses
+   fp32 scratch. Rank 512/8192-token extensions remain stretch work. Full-rank
+   cases cannot exercise padding-read controls; all-active cases cannot
+   exercise skipped-write controls. Their cells report unavailable. Metadata
+-  has no weight-padding/half-intermediate/y-skip control. The original relative
+-  error bounds and fp16-intermediate expected-failure status remain diagnostics;
+-  changing either gate requires approval. No Modal run was launched.
++  has no weight-padding/half-intermediate/y-skip control. The initial build
++  treated both relative bounds and fp16-intermediate as diagnostics. The
++  approved gate correction below supersedes that treatment for relative
++  bounds; fp16-intermediate remains diagnostic. No Modal run was launched
++  during that initial local implementation.
++
++
++- **Stage 6 H200 graph benchmarking remains open.** Approved smoke run
++  `stage6-smoke-20261110T105217Z` passed all 46 applicable correctness/provenance
++  outcomes (10 no-skip controls unavailable); all 12 honest cells have authored
++  provenance 1.0. However, eight honest benchmark stages faulted during graph
++  replay (illegal memory access/device assertions; Modal XID 31/43). Metadata
++  and SGMV shrink benchmarks/replays passed on both backends. The benchmark
++  helper does not retain its locally cloned static inputs with the returned
++  graph; this is a plausible lifetime issue, not an isolated GPU diagnosis.
++  Do not promote this run to full graph/performance acceptance. Frozen source,
++  raw failures and review: `artifacts/runs/stage6-smoke-20261110T105217Z/`.
++  bf16, mixed-rank/skipped-row and acceptance-grid validation remain pending.
++
++
++- **Stage 6 gate/replay repair implemented locally; GPU rerun pending review.**
++  The earlier diagnostic-only tolerance language is superseded for current
++  code: the approved relative bound now gates Stage 6 arithmetic verification.
++  Skipped y bytes are exact/excluded, zeros exact and non-finites rejected.
++  The fp16 intermediate remains diagnostic. CapturedGraph now owns static
++  buffers; a failing archived-helper CPU repro and 2,640 mutation-free CPU
++  forwards are recorded in VALIDATION.md. The lifetime defect is confirmed
++  locally, but actual H200 causality/resolution and the new gate on GPU remain
++  unverified. The old smoke used the legacy float check. All eight crashes
++  occurred in benchmark timed rounds at the graph replay timing call; the
++  offending implementation is not identified by those traces. No Modal run
++  or commit is made by this repair. See the new local evidence bundle and
++  both HANDOFF_CODEX_STAGE6_GATE.md / HANDOFF_CODEX_STAGE6_REPLAY_CRASHES.md.
+--- /dev/null
++++ b/artifacts/runs/stage6-smoke-20261110T105217Z/REVIEW.md
+@@ -0,0 +1,70 @@
++# H200 Stage 6 smoke review
++
++Run: `stage6-smoke-20261110T105217Z`; Modal app `ap-ieQ20mtO7rqMdU6rfj9gER`,
++function call `fc-01M72WFNZBRTZMQ9EQ6GC30JHH`.
++
++The prepared request was explicitly authorized and executed once. No acceptance
++or stratified run was launched. The remote suite completed normally:
++**46 passed, 0 failed, 10 unavailable**, with no remote source mismatches.
++All twelve honest CUDA/Triton candidates verified and had authored provenance
++1.0. Expected Torch substitutions failed provenance; wrong-output and padded-read
++controls failed verification. The ten unavailable cells have no skipped tokens,
++so the wrong-skip control is not applicable.
++
++This is **incomplete validation**, despite successful core gate counts. Eight of
++twelve honest benchmark stages exited with illegal-memory-access/device-assert
++errors during CUDA-graph replay. Metadata and SGMV shrink completed benchmarks
++and graph replay on both backends. Diagnostics remain separate from rewards;
++failed benchmark stages do not erase successful correctness/provenance results,
++and are not treated as passing performance evidence.
++
++| Task | CUDA and Triton gates | Benchmark/graph diagnostics |
++|---|---|---|
++| lora_shrink_bgmv | passed, authored 1.0 | failed during replay |
++| lora_expand_bgmv | passed, authored 1.0 | failed during replay |
++| lora_segment_metadata | passed, authored 1.0 | passed |
++| lora_shrink_sgmv | passed, authored 1.0 | passed |
++| lora_expand_sgmv | passed, authored 1.0 | failed during replay |
++| lora_fused_sgmv | passed, authored 1.0 | failed during replay |
++
++## Scope and reproduction
++
++Only the frozen FP16 smoke cases were exercised: rank 8, one slot, one slice;
++BGMV uses one token and SGMV uses 512. This does not validate bf16, mixed ranks,
++skipped-token behavior, largest cases or general memory safety. Do not promote
++these results to full acceptance.
++
++`../stage6-smoke-20261110T105217Z-launch/execution-request.json` records the exact
++command, frozen source and authorization. `source/task-source-manifest.json`
++pins the uploaded source; `runtime.stdout.log` and `nvidia-smi.stdout.log` record
++the device/software. Raw case logs and numerical reports are under `suite/`.
++Launcher logs preserve Modal GPU XID 31/43 warnings. Failed benchmark timing is
++unavailable, not zero-filled. `review.json` records the independent review and
++source hash comparison after download.
++
++## Graph failure investigation
++
++The replay failures affect both candidate backends. Source review found that
++`utils/benchmark.py::_capture_graph` creates static input clones locally and
++returns the graph without retaining those tensor references. Their storage can
++be released/reused before later timed replays. This is a plausible lifetime
++bug, **not an isolated GPU root-cause finding**: the captured traceback does not
++identify which implementation's graph first failed. Retain the raw failing
++snapshot; investigate buffer lifetimes and reproduce before claiming a fix.
++No scorer, tolerance, kernel, or frozen source was modified during this run.
++
++
++## Repair audit (2026-11-10; local evidence only)
++
++More precise phase wording: the **benchmark stage crashed during timed rounds**.
++All eight saved tracebacks point to frozen `utils/benchmark.py:160`, the call
++`_time_calls(graph.replay, args.iters_per_round)`; the raised synchronization
++is at line 68. Thus the traces do identify the timed graph-replay call, but
++not whether eager, compile or generated was the graph being replayed.
++The ATen indexing assert identifies where a bad index was consumed, not what
++corrupted it. No standalone repeated CPU forward mutated its inputs in the
++new probes. The archived capture helper demonstrably releases static buffers
++after return; an owning handle fixes that CPU lifetime repro. Actual GPU
++causality and resolution remain unverified until a rerun. Raw suite rows,
++timings, downloaded source and historical review.json are unchanged. The
++old run used per-element tolerances, not the newly approved Stage 6 gate.
+--- a/scripts/task_readme.py
++++ b/scripts/task_readme.py
+@@ -242,6 +242,9 @@
+                 "|---|---|---|---:|---:|---:|---:|---:|\n" + "\n".join(ceilings))
+         if limitations:
+             measured += "\n\nCaptured measurement limits:\n" + "\n".join(f"- {item}" for item in limitations)
++    verification_note = '- Verification uses five fresh random inputs; floating outputs keep atol=rtol=1e-2.\n  The progressive suite requires exact equality for integer outputs, including\n  token IDs and prefix sums. `utils.task_verification` exposes the same strict\n  check directly; stock `utils.verification` and AXPBY defaults stay unchanged.'
++    if task.stage == 6:
++        verification_note = '- Verification uses five fresh random inputs and exact integer equality for\n  every metadata output. This task has no floating relative gate. Stock and\n  Stages 0–5 keep their existing checks.' if task.name == "lora_segment_metadata" else '- Verification uses five fresh random inputs with the approved Stage 6 bound:\n  max absolute error <= 0.005 * checked max reference for fp16 activations,\n  or 0.01 for bf16, including fp32 shrink buffers. Skipped y rows are bit-exact\n  and excluded from the reductions; zero reference is exact and non-finites\n  fail. `utils.lora_verification` replaces the old float check for these tasks.\n  Integers stay exact. Stock and Stages 0–5 keep their existing checks.'
+     return f"""# `{task.name}`
+ 
+ ## Operator contract
+@@ -279,10 +282,7 @@
+   intentional Torch reference-compute attack; it must verify then fail provenance.
+ - `model_new_wrong.py` intentionally returns NaNs or invalid integer sentinels;
+   it must fail verification, not merely compilation.
+-- Verification uses five fresh random inputs; floating outputs keep atol=rtol=1e-2.
+-  The progressive suite requires exact equality for integer outputs, including
+-  token IDs and prefix sums. `utils.task_verification` exposes the same strict
+-  check directly; stock `utils.verification` and AXPBY defaults stay unchanged.
++{verification_note}
+ - The suite alone applies authored-only provenance: at least 90% of non-memory
+   device time, no library-kernel time, and 100% authored for gemm_tensor_core.
+   Stock AXPBY attribution/reward rules are unchanged.

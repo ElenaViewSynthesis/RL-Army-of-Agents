@@ -1,0 +1,80 @@
+Verified frozen source: 265 files
+Note that running a local entrypoint in detached mode only keeps the last triggered Modal function alive after the parent process has been killed or disconnected.
+✓ Initialized. View run at 
+https://modal.com/apps/elenamylocuda/main/ap-ieQ20mtO7rqMdU6rfj9gER
+✓ Created objects.
+├── ✓ Uploaded 
+│   /mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifact
+│   s/runs/multi-lora-local-20261110T105217Z/source-final/cloud/modal_tasks.py
+├── ✓ Uploaded 
+│   /mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifact
+│   s/runs/multi-lora-local-20261110T105217Z/source-final/artifacts/upstream.jso
+│   n
+├── ✓ Uploaded 
+│   /mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifact
+│   s/runs/multi-lora-local-20261110T105217Z/source-final
+└── ✓ Created Function evaluate.
+{"run_id": "stage6-smoke-20261110T105217Z", "function_call_id": "fc-01M72WFNZBRTZMQ9EQ6GC30JHH", "volume": "agenticrl-cuda-artifacts", "remote": "/artifacts/stage6-smoke-20261110T105217Z"}
+{"function_call_id": "fc-01M72WFNZBRTZMQ9EQ6GC30JHH"}
+[gpu-health] [WARN] GPU-db3c235c-a227-8f2d-7397-35d960f26a6f: XID: NVRM: Xid (PCI:0000:5a:00): 31, pid=2613356, name=gvisor_sentry, channel 0x00000002, intr 00000000. MMU Fault: ENGINE GRAPHICS GPC7 GPCCLIENT_T1_0 faulted @ 0x2b2a_1be56000. Fault is of type FAULT_PDE ACCESS_TYPE_VIRT_READ
+
+{"completed": 1, "last_task": "lora_shrink_bgmv", "last_status": "passed"}
+{"completed": 2, "last_task": "lora_shrink_bgmv", "last_status": "passed"}
+{"completed": 3, "last_task": "lora_shrink_bgmv", "last_status": "passed"}
+{"completed": 5, "last_task": "lora_shrink_bgmv", "last_status": "unavailable"}
+[gpu-health] [WARN] GPU-db3c235c-a227-8f2d-7397-35d960f26a6f: XID: NVRM: Xid (PCI:0000:5a:00): 31, pid=2613356, name=gvisor_sentry, channel 0x00000002, intr 00000000. MMU Fault: ENGINE GRAPHICS GPC7 GPCCLIENT_T1_0 faulted @ 0x2ba3_f1e56000. Fault is of type FAULT_PDE ACCESS_TYPE_VIRT_READ
+
+{"completed": 5, "last_task": "lora_shrink_bgmv", "last_status": "unavailable"}
+{"completed": 10, "last_task": "lora_shrink_bgmv", "last_status": "unavailable"}
+{"completed": 10, "last_task": "lora_shrink_bgmv", "last_status": "unavailable"}
+[gpu-health] [WARN] GPU-db3c235c-a227-8f2d-7397-35d960f26a6f: XID: NVRM: Xid (PCI:0000:5a:00): 43, pid=2613356, name=gvisor_sentry, channel 0x00000002
+
+{"completed": 11, "last_task": "lora_expand_bgmv", "last_status": "passed"}
+{"completed": 11, "last_task": "lora_expand_bgmv", "last_status": "passed"}
+{"completed": 12, "last_task": "lora_expand_bgmv", "last_status": "passed"}
+{"completed": 13, "last_task": "lora_expand_bgmv", "last_status": "passed"}
+{"completed": 15, "last_task": "lora_expand_bgmv", "last_status": "unavailable"}
+[gpu-health] [WARN] GPU-db3c235c-a227-8f2d-7397-35d960f26a6f: XID: NVRM: Xid (PCI:0000:5a:00): 43, pid=2613356, name=gvisor_sentry, channel 0x00000002
+
+{"completed": 17, "last_task": "lora_expand_bgmv", "last_status": "passed"}
+{"completed": 20, "last_task": "lora_expand_bgmv", "last_status": "unavailable"}
+{"completed": 20, "last_task": "lora_expand_bgmv", "last_status": "unavailable"}
+{"completed": 21, "last_task": "lora_segment_metadata", "last_status": "passed"}
+{"completed": 22, "last_task": "lora_segment_metadata", "last_status": "passed"}
+{"completed": 23, "last_task": "lora_segment_metadata", "last_status": "passed"}
+{"completed": 25, "last_task": "lora_segment_metadata", "last_status": "passed"}
+{"completed": 26, "last_task": "lora_segment_metadata", "last_status": "passed"}
+{"completed": 27, "last_task": "lora_shrink_sgmv", "last_status": "passed"}
+{"completed": 27, "last_task": "lora_shrink_sgmv", "last_status": "passed"}
+{"completed": 28, "last_task": "lora_shrink_sgmv", "last_status": "passed"}
+{"completed": 29, "last_task": "lora_shrink_sgmv", "last_status": "passed"}
+{"completed": 31, "last_task": "lora_shrink_sgmv", "last_status": "unavailable"}
+{"completed": 32, "last_task": "lora_shrink_sgmv", "last_status": "passed"}
+{"completed": 36, "last_task": "lora_shrink_sgmv", "last_status": "unavailable"}
+{"completed": 36, "last_task": "lora_shrink_sgmv", "last_status": "unavailable"}
+[gpu-health] [WARN] GPU-db3c235c-a227-8f2d-7397-35d960f26a6f: XID: NVRM: Xid (PCI:0000:5a:00): 43, pid=2613356, name=gvisor_sentry, channel 0x00000002
+
+{"completed": 37, "last_task": "lora_expand_sgmv", "last_status": "passed"}
+{"completed": 37, "last_task": "lora_expand_sgmv", "last_status": "passed"}
+{"completed": 38, "last_task": "lora_expand_sgmv", "last_status": "passed"}
+{"completed": 39, "last_task": "lora_expand_sgmv", "last_status": "passed"}
+{"completed": 41, "last_task": "lora_expand_sgmv", "last_status": "unavailable"}
+[gpu-health] [WARN] GPU-db3c235c-a227-8f2d-7397-35d960f26a6f: XID: NVRM: Xid (PCI:0000:5a:00): 43, pid=2613356, name=gvisor_sentry, channel 0x00000002
+
+{"completed": 41, "last_task": "lora_expand_sgmv", "last_status": "unavailable"}
+{"completed": 42, "last_task": "lora_expand_sgmv", "last_status": "passed"}
+{"completed": 46, "last_task": "lora_expand_sgmv", "last_status": "unavailable"}
+{"completed": 46, "last_task": "lora_expand_sgmv", "last_status": "unavailable"}
+[gpu-health] [WARN] GPU-db3c235c-a227-8f2d-7397-35d960f26a6f: XID: NVRM: Xid (PCI:0000:5a:00): 43, pid=2613356, name=gvisor_sentry, channel 0x00000002
+
+{"completed": 47, "last_task": "lora_fused_sgmv", "last_status": "passed"}
+{"completed": 47, "last_task": "lora_fused_sgmv", "last_status": "passed"}
+{"completed": 48, "last_task": "lora_fused_sgmv", "last_status": "passed"}
+{"completed": 49, "last_task": "lora_fused_sgmv", "last_status": "passed"}
+{"completed": 51, "last_task": "lora_fused_sgmv", "last_status": "unavailable"}
+[gpu-health] [WARN] GPU-db3c235c-a227-8f2d-7397-35d960f26a6f: XID: NVRM: Xid (PCI:0000:5a:00): 43, pid=2613356, name=gvisor_sentry, channel 0x00000002
+
+{"completed": 53, "last_task": "lora_fused_sgmv", "last_status": "passed"}
+{"run_id": "stage6-smoke-20261110T105217Z", "execution": {"command": "python -m scripts.validate --suite lora_shrink_bgmv,lora_expand_bgmv,lora_segment_metadata,lora_shrink_sgmv,lora_expand_sgmv,lora_fused_sgmv --device cuda --purpose eval --case-set smoke --fixtures all --timeout-s 600 --suite-out /artifacts/stage6-smoke-20261110T105217Z/suite --backends cuda,triton --benchmark --cold-start --cuda-graphs", "returncode": 0, "timed_out": false, "wall_s": 1435.068760015}, "counts": {"passed": 46, "failed": 0, "unavailable": 10}, "status": "partial", "source_mismatches": [], "scope": "selected workload cases only; no stock AXPBY acceptance or timing-cause claim"}
+✓ App completed. View run at 
+https://modal.com/apps/elenamylocuda/main/ap-ieQ20mtO7rqMdU6rfj9gER

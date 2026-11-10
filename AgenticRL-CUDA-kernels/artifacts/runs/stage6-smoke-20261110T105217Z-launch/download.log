@@ -1,0 +1,4 @@
+Usage: modal volume get [OPTIONS] VOLUME_NAME REMOTE_PATH [LOCAL_DESTINATION]
+Try 'modal volume get --help' for help.
+
+Error: Output path 'artifacts/runs/stage6-smoke-20261110T105217Z/stage6-smoke-20261110T105217Z/suite/lora_segment_metadata/tokens1_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16/triton/hack' already exists. Use --force to overwrite the output directory

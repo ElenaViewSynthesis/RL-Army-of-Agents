@@ -1,0 +1,14 @@
+test_boundary_and_over_boundary_replaces_old_assert_close (tests.test_lora_gate.GateMath.test_boundary_and_over_boundary_replaces_old_assert_close) ... ok
+test_case_json_retains_gate_failure_without_using_report_for_rewards (tests.test_lora_gate.GateMath.test_case_json_retains_gate_failure_without_using_report_for_rewards) ... ok
+test_integer_metadata_and_structure_stay_exact (tests.test_lora_gate.GateMath.test_integer_metadata_and_structure_stay_exact) ... ok
+test_mixed_ranks_and_controls (tests.test_lora_gate.GateMath.test_mixed_ranks_and_controls) ... ok
+test_nonfinite_padding_and_zero_reference (tests.test_lora_gate.GateMath.test_nonfinite_padding_and_zero_reference) ... ok
+test_skips_one_ulp_small_large_and_signed_zero_are_bit_exact (tests.test_lora_gate.GateMath.test_skips_one_ulp_small_large_and_signed_zero_are_bit_exact) ... ok
+test_actual_rollout_selects_only_opted_in_verifier (tests.test_lora_gate.GateRouting.test_actual_rollout_selects_only_opted_in_verifier) ... ok
+test_defaults_cli_and_torch_free (tests.test_lora_gate.GateRouting.test_defaults_cli_and_torch_free) ... ok
+test_suite_enables_gate_only_for_stage6_arithmetic (tests.test_lora_gate.GateRouting.test_suite_enables_gate_only_for_stage6_arithmetic) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 13.771s
+
+OK
