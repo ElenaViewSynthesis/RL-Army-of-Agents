@@ -57,6 +57,28 @@ Upstream verification blocks `torch.nn.functional.*`, but nothing stops `model_n
 
 This environment closes that gap by reading the `torch.profiler` CUDA events it already collects and attributing each kernel to its source. The test suite includes the `reward-hack-torchop` fixture (`reward-hack-torchop-<backend>` for backend-specific variants): it passes correctness and must fail provenance. Historical artifacts retain their recorded `hack` / `hack-<backend>` case labels.
 
+## Configuration: GRPO, DAPO and CISPO
+
+`RolloutConfig` (`utils/config.py`) is pure Python and never imports Torch. Every field is a `--kebab-case` flag, and presets are applied *before* overrides, so `--algo dapo --clip-high 0.3` changes one knob only. `utils.config.ALGOS` lists the presets.
+
+| Toggle | GRPO preset | DAPO preset | CISPO preset | Owned by |
+|---|---|---|---|---|
+| Clip range (`clip_low` / `clip_high`) | 0.2 / 0.2 | 0.2 / 0.28 | 1.0 / 4.0 (IS weight in [0, 5]) | trainer |
+| Loss aggregation (`loss_agg`) | `seq` | `token` | `token` | trainer |
+| Tied-group filtering (`filter_tied_groups`) | keep (zero advantage) | drop | drop | **environment** |
+| Overlong shaping (`overlong_buffer_turns`) | 0 (hard cutoff) | 4 (linear penalty) | 4 (linear penalty) | **environment** |
+| `kl_coef` | 0.001 | 0.0 | 0.0 | trainer |
+
+**CISPO** ([MiniMax-M1](https://arxiv.org/abs/2506.13585)) keeps GRPO's group-relative advantages but swaps PPO's clipped surrogate for `sg(clip(r, 1 - clip_low, 1 + clip_high)) · Â · log π`, token-averaged — every token keeps a gradient. The preset sets `clip_low=1.0` (no lower bound, as in the paper; CISPO only — GRPO/DAPO keep `clip_low < 1`) and `clip_high=4.0` (IS weight ≤ 5, from ms-swift's [CISPO example](https://swift.readthedocs.io/en/v4.4/Instruction/GRPO/AdvancedResearch/CISPO.html) citing [ScaleRL](https://arxiv.org/abs/2510.13786); the paper gives no value), plus DAPO's tied-group filtering and overlong penalty, no KL. The environment supplies advantages, filtering and shaping; the trainer applies the loss and the IS clip. Decision record: [Architecture-decision/0001-cispo-preset.md](Architecture-decision/0001-cispo-preset.md).
+
+Other defaults: `provenance_threshold=0.90`, `speedup_margin=0.05`, `max_turns=20`, `max_context_tokens=32768`, `timeout_s=180`, `group_size=8`.
+
+> For a controlled comparison that differs only in the preset toggles, hold `--kl-coef`, seeds and budgets equal across runs.
+
+**Phase 2: Modal rollouts.** Call `utils.rollout_env.run_task(workdir, cfg, turns_used)` with `RolloutConfig.from_args(...)`. Recommended first-run flags: `--max-turns 20 --max-context-tokens 32768 --timeout-s 180 --group-size 8`. The agent loop enforces turns and context. The environment also checks the turn count and enforces the shared wall-clock deadline. CPU runs, or runs without GPU measurements, return null fields and reason `unmeasured`, never a positive reward.
+
+**Phase 3: tracking.** The W&B namespaces are `env/`, `reward/`, `adv/`, `turns/` and `meta/`; drop `log/*` and `artifact/*` before logging. `RolloutConfig.to_dict()` is the MLflow parameter set. No tracking library is imported here.
+
 ## How a rollout is scored
 
 ```mermaid
@@ -596,30 +618,6 @@ python -m scripts.validate --device cuda
 ```
 
 The GPU tests require honest CUDA and Triton to pass correctness *and* provenance, and the Torch-op hack to pass correctness but fail provenance and rank last under every preset.
-
----
-
-## Configuration: GRPO, DAPO and CISPO
-
-`RolloutConfig` (`utils/config.py`) is pure Python and never imports Torch. Every field is a `--kebab-case` flag, and presets are applied *before* overrides, so `--algo dapo --clip-high 0.3` changes one knob only. `utils.config.ALGOS` lists the presets.
-
-| Toggle | GRPO preset | DAPO preset | CISPO preset | Owned by |
-|---|---|---|---|---|
-| Clip range (`clip_low` / `clip_high`) | 0.2 / 0.2 | 0.2 / 0.28 | 1.0 / 4.0 (IS weight in [0, 5]) | trainer |
-| Loss aggregation (`loss_agg`) | `seq` | `token` | `token` | trainer |
-| Tied-group filtering (`filter_tied_groups`) | keep (zero advantage) | drop | drop | **environment** |
-| Overlong shaping (`overlong_buffer_turns`) | 0 (hard cutoff) | 4 (linear penalty) | 4 (linear penalty) | **environment** |
-| `kl_coef` | 0.001 | 0.0 | 0.0 | trainer |
-
-**CISPO** ([MiniMax-M1](https://arxiv.org/abs/2506.13585)) keeps GRPO's group-relative advantages but swaps PPO's clipped surrogate for `sg(clip(r, 1 - clip_low, 1 + clip_high)) · Â · log π`, token-averaged — every token keeps a gradient. The preset sets `clip_low=1.0` (no lower bound, as in the paper; CISPO only — GRPO/DAPO keep `clip_low < 1`) and `clip_high=4.0` (IS weight ≤ 5, from ms-swift's [CISPO example](https://swift.readthedocs.io/en/v4.4/Instruction/GRPO/AdvancedResearch/CISPO.html) citing [ScaleRL](https://arxiv.org/abs/2510.13786); the paper gives no value), plus DAPO's tied-group filtering and overlong penalty, no KL. The environment supplies advantages, filtering and shaping; the trainer applies the loss and the IS clip. Decision record: [Architecture-decision/0001-cispo-preset.md](Architecture-decision/0001-cispo-preset.md).
-
-Other defaults: `provenance_threshold=0.90`, `speedup_margin=0.05`, `max_turns=20`, `max_context_tokens=32768`, `timeout_s=180`, `group_size=8`.
-
-> For a controlled comparison that differs only in the preset toggles, hold `--kl-coef`, seeds and budgets equal across runs.
-
-**Phase 2: Modal rollouts.** Call `utils.rollout_env.run_task(workdir, cfg, turns_used)` with `RolloutConfig.from_args(...)`. Recommended first-run flags: `--max-turns 20 --max-context-tokens 32768 --timeout-s 180 --group-size 8`. The agent loop enforces turns and context. The environment also checks the turn count and enforces the shared wall-clock deadline. CPU runs, or runs without GPU measurements, return null fields and reason `unmeasured`, never a positive reward.
-
-**Phase 3: tracking.** The W&B namespaces are `env/`, `reward/`, `adv/`, `turns/` and `meta/`; drop `log/*` and `artifact/*` before logging. `RolloutConfig.to_dict()` is the MLflow parameter set. No tracking library is imported here.
 
 ---
 
