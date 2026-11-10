@@ -2331,3 +2331,212 @@ matmuls and no reuse of loaded keys or vocabulary rows (for example, one CUDA
 block per vocabulary entry for top-k, and one thread per sequence for CUDA
 tree step). The tree-walk tasks beat eager largely because the eager
 reference launches one small kernel per tree step.
+
+## Stage 6 multi-LoRA implementation (2026-11-10; CPU evidence only)
+
+Added BGMV shrink/expand, stable device segment metadata, SGMV shrink/expand,
+and fp32-scratch fused SGMV. Interfaces and limitations are in
+`MULTI_LORA_STAGE6.md`; pinned Apache-2.0 license evidence is in
+`legal/multi_lora/sources.json`. Reference tests use an independent per-token
+oracle only in `tests/fixtures/lora_reference_loop.py`. CPU interpreter probes
+cover both dtypes, mixed ranks, skip patterns, poisoned padding, guard columns
+and segment ordering. GPU graph-replay tests are skip-marked without CUDA.
+
+No H200 run is authorized by this implementation task. No GPU metrics or
+performance claims are recorded for Stage 6. The stock protected files, reward
+semantics, attribution rules and 1e-2 tolerances are unchanged. Numeric diagnostics
+record honest/fp16 intermediate distributions and the original relative metric
+without applying it as an acceptance gate.
+
+Local evidence: `artifacts/runs/multi-lora-local-20261110T105217Z/`.
+`commands.json` records exact commands and environment versions. The full
+system-Python discovery run completed with:
+
+```text
+Ran 275 tests in 405.040s
+OK (skipped=67)
+```
+
+The discovery runs collected tests during implementation. Final focused
+post-change checks cover the current catalog, independent dyadic oracle,
+large skipped deltas, rank-64 diagnostics, malformed-diagnostic isolation and
+Modal option forwarding. Focused raw summaries:
+
+```text
+# PYTHONDONTWRITEBYTECODE=1 python3 -m unittest -v tests.test_lora_stage6.LoraContracts
+Ran 6 tests in 77.379s
+OK
+# PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 .venv/bin/python -m unittest -v tests.test_lora_stage6.LoraReferences
+Ran 6 tests in 149.608s
+OK
+```
+
+The reference test includes 60 small interpreter probes (six tasks × two
+dtypes × five assignment patterns). `rank_probe.py` and `rank-probe.json`
+retain 20 additional synthetic interpreter probes at ranks 64/256 for the
+five arithmetic tasks and both dtypes, with honest/half-intermediate error
+distributions. Every one passed the unchanged atol/rtol 1e-2. Metadata is
+integer exact. The dyadic independent oracle is bitwise equal; random
+floating reductions are checked at the existing tolerance, not asserted
+bitwise identical across reduction orders.
+
+| Task | Small CPU pattern probes | Rank 64/256 CPU probes | GPU status |
+|---|---:|---:|---|
+| lora_shrink_bgmv | 10 pass | 4 pass | unverified |
+| lora_expand_bgmv | 10 pass | 4 pass | unverified |
+| lora_segment_metadata | 10 exact pass | not arithmetic | unverified |
+| lora_shrink_sgmv | 10 pass | 4 pass | unverified |
+| lora_expand_sgmv | 10 pass | 4 pass | unverified |
+| lora_fused_sgmv | 10 pass | 4 pass | unverified |
+
+`PYTHONDONTWRITEBYTECODE=1 TRITON_INTERPRET=0
+TRITON_CACHE_DIR=/tmp/lora-stage6/triton-cache .venv/bin/python -m
+scripts.compile_lora_offline --output /tmp/lora-stage6/offline-compile-final.json`
+compiled 28 configurations across sm_75/sm_90 and fp16/bf16, including
+largest-case segment GEMMs and device metadata. This is compilation, never
+hardware execution. `offline-compile-final.json` records each configuration.
+
+`python3 -m scripts.validate --suite stage6 --device cpu --fixtures all
+--suite-out /tmp/lora-stage6/cpu-suite-final-catalog` recorded 0 passed,
+0 failed, 56 unavailable. CPU runs never produce GPU suite acceptance;
+cases lacking a skipped row report that negative control as not applicable.
+CUDA graph replay, CUDA builds, real provenance, cold/warm device timings and
+catalog-grid GPU correctness are not covered by these CPU results. CUDA's
+segment kernels are correctness-first; no throughput claim is made.
+
+The installed-runtime discovery command in `commands.json` finished with:
+
+```text
+Ran 281 tests in 1670.219s
+OK (skipped=29)
+```
+
+System Python skips missing Torch/runtime paths (67 skips); the installed
+runtime skips CUDA/GPU and unavailable optional capabilities (29 skips).
+Each raw log retains the exact skip reasons. The installed discovery logged nine Stage 6 methods; the focused runs cover
+subsequent additions. One additional focused precision check passed:
+`PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m unittest -v
+tests.test_lora_stage6.LoraReferences.test_reference_disables_reduced_precision_matmul`
+(`Ran 1 test in 0.079s`, `OK`). Reference construction explicitly selects
+highest fp32 matmul precision, matching the existing GEMM references.
+
+Late source review replaced CUDA's Torch half template types with native
+`__half`/`__nv_bfloat16` and explicit conversion intrinsics. Otherwise `c10::`
+in a device symbol would correctly be rejected by the unchanged conservative
+classifier. `native-symbols.log` contains synthetic signature-policy checks,
+not captured device names; these final CUDA sources remain uncompiled here.
+`input-contract.log` also confirms fp32 scales even with a float64 caller
+default. The final public source snapshot is retained under the evidence
+bundle's `source-final/`, with a hash manifest. No Modal request has been executed;
+`h200-smoke-request.json` is prepared for explicit approval only.
+
+Scoped whitespace validation (`git diff --check` with the eleven modified
+integration/documentation paths) passed. An earlier repository-wide check
+reported CRLF whitespace in pre-existing, untouched files; those were preserved.
+Six protected upstream file hashes still match `artifacts/upstream.json`.
+No commit was created.
+
+
+## Stage 6 H200 smoke: stage6-smoke-20261110T105217Z (2026-11-10)
+
+The explicitly approved prepared request ran on Modal and completed in
+1435.068760015 seconds (remote suite wall time), exit 0. Evidence:
+`artifacts/runs/stage6-smoke-20261110T105217Z/REVIEW.md` and raw `suite/suite.json`.
+Launcher command and durable function-call ID are under the sibling `-launch/`
+directory. Uploaded source is retained with its manifest in the run's `source/`.
+
+Core outcome: **46 passed, 0 failed, 10 unavailable**. All twelve honest CUDA
+and Triton cells verified and measured authored provenance **1.0**. The ten
+unavailable cells are wrong-skip controls with all-active inputs. Metadata and
+SGMV shrink passed benchmark/graph capture/replay on both backends. Eight
+other honest benchmark stages failed during timed graph replay with illegal
+memory access/device asserts; Modal also logged XID 31/43. Thus this is not
+complete graph/performance acceptance. Correctness/provenance counts do not
+silently imply successful diagnostics. Failed timings remain unavailable.
+
+Only FP16, rank-8, one-slot, one-slice smoke cases were run. BGMV T=1 and SGMV
+T=512 do not establish bf16, mixed ranks, skipped-row or largest-case coverage.
+No acceptance/stratified run was launched, and no commit was created. Source
+review suggests a possible graph static-input lifetime defect; see REVIEW.md.
+This is not a confirmed root-cause or a validated fix.
+
+
+Full evidence download retained 3,127 files (98,283,984 bytes). Every transfer
+size was checked; all 265 frozen-source hashes and the prepared/source manifest
+match, with zero remote or local source mismatches. Runtime: NVIDIA H200,
+compute capability 9.0, UUID `GPU-db3c235c-a227-8f2d-7397-35d960f26a6f`, driver
+610.57.04, Python 3.12.1, Torch 2.14.1+cu130, Triton 3.8.0, nvcc 13.3.
+The Modal recursive CLI download encountered a directory collision; a file-only
+SDK download retained the full run without altering remote artifacts. Download
+inventory and scripts are in the sibling `-launch/` directory. `review.json`
+explicitly records `complete_validation_ok: false` for the graph benchmark gaps.
+
+
+## Stage 6 relative gate and benchmark repair (2026-11-10; CPU-only)
+
+Both linked handoffs are implemented locally. `relative_error_bounds` is off
+by default and forced only for Stage 6 arithmetic. Its verifier replaces the
+old per-element float check with the approved activation-dependent relative
+bound, exact skipped y rows, exact zero-reference handling, non-finite rejection
+and exact integers. All six ADR config row types and the CLI are present.
+Case JSON includes verification bounds and decisions. Diagnostic fp16 storage
+is still not an expected-failure gate; its hypothetical decision is recorded.
+Stock and Stage 0–5 verification, task forward signatures and input immutability
+semantics are unchanged. This implements the already approved Stage 6 criterion;
+it does not change speed rewards or provenance rules.
+
+The confirmed CPU ownership repro fails on the archived helper: cloned static
+inputs and the captured output are collected after `_capture_graph` returns.
+An owning `CapturedGraph` handle preserves them for all timed replays. No shared
+reference/Triton forward mutated its inputs in 2,640 repeated calls (66 small
+scenarios × 40), and returned outputs stayed bit-identical. This does not rule
+out native CUDA or CUDA-compiled reference defects. Actual H200 root cause and
+repair effectiveness remain unverified; no GPU run is launched here.
+
+All eight old tracebacks were audited against the downloaded frozen helper:
+`run_benchmark:160` calls `_time_calls(graph.replay,...)`; the failure surfaces
+at its final synchronization (line 68). Thus the precise wording is: benchmark
+stage crashed during timed rounds while replaying a captured graph. The
+traceback does not name which implementation's graph was active. Missing graph
+fields reflect lost benchmark-stage output, not proof of a pre-capture failure.
+The derived smoke REVIEW.md contains this clarification; raw smoke results,
+source snapshots and legacy correctness/provenance measurements are unchanged.
+
+Local evidence: `artifacts/runs/multi-lora-local-20261110T203438Z/`. `commands.json` records exact invocations.
+The 11 focused gate/lifetime regressions passed (`Ran 11 tests in 61.538s`, `OK`).
+The self-contained archived-helper repro passed (`Ran 2 tests in 0.017s`, `OK`).
+The permanent repeated-call test passed (`Ran 1 test in 106.199s`, `OK`).
+The verifier subprocess exited 0 for honest and 1 for both wrong-padding and
+wrong-skip controls. All 32 rank-64/256 and mixed-rank supplemental interpreter
+probes met the approved bound; the largest observed fraction of bound was
+0.5649717514124294. No tested honest case required relaxation. GPU or larger
+catalog cases remain at risk until reviewed hardware evidence exists.
+
+The system discovery run completed:
+
+```text
+Ran 299 tests in 399.525s
+OK (skipped=77)
+```
+
+The installed-runtime discovery run also completed:
+
+```text
+Ran 305 tests in 1866.756s
+
+OK (skipped=29)
+```
+
+The final 60-case Stage 6 interpreter sweep passed under the new gate.
+The runtime discovery run also repeated all 66 immutable-input scenarios
+(2,640 forwards). Skips cover unavailable GPU/backend packages and
+optional integrations; these are not GPU acceptance. Existing SQLite
+ResourceWarnings are retained in the raw logs.
+
+Discovery overlapped the repair work. Final config positional
+compatibility and the portable archived-helper fixture were
+checked separately afterward (`final-routing.log`: 5 tests, OK;
+`self-contained-repro.log`: 2 tests, OK).
+
+No commit or Modal launch was performed. Claude reviews the frozen
+source and prepared request and launches only after user approval.

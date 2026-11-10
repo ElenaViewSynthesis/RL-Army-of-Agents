@@ -108,7 +108,7 @@ Under the DAPO and CISPO presets, a rollout that finishes inside the last `overl
 
 ### Kernel tasks the agent works on
 
-Beyond the stock 1 × 128 `axpby` fixture, `tasks/` holds a progressive curriculum of 29 workloads. Each task folder has a trusted `model.py` reference, which takes its shapes and dtypes from `utils/task_catalog.py` so a candidate workdir cannot redefine them. Every task also has two negative controls: a Torch-op hack and a wrong-output fixture. Tasks with a reference solution add CUDA and/or Triton kernels. The agent's job on every task is the same: write a `model_new.py` whose authored kernels match the reference and beat eager and `torch.compile`.
+Beyond the stock 1 × 128 `axpby` fixture, `tasks/` holds a progressive curriculum of 35 workloads. Each task folder has a trusted `model.py` reference, which takes its shapes and dtypes from `utils/task_catalog.py` so a candidate workdir cannot redefine them. Every task also has two negative controls: a Torch-op hack and a wrong-output fixture. Tasks with a reference solution add CUDA and/or Triton kernels. The agent's job on every task is the same: write a `model_new.py` whose authored kernels match the reference and beat eager and `torch.compile`.
 
 #### Headline kernels (stages 4–5)
 
@@ -154,7 +154,7 @@ All 71 suite rows passed in run `task-stage5-gpu-acceptance-20261110T002043Z`; d
 | 3 | Packed-reduction kernels against the repository-authored RL contracts: GRPO group normalization, CISPO weight clipping, packed variable-length reduction | pass |
 | 4 | Attention, grouped GEMM, sampling, residual RMSNorm, decode attention and Dense-MoE; INT8/FP8 as contracts only | pass (grouped GEMM is Triton-only by design) |
 | 5 | EAGLE-4 speculative decoding: nine evaluation-only tree workloads, including 32k-context tree row and verify attention, candidate top-k over a 151,936 vocabulary, sampled acceptance, Mamba2 conv, and GDN walk plus chain replay | pass: smoke 71/71 and largest cases 71/71, CUDA and Triton, all fixtures |
-| 6 (planned) | Multi-LoRA serving kernels as engine-free tasks: BGMV and SGMV shrink/expand, segment metadata, fused SGMV | not started; brief in [MULTI_LORA_kernels_task.md](MULTI_LORA_kernels_task.md) |
+| 6 | Multi-LoRA serving: six tasks, including fused SGMV, with Triton and CUDA kernels: BGMV and SGMV shrink/expand, stable segment metadata, and fp32-scratch fused SGMV | H200 fp16 smoke: correctness and provenance pass; eight benchmark stages crashed. [Review](artifacts/runs/stage6-smoke-20261110T105217Z/REVIEW.md). [Contracts](MULTI_LORA_STAGE6.md) |
 
 | Stage | Task | Reference solution | H200 result (honest scores, hack fails provenance, wrong fails verification) |
 |---|---|---|---|
@@ -187,6 +187,12 @@ All 71 suite rows passed in run `task-stage5-gpu-acceptance-20261110T002043Z`; d
 | 5 | `eagle_gdn_tree_recurrence`‡ | Triton, CUDA; alternate Triton chain replay | pass (smoke; largest 32 × 64 nodes × 4 heads × 128²), including chain replay |
 | 5 | `eagle_accept_tail`‡ | Triton, CUDA | pass (smoke; largest 32 × 64 nodes) |
 | 5 | `eagle_accept_tail_sampled`‡ | Triton, CUDA | pass (smoke; largest 32 × 64 nodes × 151,936 vocabulary) |
+| 6 | `lora_shrink_bgmv` | Triton split-K, CUDA | H200 fp16 smoke: gates pass; graph replay crashed (harness bug, fixed; rerun pending) |
+| 6 | `lora_expand_bgmv` | Triton tiled, CUDA | H200 fp16 smoke: gates pass; graph replay crashed (harness bug, fixed; rerun pending) |
+| 6 | `lora_segment_metadata` | Triton counts/scan/scatter, CUDA | H200 fp16 smoke: gates pass; graph replay pass |
+| 6 | `lora_shrink_sgmv` | Triton segment GEMM, CUDA | H200 fp16 smoke: gates pass; graph replay pass |
+| 6 | `lora_expand_sgmv` | Triton segment GEMM, CUDA | H200 fp16 smoke: gates pass; graph replay crashed (harness bug, fixed; rerun pending) |
+| 6 | `lora_fused_sgmv` | Triton and CUDA, fp32 scratch | H200 fp16 smoke: gates pass; graph replay crashed (harness bug, fixed; rerun pending) |
 
 \* Evaluation-only: adapted from GPU MODE reference kernels, whose license does not clear training use (`--purpose train` is refused).
 † Contract only by design: the INT8/FP8 workloads are specified (inputs, reference, checks), but Stage 4 deliberately enables no backend for them; their `ModelNew` raises `unavailable`.
@@ -198,6 +204,8 @@ Runs: `task-stage1-20261109T004826Z` (stages 0–1, 24/24), `task-stage23-202611
 - **No verified solution yet:** the task still defines its inputs, PyTorch reference and checks, and an agent can attempt it, but its suite rows cannot be trusted as `passed` until a GPU run confirms the reference solution.
 
 Tasks run through `python -m scripts.validate --suite <names|stageN|all> --device cuda` (or `cloud/modal_tasks.py` on Modal). They use two task-only gates, both approved on 2026-11-09: the provenance gate `authored-only-no-library-v1` (any library kernel time is a violation, the authored share must be at least 90%, memory time is excluded, and `gemm_tensor_core` requires 100% authored), and exact comparison for integer outputs (`RolloutConfig.exact_integer_outputs`, via `utils/task_verification.py`; floating-point tolerances are unchanged). Both are off for the stock rollout, whose reward is unchanged.
+
+Stage 6 results above are from the fp16 smoke run `stage6-smoke-20261110T105217Z` only ([review](artifacts/runs/stage6-smoke-20261110T105217Z/REVIEW.md)): every honest kernel verified with authored provenance 1.0, and every hack and wrong control was caught, but 8 of 12 honest benchmark stages crashed during timed CUDA-graph replay (illegal memory access, or a PyTorch index-out-of-bounds assert). The cause found locally is in the shared benchmark harness: a captured graph did not keep its static input and output buffers alive, so replay touched freed memory. That is fixed (`CapturedGraph`, with a regression test), and 2,640 repeated forwards showed no input mutation; the fix still needs a GPU rerun. See [MULTI_LORA_STAGE6.md](MULTI_LORA_STAGE6.md) for interfaces, deterministic stratification, poisoned padding, negative controls, error distributions and reproduction.
 
 ---
 
@@ -684,3 +692,12 @@ honest fixtures retained 100% provenance; all five launched dummy `kernel`
 plus Torch-op fixtures verified but received 0% provenance and reward -1.
 The fresh environment artifact packaging was also verified remotely.
 See VALIDATION.md for raw artifacts and remaining attribution limits.
+
+
+Stage 6 correction pending GPU review: the approved activation-dependent global
+relative bound now gates arithmetic verification (fp16 0.005, bf16 0.01). Skipped
+y rows are exact and excluded from the bound. Stock/Stages 0–5 are unchanged.
+The replay helper retains static buffers for the capture lifetime. Local
+regression evidence and remaining GPU limits are recorded in VALIDATION.md.
+The earlier H200 smoke used the old floating check; it does not validate this
+new gate or replay repair. No rerun is launched as part of the repair.

@@ -332,3 +332,49 @@
   case selection remain necessary for the next approved GPU run. Raw evidence
   and final suite summaries are in VALIDATION.md. No state-equality tolerance,
   reward or RolloutConfig change was needed.
+
+- **Stage 6 multi-LoRA: initial local validation scope.** Six standalone tasks have
+  vectorized trusted references, Triton and conservative CUDA candidates,
+  stable segment metadata, mixed-rank NaN padding, skip sentinels and negative
+  controls. CPU reference/interpreter checks pass, as do 28 offline Triton
+  compiler configurations for sm_75/sm_90; see `MULTI_LORA_STAGE6.md`.
+  Those initial checks did not validate GPU, nvcc, device provenance, graph
+  replay, H200 timings or sm_75 runtime behavior. The later smoke and repair
+  limits are recorded below. CUDA segment kernels are
+  correctness-first and do not yet share weight tiles. The fused task uses
+  fp32 scratch. Rank 512/8192-token extensions remain stretch work. Full-rank
+  cases cannot exercise padding-read controls; all-active cases cannot
+  exercise skipped-write controls. Their cells report unavailable. Metadata
+  has no weight-padding/half-intermediate/y-skip control. The initial build
+  treated both relative bounds and fp16-intermediate as diagnostics. The
+  approved gate correction below supersedes that treatment for relative
+  bounds; fp16-intermediate remains diagnostic. No Modal run was launched
+  during that initial local implementation.
+
+
+- **Stage 6 H200 graph benchmarking remains open.** Approved smoke run
+  `stage6-smoke-20261110T105217Z` passed all 46 applicable correctness/provenance
+  outcomes (10 no-skip controls unavailable); all 12 honest cells have authored
+  provenance 1.0. However, eight honest benchmark stages faulted during graph
+  replay (illegal memory access/device assertions; Modal XID 31/43). Metadata
+  and SGMV shrink benchmarks/replays passed on both backends. The benchmark
+  helper does not retain its locally cloned static inputs with the returned
+  graph; this is a plausible lifetime issue, not an isolated GPU diagnosis.
+  Do not promote this run to full graph/performance acceptance. Frozen source,
+  raw failures and review: `artifacts/runs/stage6-smoke-20261110T105217Z/`.
+  bf16, mixed-rank/skipped-row and acceptance-grid validation remain pending.
+
+
+- **Stage 6 gate/replay repair implemented locally; GPU rerun pending review.**
+  The earlier diagnostic-only tolerance language is superseded for current
+  code: the approved relative bound now gates Stage 6 arithmetic verification.
+  Skipped y bytes are exact/excluded, zeros exact and non-finites rejected.
+  The fp16 intermediate remains diagnostic. CapturedGraph now owns static
+  buffers; a failing archived-helper CPU repro and 2,640 mutation-free CPU
+  forwards are recorded in VALIDATION.md. The lifetime defect is confirmed
+  locally, but actual H200 causality/resolution and the new gate on GPU remain
+  unverified. The old smoke used the legacy float check. All eight crashes
+  occurred in benchmark timed rounds at the graph replay timing call; the
+  offending implementation is not identified by those traces. No Modal run
+  or commit is made by this repair. See the new local evidence bundle and
+  both HANDOFF_CODEX_STAGE6_GATE.md / HANDOFF_CODEX_STAGE6_REPLAY_CRASHES.md.

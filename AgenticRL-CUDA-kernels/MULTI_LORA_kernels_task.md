@@ -65,7 +65,7 @@ of every shrink/expand task, not separate tasks.
   output and fails verification. Do not change this.
 - **idx = -1 tokens** get zero work and zero writes. The trusted inputs give
   those rows of y_in large sentinel values and make the LoRA delta large, so
-  any write to them fails the standard tolerance.
+  any byte change to them fails the exact skipped-row verification gate.
 - Adapters with a dtype different from the model's are cast once, by the
   trusted input builder, never inside the kernel.
 - No host syncs (`.item()`, `.tolist()`, `.nonzero()`) and no data-dependent
@@ -123,11 +123,22 @@ of every shrink/expand task, not separate tasks.
 
 ## Tolerances and gates
 
-- Use the existing verification: atol/rtol 1e-2, with integer outputs
-  exact (`exact_integer_outputs`, approved). The original brief's relative
-  bounds (bf16 ≤ 1e-2·max|ref|, fp16 ≤ 5e-3·max|ref|) are a different
-  metric. Record them as diagnostics in the case JSON, and **ASK** before
-  making them a gate or changing tolerances.
+- **Approved Stage 6 arithmetic verification:** for every floating output,
+  `max(abs(actual-ref)) <= c * max(abs(ref))`, where activation dtype selects
+  c=0.005 (fp16) or c=0.01 (bf16), including fp32 shrink buffers. This replaces
+  the old per-element atol/rtol check for Stage 6 only.
+- Skipped rows of y (`idx=-1`) must be bit-identical to y_in and are excluded
+  from both reductions. Actual NaN/inf where reference is finite fails.
+  A zero checked reference requires exact equality; an all-skipped batch
+  still checks every skipped y byte.
+- Metadata and all integer outputs stay exact. Stock and Stages 0–5 retain
+  their existing comparison paths. The suite forces `relative_error_bounds`
+  only for Stage 6 arithmetic; it defaults off and has a matching CLI flag.
+- Case JSON includes per-output bound, checked reference maximum, errors and
+  decision from the verification subprocess. Its exit status gates rewards;
+  candidate-writable report files never feed a reward.
+- The fp16-intermediate fixture remains diagnostic only; record whether it
+  would violate the approved bound, without an expected-failure gate.
 - The authored-only provenance gate applies: no cuBLAS/cuDNN time in honest
   solutions.
 
