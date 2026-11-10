@@ -37,6 +37,7 @@ class RolloutConfig:
     seed: int = 0
     run_name: str = ""
     tags: list[str] = field(default_factory=list)
+    relative_error_bounds: bool = False
 
     def __post_init__(self):
         for name, choices in {"backend": BACKEND_CHOICES,
@@ -70,7 +71,7 @@ class RolloutConfig:
         if not low_ok or self.clip_high < 0 or self.kl_coef < 0:
             raise ValueError("Invalid clip range or kl_coef")
         for name in ("benchmark", "cuda_graphs", "diagnostics", "filter_tied_groups",
-                     "exact_integer_outputs"):
+                     "exact_integer_outputs", "relative_error_bounds"):
             if not isinstance(getattr(self, name), bool):
                 raise ValueError(f"{name} must be bool")
         if not isinstance(self.seed, int) or not isinstance(self.run_name, str):

@@ -119,6 +119,7 @@ saves the sampler output (enabled in the Modal test runner).
 | `cfg:cfg/backend` | config | cfg | str | 1 | never | config | environment |
 | `cfg:cfg/iters` | config | cfg | int | 1 | never | config | environment |
 | `cfg:cfg/exact_integer_outputs` | config | cfg | bool | 1 | not recorded in historical configs | verification/config; forced true only by progressive suite | environment |
+| `cfg:cfg/relative_error_bounds` | config | cfg | bool | 1 | not recorded in historical configs | Stage 6 relative verification/config; forced true only for Stage 6 arithmetic | environment |
 | `cfg:cfg/benchmark` | config | cfg | bool | 1 | never | config | environment |
 | `cfg:cfg/bench_warmup_iters` | config | cfg | int | 1 | never | config | environment |
 | `cfg:cfg/bench_rounds` | config | cfg | int | 1 | never | config | environment |
@@ -394,9 +395,11 @@ saves the sampler output (enabled in the Modal test runner).
 | `results:config/cuda_graphs` | config | config | bool | 1 | historical artifact did not persist it | config | environment |
 | `results:config/diagnostics` | config | config | bool | 1 | historical artifact did not persist it | config | environment |
 | `results:config/exact_integer_outputs` | config | config | bool | 1 | historical artifact did not persist it | config | environment |
+| `results:config/relative_error_bounds` | config | config | bool | 1 | historical artifact did not persist it | config | environment |
 | `results:case_configs/*/cuda_graphs` | table | case_configs | bool | 1 | historical artifact did not persist it | config | environment |
 | `results:case_configs/*/diagnostics` | table | case_configs | bool | 1 | historical artifact did not persist it | config | environment |
 | `results:case_configs/*/exact_integer_outputs` | table | case_configs | bool | 1 | historical artifact did not persist it | config | environment |
+| `results:case_configs/*/relative_error_bounds` | table | case_configs | bool | 1 | historical artifact did not persist it | config | environment |
 | `results:config/timeout_s` | config | config | float | s | historical artifact did not persist it | config | environment |
 | `results:case_configs/*/timeout_s` | table | case_configs | float | s | historical artifact did not persist it | config | environment |
 | `results:config/provenance_threshold` | config | config | float | 1 | historical artifact did not persist it | config | environment |
@@ -450,9 +453,11 @@ saves the sampler output (enabled in the Modal test runner).
 | `names:config/cuda_graphs` | config | config | bool | 1 | historical artifact did not persist it | config | environment |
 | `names:config/diagnostics` | config | config | bool | 1 | historical artifact did not persist it | config | environment |
 | `names:config/exact_integer_outputs` | config | config | bool | 1 | historical artifact did not persist it | config | environment |
+| `names:config/relative_error_bounds` | config | config | bool | 1 | historical artifact did not persist it | config | environment |
 | `names:case_configs/*/cuda_graphs` | table | case_configs | bool | 1 | historical artifact did not persist it | config | environment |
 | `names:case_configs/*/diagnostics` | table | case_configs | bool | 1 | historical artifact did not persist it | config | environment |
 | `names:case_configs/*/exact_integer_outputs` | table | case_configs | bool | 1 | historical artifact did not persist it | config | environment |
+| `names:case_configs/*/relative_error_bounds` | table | case_configs | bool | 1 | historical artifact did not persist it | config | environment |
 | `names:config/timeout_s` | config | config | float | s | historical artifact did not persist it | config | environment |
 | `names:case_configs/*/timeout_s` | table | case_configs | float | s | historical artifact did not persist it | config | environment |
 | `names:config/provenance_threshold` | config | config | float | 1 | historical artifact did not persist it | config | environment |
@@ -496,6 +501,7 @@ saves the sampler output (enabled in the Modal test runner).
 | `results:group_configs/*/cuda_graphs` | config | group_configs | bool | 1 | historical artifact did not persist it | diagnostic | environment |
 | `results:group_configs/*/diagnostics` | config | group_configs | bool | 1 | historical artifact did not persist it | diagnostic | environment |
 | `results:group_configs/*/exact_integer_outputs` | config | group_configs | bool | 1 | historical artifact did not persist it | diagnostic | environment |
+| `results:group_configs/*/relative_error_bounds` | config | group_configs | bool | 1 | historical artifact did not persist it | diagnostic | environment |
 | `results:group_configs/*/timeout_s` | config | group_configs | float | s | historical artifact did not persist it | diagnostic | environment |
 | `results:group_configs/*/provenance_threshold` | config | group_configs | float | 1 | historical artifact did not persist it | diagnostic | environment |
 | `results:group_configs/*/speedup_margin` | config | group_configs | float | 1 | historical artifact did not persist it | diagnostic | environment |
@@ -655,6 +661,7 @@ forward in a benchmark process, not flushed hardware caches.
 | `result:suite/status` | table | suite | str | passed/failed/unavailable | never for suite rows | coverage | task suite |
 | `result:suite/reason` | table | suite | str | reason | no reason | diagnostic | task suite |
 | `result:suite/wall_s` | table | suite | float | s | case not executed | deadline diagnostic | task suite |
+| `result:suite/numerics_unavailable_reason` | table | suite | str | reason | diagnostic succeeded/not requested | diagnostic only; never reward | task suite |
 | `result:bench/cold_definition` | table | bench | str | timing definition | cold sampling disabled | diagnostic | environment |
 | `result:bench/*/cold_event_us` | table | bench | float | us | cold sampling disabled/unavailable | diagnostic | environment |
 | `result:bench/*/cold_wall_us` | table | bench | float | us | cold sampling disabled/unavailable | diagnostic | environment |

@@ -173,8 +173,10 @@ def run_task(workdir: str, cfg: RolloutConfig, turns_used: int | None = None, *,
                 env.setdefault(var, str(path / ".cache" / subdir))
         env.setdefault("TORCHINDUCTOR_CACHE_DIR", str(path / ".cache" / "inductor"))
         env["PYTHONDONTWRITEBYTECODE"] = "1"
+        env["CUDA_AGENT_RELATIVE_ERROR_BOUNDS"] = "1" if cfg.relative_error_bounds else "0"
         deadline = start + cfg.timeout_s
-        verification_module = "utils.task_verification" if cfg.exact_integer_outputs else "utils.verification"
+        verification_module = ("utils.lora_verification" if cfg.relative_error_bounds else
+                               "utils.task_verification" if cfg.exact_integer_outputs else "utils.verification")
         stages = (("compile", "utils.compile", ["--backend", backend, "--seed", str(cfg.seed)]),
                   ("verification", verification_module, ["--seed", str(cfg.seed)]),
                   ("profiling", "utils.profiling", ["--backend", backend, "--iters", str(cfg.iters),
