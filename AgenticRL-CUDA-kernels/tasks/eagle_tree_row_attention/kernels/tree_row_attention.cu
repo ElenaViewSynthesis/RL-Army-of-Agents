@@ -39,21 +39,21 @@ __global__ void eagle_cuda_attention(const bf16* q,const bf16* k,const bf16* v,c
         bool committed=ix<window;int tid=ix-window;bool visible=committed;
         if(!committed)for(int z=0;z<n;z++)visible|=paths[(b*n+node)*n+z]==tid;
         if(!visible)continue;
-        int address=committed?((b*hk+kvhead)*s+s-window+ix)*d+ch:((b*hk+kvhead)*n+tid)*d+ch;
+        long long address=committed?((long long)(b*hk+kvhead)*s+s-window+ix)*d+ch:((long long)(b*hk+kvhead)*n+tid)*d+ch;
         float key=__bfloat162float(committed?k[address]:tk[address]);
         float value=__bfloat162float(committed?v[address]:tv[address]);
         float score=eagle_reduce(query*key)*rsqrtf((float)d);
         float next=fmaxf(maximum,score),scale=expf(maximum-next),prob=expf(score-next);
         weighted=weighted*scale+prob*value;denom=denom*scale+prob;maximum=next;
     }
-    int row=(bh*n+node)*splits+split;
+    long long row=((long long)bh*n+node)*splits+split;  // *d exceeds 2**31 at 32k contexts
     part[row*d+ch]=weighted;if(ch==0){maxima[row]=maximum;denominators[row]=denom;}
 }
 __global__ void eagle_cuda_attention_merge(const float* part,const float* maxima,const float* denominators,bf16* out,int d,int splits){
-    int row=blockIdx.x,ch=threadIdx.x;float maximum=-INFINITY;
+    long long row=blockIdx.x;int ch=threadIdx.x;float maximum=-INFINITY;
     for(int i=0;i<splits;i++)maximum=fmaxf(maximum,maxima[row*splits+i]);
     float sum=0,denom=0;for(int i=0;i<splits;i++){
-        int offset=row*splits+i;float scale=expf(maxima[offset]-maximum);
+        long long offset=row*splits+i;float scale=expf(maxima[offset]-maximum);
         sum+=part[offset*d+ch]*scale;denom+=denominators[offset]*scale;
     }out[row*d+ch]=__float2bfloat16_rn(sum/denom);
 }

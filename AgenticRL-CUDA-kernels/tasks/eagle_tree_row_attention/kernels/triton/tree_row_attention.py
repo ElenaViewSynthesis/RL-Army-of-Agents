@@ -23,7 +23,8 @@ def paths_for(parents):
 
 @triton.jit
 def eagle_attention_splits(Q,K,V,TK,TV,Paths,Part,Maximum,Denom,N:tl.constexpr,S:tl.constexpr,HQ:tl.constexpr,HK:tl.constexpr,D:tl.constexpr,WINDOW:tl.constexpr,SPLITS:tl.constexpr,DEPTH:tl.constexpr,BLOCK:tl.constexpr):
-    bh,node,split=tl.program_id(0),tl.program_id(1),tl.program_id(2)
+    # int64 offsets: (b*hq*n*splits)*d exceeds 2**31 at 32k contexts.
+    bh,node,split=tl.program_id(0).to(tl.int64),tl.program_id(1).to(tl.int64),tl.program_id(2).to(tl.int64)
     batch,head=bh//HQ,bh%HQ
     kvhead=head//(HQ//HK)
     index=split*BLOCK+tl.arange(0,BLOCK)
@@ -53,7 +54,7 @@ def eagle_attention_splits(Q,K,V,TK,TV,Paths,Part,Maximum,Denom,N:tl.constexpr,S
 
 @triton.jit
 def eagle_attention_merge(Part,Maximum,Denom,Out,N:tl.constexpr,D:tl.constexpr,SPLITS:tl.constexpr,BLOCK:tl.constexpr):
-    row=tl.program_id(0)
+    row=tl.program_id(0).to(tl.int64)
     splits=tl.arange(0,BLOCK)
     columns=tl.arange(0,D)
     maximum=tl.load(Maximum+row*SPLITS+splits,splits<SPLITS,other=-float('inf'))
