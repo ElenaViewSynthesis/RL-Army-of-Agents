@@ -94,8 +94,12 @@ def prime_profiler():
 
 
 def profile_models(models, inputs, backend, iters, *, order="gen,eager,compile", trace_dir=None,
-                   agent_names=(), prime=True):
-    """One capture per session, retaining evidence even if another session is empty."""
+                   agent_names=(), prime=True, samples_dir=None):
+    """One capture per session, retaining evidence even if another session is empty.
+
+    samples_dir, when given, receives the verbatim per-event lists as a JSON
+    sidecar; the record itself carries only per-kernel aggregates.
+    """
     primer_events = prime_profiler() if prime else []
     captures = {}
     for session in order.split(","):
@@ -115,9 +119,12 @@ def profile_models(models, inputs, backend, iters, *, order="gen,eager,compile",
         summary["provenance"] = None
         summary.update({"provenance/"+s: None for s in ("agent","library","torch","memory")})
     summary.update({f"profile/{s}_events": len(captures[s][1]) for s in captures})
-    summary.update({f"profile/{s}_kernel_samples": json.dumps(
-        [(name, duration if math.isfinite(duration) else str(duration)) for name, duration in captures[s][1]],
-        allow_nan=False) for s in captures})
+    # Per-kernel aggregates keep the stdout record small (run_task keeps only
+    # its last 4 MiB); the verbatim per-event list goes to a sidecar file.
+    summary.update({f"profile/{s}_kernel_samples": json.dumps(kernel_aggregates(captures[s][1]),
+                                                             allow_nan=False) for s in captures})
+    summary["profile/kernel_samples_path"] = write_kernel_samples(
+        samples_dir, {s: captures[s][1] for s in captures}, order, iters)
     # JSON strings keep the profiler's record flat; names are verbatim.
     summary["profile/eager_kernel_names"] = json.dumps(sorted({n for n, _ in captures["eager"][1]}))
     summary["profile/order"] = order
@@ -128,6 +135,37 @@ def profile_models(models, inputs, backend, iters, *, order="gen,eager,compile",
     if trace_dir is not None:
         summary.update({f"profile/{s}_trace": str(Path(trace_dir) / f"{s}.json") for s in captures})
     return summary
+
+
+def _json_duration(value):
+    return value if math.isfinite(value) else str(value)
+
+
+def kernel_aggregates(events):
+    """[[name, calls, total_us], ...] in first-seen order; non-finite totals as strings."""
+    totals, calls = {}, {}
+    for name, duration in events:
+        totals[name] = totals.get(name, 0.0) + duration
+        calls[name] = calls.get(name, 0) + 1
+    return [[name, calls[name], _json_duration(totals[name])] for name in totals]
+
+
+def write_kernel_samples(samples_dir, sessions, order, iters):
+    """Write the verbatim per-event lists; return the path, or None if not written."""
+    if samples_dir is None:
+        return None
+    try:
+        from uuid import uuid4
+        directory = Path(samples_dir)
+        directory.mkdir(parents=True, exist_ok=True)
+        path = directory / f"{uuid4().hex}.json"
+        path.write_text(json.dumps({
+            "schema": "profile-kernel-samples-v1", "order": order, "iters": iters,
+            "sessions": {s: [[name, _json_duration(d)] for name, d in events]
+                         for s, events in sessions.items()}}, allow_nan=False) + "\n")
+        return str(path)
+    except OSError:
+        return None
 
 
 def print_results(torch_time, compile_time, cuda_time):
@@ -182,7 +220,8 @@ def main():
     summary = profile_models(
         {"gen": cuda_model, "eager": torch_model, "compile": torch.compile(torch_model)},
         {"gen": cuda_inputs, "eager": torch_inputs, "compile": torch_inputs}, backend, args.iters,
-        order=args.order, trace_dir=args.trace_dir, agent_names=agent_kernel_names(Path.cwd(), backend))
+        order=args.order, trace_dir=args.trace_dir, agent_names=agent_kernel_names(Path.cwd(), backend),
+        samples_dir=Path.cwd() / ".artifacts" / "profile-samples")
     if summary["timing_measured"]:
         print_results(summary["t_eager_us"], summary["t_compile_us"], summary["t_gen_us"])
     else:

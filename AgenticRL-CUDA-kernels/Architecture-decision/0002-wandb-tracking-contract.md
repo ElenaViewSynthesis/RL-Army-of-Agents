@@ -181,7 +181,8 @@ saves the sampler output (enabled in the Modal test runner).
 | `profile:timing_reason` | artifact | profile | str | 1 | null on successful capture | diagnostic | environment |
 | `profile:profile/*_events` | artifact | profile | int | CUDA events | absent on CPU | diagnostic | environment |
 | `profile:profile/eager_kernel_names` | artifact | profile | str (JSON list) | 1 | absent on CPU | diagnostic | environment |
-| `profile:profile/*_kernel_samples` | artifact | profile | str (JSON list of name/duration pairs) | us per CUDA event; non-finite durations encoded as strings | absent on CPU | diagnostic | environment |
+| `profile:profile/*_kernel_samples` | artifact | profile | str (JSON list of [name, calls, total_us]; per-event list in the kernel_samples_path sidecar since 2026-11-09) | us per CUDA event; non-finite durations encoded as strings | absent on CPU | diagnostic | environment |
+| `profile:profile/kernel_samples_path` | artifact | profile | str | path to the per-event JSON sidecar | not written (no samples dir or OSError); absent on CPU and before 2026-11-09 | diagnostic | environment |
 | `profile:profile/order` | artifact | profile | str | 1 | absent on CPU | diagnostic | environment |
 | `profile:profile/timing_method` | artifact | profile | str | versioned capture conditioning | absent historically/CPU | diagnostic | environment |
 | `profile:profile/primer_event_counts` | artifact | profile | str (JSON list) | CUDA events per intentional empty conditioning capture | absent historically/CPU | diagnostic | environment |
@@ -353,7 +354,8 @@ saves the sampler output (enabled in the Modal test runner).
 | `names:backends/*/profile/kernel_us/*` | table | profile | scalar/string | us for timing; otherwise 1 | CPU/failure/disabled | diagnostic | environment |
 | `names:backends/*/profile/profile/*_events` | artifact | profile | scalar/string | us for timing; otherwise 1 | CPU/failure/disabled | diagnostic | environment |
 | `names:backends/*/profile/profile/eager_kernel_names` | artifact | profile | scalar/string | us for timing; otherwise 1 | CPU/failure/disabled | diagnostic | environment |
-| `names:backends/*/profile/profile/*_kernel_samples` | artifact | profile | str (JSON list of name/duration pairs) | us per CUDA event; non-finite durations encoded as strings | CPU/failure/disabled | diagnostic | environment |
+| `names:backends/*/profile/profile/*_kernel_samples` | artifact | profile | str (JSON list of [name, calls, total_us]; per-event list in the kernel_samples_path sidecar since 2026-11-09) | us per CUDA event; non-finite durations encoded as strings | CPU/failure/disabled | diagnostic | environment |
+| `names:backends/*/profile/profile/kernel_samples_path` | artifact | profile | str | path to the per-event JSON sidecar | not written (no samples dir or OSError); absent on CPU and before 2026-11-09 | diagnostic | environment |
 | `names:backends/*/profile/profile/order` | artifact | profile | scalar/string | us for timing; otherwise 1 | CPU/failure/disabled | diagnostic | environment |
 | `names:backends/*/profile/profile/timing_method` | artifact | profile | str | versioned capture conditioning | absent historically/CPU | diagnostic | environment |
 | `names:backends/*/profile/profile/primer_event_counts` | artifact | profile | str (JSON list) | CUDA events per conditioning capture | absent historically/CPU | diagnostic | environment |

@@ -116,8 +116,8 @@ class CaptureTests(unittest.TestCase):
                     self.assertIsNone(profile['t_' + session + '_us'])
                     self.assertEqual(profile['profile/' + session + '_events'], 1)
                     sample = json.loads(profile['profile/' + session + '_kernel_samples'])[0]
-                    self.assertEqual(sample[0], 'axpby_kernel')
-                    self.assertEqual(sample[1], str(duration) if reason == 'invalid_profile'
+                    self.assertEqual(sample[:2], ['axpby_kernel', 1])
+                    self.assertEqual(sample[2], str(duration) if reason == 'invalid_profile'
                                      and duration not in (-1.0,) else duration)
                     json.dumps(profile, allow_nan=False)
                     if session == 'gen':
@@ -138,8 +138,36 @@ class CaptureTests(unittest.TestCase):
         profile = self.capture([[event(), event(device='CPU', duration=100)]] * 3)
         for session in ('gen', 'eager', 'compile'):
             self.assertEqual(json.loads(profile['profile/' + session + '_kernel_samples']),
-                             [['axpby_kernel', 2]])
+                             [['axpby_kernel', 1, 2]])
             self.assertEqual(profile['t_' + session + '_us'], 2)
+        self.assertIsNone(profile['profile/kernel_samples_path'])
+
+    def test_sidecar_keeps_every_event_and_record_stays_small(self):
+        # SYNTHETIC: 20000 tiny events per session, like a reference with
+        # hundreds of kernels per forward; the old per-event record overflowed
+        # run_task's 4 MiB stdout tail (H200 run task-stage5-gpu-acceptance-20261109T222837Z).
+        names = [f"void at::native::vectorized_elementwise_kernel<4, op_{i % 40}>" for i in range(20000)]
+        sessions = [[event(name, duration=0.5) for name in names]] * 3
+        with scratch() as tmp:
+            profile = self.capture(sessions, samples_dir=tmp)
+            self.assertLess(len(json.dumps(profile)), 64 * 1024)
+            aggregates = json.loads(profile['profile/eager_kernel_samples'])
+            self.assertEqual(len(aggregates), 40)
+            self.assertEqual(sum(row[1] for row in aggregates), 20000)
+            self.assertAlmostEqual(sum(row[2] for row in aggregates), 10000.0)
+            sidecar = json.loads(Path(profile['profile/kernel_samples_path']).read_text())
+            self.assertEqual(sidecar['schema'], 'profile-kernel-samples-v1')
+            for session in ('gen', 'eager', 'compile'):
+                self.assertEqual(len(sidecar['sessions'][session]), 20000)
+                self.assertEqual(sidecar['sessions'][session][0], [names[0], 0.5])
+
+    def test_unwritable_sidecar_is_null_not_a_failure(self):
+        with scratch() as tmp:
+            blocker = Path(tmp) / 'file'
+            blocker.write_text('x')
+            profile = self.capture([[event()]] * 3, samples_dir=blocker / 'sub')
+        self.assertIsNone(profile['profile/kernel_samples_path'])
+        self.assertTrue(profile['timing_measured'])
 
     def test_conditioning_precedes_every_model_and_unprimed_is_diagnostic(self):
         from collections import Counter
