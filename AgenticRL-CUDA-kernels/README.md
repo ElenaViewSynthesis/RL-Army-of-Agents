@@ -96,6 +96,7 @@ Beyond the stock 1 × 128 `axpby` fixture, `tasks/` holds a progressive curricul
 | 3 | Packed-reduction kernels against the repository-authored RL contracts: GRPO group normalization, CISPO weight clipping, packed variable-length reduction | pass |
 | 4 | Attention, grouped GEMM, sampling, residual RMSNorm, decode attention and Dense-MoE; INT8/FP8 as contracts only | pass (grouped GEMM is Triton-only by design) |
 | 5 | Nine evaluation-only speculative-tree workloads, including sampled acceptance and Mamba2 conv; GDN walk and chain replay | H200 smoke: 71/71 pass, CUDA and Triton, all fixtures; largest-case run stopped on two fixed bugs, rerun pending |
+| 6 (planned) | Multi-LoRA serving kernels as engine-free tasks: BGMV and SGMV shrink/expand, segment metadata, fused SGMV | not started; brief in [MULTI_LORA_kernels_task.md](MULTI_LORA_kernels_task.md) |
 
 | Stage | Task | Reference solution | H200 result (honest scores, hack fails provenance, wrong fails verification) |
 |---|---|---|---|

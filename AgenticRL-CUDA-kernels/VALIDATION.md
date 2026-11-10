@@ -2262,7 +2262,42 @@ detached):** stopped on purpose after 14 rows (`progress-stopped.jsonl`).
   every output is bit-for-bit equal (7 tests OK). The eager baseline for
   these tasks is now a real GPU reference, so "faster than eager" means more.
 
-Local suites after the fixes (`artifacts/task-stage5-reference-fix-20261109/`):
+Local suites after the fixes (`artifacts/runs/task-stage5-reference-fix-20261109/`):
 system Python `Ran 262 tests in 348.337s` / `OK (skipped=63)`. The venv suite
 was killed by host memory pressure before finishing, with no failures up to
 that point. The equivalence tests passed in the venv on their own.
+
+### Stage 5 largest cases, rerun: task-stage5-gpu-acceptance-20261109T222837Z
+
+Detached H200 run of the fixed tree (frozen source: 289 files, manifest
+`53dd812bd58f92a38c957de7939750e4bfe991cb8a03e572e200035328df7a1c`, git
+`86441c8`): status `fail`, 52 passed, 19 failed, no source mismatches,
+4417 s. Evidence: `artifacts/runs/task-stage5-gpu-acceptance-20261109T222837Z/`.
+
+- **Both earlier fixes held on the GPU.** Triton candidate top-k passes at
+  32 × 151936, and `eagle_tree_step` passes on both backends.
+- Also passing at the largest case: `eagle_gdn_tree_conv`,
+  `eagle_mamba2_tree_conv`, row-attention honest, and every wrong and
+  wrong-ancestor control.
+- **2 failures: verify-attention honest, illegal memory access** (CUDA at
+  verification, Triton at compile). The partial-output offsets were computed
+  in int32: (b·hq·n·splits)·d ≈ 4.3e9 > 2^31 at a 32768-token context. Row
+  attention passed only because its 4096 window gives 33 splits instead of
+  257. Fixed with int64 offsets in all four attention kernels (CUDA and
+  Triton, row and verify).
+- **17 failures: profiler record overflow** (`JSONDecodeError`): the
+  attention hacks, and every honest/hack/chain-replay row of the GDN
+  recurrence, greedy acceptance and sampled acceptance. Their references are
+  sequential over 64 nodes and legitimately launch hundreds of kernels per
+  forward. `profile/<session>_kernel_samples` listed every event in the
+  single JSON line, which exceeded run_task's 4 MiB stdout tail. Fixed (user
+  approved, 2026-11-09): the record now carries per-kernel aggregates
+  `[name, calls, total_us]`, and the verbatim per-event lists go to a sidecar
+  JSON whose path is `profile/kernel_samples_path`. Timings, provenance and
+  rewards are computed as before. `ancestors()` now uses binary lifting
+  (about 6 doubling steps instead of 64 depth steps), still bit-for-bit equal
+  to the original loop.
+
+Local suites after these fixes: system Python `Ran 264 tests in 352.512s` /
+`OK (skipped=63)`. Earlier, after the first two fixes, the venv suite ran
+`Ran 267 tests in 664.506s` / `OK (skipped=28)`.

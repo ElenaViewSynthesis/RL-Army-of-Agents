@@ -292,6 +292,12 @@
   MODE-derived tasks are evaluation-only, and the "local" source has no
   repository license (NOASSERTION).
 
+- **Stage 5 largest cases: three more fixes, second rerun pending.** The
+  rerun `task-stage5-gpu-acceptance-20261109T222837Z` passed 52/71. The 19
+  failures were int32 offsets in verify attention and profiler-record
+  overflow from sequential references. Both are fixed (int64 offsets; the
+  per-event samples moved to a sidecar file, as approved; binary-lifting
+  ancestors) and not yet rerun on a GPU.
 - **Stage 5 on H200: smoke passes; largest-case acceptance pending a rerun.**
   Smoke run `task-stage5-gpu-smoke-20261109T190928Z` passed 71/71 (all nine
   tasks, CUDA and Triton, all fixtures; the first Stage 5 CUDA C++ builds).
