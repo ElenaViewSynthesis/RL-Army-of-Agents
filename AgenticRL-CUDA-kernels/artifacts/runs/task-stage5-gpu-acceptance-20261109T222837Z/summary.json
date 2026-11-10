@@ -1,0 +1,17 @@
+{
+  "run_id": "task-stage5-gpu-acceptance-20261109T222837Z",
+  "execution": {
+    "command": "python -m scripts.validate --suite eagle_candidate_topk,eagle_tree_step,eagle_tree_row_attention,eagle_tree_verify_attention,eagle_gdn_tree_conv,eagle_mamba2_tree_conv,eagle_gdn_tree_recurrence,eagle_accept_tail,eagle_accept_tail_sampled --device cuda --purpose eval --case-set acceptance --fixtures all --timeout-s 900 --suite-out /artifacts/task-stage5-gpu-acceptance-20261109T222837Z/suite --backends cuda,triton --benchmark --cold-start",
+    "returncode": 1,
+    "timed_out": false,
+    "wall_s": 4416.944701319
+  },
+  "counts": {
+    "passed": 52,
+    "failed": 19,
+    "unavailable": 0
+  },
+  "status": "fail",
+  "source_mismatches": [],
+  "scope": "selected workload cases only; no stock AXPBY acceptance or timing-cause claim"
+}

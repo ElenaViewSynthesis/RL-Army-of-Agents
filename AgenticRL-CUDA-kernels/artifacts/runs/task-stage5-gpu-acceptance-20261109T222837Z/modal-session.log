@@ -1,0 +1,80 @@
+Note that running a local entrypoint in detached mode only keeps the last triggered Modal function alive after the parent process has been killed or disconnected.
+✓ Initialized. View run at 
+https://modal.com/apps/elenamylocuda/main/ap-h4hK59C9rN0Kfphhqqw750
+✓ Created objects.
+├── ✓ Uploaded /tmp/task-stage5-gpu-source-20261109T222837Z/cloud/modal_tasks.py
+├── ✓ Uploaded 
+│   /tmp/task-stage5-gpu-source-20261109T222837Z/artifacts/upstream.json
+├── ✓ Uploaded /tmp/task-stage5-gpu-source-20261109T222837Z
+└── ✓ Created Function evaluate.
+{"run_id": "task-stage5-gpu-acceptance-20261109T222837Z", "function_call_id": "fc-01M716W8X4435TQX612WQF5GDJ", "volume": "agenticrl-cuda-artifacts", "remote": "/artifacts/task-stage5-gpu-acceptance-20261109T222837Z"}
+{"function_call_id": "fc-01M716W8X4435TQX612WQF5GDJ"}
+{"completed": 1, "last_task": "eagle_candidate_topk", "last_status": "passed"}
+{"completed": 1, "last_task": "eagle_candidate_topk", "last_status": "passed"}
+{"completed": 2, "last_task": "eagle_candidate_topk", "last_status": "passed"}
+{"completed": 2, "last_task": "eagle_candidate_topk", "last_status": "passed"}
+{"completed": 3, "last_task": "eagle_candidate_topk", "last_status": "passed"}
+{"completed": 3, "last_task": "eagle_candidate_topk", "last_status": "passed"}
+{"completed": 4, "last_task": "eagle_candidate_topk", "last_status": "passed"}
+{"completed": 6, "last_task": "eagle_candidate_topk", "last_status": "passed"}
+{"completed": 6, "last_task": "eagle_candidate_topk", "last_status": "passed"}
+{"completed": 6, "last_task": "eagle_candidate_topk", "last_status": "passed"}
+{"completed": 7, "last_task": "eagle_tree_step", "last_status": "passed"}
+{"completed": 7, "last_task": "eagle_tree_step", "last_status": "passed"}
+{"completed": 8, "last_task": "eagle_tree_step", "last_status": "passed"}
+{"completed": 8, "last_task": "eagle_tree_step", "last_status": "passed"}
+{"completed": 9, "last_task": "eagle_tree_step", "last_status": "passed"}
+{"completed": 10, "last_task": "eagle_tree_step", "last_status": "passed"}
+{"completed": 11, "last_task": "eagle_tree_step", "last_status": "passed"}
+{"completed": 13, "last_task": "eagle_tree_step", "last_status": "passed"}
+{"completed": 14, "last_task": "eagle_tree_step", "last_status": "passed"}
+{"completed": 14, "last_task": "eagle_tree_step", "last_status": "passed"}
+{"completed": 14, "last_task": "eagle_tree_step", "last_status": "passed"}
+{"completed": 14, "last_task": "eagle_tree_step", "last_status": "passed"}
+{"completed": 14, "last_task": "eagle_tree_step", "last_status": "passed"}
+{"completed": 15, "last_task": "eagle_tree_row_attention", "last_status": "passed"}
+{"completed": 15, "last_task": "eagle_tree_row_attention", "last_status": "passed"}
+{"completed": 15, "last_task": "eagle_tree_row_attention", "last_status": "passed"}
+{"completed": 15, "last_task": "eagle_tree_row_attention", "last_status": "passed"}
+{"completed": 16, "last_task": "eagle_tree_row_attention", "last_status": "failed"}
+{"completed": 16, "last_task": "eagle_tree_row_attention", "last_status": "failed"}
+{"completed": 17, "last_task": "eagle_tree_row_attention", "last_status": "passed"}
+{"completed": 18, "last_task": "eagle_tree_row_attention", "last_status": "passed"}
+{"completed": 18, "last_task": "eagle_tree_row_attention", "last_status": "passed"}
+{"completed": 18, "last_task": "eagle_tree_row_attention", "last_status": "passed"}
+{"completed": 18, "last_task": "eagle_tree_row_attention", "last_status": "passed"}
+{"completed": 18, "last_task": "eagle_tree_row_attention", "last_status": "passed"}
+{"completed": 19, "last_task": "eagle_tree_row_attention", "last_status": "passed"}
+{"completed": 19, "last_task": "eagle_tree_row_attention", "last_status": "passed"}
+{"completed": 19, "last_task": "eagle_tree_row_attention", "last_status": "passed"}
+{"completed": 19, "last_task": "eagle_tree_row_attention", "last_status": "passed"}
+{"completed": 20, "last_task": "eagle_tree_row_attention", "last_status": "failed"}
+{"completed": 21, "last_task": "eagle_tree_row_attention", "last_status": "passed"}
+{"completed": 22, "last_task": "eagle_tree_row_attention", "last_status": "passed"}
+[gpu-health] [WARN] GPU-426e5604-65c1-6aae-a210-03c736d4425d: XID: NVRM: Xid (PCI:0000:a5:00): 31, pid=3607644, name=gvisor_sentry, channel 0x00000002, intr 00000000. MMU Fault: ENGINE GRAPHICS GPC3 GPCCLIENT_T1_7 faulted @ 0x2b23_6a3a8000. Fault is of type FAULT_PDE ACCESS_TYPE_VIRT_WRITE
+
+{"completed": 23, "last_task": "eagle_tree_verify_attention", "last_status": "failed"}
+{"completed": 23, "last_task": "eagle_tree_verify_attention", "last_status": "failed"}
+{"completed": 23, "last_task": "eagle_tree_verify_attention", "last_status": "failed"}
+{"completed": 23, "last_task": "eagle_tree_verify_attention", "last_status": "failed"}
+{"completed": 23, "last_task": "eagle_tree_verify_attention", "last_status": "failed"}
+{"completed": 24, "last_task": "eagle_tree_verify_attention", "last_status": "failed"}
+{"completed": 25, "last_task": "eagle_tree_verify_attention", "last_status": "passed"}
+{"completed": 25, "last_task": "eagle_tree_verify_attention", "last_status": "passed"}
+[gpu-health] [WARN] GPU-426e5604-65c1-6aae-a210-03c736d4425d: XID: NVRM: Xid (PCI:0000:a5:00): 31, pid=3607644, name=gvisor_sentry, channel 0x00000002, intr 00000000. MMU Fault: ENGINE GRAPHICS GPC5 GPCCLIENT_T1_3 faulted @ 0x2ad4_207e8000. Fault is of type FAULT_PDE ACCESS_TYPE_VIRT_WRITE
+
+{"completed": 27, "last_task": "eagle_tree_verify_attention", "last_status": "failed"}
+{"completed": 27, "last_task": "eagle_tree_verify_attention", "last_status": "failed"}
+{"completed": 27, "last_task": "eagle_tree_verify_attention", "last_status": "failed"}
+{"completed": 27, "last_task": "eagle_tree_verify_attention", "last_status": "failed"}
+{"completed": 27, "last_task": "eagle_tree_verify_attention", "last_status": "failed"}
+{"completed": 28, "last_task": "eagle_tree_verify_attention", "last_status": "failed"}
+{"completed": 29, "last_task": "eagle_tree_verify_attention", "last_status": "passed"}
+{"completed": 30, "last_task": "eagle_tree_verify_attention", "last_status": "passed"}
+{"completed": 30, "last_task": "eagle_tree_verify_attention", "last_status": "passed"}
+{"completed": 31, "last_task": "eagle_gdn_tree_conv", "last_status": "passed"}
+{"completed": 32, "last_task": "eagle_gdn_tree_conv", "last_status": "passed"}
+{"completed": 32, "last_task": "eagle_gdn_tree_conv", "last_status": "passed"}
+{"completed": 33, "last_task": "eagle_gdn_tree_conv", "last_status": "passed"}
+{"completed": 35, "last_task": "eagle_gdn_tree_conv", "last_status": "passed"}
+{"completed": 38, "last_task": "eagle_gdn_tree_conv", "last_status": "passed"}
