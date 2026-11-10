@@ -108,6 +108,22 @@ The hardest workloads are the attention, sampling, MoE and speculative-decoding 
 
 Stage 4 sizes are the largest cases run on the H200 (`…-20261109T021131Z` batch and stage 4 acceptance). Stage 5 sizes are each task's catalog acceptance case. The EAGLE-4 tasks (stage 5) are written from EAGLE-4's documented kernel behaviour and are evaluation-only (see footnote ‡).
 
+#### Stage 5 on the H200: results at the largest cases
+
+![Stage 5 honest solutions: speed relative to eager PyTorch at the largest case, log scale](assets/stage5/fig_stage5_speedup_vs_eager.svg)
+
+**Figure 1.** Speed of each honest Stage 5 (EAGLE-4) reference solution relative to eager PyTorch, at each task's largest case on one H200 (eager time ÷ solution time, log scale).
+Squares are CUDA C++ and triangles Triton; the hollow triangle is the alternate chain-replay solution for the GDN recurrence.
+Right of the line is faster than eager: the tree convs, GDN recurrence and greedy acceptance win by about 3× to 230×.
+Candidate top-k and the two 32k-context attention kernels are correct but untuned, so they run slower than eager.
+
+![Stage 5 time per call for eager, torch.compile, CUDA and Triton at the largest case, log scale](assets/stage5/fig_stage5_time_per_call.svg)
+
+**Figure 2.** Time per call at each Stage 5 task's largest case, as reward-profiler device time on a log scale from microseconds to seconds.
+Filled circles are eager PyTorch, hollow circles `torch.compile`, squares the CUDA solution and triangles the Triton solution.
+The gap between a solution and the two baselines shows the headroom: `torch.compile` beats every reference solution on the 32k attention tasks and top-k.
+All 71 suite rows passed in run `task-stage5-gpu-acceptance-20261110T002043Z`; data, LaTeX table and captions are in [`assets/stage5/`](assets/stage5/).
+
 | Stage | Focus | H200 status |
 |---|---|---|
 | 0 | Bootstrap: GEMM with a fused divide-sum-scale epilogue | pass |
