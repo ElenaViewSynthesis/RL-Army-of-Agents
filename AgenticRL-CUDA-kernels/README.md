@@ -16,6 +16,8 @@ This project extends the environment released with [CUDA-Agent](https://github.c
 2. **A kernel-provenance gate.** The profiler splits device time into *agent-authored*, *library* (cuBLAS / CUTLASS / cuDNN), *Torch* and *memory* kernels. A rollout only earns a speed reward if at least 90% of compute time is in kernels the agent may claim.
 3. **GRPO / DAPO / CISPO reward handling.** Group-relative advantages, tied-group filtering and overlong-turn shaping are exposed as config switches, so a critic-free trainer can consume the discrete milestone reward.
 
+New to the terminology (CUDA-graph replay, provenance, BGMV/SGMV, the relative-error bound, GRPO vs DAPO vs CISPO and more)? See the [glossary](GLOSSARY.md).
+
 > [!IMPORTANT]
 > **First H200 measurements now exist.** Modal runs `20261106T142830Z` and
 > `20261106T185236Z` executed the shipped fixtures. The first found a CUDA C++
@@ -417,6 +419,34 @@ Each round reports two per-iteration timings: `event_us_*` (CUDA events on the c
 
 `RolloutConfig.benchmark` adds a fourth `run_task` stage (after profiling, same deadline) that merges the flat `bench/*` keys into the result; `bench_warmup_iters`/`bench_rounds`/`bench_iters_per_round`/`cuda_graphs` tune it. With the flag off, the stage argv, result keys and reward are byte-for-byte unchanged. On CPU or a missing GPU the record is just `{"bench/available": false, "bench/unavailable_reason": ...}` — no timings are ever fabricated. A benchmark stage that crashes, times out or returns malformed output degrades the same way (`bench/available: false` with the reason); it can never change `env/*` or the reward.
 
+### CUDA-graph replay (`--cuda-graphs`)
+
+A CUDA graph records a model's sequence of GPU kernel launches once and then replays all of them with a single launch. That removes most of the CPU-side launch overhead, which dominates small, launch-bound workloads such as the 1 × 128 `axpby` fixture or one-token LoRA decode. `--cuda-graphs` measures how a solution performs, and whether it still works, when run that way. It is a diagnostic: it never changes `t_*_us` or the reward.
+
+What happens for each implementation (eager, `torch.compile` and the candidate), after its prepare and warmup calls:
+
+1. **Capture.** The model runs once on a side stream, then once more inside `torch.cuda.graph(...)` on **static input buffers** (fixed tensors whose addresses the graph remembers). A forward that cannot be captured, for example because it calls `.item()`, `.cpu()` or `torch.cuda.synchronize()`, has data-dependent shapes or CPU control flow, or is still compiling, is reported as `bench/<impl>/graph_capturable: false` with the error in `graph_error`. It never crashes the stage.
+2. **Replay check.** Fresh inputs are copied into the static buffers, the graph is replayed, and the static output is compared with the reference. It uses the standard tolerance, or the relative bound for Stage 6. A mismatch (`graph_replay_ok: false`) means the forward baked CPU-side state into the graph.
+3. **Timed replay.** `graph.replay()` is timed with CUDA events in the same rotated rounds as the normal timings, giving `bench/<impl>/graph_us_*`.
+
+A graph comparison is only meaningful when all three implementations captured (`bench/graph_all_capturable`); a graph-replayed candidate is never compared with non-graph baselines.
+
+**Buffer ownership (fixed 2026-11-10).** A `torch.cuda.CUDAGraph` does not keep its static input and output tensors alive. The benchmark used to keep only the graph, so the buffers were freed after capture, and later replays read and wrote memory that other tensors had reused. In the Stage 6 smoke run (`stage6-smoke-20261110T105217Z`), 8 of 12 honest benchmark stages crashed this way, with an illegal memory access or a PyTorch index-out-of-bounds assert. `CapturedGraph` in `utils/benchmark.py` now holds the graph together with its buffers for its whole lifetime, and `tests/test_graph_lifetime.py` fails on the old behaviour. The H200 rerun `stage6-smoke-rerun-20261111T031847Z` checks the fix on the GPU.
+
+Where to turn it on (it always requires the benchmark):
+
+```bash
+# Standalone benchmark
+python -m utils.benchmark --json --cuda-graphs
+# One rollout (RolloutConfig.benchmark + cuda_graphs)
+python -m utils.rollout_env <workdir> --benchmark --cuda-graphs
+# The task suite, locally or forwarded through the Modal task runner
+python -m scripts.validate --suite stage6 --device cuda --benchmark --cuda-graphs
+modal run --detach cloud/modal_tasks.py --tasks stage6 --case-set smoke --cuda-graphs
+```
+
+On Modal, `cloud/modal_tasks.py` forwards `--cuda-graphs` to `scripts.validate`, so each case's benchmark stage records capture, replay correctness and replay timing. Making graph-capturability part of the agent's policy contract, or using graph timings in the reward, would need the user's approval.
+
 ## Diagnostic profiling artifacts (opt-in)
 
 `RolloutConfig.diagnostics` (CLI `--diagnostics`, default off) adds a final `run_task` stage, `python -m utils.profile_artifacts`. It runs its **own** profiler pass over the generated model only (CPU + CUDA activities, recorded shapes, memory events, after the same two-capture priming and per-backend warmup as the reward profiler). It never reuses or replaces the reward measurement or the benchmark. It writes `<workdir>/.artifacts/<run_id>/` (`run_id` is `YYYYMMDDTHHMMSSZ-<8 hex>`):
@@ -660,7 +690,8 @@ AgenticRL-CUDA-kernels/
 ├── artifacts/                         # raw logs, environment record, upstream checksums
 ├── SKILL*.md                          # policy instructions, one per backend
 ├── requirements*.txt                  # torch + triton; optional per-DSL/tracking extras
-└── VALIDATION.md · KNOWN_ISSUES.md    # evidence and open gaps
+├── VALIDATION.md · KNOWN_ISSUES.md    # evidence and open gaps
+└── GLOSSARY.md                      # plain-language definitions of terms and acronyms
 ```
 
 ## Scope and limitations
