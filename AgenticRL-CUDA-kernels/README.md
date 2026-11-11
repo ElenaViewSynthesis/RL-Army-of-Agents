@@ -156,7 +156,7 @@ All 71 suite rows passed in run `task-stage5-gpu-acceptance-20261110T002043Z`; d
 | 3 | Packed-reduction kernels against the repository-authored RL contracts: GRPO group normalization, CISPO weight clipping, packed variable-length reduction | pass |
 | 4 | Attention, grouped GEMM, sampling, residual RMSNorm, decode attention and Dense-MoE; INT8/FP8 as contracts only | pass (grouped GEMM is Triton-only by design) |
 | 5 | EAGLE-4 speculative decoding: nine evaluation-only tree workloads, including 32k-context tree row and verify attention, candidate top-k over a 151,936 vocabulary, sampled acceptance, Mamba2 conv, and GDN walk plus chain replay | pass: smoke 71/71 and largest cases 71/71, CUDA and Triton, all fixtures |
-| 6 | Multi-LoRA serving: six tasks, including fused SGMV, with Triton and CUDA kernels: BGMV and SGMV shrink/expand, stable segment metadata, and fp32-scratch fused SGMV | H200 fp16 smoke: correctness and provenance pass; eight benchmark stages crashed. [Review](artifacts/runs/stage6-smoke-20261110T105217Z/REVIEW.md). [Contracts](MULTI_LORA_STAGE6.md) |
+| 6 | Multi-LoRA serving: six tasks, including fused SGMV, with Triton and CUDA kernels: BGMV and SGMV shrink/expand, stable segment metadata, and fp32-scratch fused SGMV | H200 fp16 smoke: pass, 46/46 applicable rows, CUDA-graph replay OK on all 12 honest kernels; bf16, mixed-rank and largest cases pending. [Review of the first smoke](artifacts/runs/stage6-smoke-20261110T105217Z/REVIEW.md). [Contracts](MULTI_LORA_STAGE6.md) |
 
 | Stage | Task | Reference solution | H200 result (honest scores, hack fails provenance, wrong fails verification) |
 |---|---|---|---|
@@ -189,12 +189,12 @@ All 71 suite rows passed in run `task-stage5-gpu-acceptance-20261110T002043Z`; d
 | 5 | `eagle_gdn_tree_recurrence`‡ | Triton, CUDA; alternate Triton chain replay | pass (smoke; largest 32 × 64 nodes × 4 heads × 128²), including chain replay |
 | 5 | `eagle_accept_tail`‡ | Triton, CUDA | pass (smoke; largest 32 × 64 nodes) |
 | 5 | `eagle_accept_tail_sampled`‡ | Triton, CUDA | pass (smoke; largest 32 × 64 nodes × 151,936 vocabulary) |
-| 6 | `lora_shrink_bgmv` | Triton split-K, CUDA | H200 fp16 smoke: gates pass; graph replay crashed (harness bug, fixed; rerun pending) |
-| 6 | `lora_expand_bgmv` | Triton tiled, CUDA | H200 fp16 smoke: gates pass; graph replay crashed (harness bug, fixed; rerun pending) |
-| 6 | `lora_segment_metadata` | Triton counts/scan/scatter, CUDA | H200 fp16 smoke: gates pass; graph replay pass |
-| 6 | `lora_shrink_sgmv` | Triton segment GEMM, CUDA | H200 fp16 smoke: gates pass; graph replay pass |
-| 6 | `lora_expand_sgmv` | Triton segment GEMM, CUDA | H200 fp16 smoke: gates pass; graph replay crashed (harness bug, fixed; rerun pending) |
-| 6 | `lora_fused_sgmv` | Triton and CUDA, fp32 scratch | H200 fp16 smoke: gates pass; graph replay crashed (harness bug, fixed; rerun pending) |
+| 6 | `lora_shrink_bgmv` | Triton split-K, CUDA | H200 fp16 smoke: pass, CUDA 3.5 µs and Triton 2.3 µs vs eager 19 µs (`faster_than_both`); CUDA-graph replay OK |
+| 6 | `lora_expand_bgmv` | Triton tiled, CUDA | H200 fp16 smoke: pass, CUDA 3.0 µs and Triton 2.4 µs vs eager 30 µs (`faster_than_both`); CUDA-graph replay OK |
+| 6 | `lora_segment_metadata` | Triton counts/scan/scatter, CUDA | H200 fp16 smoke: pass, CUDA 1.2 µs and Triton 1.9 µs vs eager 43 µs (`faster_than_both`); CUDA-graph replay OK |
+| 6 | `lora_shrink_sgmv` | Triton segment GEMM, CUDA | H200 fp16 smoke: pass, CUDA 27 µs (`faster_than_eager`), Triton 48 µs (`correct`) vs eager 29 µs; CUDA-graph replay OK |
+| 6 | `lora_expand_sgmv` | Triton segment GEMM, CUDA | H200 fp16 smoke: pass, CUDA 19 µs and Triton 26 µs vs eager 48 µs (`faster_than_eager`); CUDA-graph replay OK |
+| 6 | `lora_fused_sgmv` | Triton and CUDA, fp32 scratch | H200 fp16 smoke: pass, CUDA 46 µs and Triton 74 µs vs eager 79 µs (`faster_than_eager`); CUDA-graph replay OK |
 
 \* Evaluation-only: adapted from GPU MODE reference kernels, whose license does not clear training use (`--purpose train` is refused).
 † Contract only by design: the INT8/FP8 workloads are specified (inputs, reference, checks), but Stage 4 deliberately enables no backend for them; their `ModelNew` raises `unavailable`.
@@ -207,7 +207,7 @@ Runs: `task-stage1-20261109T004826Z` (stages 0–1, 24/24), `task-stage23-202611
 
 Tasks run through `python -m scripts.validate --suite <names|stageN|all> --device cuda` (or `cloud/modal_tasks.py` on Modal). They use two task-only gates, both approved on 2026-11-09: the provenance gate `authored-only-no-library-v1` (any library kernel time is a violation, the authored share must be at least 90%, memory time is excluded, and `gemm_tensor_core` requires 100% authored), and exact comparison for integer outputs (`RolloutConfig.exact_integer_outputs`, via `utils/task_verification.py`; floating-point tolerances are unchanged). Both are off for the stock rollout, whose reward is unchanged.
 
-Stage 6 results above are from the fp16 smoke run `stage6-smoke-20261110T105217Z` only ([review](artifacts/runs/stage6-smoke-20261110T105217Z/REVIEW.md)): every honest kernel verified with authored provenance 1.0, and every hack and wrong control was caught, but 8 of 12 honest benchmark stages crashed during timed CUDA-graph replay (illegal memory access, or a PyTorch index-out-of-bounds assert). The cause found locally is in the shared benchmark harness: a captured graph did not keep its static input and output buffers alive, so replay touched freed memory. That is fixed (`CapturedGraph`, with a regression test), and 2,640 repeated forwards showed no input mutation; the fix still needs a GPU rerun. See [MULTI_LORA_STAGE6.md](MULTI_LORA_STAGE6.md) for interfaces, deterministic stratification, poisoned padding, negative controls, error distributions and reproduction.
+Stage 6 results above are from the H200 fp16 smoke rerun `stage6-smoke-rerun-20261111T031847Z` (commit `b79f0e3`, relative-bound gate on, `--cuda-graphs`): 46 passed, 0 failed, and 10 not applicable (wrong-skip controls on smoke cases that have no skipped tokens). Every honest kernel verified with authored provenance 1.0, and every one captured and replayed correctly as a CUDA graph. That confirms the `CapturedGraph` fix for the 8 replay crashes in the first smoke run (`stage6-smoke-20261110T105217Z`, [review](artifacts/runs/stage6-smoke-20261110T105217Z/REVIEW.md)). Every hack failed provenance, and every wrong and wrong-padding control failed verification. Only the fp16 smoke cases have run so far: bf16, mixed ranks, skipped tokens and the largest cases still need a GPU run. See [MULTI_LORA_STAGE6.md](MULTI_LORA_STAGE6.md) for interfaces, deterministic stratification, poisoned padding, negative controls, error distributions and reproduction.
 
 ---
 
@@ -431,7 +431,7 @@ What happens for each implementation (eager, `torch.compile` and the candidate),
 
 A graph comparison is only meaningful when all three implementations captured (`bench/graph_all_capturable`); a graph-replayed candidate is never compared with non-graph baselines.
 
-**Buffer ownership (fixed 2026-11-10).** A `torch.cuda.CUDAGraph` does not keep its static input and output tensors alive. The benchmark used to keep only the graph, so the buffers were freed after capture, and later replays read and wrote memory that other tensors had reused. In the Stage 6 smoke run (`stage6-smoke-20261110T105217Z`), 8 of 12 honest benchmark stages crashed this way, with an illegal memory access or a PyTorch index-out-of-bounds assert. `CapturedGraph` in `utils/benchmark.py` now holds the graph together with its buffers for its whole lifetime, and `tests/test_graph_lifetime.py` fails on the old behaviour. The H200 rerun `stage6-smoke-rerun-20261111T031847Z` checks the fix on the GPU.
+**Buffer ownership (fixed 2026-11-10).** A `torch.cuda.CUDAGraph` does not keep its static input and output tensors alive. The benchmark used to keep only the graph, so the buffers were freed after capture, and later replays read and wrote memory that other tensors had reused. In the Stage 6 smoke run (`stage6-smoke-20261110T105217Z`), 8 of 12 honest benchmark stages crashed this way, with an illegal memory access or a PyTorch index-out-of-bounds assert. `CapturedGraph` in `utils/benchmark.py` now holds the graph together with its buffers for its whole lifetime, and `tests/test_graph_lifetime.py` fails on the old behaviour. The H200 rerun `stage6-smoke-rerun-20261111T031847Z` confirmed the fix: all 12 Stage 6 honest kernels captured and replayed correctly.
 
 Where to turn it on. It always requires the benchmark, and every entry point rejects `--cuda-graphs` without it rather than ignoring it: `RolloutConfig` and the `run_task` CLI raise `cuda_graphs requires benchmark`, `scripts.validate` exits with a usage error (and accepts it only with `--suite`), and the Modal task runner refuses `--no-benchmark --cuda-graphs`.
 

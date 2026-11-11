@@ -2540,3 +2540,41 @@ checked separately afterward (`final-routing.log`: 5 tests, OK;
 
 No commit or Modal launch was performed. Claude reviews the frozen
 source and prepared request and launches only after user approval.
+
+### Stage 6 H200 smoke rerun: stage6-smoke-rerun-20261111T031847Z
+
+Detached H200 run of commit `b79f0e3` (frozen source: 271 files, manifest
+`b121e4cd…`), with the relative-bound gate, `--benchmark`, `--cold-start` and
+`--cuda-graphs`:
+
+```bash
+cd /tmp/task-stage6-gpu-source-20261111T031847Z && PYTHONPATH=$PWD MODAL_GPU=H200   <repo>/.venv/bin/modal run --detach cloud/modal_tasks.py --tasks stage6 --case-set smoke   --backends cuda,triton --fixtures all --cuda-graphs --timeout-s 600   --run-id stage6-smoke-rerun-20261111T031847Z
+```
+
+Result: status `partial`, **46 passed, 0 failed, 10 unavailable**, no source
+mismatches, 1343 s. The 10 unavailable rows are `wrong_skip` controls on
+smoke cases without skipped tokens (`control_not_applicable_no_skipped_tokens`).
+Every honest kernel verified under the relative bound with authored
+provenance 1.0. Every hack failed provenance, and every `wrong` and
+`wrong_padding` control failed verification.
+
+**CUDA graphs:** all 12 honest rows report `bench/available: true`,
+`graph_capturable: true`, `graph_replay_ok: true` and
+`graph_all_capturable: true`. The 8 benchmark crashes of
+`stage6-smoke-20261110T105217Z` are gone, which confirms the `CapturedGraph`
+buffer-ownership fix on the GPU.
+
+| Task (fp16 smoke) | CUDA µs (reason) | Triton µs (reason) | Eager µs |
+|---|---|---|---|
+| shrink BGMV | 3.49 (faster_than_both) | 2.34 (faster_than_both) | 19.0–19.2 |
+| expand BGMV | 3.01 (faster_than_both) | 2.36 (faster_than_both) | 29.7–29.8 |
+| segment metadata | 1.17 (faster_than_both) | 1.85 (faster_than_both) | 42.8–43.0 |
+| shrink SGMV | 27.28 (faster_than_eager) | 47.82 (correct) | 29.3–29.7 |
+| expand SGMV | 18.73 (faster_than_eager) | 26.23 (faster_than_eager) | 47.8–47.9 |
+| fused SGMV | 46.18 (faster_than_eager) | 73.97 (faster_than_eager) | 78.8 |
+
+Times are profiler device time per call. Scope: fp16 smoke cases only (rank
+8, one slot, one slice; BGMV one token, SGMV 512 tokens). bf16, mixed ranks,
+skipped tokens and the largest cases are not yet GPU-tested. Evidence:
+`artifacts/runs/stage6-smoke-rerun-20261111T031847Z/` (JSON, logs and the
+source manifest).

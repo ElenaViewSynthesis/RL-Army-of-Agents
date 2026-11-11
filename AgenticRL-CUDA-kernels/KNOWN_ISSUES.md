@@ -352,7 +352,16 @@
   during that initial local implementation.
 
 
-- **Stage 6 H200 graph benchmarking remains open.** Approved smoke run
+- **Stage 6 graph replay fixed and confirmed on the H200; wider coverage open.**
+  Rerun `stage6-smoke-rerun-20261111T031847Z` (commit `b79f0e3`, relative-bound
+  gate on, `--cuda-graphs`): 46 passed, 0 failed, 10 not applicable
+  (wrong-skip controls on smoke cases without skipped tokens). All 12 honest
+  kernels captured and replayed correctly, which confirms the `CapturedGraph`
+  ownership fix for the earlier 8 replay crashes. Still open: bf16,
+  mixed-rank, skipped-token, stratified and largest-case GPU runs. The
+  Triton shrink SGMV is correct but slower than eager at the smoke size.
+  The entries below describe the earlier state.
+- **Stage 6 H200 graph benchmarking remains open (superseded above).** Approved smoke run
   `stage6-smoke-20261110T105217Z` passed all 46 applicable correctness/provenance
   outcomes (10 no-skip controls unavailable); all 12 honest cells have authored
   provenance 1.0. However, eight honest benchmark stages faulted during graph
