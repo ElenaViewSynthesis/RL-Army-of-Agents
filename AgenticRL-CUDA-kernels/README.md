@@ -433,7 +433,7 @@ A graph comparison is only meaningful when all three implementations captured (`
 
 **Buffer ownership (fixed 2026-11-10).** A `torch.cuda.CUDAGraph` does not keep its static input and output tensors alive. The benchmark used to keep only the graph, so the buffers were freed after capture, and later replays read and wrote memory that other tensors had reused. In the Stage 6 smoke run (`stage6-smoke-20261110T105217Z`), 8 of 12 honest benchmark stages crashed this way, with an illegal memory access or a PyTorch index-out-of-bounds assert. `CapturedGraph` in `utils/benchmark.py` now holds the graph together with its buffers for its whole lifetime, and `tests/test_graph_lifetime.py` fails on the old behaviour. The H200 rerun `stage6-smoke-rerun-20261111T031847Z` checks the fix on the GPU.
 
-Where to turn it on (it always requires the benchmark):
+Where to turn it on. It always requires the benchmark, and every entry point rejects `--cuda-graphs` without it rather than ignoring it: `RolloutConfig` and the `run_task` CLI raise `cuda_graphs requires benchmark`, `scripts.validate` exits with a usage error (and accepts it only with `--suite`), and the Modal task runner refuses `--no-benchmark --cuda-graphs`.
 
 ```bash
 # Standalone benchmark
@@ -445,7 +445,7 @@ python -m scripts.validate --suite stage6 --device cuda --benchmark --cuda-graph
 modal run --detach cloud/modal_tasks.py --tasks stage6 --case-set smoke --cuda-graphs
 ```
 
-On Modal, `cloud/modal_tasks.py` forwards `--cuda-graphs` to `scripts.validate`, so each case's benchmark stage records capture, replay correctness and replay timing. Making graph-capturability part of the agent's policy contract, or using graph timings in the reward, would need the user's approval.
+On Modal, `cloud/modal_tasks.py` forwards `--cuda-graphs` to `scripts.validate`, so each case's benchmark stage records capture, replay correctness and replay timing. Making graph-capturability part of the agent's policy contract, or using graph timings in the reward, would need the user's approval. `tests/test_cuda_graph_guardrails.py` pins this: the reward from `run_task` and from the task-suite policy is identical whether graphs capture, fail or replay fast, and neither reward function reads any benchmark or graph value.
 
 ## Diagnostic profiling artifacts (opt-in)
 
