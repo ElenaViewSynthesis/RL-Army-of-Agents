@@ -1,0 +1,22 @@
+{
+  "utils/config.py": "f76974d486efc9c44045f838fd094e0ebde2b5b7b4e29b486b663c5ecd64b5aa",
+  "utils/rollout_env.py": "3c4cc4d892b83a966753f39c4e717a641c1d272306203d0f4cf231de06a29e65",
+  "utils/grpo.py": "6026cbc5950425c038a161cb38a490f50db9d671d97c0d7495ffbc6e679d2bff",
+  "utils/task_catalog.py": "9c0ed38f88265362478d75c56ff445da44ea8497f25b3bc69780c19219455a81",
+  "utils/task_suite.py": "2e4710b1d3f38cc59116f27da637a104154d3565ed666a3c9e35543325cf6b9b",
+  "tests/support.py": "39b8dcbe017d535acb29c2605cc832ccb303dded0cf4a6f9b5cfd7e5ed79e8d8",
+  "tests/test_lora_stage6.py": "dc0713d36d313e6ce78c2741a458264c446ad11c2aca4a3965d31d9cd155b015",
+  "Architecture-decision/0002-wandb-tracking-contract.md": "5dea3ba1a028f4cfc019403b751f00f2853ac64467fb89ac99352f0dc3c8c1a1",
+  "tracking/wandb_log.py": "20e5773a2a337764313d2485a14460bc6bbfab4bc5fa08039d29194c87b5bf8e",
+  "README.md": "6dffccbbe195233c62325616c44b36aed8490e5c88dc0cec6aa91bbe77518d2b",
+  "VALIDATION.md": "64920a78dc546deadae4a110716edf0a3ee1871b3349677a7c8df403d5f8a72c",
+  "KNOWN_ISSUES.md": "281607795333c7db71c5ad8808e798607ca0ceb9801e7b9eb219cfe3cac1643d",
+  "Benchmark_diagnostics_task.md": "2a5737afe89854422ee3ec80231a8f362073225dd666b78d1e70ec209699825a",
+  "MULTI_LORA_STAGE6.md": "5476d715d424d9b76f827e5f7caaa582d1135efd3db0d5b35529a6a0da4e8336",
+  "MULTI_LORA_kernels_task.md": "408bf079f4ad7f3a7a46a49f2e1a94be63a4756eb485178a9a4dfb572f0bcaf4",
+  "utils/gpu_lock.py": "d8ba25314f7cccb1dd7cfb9dd805d8bb249d8b533fd780bdbfbe14dedc11aa1d",
+  "scripts/plan_stage6.py": "c8d4b717e3e57e607a0019490ebfcea99903982b42f0d32dcf9ef62c8e39ac31",
+  "scripts/size_stage6.py": "15723ddd845cb30ddad716cd169c6b5acb9ac05bcd45720a9860d279c09419a9",
+  "tests/test_gpu_lock.py": "8b376cbeb3580736b7bec0084facb55fd4b803b6da4b8e39552f53cf63e67ab0",
+  "tests/test_stage6_plan.py": "e54662be922da6761a66be5306cf86dd57f29c27bedafa46239babb4b42cf62b"
+}

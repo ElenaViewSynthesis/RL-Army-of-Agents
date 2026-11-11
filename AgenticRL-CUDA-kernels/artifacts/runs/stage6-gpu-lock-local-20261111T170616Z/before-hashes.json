@@ -1,0 +1,17 @@
+{
+  "utils/config.py": "df51e376efb1458d5ab4314e492b8a7a578ef31a2a58d89d643d6692f710ea58",
+  "utils/rollout_env.py": "bc440ada756ebac35f4dabd1ec416940ed35d55a80614edf7fb6cc3ede4770df",
+  "utils/grpo.py": "57c2d630355c17765aa102e744673b4d038bf70a7a6eb13f8e0a9526b4b40728",
+  "utils/task_catalog.py": "387434dad0ee56a7ef1d30d49955d30202df8730186e1a51c78e8f8302aad1ca",
+  "utils/task_suite.py": "ec33ef8f6a451b9284212a682f28427b1937e2ec4292dc0d5e32947e271f79d6",
+  "tests/support.py": "3b1c7a1daf579f78c4f917c30d3edad2678e315979d158f4b9c99ff84c5b2c32",
+  "tests/test_lora_stage6.py": "1d451bf8c9602e7c5714c9541fab745ee781e76f7533aa8f7e6376be0dbc511e",
+  "Architecture-decision/0002-wandb-tracking-contract.md": "4518a0c917ce8e7af073faa4b004268d21b356800f975ffc71d34672327d5e0b",
+  "tracking/wandb_log.py": "098464f28229852ae86f571ee67432aa7b250f06ef74a438f2ebdd76f1d5dcb2",
+  "README.md": "93676201a773c41a5aec81b3f5a04548322efbe449bb7d2336487332d0529635",
+  "VALIDATION.md": "4da69165bd0792dfd8c410b287c588a0eb78f03357d077888945f0c73771462b",
+  "KNOWN_ISSUES.md": "387c8aecd51ea51ad9c24cbf6615c5d2b54582e1665dad2453085f870594e2d5",
+  "Benchmark_diagnostics_task.md": "93519af8eeb69b9ab45525b27456b4d995b7fe42a19b5d0c08f73819aae33702",
+  "MULTI_LORA_STAGE6.md": "3b94909c00871d9996034af0a2fe7c323615532cb3d415e7922a3cad01f782a5",
+  "MULTI_LORA_kernels_task.md": "3b3c7f2139d23a150296bbc15b0ddea8136e4a6681bb6d9b0600c2b71118f876"
+}

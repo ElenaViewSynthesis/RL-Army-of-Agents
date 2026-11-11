@@ -1,0 +1,1 @@
+{"source": "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifacts/sources/stage6/gpu-lock-20261111T170616Z-acceptance", "tasks": ["lora_shrink_bgmv", "lora_expand_bgmv", "lora_segment_metadata", "lora_shrink_sgmv", "lora_expand_sgmv", "lora_fused_sgmv"], "files": 277}

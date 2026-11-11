@@ -1,0 +1,34 @@
+test_busy_task_suite_stops_before_supplemental_diagnostics (tests.test_gpu_lock.BusyAdvantageTests.test_busy_task_suite_stops_before_supplemental_diagnostics) ... ok
+test_only_gpu_busy_is_excluded_with_original_group_boundaries (tests.test_gpu_lock.BusyAdvantageTests.test_only_gpu_busy_is_excluded_with_original_group_boundaries) ... ok
+test_all_measurement_stages_share_lock_and_release_on_failure (tests.test_gpu_lock.GPULockTests.test_all_measurement_stages_share_lock_and_release_on_failure) ... ok
+test_config_flags_validation_and_torch_free_import (tests.test_gpu_lock.GPULockTests.test_config_flags_validation_and_torch_free_import) ... ok
+test_cpu_opt_out_and_unknown_uuid (tests.test_gpu_lock.GPULockTests.test_cpu_opt_out_and_unknown_uuid) ... ok
+test_lock_wait_cap_is_gpu_busy_never_task_timeout (tests.test_gpu_lock.GPULockTests.test_lock_wait_cap_is_gpu_busy_never_task_timeout) ... ok
+test_sigkill_holder_releases_to_waiter (tests.test_gpu_lock.GPULockTests.test_sigkill_holder_releases_to_waiter) ... ok
+test_two_processes_wait_and_extend_rollout_deadline (tests.test_gpu_lock.GPULockTests.test_two_processes_wait_and_extend_rollout_deadline) ... ok
+test_visible_device_mapping_uuid_keys_and_bad_output (tests.test_gpu_lock.GPULockTests.test_visible_device_mapping_uuid_keys_and_bad_output) ... ok
+test_all_fixtures_are_enumerated_and_applicability_is_honest (tests.test_stage6_plan.Stage6PlanTests.test_all_fixtures_are_enumerated_and_applicability_is_honest) ... ok
+test_decode_and_largest_case_skips_and_headroom (tests.test_stage6_plan.Stage6PlanTests.test_decode_and_largest_case_skips_and_headroom) ... ok
+test_stratified_covers_binding_axes_and_is_stable (tests.test_stage6_plan.Stage6PlanTests.test_stratified_covers_binding_axes_and_is_stable) ... ok
+test_ceiling_cannot_overwrite_reward_or_reduce_tensor_core_provenance (tests.test_task_measurement.TaskMeasurementTests.test_ceiling_cannot_overwrite_reward_or_reduce_tensor_core_provenance) ... ok
+test_flash_hack_uses_real_sdpa_and_stable_alias (tests.test_task_measurement.TaskMeasurementTests.test_flash_hack_uses_real_sdpa_and_stable_alias) ... ok
+test_missing_ceiling_is_unavailable (tests.test_task_measurement.TaskMeasurementTests.test_missing_ceiling_is_unavailable) ... ok
+test_no_invented_or_inconsistent_rates (tests.test_task_measurement.TaskMeasurementTests.test_no_invented_or_inconsistent_rates) ... ok
+test_nonfinite_zero_negative_and_boolean_latencies_fail_closed (tests.test_task_measurement.TaskMeasurementTests.test_nonfinite_zero_negative_and_boolean_latencies_fail_closed) ... ok
+test_optional_task_diagnostics_are_table_only (tests.test_task_measurement.TaskMeasurementTests.test_optional_task_diagnostics_are_table_only) ... ok
+test_protected_files_are_rechecked_after_optional_ceiling (tests.test_task_measurement.TaskMeasurementTests.test_protected_files_are_rechecked_after_optional_ceiling) ... ok
+test_shape_dtype_provider_and_counts_are_attested (tests.test_task_measurement.TaskMeasurementTests.test_shape_dtype_provider_and_counts_are_attested) ... ok
+test_valid_synthetic_ceiling_and_si_units (tests.test_task_measurement.TaskMeasurementTests.test_valid_synthetic_ceiling_and_si_units) ... ok
+test_diagnostic_profile_cannot_be_reward_evidence (tests.test_task_policy.TaskPolicyTests.test_diagnostic_profile_cannot_be_reward_evidence) ... ok
+test_existing_failure_gates_and_shaping_are_preserved (tests.test_task_policy.TaskPolicyTests.test_existing_failure_gates_and_shaping_are_preserved) ... ok
+test_invalid_share_records_fail_closed (tests.test_task_policy.TaskPolicyTests.test_invalid_share_records_fail_closed) ... ok
+test_memory_excluded_and_boundary_inclusive (tests.test_task_policy.TaskPolicyTests.test_memory_excluded_and_boundary_inclusive) ... ok
+test_no_library_even_when_authored_fraction_exceeds_threshold (tests.test_task_policy.TaskPolicyTests.test_no_library_even_when_authored_fraction_exceeds_threshold) ... ok
+test_synthetic_cuda_library_hack_rejected_without_redefining_env_share (tests.test_task_policy.TaskPolicyTests.test_synthetic_cuda_library_hack_rejected_without_redefining_env_share) ... ok
+test_synthetic_diagnostic_rates_are_unit_correct (tests.test_task_policy.TaskPolicyTests.test_synthetic_diagnostic_rates_are_unit_correct) ... ok
+test_task_floor_cannot_be_lowered_by_caller (tests.test_task_policy.TaskPolicyTests.test_task_floor_cannot_be_lowered_by_caller) ... ok
+
+----------------------------------------------------------------------
+Ran 29 tests in 15.417s
+
+OK

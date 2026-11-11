@@ -1,0 +1,13 @@
+{
+  "system_suite": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover",
+  "runtime_suite": "PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 .venv/bin/python -m unittest discover",
+  "focused": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest -v tests.test_gpu_lock tests.test_stage6_plan tests.test_task_catalog tests.test_task_measurement tests.test_task_policy tests.test_config_reward_grpo tests.test_rollout_env.RolloutProtocolTests tests.test_tracking.ContractTests",
+  "final_lock": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest -v tests.test_gpu_lock",
+  "size_probe": "PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 .venv/bin/python -m scripts.size_stage6 --output /tmp/stage6-gpu-lock/symbolic-sizing.json",
+  "run_plan": "PYTHONDONTWRITEBYTECODE=1 python3 -m scripts.plan_stage6 --smoke artifacts/runs/stage6-smoke-rerun-20261111T031847Z --output /tmp/stage6-gpu-lock/run-plan.json",
+  "freeze_acceptance": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m scripts.freeze_task_suite --tasks stage6 --output /mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifacts/sources/stage6/gpu-lock-20261111T170616Z-acceptance",
+  "freeze_stratified": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m scripts.freeze_task_suite --tasks stage6 --output /mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifacts/sources/stage6/gpu-lock-20261111T170616Z-stratified",
+  "final_runtime_parent": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -S -m unittest -v tests.test_gpu_lock tests.test_stage6_plan",
+  "request_verification": "PYTHONDONTWRITEBYTECODE=1 python3 /tmp/stage6-gpu-lock/requests.py",
+  "frozen_parent_tests": "PYTHONDONTWRITEBYTECODE=1 python3 -S -m unittest -v tests.test_gpu_lock tests.test_stage6_plan (cwd: frozen acceptance source)"
+}

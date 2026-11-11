@@ -1,0 +1,121 @@
+{
+  "approval_required": true,
+  "approval_source": "HANDOFF_CODEX_STAGE6_GPU_AND_LOCK.md",
+  "launch_owner": "Claude after review/user approval",
+  "launch_order": 2,
+  "stop_after_run_and_report": true,
+  "automatic_rerun": false,
+  "launched": false,
+  "cwd": "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifacts/sources/stage6/gpu-lock-20261111T170616Z-stratified",
+  "environment": {
+    "MODAL_GPU": "H200",
+    "PYTHONPATH": "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifacts/sources/stage6/gpu-lock-20261111T170616Z-stratified"
+  },
+  "gpu_requested": "H200",
+  "command": [
+    "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/.venv/bin/modal",
+    "run",
+    "--detach",
+    "cloud/modal_tasks.py",
+    "--tasks",
+    "stage6",
+    "--case-set",
+    "stratified",
+    "--backends",
+    "cuda,triton",
+    "--fixtures",
+    "all",
+    "--cuda-graphs",
+    "--timeout-s",
+    "1200",
+    "--run-id",
+    "stage6-stratified-20261111T170616Z"
+  ],
+  "run_id": "stage6-stratified-20261111T170616Z",
+  "benchmark": true,
+  "cold_start": true,
+  "cuda_graphs": true,
+  "source_manifest_sha256": "6ab6e18e50b034182cec97552c9c74585fb23e62265a5b1b1087085a27941bd8",
+  "source_files": 277,
+  "source_git_revision": "64148690e0efbe354e58bd2cff7cedc2c4122c49",
+  "case_ids": {
+    "lora_shrink_bgmv": [
+      "tokens1_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+      "tokens3_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+      "tokens3_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+      "tokens64_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+      "tokens256_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+      "tokens256_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16"
+    ],
+    "lora_expand_bgmv": [
+      "tokens1_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+      "tokens3_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+      "tokens3_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+      "tokens64_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+      "tokens256_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+      "tokens256_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16"
+    ],
+    "lora_segment_metadata": [
+      "tokens1_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+      "tokens3_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+      "tokens3_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+      "tokens64_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+      "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+      "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16"
+    ],
+    "lora_shrink_sgmv": [
+      "tokens512_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+      "tokens512_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+      "tokens512_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+      "tokens512_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+      "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+      "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16"
+    ],
+    "lora_expand_sgmv": [
+      "tokens512_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+      "tokens512_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+      "tokens512_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+      "tokens512_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+      "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+      "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16"
+    ],
+    "lora_fused_sgmv": [
+      "tokens512_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+      "tokens512_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+      "tokens512_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+      "tokens512_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+      "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+      "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16"
+    ]
+  },
+  "estimated_wall_s": 14092.250040707646,
+  "estimate_model": "1.5 * matched smoke row wall + explicit shape-scaled extra budget + 300s startup",
+  "estimate_limitations": "Estimate only. 600s is not demonstrated for new shapes; request 1200s per case. Cold compile, profiling/sort cost and allocator peaks remain GPU checks.",
+  "timeout_s": 1200,
+  "gpu_lock": true,
+  "gpu_lock_timeout_s": 600,
+  "maximum_projected_row_s": 105.49044647164285,
+  "projected_row_budget_below_case_cap": true,
+  "expected_outcome_counts": {
+    "passed": 312,
+    "failed": 0,
+    "unavailable": 24
+  },
+  "expected_outcomes": {
+    "honest": "verify under relative gate (metadata exact), authored >=0.9, zero library time",
+    "hack": "verification succeeds; provenance fails",
+    "wrong": "verification fails",
+    "wrong_padding": "verification fails where padded ranks exist; unavailable only without padding",
+    "wrong_skip": "verification fails with idx=-1; unavailable only without skipped tokens",
+    "fp16_intermediate": "diagnostic attached to honest rows, never an expected-failure row",
+    "gpu_busy": "environment unavailable, excluded from training advantages; report any occurrence"
+  },
+  "additional_honest_checks": "bench available; eager/compile/generated graph capture and replay successful; report failures separately from reward outcomes",
+  "maximum_gpu_planning_budget_bytes": 23781149312,
+  "gpu_capacity_bytes": 141000000000,
+  "memory_limitations": "Symbolic/static estimates with graph, full verifier and runtime reserves; actual compiler/allocator peak not measured",
+  "expected_outputs": "agenticrl-cuda-artifacts:/stage6-stratified-20261111T170616Z",
+  "download_destination": "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifacts/runs/stage6-stratified-20261111T170616Z",
+  "tracking_owner": "Claude downloads JSON/log evidence and logs once to W&B after review",
+  "evidence_plan": "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifacts/runs/stage6-gpu-lock-local-20261111T170616Z/RUN_PLAN.md"
+}

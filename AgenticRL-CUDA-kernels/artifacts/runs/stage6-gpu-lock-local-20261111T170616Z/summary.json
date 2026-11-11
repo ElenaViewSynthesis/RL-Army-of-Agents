@@ -1,0 +1,67 @@
+{
+  "scope": "Stage 6 GPU preparation and per-device measurement lock",
+  "suites": {
+    "system": {
+      "tests": 318,
+      "seconds": 342.187,
+      "skipped": 78,
+      "raw_summary": "Ran 318 tests in 342.187s\n\nOK (skipped=78)"
+    },
+    "runtime": {
+      "tests": 323,
+      "seconds": 1073.095,
+      "skipped": 29,
+      "raw_summary": "Ran 323 tests in 1073.095s\n\nOK (skipped=29)"
+    }
+  },
+  "symbolic_scenarios": 39,
+  "maximum_symbolic_live_bytes": 3593734672,
+  "maximum_memory_planning_budget_bytes": 106799303296,
+  "protected_upstream_checks": {
+    "SKILL.md": true,
+    "model.py": true,
+    "model_new.py": true,
+    "binding.cpp": true,
+    "binding_registry.h": true,
+    "kernels/axpby.cu": true,
+    "kernels/axpby_binding.cpp": true
+  },
+  "new_dependencies": false,
+  "compute_reward_inputs_changed": false,
+  "only_new_reward_reason": "gpu_busy",
+  "only_new_advantage_exclusion": "gpu_busy",
+  "new_default_result_keys": 6,
+  "lock_default_enabled": true,
+  "lock_wait_counts_toward_task_deadline": false,
+  "task_forward_abi_changed": false,
+  "verification_gate_changed": false,
+  "gpu_validation_of_new_sources": false,
+  "modal_launched": false,
+  "live_tracking_write": false,
+  "committed": false,
+  "remaining_checks": [
+    "Real GPU contention/visibility lookup in deployment",
+    "Actual allocator/compiler peaks and cold-run deadline margins",
+    "bf16, mixed-rank, skipped-row and largest-case GPU correctness/graphs"
+  ],
+  "freezes": {
+    "acceptance": {
+      "source": "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifacts/sources/stage6/gpu-lock-20261111T170616Z-acceptance",
+      "source_files": 277,
+      "manifest_sha256": "bcdea24fb705193fd211dc4fe2ed40608daf6e37e62beaf4a156b6a15e9f438c",
+      "mismatches": [],
+      "new_code_tests_legal_files_present": true,
+      "launched": false
+    },
+    "stratified": {
+      "source": "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifacts/sources/stage6/gpu-lock-20261111T170616Z-stratified",
+      "source_files": 277,
+      "manifest_sha256": "6ab6e18e50b034182cec97552c9c74585fb23e62265a5b1b1087085a27941bd8",
+      "mismatches": [],
+      "new_code_tests_legal_files_present": true,
+      "launched": false
+    }
+  },
+  "frozen_parent_tests": "Ran 12 tests in 2.631s; OK",
+  "independent_freezes_have_identical_file_maps": true
+}

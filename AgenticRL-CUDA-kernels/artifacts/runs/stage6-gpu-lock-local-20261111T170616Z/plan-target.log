@@ -1,0 +1,16 @@
+test_all_fixtures_are_enumerated_and_applicability_is_honest (tests.test_stage6_plan.Stage6PlanTests.test_all_fixtures_are_enumerated_and_applicability_is_honest) ... ok
+test_decode_and_largest_case_skips_and_headroom (tests.test_stage6_plan.Stage6PlanTests.test_decode_and_largest_case_skips_and_headroom) ... FAIL
+test_stratified_covers_binding_axes_and_is_stable (tests.test_stage6_plan.Stage6PlanTests.test_stratified_covers_binding_axes_and_is_stable) ... ok
+
+======================================================================
+FAIL: test_decode_and_largest_case_skips_and_headroom (tests.test_stage6_plan.Stage6PlanTests.test_decode_and_largest_case_skips_and_headroom)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/tests/test_stage6_plan.py", line 37, in test_decode_and_largest_case_skips_and_headroom
+    self.assertGreater(size_case(name, item)['gpu_headroom_bytes'], 32*1024**3)
+AssertionError: 34200696704 not greater than 34359738368
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.011s
+
+FAILED (failures=1)

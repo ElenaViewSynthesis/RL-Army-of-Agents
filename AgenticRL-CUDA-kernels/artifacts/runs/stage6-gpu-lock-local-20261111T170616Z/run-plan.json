@@ -1,0 +1,4070 @@
+{
+  "schema": "stage6-gpu-plan-v1",
+  "smoke_evidence": "artifacts/runs/stage6-smoke-rerun-20261111T031847Z",
+  "gpu_timings_measured_for_new_cases": false,
+  "runs": {
+    "acceptance": {
+      "cases": {
+        "lora_shrink_bgmv": [
+          {
+            "case": {
+              "id": "tokens64_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+              "dtype": "bfloat16",
+              "parameters": {
+                "tokens": 64,
+                "hidden": 14336,
+                "out": 14336,
+                "rank": 256,
+                "slots": 16,
+                "slices": 3,
+                "pattern": "mixed",
+                "mixed": true
+              }
+            },
+            "sizing": {
+              "input_bytes": 354156928,
+              "output_bytes": 196608,
+              "builder_peak_budget_bytes": 1416829776,
+              "reference_workspace_budget_bytes": 91947008,
+              "gate_workspace_budget_bytes": 4718592,
+              "gpu_planning_budget_bytes": 29629667968,
+              "gpu_capacity_bytes": 141000000000,
+              "gpu_headroom_bytes": 111370332032,
+              "scope": "Explicit-tensor planning budget, not measured allocator/compiler peak",
+              "assumptions": "8 builder/input copies; 12 workspace/output pools; 2 full gate workspaces; 16 GiB runtime reserve",
+              "skipped_tokens": 16,
+              "rank_padding": true
+            }
+          }
+        ],
+        "lora_expand_bgmv": [
+          {
+            "case": {
+              "id": "tokens64_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+              "dtype": "bfloat16",
+              "parameters": {
+                "tokens": 64,
+                "hidden": 14336,
+                "out": 14336,
+                "rank": 256,
+                "slots": 16,
+                "slices": 3,
+                "pattern": "mixed",
+                "mixed": true
+              }
+            },
+            "sizing": {
+              "input_bytes": 358029644,
+              "output_bytes": 5511168,
+              "builder_peak_budget_bytes": 1416829776,
+              "reference_workspace_budget_bytes": 128843776,
+              "gate_workspace_budget_bytes": 264536064,
+              "gpu_planning_budget_bytes": 30655838848,
+              "gpu_capacity_bytes": 141000000000,
+              "gpu_headroom_bytes": 110344161152,
+              "scope": "Explicit-tensor planning budget, not measured allocator/compiler peak",
+              "assumptions": "8 builder/input copies; 12 workspace/output pools; 2 full gate workspaces; 16 GiB runtime reserve",
+              "skipped_tokens": 16,
+              "rank_padding": true
+            }
+          }
+        ],
+        "lora_segment_metadata": [
+          {
+            "case": {
+              "id": "tokens4096_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+              "dtype": "bfloat16",
+              "parameters": {
+                "tokens": 4096,
+                "hidden": 14336,
+                "out": 14336,
+                "rank": 256,
+                "slots": 16,
+                "slices": 3,
+                "pattern": "mixed",
+                "mixed": true
+              }
+            },
+            "sizing": {
+              "input_bytes": 16448,
+              "output_bytes": 16580,
+              "builder_peak_budget_bytes": 16448,
+              "reference_workspace_budget_bytes": 4456448,
+              "gate_workspace_budget_bytes": 0,
+              "gpu_planning_budget_bytes": 17233677104,
+              "gpu_capacity_bytes": 141000000000,
+              "gpu_headroom_bytes": 123766322896,
+              "scope": "Explicit-tensor planning budget, not measured allocator/compiler peak",
+              "assumptions": "8 builder/input copies; 12 workspace/output pools; 2 full gate workspaces; 16 GiB runtime reserve",
+              "skipped_tokens": 1024,
+              "rank_padding": true
+            }
+          }
+        ],
+        "lora_shrink_sgmv": [
+          {
+            "case": {
+              "id": "tokens4096_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+              "dtype": "bfloat16",
+              "parameters": {
+                "tokens": 4096,
+                "hidden": 14336,
+                "out": 14336,
+                "rank": 256,
+                "slots": 16,
+                "slices": 3,
+                "pattern": "mixed",
+                "mixed": true
+              }
+            },
+            "sizing": {
+              "input_bytes": 469795140,
+              "output_bytes": 12582912,
+              "builder_peak_budget_bytes": 1892057424,
+              "reference_workspace_budget_bytes": 335544320,
+              "gate_workspace_budget_bytes": 301989888,
+              "gpu_planning_budget_bytes": 37097835136,
+              "gpu_capacity_bytes": 141000000000,
+              "gpu_headroom_bytes": 103902164864,
+              "scope": "Explicit-tensor planning budget, not measured allocator/compiler peak",
+              "assumptions": "8 builder/input copies; 12 workspace/output pools; 2 full gate workspaces; 16 GiB runtime reserve",
+              "skipped_tokens": 1024,
+              "rank_padding": true
+            }
+          }
+        ],
+        "lora_expand_sgmv": [
+          {
+            "case": {
+              "id": "tokens4096_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+              "dtype": "bfloat16",
+              "parameters": {
+                "tokens": 4096,
+                "hidden": 14336,
+                "out": 14336,
+                "rank": 256,
+                "slots": 16,
+                "slices": 3,
+                "pattern": "mixed",
+                "mixed": true
+              }
+            },
+            "sizing": {
+              "input_bytes": 717652240,
+              "output_bytes": 352714752,
+              "builder_peak_budget_bytes": 1892057424,
+              "reference_workspace_budget_bytes": 2696937472,
+              "gate_workspace_budget_bytes": 16930308096,
+              "gpu_planning_budget_bytes": 102772771456,
+              "gpu_capacity_bytes": 141000000000,
+              "gpu_headroom_bytes": 38227228544,
+              "scope": "Explicit-tensor planning budget, not measured allocator/compiler peak",
+              "assumptions": "8 builder/input copies; 12 workspace/output pools; 2 full gate workspaces; 16 GiB runtime reserve",
+              "skipped_tokens": 1024,
+              "rank_padding": true
+            }
+          }
+        ],
+        "lora_fused_sgmv": [
+          {
+            "case": {
+              "id": "tokens4096_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+              "dtype": "bfloat16",
+              "parameters": {
+                "tokens": 4096,
+                "hidden": 14336,
+                "out": 14336,
+                "rank": 256,
+                "slots": 16,
+                "slices": 3,
+                "pattern": "mixed",
+                "mixed": true
+              }
+            },
+            "sizing": {
+              "input_bytes": 1174831440,
+              "output_bytes": 352714752,
+              "builder_peak_budget_bytes": 1892057424,
+              "reference_workspace_budget_bytes": 3032481792,
+              "gate_workspace_budget_bytes": 16930308096,
+              "gpu_planning_budget_bytes": 106799303296,
+              "gpu_capacity_bytes": 141000000000,
+              "gpu_headroom_bytes": 34200696704,
+              "scope": "Explicit-tensor planning budget, not measured allocator/compiler peak",
+              "assumptions": "8 builder/input copies; 12 workspace/output pools; 2 full gate workspaces; 16 GiB runtime reserve",
+              "skipped_tokens": 1024,
+              "rank_padding": true
+            }
+          }
+        ]
+      },
+      "rows": [
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens64_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens64_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens64_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens64_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong_padding",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens64_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong_skip",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens64_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens64_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens64_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens64_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong_padding",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens64_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong_skip",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens64_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens64_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens64_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens64_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong_padding",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens64_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong_skip",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens64_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens64_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens64_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens64_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong_padding",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens64_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong_skip",
+          "applicable": true
+        },
+        {
+          "task": "lora_segment_metadata",
+          "case": "tokens4096_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_segment_metadata",
+          "case": "tokens4096_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_segment_metadata",
+          "case": "tokens4096_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_segment_metadata",
+          "case": "tokens4096_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_segment_metadata",
+          "case": "tokens4096_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_segment_metadata",
+          "case": "tokens4096_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens4096_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens4096_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens4096_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens4096_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong_padding",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens4096_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong_skip",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens4096_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens4096_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens4096_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens4096_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong_padding",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens4096_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong_skip",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens4096_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens4096_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens4096_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens4096_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong_padding",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens4096_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong_skip",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens4096_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens4096_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens4096_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens4096_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong_padding",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens4096_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong_skip",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens4096_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens4096_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens4096_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens4096_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong_padding",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens4096_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong_skip",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens4096_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens4096_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens4096_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens4096_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong_padding",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens4096_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong_skip",
+          "applicable": true
+        }
+      ],
+      "total_rows": 56,
+      "applicable_rows": 56,
+      "smoke_baseline_projection_s": 1539.9429724310003,
+      "extra_large_case_budget_s": 5952.0,
+      "estimated_wall_s": 8561.9144586465,
+      "per_case_timeout_s": 1200,
+      "suite_budget_s": 20700,
+      "modal_function_limit_s": 21600,
+      "estimate_within_suite_budget": true,
+      "time_model": "1.5 * matched smoke row wall + explicit shape-scaled extra budget + 300s startup",
+      "time_limitations": "Estimate only. 600s is not demonstrated for new shapes; request 1200s per case. Cold compile, profiling/sort cost and allocator peaks remain GPU checks."
+    },
+    "stratified": {
+      "cases": {
+        "lora_shrink_bgmv": [
+          {
+            "case": {
+              "id": "tokens1_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+              "dtype": "float16",
+              "parameters": {
+                "tokens": 1,
+                "hidden": 2048,
+                "out": 2048,
+                "rank": 8,
+                "slots": 1,
+                "slices": 1,
+                "pattern": "single",
+                "mixed": false
+              }
+            },
+            "sizing": {
+              "input_bytes": 69644,
+              "output_bytes": 64,
+              "builder_peak_budget_bytes": 270468,
+              "reference_workspace_budget_bytes": 270400,
+              "gate_workspace_budget_bytes": 1536,
+              "gpu_planning_budget_bytes": 17185281568,
+              "gpu_capacity_bytes": 141000000000,
+              "gpu_headroom_bytes": 123814718432,
+              "scope": "Explicit-tensor planning budget, not measured allocator/compiler peak",
+              "assumptions": "8 builder/input copies; 12 workspace/output pools; 2 full gate workspaces; 16 GiB runtime reserve",
+              "skipped_tokens": 0,
+              "rank_padding": true
+            }
+          },
+          {
+            "case": {
+              "id": "tokens3_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+              "dtype": "bfloat16",
+              "parameters": {
+                "tokens": 3,
+                "hidden": 2048,
+                "out": 2048,
+                "rank": 8,
+                "slots": 4,
+                "slices": 1,
+                "pattern": "mixed",
+                "mixed": false
+              }
+            },
+            "sizing": {
+              "input_bytes": 274476,
+              "output_bytes": 192,
+              "builder_peak_budget_bytes": 1073552,
+              "reference_workspace_budget_bytes": 286912,
+              "gate_workspace_budget_bytes": 4608,
+              "gpu_planning_budget_bytes": 17191912064,
+              "gpu_capacity_bytes": 141000000000,
+              "gpu_headroom_bytes": 123808087936,
+              "scope": "Explicit-tensor planning budget, not measured allocator/compiler peak",
+              "assumptions": "8 builder/input copies; 12 workspace/output pools; 2 full gate workspaces; 16 GiB runtime reserve",
+              "skipped_tokens": 1,
+              "rank_padding": true
+            }
+          },
+          {
+            "case": {
+              "id": "tokens3_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+              "dtype": "float16",
+              "parameters": {
+                "tokens": 3,
+                "hidden": 8192,
+                "out": 8192,
+                "rank": 64,
+                "slots": 4,
+                "slices": 2,
+                "pattern": "distinct",
+                "mixed": false
+              }
+            },
+            "sizing": {
+              "input_bytes": 8437804,
+              "output_bytes": 1536,
+              "builder_peak_budget_bytes": 33703732,
+              "reference_workspace_budget_bytes": 8488448,
+              "gate_workspace_budget_bytes": 36864,
+              "gpu_planning_budget_bytes": 17551452576,
+              "gpu_capacity_bytes": 141000000000,
+              "gpu_headroom_bytes": 123448547424,
+              "scope": "Explicit-tensor planning budget, not measured allocator/compiler peak",
+              "assumptions": "8 builder/input copies; 12 workspace/output pools; 2 full gate workspaces; 16 GiB runtime reserve",
+              "skipped_tokens": 0,
+              "rank_padding": false
+            }
+          },
+          {
+            "case": {
+              "id": "tokens64_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+              "dtype": "bfloat16",
+              "parameters": {
+                "tokens": 64,
+                "hidden": 2048,
+                "out": 2048,
+                "rank": 128,
+                "slots": 16,
+                "slices": 1,
+                "pattern": "none",
+                "mixed": true
+              }
+            },
+            "sizing": {
+              "input_bytes": 8651136,
+              "output_bytes": 32768,
+              "builder_peak_budget_bytes": 34114376,
+              "reference_workspace_budget_bytes": 2654208,
+              "gate_workspace_budget_bytes": 786432,
+              "gpu_planning_budget_bytes": 17486600768,
+              "gpu_capacity_bytes": 141000000000,
+              "gpu_headroom_bytes": 123513399232,
+              "scope": "Explicit-tensor planning budget, not measured allocator/compiler peak",
+              "assumptions": "8 builder/input copies; 12 workspace/output pools; 2 full gate workspaces; 16 GiB runtime reserve",
+              "skipped_tokens": 64,
+              "rank_padding": true
+            }
+          },
+          {
+            "case": {
+              "id": "tokens256_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+              "dtype": "float16",
+              "parameters": {
+                "tokens": 256,
+                "hidden": 4096,
+                "out": 4096,
+                "rank": 256,
+                "slots": 16,
+                "slices": 3,
+                "pattern": "mixed",
+                "mixed": true
+              }
+            },
+            "sizing": {
+              "input_bytes": 102761600,
+              "output_bytes": 786432,
+              "builder_peak_budget_bytes": 411855184,
+              "reference_workspace_budget_bytes": 30146560,
+              "gate_workspace_budget_bytes": 18874368,
+              "gpu_planning_budget_bytes": 20883655296,
+              "gpu_capacity_bytes": 141000000000,
+              "gpu_headroom_bytes": 120116344704,
+              "scope": "Explicit-tensor planning budget, not measured allocator/compiler peak",
+              "assumptions": "8 builder/input copies; 12 workspace/output pools; 2 full gate workspaces; 16 GiB runtime reserve",
+              "skipped_tokens": 64,
+              "rank_padding": true
+            }
+          },
+          {
+            "case": {
+              "id": "tokens256_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+              "dtype": "bfloat16",
+              "parameters": {
+                "tokens": 256,
+                "hidden": 4096,
+                "out": 4096,
+                "rank": 256,
+                "slots": 16,
+                "slices": 3,
+                "pattern": "mixed",
+                "mixed": true
+              }
+            },
+            "sizing": {
+              "input_bytes": 102761600,
+              "output_bytes": 786432,
+              "builder_peak_budget_bytes": 411855184,
+              "reference_workspace_budget_bytes": 30146560,
+              "gate_workspace_budget_bytes": 18874368,
+              "gpu_planning_budget_bytes": 20883655296,
+              "gpu_capacity_bytes": 141000000000,
+              "gpu_headroom_bytes": 120116344704,
+              "scope": "Explicit-tensor planning budget, not measured allocator/compiler peak",
+              "assumptions": "8 builder/input copies; 12 workspace/output pools; 2 full gate workspaces; 16 GiB runtime reserve",
+              "skipped_tokens": 64,
+              "rank_padding": true
+            }
+          }
+        ],
+        "lora_expand_bgmv": [
+          {
+            "case": {
+              "id": "tokens1_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+              "dtype": "float16",
+              "parameters": {
+                "tokens": 1,
+                "hidden": 2048,
+                "out": 2048,
+                "rank": 8,
+                "slots": 1,
+                "slices": 1,
+                "pattern": "single",
+                "mixed": false
+              }
+            },
+            "sizing": {
+              "input_bytes": 69740,
+              "output_bytes": 4128,
+              "builder_peak_budget_bytes": 270468,
+              "reference_workspace_budget_bytes": 336000,
+              "gate_workspace_budget_bytes": 198144,
+              "gpu_planning_budget_bytes": 17186510752,
+              "gpu_capacity_bytes": 141000000000,
+              "gpu_headroom_bytes": 123813489248,
+              "scope": "Explicit-tensor planning budget, not measured allocator/compiler peak",
+              "assumptions": "8 builder/input copies; 12 workspace/output pools; 2 full gate workspaces; 16 GiB runtime reserve",
+              "skipped_tokens": 0,
+              "rank_padding": true
+            }
+          },
+          {
+            "case": {
+              "id": "tokens3_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+              "dtype": "bfloat16",
+              "parameters": {
+                "tokens": 3,
+                "hidden": 2048,
+                "out": 2048,
+                "rank": 8,
+                "slots": 4,
+                "slices": 1,
+                "pattern": "mixed",
+                "mixed": false
+              }
+            },
+            "sizing": {
+              "input_bytes": 274752,
+              "output_bytes": 12384,
+              "builder_peak_budget_bytes": 1073552,
+              "reference_workspace_budget_bytes": 483712,
+              "gate_workspace_budget_bytes": 594432,
+              "gpu_planning_budget_bytes": 17195599616,
+              "gpu_capacity_bytes": 141000000000,
+              "gpu_headroom_bytes": 123804400384,
+              "scope": "Explicit-tensor planning budget, not measured allocator/compiler peak",
+              "assumptions": "8 builder/input copies; 12 workspace/output pools; 2 full gate workspaces; 16 GiB runtime reserve",
+              "skipped_tokens": 1,
+              "rank_padding": true
+            }
+          },
+          {
+            "case": {
+              "id": "tokens3_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+              "dtype": "float16",
+              "parameters": {
+                "tokens": 3,
+                "hidden": 8192,
+                "out": 8192,
+                "rank": 64,
+                "slots": 4,
+                "slices": 2,
+                "pattern": "distinct",
+                "mixed": false
+              }
+            },
+            "sizing": {
+              "input_bytes": 8488676,
+              "output_bytes": 98496,
+              "builder_peak_budget_bytes": 33703732,
+              "reference_workspace_budget_bytes": 9374720,
+              "gate_workspace_budget_bytes": 4727808,
+              "gpu_planning_budget_bytes": 17572633248,
+              "gpu_capacity_bytes": 141000000000,
+              "gpu_headroom_bytes": 123427366752,
+              "scope": "Explicit-tensor planning budget, not measured allocator/compiler peak",
+              "assumptions": "8 builder/input copies; 12 workspace/output pools; 2 full gate workspaces; 16 GiB runtime reserve",
+              "skipped_tokens": 0,
+              "rank_padding": false
+            }
+          },
+          {
+            "case": {
+              "id": "tokens64_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+              "dtype": "bfloat16",
+              "parameters": {
+                "tokens": 64,
+                "hidden": 2048,
+                "out": 2048,
+                "rank": 128,
+                "slots": 16,
+                "slices": 1,
+                "pattern": "none",
+                "mixed": true
+              }
+            },
+            "sizing": {
+              "input_bytes": 8685892,
+              "output_bytes": 264192,
+              "builder_peak_budget_bytes": 34114376,
+              "reference_workspace_budget_bytes": 6881280,
+              "gate_workspace_budget_bytes": 12681216,
+              "gpu_planning_budget_bytes": 17563892288,
+              "gpu_capacity_bytes": 141000000000,
+              "gpu_headroom_bytes": 123436107712,
+              "scope": "Explicit-tensor planning budget, not measured allocator/compiler peak",
+              "assumptions": "8 builder/input copies; 12 workspace/output pools; 2 full gate workspaces; 16 GiB runtime reserve",
+              "skipped_tokens": 64,
+              "rank_padding": true
+            }
+          },
+          {
+            "case": {
+              "id": "tokens256_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+              "dtype": "float16",
+              "parameters": {
+                "tokens": 256,
+                "hidden": 4096,
+                "out": 4096,
+                "rank": 256,
+                "slots": 16,
+                "slices": 3,
+                "pattern": "mixed",
+                "mixed": true
+              }
+            },
+            "sizing": {
+              "input_bytes": 107766860,
+              "output_bytes": 6316032,
+              "builder_peak_budget_bytes": 411855184,
+              "reference_workspace_budget_bytes": 72876032,
+              "gate_workspace_budget_bytes": 303169536,
+              "gpu_planning_budget_bytes": 22031354496,
+              "gpu_capacity_bytes": 141000000000,
+              "gpu_headroom_bytes": 118968645504,
+              "scope": "Explicit-tensor planning budget, not measured allocator/compiler peak",
+              "assumptions": "8 builder/input copies; 12 workspace/output pools; 2 full gate workspaces; 16 GiB runtime reserve",
+              "skipped_tokens": 64,
+              "rank_padding": true
+            }
+          },
+          {
+            "case": {
+              "id": "tokens256_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+              "dtype": "bfloat16",
+              "parameters": {
+                "tokens": 256,
+                "hidden": 4096,
+                "out": 4096,
+                "rank": 256,
+                "slots": 16,
+                "slices": 3,
+                "pattern": "mixed",
+                "mixed": true
+              }
+            },
+            "sizing": {
+              "input_bytes": 107766860,
+              "output_bytes": 6316032,
+              "builder_peak_budget_bytes": 411855184,
+              "reference_workspace_budget_bytes": 72876032,
+              "gate_workspace_budget_bytes": 303169536,
+              "gpu_planning_budget_bytes": 22031354496,
+              "gpu_capacity_bytes": 141000000000,
+              "gpu_headroom_bytes": 118968645504,
+              "scope": "Explicit-tensor planning budget, not measured allocator/compiler peak",
+              "assumptions": "8 builder/input copies; 12 workspace/output pools; 2 full gate workspaces; 16 GiB runtime reserve",
+              "skipped_tokens": 64,
+              "rank_padding": true
+            }
+          }
+        ],
+        "lora_segment_metadata": [
+          {
+            "case": {
+              "id": "tokens1_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+              "dtype": "float16",
+              "parameters": {
+                "tokens": 1,
+                "hidden": 2048,
+                "out": 2048,
+                "rank": 8,
+                "slots": 1,
+                "slices": 1,
+                "pattern": "single",
+                "mixed": false
+              }
+            },
+            "sizing": {
+              "input_bytes": 8,
+              "output_bytes": 20,
+              "builder_peak_budget_bytes": 8,
+              "reference_workspace_budget_bytes": 128,
+              "gate_workspace_budget_bytes": 0,
+              "gpu_planning_budget_bytes": 17179871024,
+              "gpu_capacity_bytes": 141000000000,
+              "gpu_headroom_bytes": 123820128976,
+              "scope": "Explicit-tensor planning budget, not measured allocator/compiler peak",
+              "assumptions": "8 builder/input copies; 12 workspace/output pools; 2 full gate workspaces; 16 GiB runtime reserve",
+              "skipped_tokens": 0,
+              "rank_padding": true
+            }
+          },
+          {
+            "case": {
+              "id": "tokens3_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+              "dtype": "bfloat16",
+              "parameters": {
+                "tokens": 3,
+                "hidden": 2048,
+                "out": 2048,
+                "rank": 8,
+                "slots": 4,
+                "slices": 1,
+                "pattern": "mixed",
+                "mixed": false
+              }
+            },
+            "sizing": {
+              "input_bytes": 28,
+              "output_bytes": 64,
+              "builder_peak_budget_bytes": 28,
+              "reference_workspace_budget_bytes": 960,
+              "gate_workspace_budget_bytes": 0,
+              "gpu_planning_budget_bytes": 17179881696,
+              "gpu_capacity_bytes": 141000000000,
+              "gpu_headroom_bytes": 123820118304,
+              "scope": "Explicit-tensor planning budget, not measured allocator/compiler peak",
+              "assumptions": "8 builder/input copies; 12 workspace/output pools; 2 full gate workspaces; 16 GiB runtime reserve",
+              "skipped_tokens": 1,
+              "rank_padding": true
+            }
+          },
+          {
+            "case": {
+              "id": "tokens3_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+              "dtype": "float16",
+              "parameters": {
+                "tokens": 3,
+                "hidden": 8192,
+                "out": 8192,
+                "rank": 64,
+                "slots": 4,
+                "slices": 2,
+                "pattern": "distinct",
+                "mixed": false
+              }
+            },
+            "sizing": {
+              "input_bytes": 28,
+              "output_bytes": 64,
+              "builder_peak_budget_bytes": 28,
+              "reference_workspace_budget_bytes": 960,
+              "gate_workspace_budget_bytes": 0,
+              "gpu_planning_budget_bytes": 17179881696,
+              "gpu_capacity_bytes": 141000000000,
+              "gpu_headroom_bytes": 123820118304,
+              "scope": "Explicit-tensor planning budget, not measured allocator/compiler peak",
+              "assumptions": "8 builder/input copies; 12 workspace/output pools; 2 full gate workspaces; 16 GiB runtime reserve",
+              "skipped_tokens": 0,
+              "rank_padding": false
+            }
+          },
+          {
+            "case": {
+              "id": "tokens64_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+              "dtype": "bfloat16",
+              "parameters": {
+                "tokens": 64,
+                "hidden": 2048,
+                "out": 2048,
+                "rank": 128,
+                "slots": 16,
+                "slices": 1,
+                "pattern": "none",
+                "mixed": true
+              }
+            },
+            "sizing": {
+              "input_bytes": 320,
+              "output_bytes": 452,
+              "builder_peak_budget_bytes": 320,
+              "reference_workspace_budget_bytes": 69632,
+              "gate_workspace_budget_bytes": 0,
+              "gpu_planning_budget_bytes": 17180712752,
+              "gpu_capacity_bytes": 141000000000,
+              "gpu_headroom_bytes": 123819287248,
+              "scope": "Explicit-tensor planning budget, not measured allocator/compiler peak",
+              "assumptions": "8 builder/input copies; 12 workspace/output pools; 2 full gate workspaces; 16 GiB runtime reserve",
+              "skipped_tokens": 64,
+              "rank_padding": true
+            }
+          },
+          {
+            "case": {
+              "id": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+              "dtype": "float16",
+              "parameters": {
+                "tokens": 512,
+                "hidden": 4096,
+                "out": 4096,
+                "rank": 256,
+                "slots": 16,
+                "slices": 3,
+                "pattern": "mixed",
+                "mixed": true
+              }
+            },
+            "sizing": {
+              "input_bytes": 2112,
+              "output_bytes": 2244,
+              "builder_peak_budget_bytes": 2112,
+              "reference_workspace_budget_bytes": 557056,
+              "gate_workspace_budget_bytes": 0,
+              "gpu_planning_budget_bytes": 17186597680,
+              "gpu_capacity_bytes": 141000000000,
+              "gpu_headroom_bytes": 123813402320,
+              "scope": "Explicit-tensor planning budget, not measured allocator/compiler peak",
+              "assumptions": "8 builder/input copies; 12 workspace/output pools; 2 full gate workspaces; 16 GiB runtime reserve",
+              "skipped_tokens": 128,
+              "rank_padding": true
+            }
+          },
+          {
+            "case": {
+              "id": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+              "dtype": "bfloat16",
+              "parameters": {
+                "tokens": 512,
+                "hidden": 4096,
+                "out": 4096,
+                "rank": 256,
+                "slots": 16,
+                "slices": 3,
+                "pattern": "mixed",
+                "mixed": true
+              }
+            },
+            "sizing": {
+              "input_bytes": 2112,
+              "output_bytes": 2244,
+              "builder_peak_budget_bytes": 2112,
+              "reference_workspace_budget_bytes": 557056,
+              "gate_workspace_budget_bytes": 0,
+              "gpu_planning_budget_bytes": 17186597680,
+              "gpu_capacity_bytes": 141000000000,
+              "gpu_headroom_bytes": 123813402320,
+              "scope": "Explicit-tensor planning budget, not measured allocator/compiler peak",
+              "assumptions": "8 builder/input copies; 12 workspace/output pools; 2 full gate workspaces; 16 GiB runtime reserve",
+              "skipped_tokens": 128,
+              "rank_padding": true
+            }
+          }
+        ],
+        "lora_shrink_sgmv": [
+          {
+            "case": {
+              "id": "tokens512_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+              "dtype": "float16",
+              "parameters": {
+                "tokens": 512,
+                "hidden": 2048,
+                "out": 2048,
+                "rank": 8,
+                "slots": 1,
+                "slices": 1,
+                "pattern": "single",
+                "mixed": false
+              }
+            },
+            "sizing": {
+              "input_bytes": 2166808,
+              "output_bytes": 32768,
+              "builder_peak_budget_bytes": 4509724,
+              "reference_workspace_budget_bytes": 4489216,
+              "gate_workspace_budget_bytes": 786432,
+              "gpu_planning_budget_bytes": 17271783648,
+              "gpu_capacity_bytes": 141000000000,
+              "gpu_headroom_bytes": 123728216352,
+              "scope": "Explicit-tensor planning budget, not measured allocator/compiler peak",
+              "assumptions": "8 builder/input copies; 12 workspace/output pools; 2 full gate workspaces; 16 GiB runtime reserve",
+              "skipped_tokens": 0,
+              "rank_padding": true
+            }
+          },
+          {
+            "case": {
+              "id": "tokens512_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+              "dtype": "bfloat16",
+              "parameters": {
+                "tokens": 512,
+                "hidden": 2048,
+                "out": 2048,
+                "rank": 8,
+                "slots": 4,
+                "slices": 1,
+                "pattern": "mixed",
+                "mixed": false
+              }
+            },
+            "sizing": {
+              "input_bytes": 2363476,
+              "output_bytes": 32768,
+              "builder_peak_budget_bytes": 5296216,
+              "reference_workspace_budget_bytes": 4489216,
+              "gate_workspace_budget_bytes": 786432,
+              "gpu_planning_budget_bytes": 17278075584,
+              "gpu_capacity_bytes": 141000000000,
+              "gpu_headroom_bytes": 123721924416,
+              "scope": "Explicit-tensor planning budget, not measured allocator/compiler peak",
+              "assumptions": "8 builder/input copies; 12 workspace/output pools; 2 full gate workspaces; 16 GiB runtime reserve",
+              "skipped_tokens": 128,
+              "rank_padding": true
+            }
+          },
+          {
+            "case": {
+              "id": "tokens512_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+              "dtype": "float16",
+              "parameters": {
+                "tokens": 512,
+                "hidden": 8192,
+                "out": 8192,
+                "rank": 64,
+                "slots": 4,
+                "slices": 2,
+                "pattern": "distinct",
+                "mixed": false
+              }
+            },
+            "sizing": {
+              "input_bytes": 16781396,
+              "output_bytes": 262144,
+              "builder_peak_budget_bytes": 59019356,
+              "reference_workspace_budget_bytes": 25427968,
+              "gate_workspace_budget_bytes": 6291456,
+              "gpu_planning_budget_bytes": 17972888288,
+              "gpu_capacity_bytes": 141000000000,
+              "gpu_headroom_bytes": 123027111712,
+              "scope": "Explicit-tensor planning budget, not measured allocator/compiler peak",
+              "assumptions": "8 builder/input copies; 12 workspace/output pools; 2 full gate workspaces; 16 GiB runtime reserve",
+              "skipped_tokens": 508,
+              "rank_padding": false
+            }
+          },
+          {
+            "case": {
+              "id": "tokens512_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+              "dtype": "bfloat16",
+              "parameters": {
+                "tokens": 512,
+                "hidden": 2048,
+                "out": 2048,
+                "rank": 128,
+                "slots": 16,
+                "slices": 1,
+                "pattern": "none",
+                "mixed": true
+              }
+            },
+            "sizing": {
+              "input_bytes": 10490180,
+              "output_bytes": 262144,
+              "builder_peak_budget_bytes": 38031688,
+              "reference_workspace_budget_bytes": 6553600,
+              "gate_workspace_budget_bytes": 6291456,
+              "gpu_planning_budget_bytes": 17578494528,
+              "gpu_capacity_bytes": 141000000000,
+              "gpu_headroom_bytes": 123421505472,
+              "scope": "Explicit-tensor planning budget, not measured allocator/compiler peak",
+              "assumptions": "8 builder/input copies; 12 workspace/output pools; 2 full gate workspaces; 16 GiB runtime reserve",
+              "skipped_tokens": 512,
+              "rank_padding": true
+            }
+          },
+          {
+            "case": {
+              "id": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+              "dtype": "float16",
+              "parameters": {
+                "tokens": 512,
+                "hidden": 4096,
+                "out": 4096,
+                "rank": 256,
+                "slots": 16,
+                "slices": 3,
+                "pattern": "mixed",
+                "mixed": true
+              }
+            },
+            "sizing": {
+              "input_bytes": 104862020,
+              "output_bytes": 1572864,
+              "builder_peak_budget_bytes": 421056848,
+              "reference_workspace_budget_bytes": 35127296,
+              "gate_workspace_budget_bytes": 37748736,
+              "gpu_planning_budget_bytes": 21064223360,
+              "gpu_capacity_bytes": 141000000000,
+              "gpu_headroom_bytes": 119935776640,
+              "scope": "Explicit-tensor planning budget, not measured allocator/compiler peak",
+              "assumptions": "8 builder/input copies; 12 workspace/output pools; 2 full gate workspaces; 16 GiB runtime reserve",
+              "skipped_tokens": 128,
+              "rank_padding": true
+            }
+          },
+          {
+            "case": {
+              "id": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+              "dtype": "bfloat16",
+              "parameters": {
+                "tokens": 512,
+                "hidden": 4096,
+                "out": 4096,
+                "rank": 256,
+                "slots": 16,
+                "slices": 3,
+                "pattern": "mixed",
+                "mixed": true
+              }
+            },
+            "sizing": {
+              "input_bytes": 104862020,
+              "output_bytes": 1572864,
+              "builder_peak_budget_bytes": 421056848,
+              "reference_workspace_budget_bytes": 35127296,
+              "gate_workspace_budget_bytes": 37748736,
+              "gpu_planning_budget_bytes": 21064223360,
+              "gpu_capacity_bytes": 141000000000,
+              "gpu_headroom_bytes": 119935776640,
+              "scope": "Explicit-tensor planning budget, not measured allocator/compiler peak",
+              "assumptions": "8 builder/input copies; 12 workspace/output pools; 2 full gate workspaces; 16 GiB runtime reserve",
+              "skipped_tokens": 128,
+              "rank_padding": true
+            }
+          }
+        ],
+        "lora_expand_sgmv": [
+          {
+            "case": {
+              "id": "tokens512_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+              "dtype": "float16",
+              "parameters": {
+                "tokens": 512,
+                "hidden": 2048,
+                "out": 2048,
+                "rank": 8,
+                "slots": 1,
+                "slices": 1,
+                "pattern": "single",
+                "mixed": false
+              }
+            },
+            "sizing": {
+              "input_bytes": 2215960,
+              "output_bytes": 2113536,
+              "builder_peak_budget_bytes": 4509724,
+              "reference_workspace_budget_bytes": 38076416,
+              "gate_workspace_budget_bytes": 101449728,
+              "gpu_planning_budget_bytes": 17901125856,
+              "gpu_capacity_bytes": 141000000000,
+              "gpu_headroom_bytes": 123098874144,
+              "scope": "Explicit-tensor planning budget, not measured allocator/compiler peak",
+              "assumptions": "8 builder/input copies; 12 workspace/output pools; 2 full gate workspaces; 16 GiB runtime reserve",
+              "skipped_tokens": 0,
+              "rank_padding": true
+            }
+          },
+          {
+            "case": {
+              "id": "tokens512_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+              "dtype": "bfloat16",
+              "parameters": {
+                "tokens": 512,
+                "hidden": 2048,
+                "out": 2048,
+                "rank": 8,
+                "slots": 4,
+                "slices": 1,
+                "pattern": "mixed",
+                "mixed": false
+              }
+            },
+            "sizing": {
+              "input_bytes": 2412616,
+              "output_bytes": 2113536,
+              "builder_peak_budget_bytes": 5296216,
+              "reference_workspace_budget_bytes": 38076416,
+              "gate_workspace_budget_bytes": 101449728,
+              "gpu_planning_budget_bytes": 17907417792,
+              "gpu_capacity_bytes": 141000000000,
+              "gpu_headroom_bytes": 123092582208,
+              "scope": "Explicit-tensor planning budget, not measured allocator/compiler peak",
+              "assumptions": "8 builder/input copies; 12 workspace/output pools; 2 full gate workspaces; 16 GiB runtime reserve",
+              "skipped_tokens": 128,
+              "rank_padding": true
+            }
+          },
+          {
+            "case": {
+              "id": "tokens512_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+              "dtype": "float16",
+              "parameters": {
+                "tokens": 512,
+                "hidden": 8192,
+                "out": 8192,
+                "rank": 64,
+                "slots": 4,
+                "slices": 2,
+                "pattern": "distinct",
+                "mixed": false
+              }
+            },
+            "sizing": {
+              "input_bytes": 25464908,
+              "output_bytes": 16809984,
+              "builder_peak_budget_bytes": 59019356,
+              "reference_workspace_budget_bytes": 176685056,
+              "gate_workspace_budget_bytes": 806879232,
+              "gpu_planning_budget_bytes": 21587722976,
+              "gpu_capacity_bytes": 141000000000,
+              "gpu_headroom_bytes": 119412277024,
+              "scope": "Explicit-tensor planning budget, not measured allocator/compiler peak",
+              "assumptions": "8 builder/input copies; 12 workspace/output pools; 2 full gate workspaces; 16 GiB runtime reserve",
+              "skipped_tokens": 508,
+              "rank_padding": false
+            }
+          },
+          {
+            "case": {
+              "id": "tokens512_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+              "dtype": "bfloat16",
+              "parameters": {
+                "tokens": 512,
+                "hidden": 2048,
+                "out": 2048,
+                "rank": 128,
+                "slots": 16,
+                "slices": 1,
+                "pattern": "none",
+                "mixed": true
+              }
+            },
+            "sizing": {
+              "input_bytes": 10768648,
+              "output_bytes": 2113536,
+              "builder_peak_budget_bytes": 38031688,
+              "reference_workspace_budget_bytes": 40370176,
+              "gate_workspace_budget_bytes": 101449728,
+              "gpu_planning_budget_bytes": 18196826688,
+              "gpu_capacity_bytes": 141000000000,
+              "gpu_headroom_bytes": 122803173312,
+              "scope": "Explicit-tensor planning budget, not measured allocator/compiler peak",
+              "assumptions": "8 builder/input copies; 12 workspace/output pools; 2 full gate workspaces; 16 GiB runtime reserve",
+              "skipped_tokens": 512,
+              "rank_padding": true
+            }
+          },
+          {
+            "case": {
+              "id": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+              "dtype": "float16",
+              "parameters": {
+                "tokens": 512,
+                "hidden": 4096,
+                "out": 4096,
+                "rank": 256,
+                "slots": 16,
+                "slices": 3,
+                "pattern": "mixed",
+                "mixed": true
+              }
+            },
+            "sizing": {
+              "input_bytes": 114872592,
+              "output_bytes": 12632064,
+              "builder_peak_budget_bytes": 421056848,
+              "reference_workspace_budget_bytes": 120586240,
+              "gate_workspace_budget_bytes": 606339072,
+              "gpu_planning_budget_bytes": 23359621760,
+              "gpu_capacity_bytes": 141000000000,
+              "gpu_headroom_bytes": 117640378240,
+              "scope": "Explicit-tensor planning budget, not measured allocator/compiler peak",
+              "assumptions": "8 builder/input copies; 12 workspace/output pools; 2 full gate workspaces; 16 GiB runtime reserve",
+              "skipped_tokens": 128,
+              "rank_padding": true
+            }
+          },
+          {
+            "case": {
+              "id": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+              "dtype": "bfloat16",
+              "parameters": {
+                "tokens": 512,
+                "hidden": 4096,
+                "out": 4096,
+                "rank": 256,
+                "slots": 16,
+                "slices": 3,
+                "pattern": "mixed",
+                "mixed": true
+              }
+            },
+            "sizing": {
+              "input_bytes": 114872592,
+              "output_bytes": 12632064,
+              "builder_peak_budget_bytes": 421056848,
+              "reference_workspace_budget_bytes": 120586240,
+              "gate_workspace_budget_bytes": 606339072,
+              "gpu_planning_budget_bytes": 23359621760,
+              "gpu_capacity_bytes": 141000000000,
+              "gpu_headroom_bytes": 117640378240,
+              "scope": "Explicit-tensor planning budget, not measured allocator/compiler peak",
+              "assumptions": "8 builder/input copies; 12 workspace/output pools; 2 full gate workspaces; 16 GiB runtime reserve",
+              "skipped_tokens": 128,
+              "rank_padding": true
+            }
+          }
+        ],
+        "lora_fused_sgmv": [
+          {
+            "case": {
+              "id": "tokens512_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+              "dtype": "float16",
+              "parameters": {
+                "tokens": 512,
+                "hidden": 2048,
+                "out": 2048,
+                "rank": 8,
+                "slots": 1,
+                "slices": 1,
+                "pattern": "single",
+                "mixed": false
+              }
+            },
+            "sizing": {
+              "input_bytes": 4345884,
+              "output_bytes": 2113536,
+              "builder_peak_budget_bytes": 4509724,
+              "reference_workspace_budget_bytes": 42565632,
+              "gate_workspace_budget_bytes": 101449728,
+              "gpu_planning_budget_bytes": 17954996448,
+              "gpu_capacity_bytes": 141000000000,
+              "gpu_headroom_bytes": 123045003552,
+              "scope": "Explicit-tensor planning budget, not measured allocator/compiler peak",
+              "assumptions": "8 builder/input copies; 12 workspace/output pools; 2 full gate workspaces; 16 GiB runtime reserve",
+              "skipped_tokens": 0,
+              "rank_padding": true
+            }
+          },
+          {
+            "case": {
+              "id": "tokens512_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+              "dtype": "bfloat16",
+              "parameters": {
+                "tokens": 512,
+                "hidden": 2048,
+                "out": 2048,
+                "rank": 8,
+                "slots": 4,
+                "slices": 1,
+                "pattern": "mixed",
+                "mixed": false
+              }
+            },
+            "sizing": {
+              "input_bytes": 4739160,
+              "output_bytes": 2113536,
+              "builder_peak_budget_bytes": 5296216,
+              "reference_workspace_budget_bytes": 42565632,
+              "gate_workspace_budget_bytes": 101449728,
+              "gpu_planning_budget_bytes": 17961288384,
+              "gpu_capacity_bytes": 141000000000,
+              "gpu_headroom_bytes": 123038711616,
+              "scope": "Explicit-tensor planning budget, not measured allocator/compiler peak",
+              "assumptions": "8 builder/input copies; 12 workspace/output pools; 2 full gate workspaces; 16 GiB runtime reserve",
+              "skipped_tokens": 128,
+              "rank_padding": true
+            }
+          },
+          {
+            "case": {
+              "id": "tokens512_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+              "dtype": "float16",
+              "parameters": {
+                "tokens": 512,
+                "hidden": 8192,
+                "out": 8192,
+                "rank": 64,
+                "slots": 4,
+                "slices": 2,
+                "pattern": "distinct",
+                "mixed": false
+              }
+            },
+            "sizing": {
+              "input_bytes": 41979996,
+              "output_bytes": 16809984,
+              "builder_peak_budget_bytes": 59019356,
+              "reference_workspace_budget_bytes": 202113024,
+              "gate_workspace_budget_bytes": 806879232,
+              "gpu_planning_budget_bytes": 21892858592,
+              "gpu_capacity_bytes": 141000000000,
+              "gpu_headroom_bytes": 119107141408,
+              "scope": "Explicit-tensor planning budget, not measured allocator/compiler peak",
+              "assumptions": "8 builder/input copies; 12 workspace/output pools; 2 full gate workspaces; 16 GiB runtime reserve",
+              "skipped_tokens": 508,
+              "rank_padding": false
+            }
+          },
+          {
+            "case": {
+              "id": "tokens512_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+              "dtype": "bfloat16",
+              "parameters": {
+                "tokens": 512,
+                "hidden": 2048,
+                "out": 2048,
+                "rank": 128,
+                "slots": 16,
+                "slices": 1,
+                "pattern": "none",
+                "mixed": true
+              }
+            },
+            "sizing": {
+              "input_bytes": 20992328,
+              "output_bytes": 2113536,
+              "builder_peak_budget_bytes": 38031688,
+              "reference_workspace_budget_bytes": 46923776,
+              "gate_workspace_budget_bytes": 101449728,
+              "gpu_planning_budget_bytes": 18275469888,
+              "gpu_capacity_bytes": 141000000000,
+              "gpu_headroom_bytes": 122724530112,
+              "scope": "Explicit-tensor planning budget, not measured allocator/compiler peak",
+              "assumptions": "8 builder/input copies; 12 workspace/output pools; 2 full gate workspaces; 16 GiB runtime reserve",
+              "skipped_tokens": 512,
+              "rank_padding": true
+            }
+          },
+          {
+            "case": {
+              "id": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+              "dtype": "float16",
+              "parameters": {
+                "tokens": 512,
+                "hidden": 4096,
+                "out": 4096,
+                "rank": 256,
+                "slots": 16,
+                "slices": 3,
+                "pattern": "mixed",
+                "mixed": true
+              }
+            },
+            "sizing": {
+              "input_bytes": 218157392,
+              "output_bytes": 12632064,
+              "builder_peak_budget_bytes": 421056848,
+              "reference_workspace_budget_bytes": 155713536,
+              "gate_workspace_budget_bytes": 606339072,
+              "gpu_planning_budget_bytes": 23781149312,
+              "gpu_capacity_bytes": 141000000000,
+              "gpu_headroom_bytes": 117218850688,
+              "scope": "Explicit-tensor planning budget, not measured allocator/compiler peak",
+              "assumptions": "8 builder/input copies; 12 workspace/output pools; 2 full gate workspaces; 16 GiB runtime reserve",
+              "skipped_tokens": 128,
+              "rank_padding": true
+            }
+          },
+          {
+            "case": {
+              "id": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+              "dtype": "bfloat16",
+              "parameters": {
+                "tokens": 512,
+                "hidden": 4096,
+                "out": 4096,
+                "rank": 256,
+                "slots": 16,
+                "slices": 3,
+                "pattern": "mixed",
+                "mixed": true
+              }
+            },
+            "sizing": {
+              "input_bytes": 218157392,
+              "output_bytes": 12632064,
+              "builder_peak_budget_bytes": 421056848,
+              "reference_workspace_budget_bytes": 155713536,
+              "gate_workspace_budget_bytes": 606339072,
+              "gpu_planning_budget_bytes": 23781149312,
+              "gpu_capacity_bytes": 141000000000,
+              "gpu_headroom_bytes": 117218850688,
+              "scope": "Explicit-tensor planning budget, not measured allocator/compiler peak",
+              "assumptions": "8 builder/input copies; 12 workspace/output pools; 2 full gate workspaces; 16 GiB runtime reserve",
+              "skipped_tokens": 128,
+              "rank_padding": true
+            }
+          }
+        ]
+      },
+      "rows": [
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens1_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+          "backend": "cuda",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens1_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+          "backend": "cuda",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens1_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+          "backend": "cuda",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens1_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+          "backend": "cuda",
+          "fixture": "wrong_padding",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens1_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+          "backend": "cuda",
+          "fixture": "wrong_skip",
+          "applicable": false
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens1_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+          "backend": "triton",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens1_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+          "backend": "triton",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens1_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+          "backend": "triton",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens1_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+          "backend": "triton",
+          "fixture": "wrong_padding",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens1_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+          "backend": "triton",
+          "fixture": "wrong_skip",
+          "applicable": false
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens3_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+          "backend": "cuda",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens3_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+          "backend": "cuda",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens3_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens3_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong_padding",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens3_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong_skip",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens3_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+          "backend": "triton",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens3_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+          "backend": "triton",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens3_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens3_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong_padding",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens3_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong_skip",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens3_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+          "backend": "cuda",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens3_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+          "backend": "cuda",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens3_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+          "backend": "cuda",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens3_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+          "backend": "cuda",
+          "fixture": "wrong_padding",
+          "applicable": false
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens3_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+          "backend": "cuda",
+          "fixture": "wrong_skip",
+          "applicable": false
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens3_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+          "backend": "triton",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens3_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+          "backend": "triton",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens3_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+          "backend": "triton",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens3_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+          "backend": "triton",
+          "fixture": "wrong_padding",
+          "applicable": false
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens3_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+          "backend": "triton",
+          "fixture": "wrong_skip",
+          "applicable": false
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens64_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens64_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens64_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens64_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong_padding",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens64_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong_skip",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens64_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens64_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens64_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens64_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong_padding",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens64_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong_skip",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens256_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+          "backend": "cuda",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens256_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+          "backend": "cuda",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens256_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+          "backend": "cuda",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens256_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+          "backend": "cuda",
+          "fixture": "wrong_padding",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens256_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+          "backend": "cuda",
+          "fixture": "wrong_skip",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens256_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+          "backend": "triton",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens256_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+          "backend": "triton",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens256_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+          "backend": "triton",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens256_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+          "backend": "triton",
+          "fixture": "wrong_padding",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens256_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+          "backend": "triton",
+          "fixture": "wrong_skip",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens256_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens256_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens256_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens256_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong_padding",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens256_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong_skip",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens256_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens256_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens256_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens256_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong_padding",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_bgmv",
+          "case": "tokens256_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong_skip",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens1_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+          "backend": "cuda",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens1_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+          "backend": "cuda",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens1_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+          "backend": "cuda",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens1_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+          "backend": "cuda",
+          "fixture": "wrong_padding",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens1_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+          "backend": "cuda",
+          "fixture": "wrong_skip",
+          "applicable": false
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens1_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+          "backend": "triton",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens1_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+          "backend": "triton",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens1_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+          "backend": "triton",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens1_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+          "backend": "triton",
+          "fixture": "wrong_padding",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens1_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+          "backend": "triton",
+          "fixture": "wrong_skip",
+          "applicable": false
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens3_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+          "backend": "cuda",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens3_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+          "backend": "cuda",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens3_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens3_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong_padding",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens3_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong_skip",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens3_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+          "backend": "triton",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens3_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+          "backend": "triton",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens3_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens3_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong_padding",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens3_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong_skip",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens3_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+          "backend": "cuda",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens3_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+          "backend": "cuda",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens3_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+          "backend": "cuda",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens3_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+          "backend": "cuda",
+          "fixture": "wrong_padding",
+          "applicable": false
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens3_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+          "backend": "cuda",
+          "fixture": "wrong_skip",
+          "applicable": false
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens3_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+          "backend": "triton",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens3_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+          "backend": "triton",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens3_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+          "backend": "triton",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens3_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+          "backend": "triton",
+          "fixture": "wrong_padding",
+          "applicable": false
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens3_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+          "backend": "triton",
+          "fixture": "wrong_skip",
+          "applicable": false
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens64_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens64_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens64_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens64_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong_padding",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens64_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong_skip",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens64_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens64_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens64_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens64_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong_padding",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens64_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong_skip",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens256_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+          "backend": "cuda",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens256_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+          "backend": "cuda",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens256_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+          "backend": "cuda",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens256_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+          "backend": "cuda",
+          "fixture": "wrong_padding",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens256_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+          "backend": "cuda",
+          "fixture": "wrong_skip",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens256_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+          "backend": "triton",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens256_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+          "backend": "triton",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens256_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+          "backend": "triton",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens256_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+          "backend": "triton",
+          "fixture": "wrong_padding",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens256_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+          "backend": "triton",
+          "fixture": "wrong_skip",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens256_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens256_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens256_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens256_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong_padding",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens256_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong_skip",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens256_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens256_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens256_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens256_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong_padding",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_bgmv",
+          "case": "tokens256_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong_skip",
+          "applicable": true
+        },
+        {
+          "task": "lora_segment_metadata",
+          "case": "tokens1_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+          "backend": "cuda",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_segment_metadata",
+          "case": "tokens1_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+          "backend": "cuda",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_segment_metadata",
+          "case": "tokens1_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+          "backend": "cuda",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_segment_metadata",
+          "case": "tokens1_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+          "backend": "triton",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_segment_metadata",
+          "case": "tokens1_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+          "backend": "triton",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_segment_metadata",
+          "case": "tokens1_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+          "backend": "triton",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_segment_metadata",
+          "case": "tokens3_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+          "backend": "cuda",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_segment_metadata",
+          "case": "tokens3_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+          "backend": "cuda",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_segment_metadata",
+          "case": "tokens3_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_segment_metadata",
+          "case": "tokens3_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+          "backend": "triton",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_segment_metadata",
+          "case": "tokens3_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+          "backend": "triton",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_segment_metadata",
+          "case": "tokens3_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_segment_metadata",
+          "case": "tokens3_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+          "backend": "cuda",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_segment_metadata",
+          "case": "tokens3_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+          "backend": "cuda",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_segment_metadata",
+          "case": "tokens3_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+          "backend": "cuda",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_segment_metadata",
+          "case": "tokens3_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+          "backend": "triton",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_segment_metadata",
+          "case": "tokens3_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+          "backend": "triton",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_segment_metadata",
+          "case": "tokens3_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+          "backend": "triton",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_segment_metadata",
+          "case": "tokens64_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_segment_metadata",
+          "case": "tokens64_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_segment_metadata",
+          "case": "tokens64_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_segment_metadata",
+          "case": "tokens64_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_segment_metadata",
+          "case": "tokens64_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_segment_metadata",
+          "case": "tokens64_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_segment_metadata",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+          "backend": "cuda",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_segment_metadata",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+          "backend": "cuda",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_segment_metadata",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+          "backend": "cuda",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_segment_metadata",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+          "backend": "triton",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_segment_metadata",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+          "backend": "triton",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_segment_metadata",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+          "backend": "triton",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_segment_metadata",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_segment_metadata",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_segment_metadata",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_segment_metadata",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_segment_metadata",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_segment_metadata",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+          "backend": "cuda",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+          "backend": "cuda",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+          "backend": "cuda",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+          "backend": "cuda",
+          "fixture": "wrong_padding",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+          "backend": "cuda",
+          "fixture": "wrong_skip",
+          "applicable": false
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+          "backend": "triton",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+          "backend": "triton",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+          "backend": "triton",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+          "backend": "triton",
+          "fixture": "wrong_padding",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+          "backend": "triton",
+          "fixture": "wrong_skip",
+          "applicable": false
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+          "backend": "cuda",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+          "backend": "cuda",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong_padding",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong_skip",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+          "backend": "triton",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+          "backend": "triton",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong_padding",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong_skip",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens512_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+          "backend": "cuda",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens512_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+          "backend": "cuda",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens512_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+          "backend": "cuda",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens512_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+          "backend": "cuda",
+          "fixture": "wrong_padding",
+          "applicable": false
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens512_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+          "backend": "cuda",
+          "fixture": "wrong_skip",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens512_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+          "backend": "triton",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens512_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+          "backend": "triton",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens512_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+          "backend": "triton",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens512_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+          "backend": "triton",
+          "fixture": "wrong_padding",
+          "applicable": false
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens512_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+          "backend": "triton",
+          "fixture": "wrong_skip",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong_padding",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong_skip",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong_padding",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong_skip",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+          "backend": "cuda",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+          "backend": "cuda",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+          "backend": "cuda",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+          "backend": "cuda",
+          "fixture": "wrong_padding",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+          "backend": "cuda",
+          "fixture": "wrong_skip",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+          "backend": "triton",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+          "backend": "triton",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+          "backend": "triton",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+          "backend": "triton",
+          "fixture": "wrong_padding",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+          "backend": "triton",
+          "fixture": "wrong_skip",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong_padding",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong_skip",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong_padding",
+          "applicable": true
+        },
+        {
+          "task": "lora_shrink_sgmv",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong_skip",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+          "backend": "cuda",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+          "backend": "cuda",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+          "backend": "cuda",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+          "backend": "cuda",
+          "fixture": "wrong_padding",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+          "backend": "cuda",
+          "fixture": "wrong_skip",
+          "applicable": false
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+          "backend": "triton",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+          "backend": "triton",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+          "backend": "triton",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+          "backend": "triton",
+          "fixture": "wrong_padding",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+          "backend": "triton",
+          "fixture": "wrong_skip",
+          "applicable": false
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+          "backend": "cuda",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+          "backend": "cuda",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong_padding",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong_skip",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+          "backend": "triton",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+          "backend": "triton",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong_padding",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong_skip",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens512_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+          "backend": "cuda",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens512_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+          "backend": "cuda",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens512_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+          "backend": "cuda",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens512_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+          "backend": "cuda",
+          "fixture": "wrong_padding",
+          "applicable": false
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens512_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+          "backend": "cuda",
+          "fixture": "wrong_skip",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens512_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+          "backend": "triton",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens512_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+          "backend": "triton",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens512_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+          "backend": "triton",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens512_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+          "backend": "triton",
+          "fixture": "wrong_padding",
+          "applicable": false
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens512_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+          "backend": "triton",
+          "fixture": "wrong_skip",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong_padding",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong_skip",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong_padding",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong_skip",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+          "backend": "cuda",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+          "backend": "cuda",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+          "backend": "cuda",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+          "backend": "cuda",
+          "fixture": "wrong_padding",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+          "backend": "cuda",
+          "fixture": "wrong_skip",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+          "backend": "triton",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+          "backend": "triton",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+          "backend": "triton",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+          "backend": "triton",
+          "fixture": "wrong_padding",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+          "backend": "triton",
+          "fixture": "wrong_skip",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong_padding",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong_skip",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong_padding",
+          "applicable": true
+        },
+        {
+          "task": "lora_expand_sgmv",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong_skip",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+          "backend": "cuda",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+          "backend": "cuda",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+          "backend": "cuda",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+          "backend": "cuda",
+          "fixture": "wrong_padding",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+          "backend": "cuda",
+          "fixture": "wrong_skip",
+          "applicable": false
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+          "backend": "triton",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+          "backend": "triton",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+          "backend": "triton",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+          "backend": "triton",
+          "fixture": "wrong_padding",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16",
+          "backend": "triton",
+          "fixture": "wrong_skip",
+          "applicable": false
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+          "backend": "cuda",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+          "backend": "cuda",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong_padding",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong_skip",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+          "backend": "triton",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+          "backend": "triton",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong_padding",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank8_slots4_slices1_patternmixed_mixedfalse_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong_skip",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens512_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+          "backend": "cuda",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens512_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+          "backend": "cuda",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens512_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+          "backend": "cuda",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens512_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+          "backend": "cuda",
+          "fixture": "wrong_padding",
+          "applicable": false
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens512_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+          "backend": "cuda",
+          "fixture": "wrong_skip",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens512_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+          "backend": "triton",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens512_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+          "backend": "triton",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens512_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+          "backend": "triton",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens512_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+          "backend": "triton",
+          "fixture": "wrong_padding",
+          "applicable": false
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens512_hidden8192_out8192_rank64_slots4_slices2_patterndistinct_mixedfalse_float16",
+          "backend": "triton",
+          "fixture": "wrong_skip",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong_padding",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong_skip",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong_padding",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens512_hidden2048_out2048_rank128_slots16_slices1_patternnone_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong_skip",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+          "backend": "cuda",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+          "backend": "cuda",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+          "backend": "cuda",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+          "backend": "cuda",
+          "fixture": "wrong_padding",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+          "backend": "cuda",
+          "fixture": "wrong_skip",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+          "backend": "triton",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+          "backend": "triton",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+          "backend": "triton",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+          "backend": "triton",
+          "fixture": "wrong_padding",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_float16",
+          "backend": "triton",
+          "fixture": "wrong_skip",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong_padding",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "cuda",
+          "fixture": "wrong_skip",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "honest",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "hack",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong_padding",
+          "applicable": true
+        },
+        {
+          "task": "lora_fused_sgmv",
+          "case": "tokens512_hidden4096_out4096_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+          "backend": "triton",
+          "fixture": "wrong_skip",
+          "applicable": true
+        }
+      ],
+      "total_rows": 336,
+      "applicable_rows": 312,
+      "smoke_baseline_projection_s": 8763.803598567001,
+      "extra_large_case_budget_s": 646.5446428571429,
+      "estimated_wall_s": 14092.250040707646,
+      "per_case_timeout_s": 1200,
+      "suite_budget_s": 20700,
+      "modal_function_limit_s": 21600,
+      "estimate_within_suite_budget": true,
+      "time_model": "1.5 * matched smoke row wall + explicit shape-scaled extra budget + 300s startup",
+      "time_limitations": "Estimate only. 600s is not demonstrated for new shapes; request 1200s per case. Cold compile, profiling/sort cost and allocator peaks remain GPU checks."
+    }
+  },
+  "decode_finding": "The paired catalog already includes 256-token BGMV at hidden=4096. The last/widest acceptance row is 64 tokens at hidden=14336. No catalog change; combined 256-token/widest shape is not claimed."
+}

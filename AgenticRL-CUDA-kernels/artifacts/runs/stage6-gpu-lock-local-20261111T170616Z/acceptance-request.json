@@ -1,0 +1,91 @@
+{
+  "approval_required": true,
+  "approval_source": "HANDOFF_CODEX_STAGE6_GPU_AND_LOCK.md",
+  "launch_owner": "Claude after review/user approval",
+  "launch_order": 1,
+  "stop_after_run_and_report": true,
+  "automatic_rerun": false,
+  "launched": false,
+  "cwd": "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifacts/sources/stage6/gpu-lock-20261111T170616Z-acceptance",
+  "environment": {
+    "MODAL_GPU": "H200",
+    "PYTHONPATH": "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifacts/sources/stage6/gpu-lock-20261111T170616Z-acceptance"
+  },
+  "gpu_requested": "H200",
+  "command": [
+    "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/.venv/bin/modal",
+    "run",
+    "--detach",
+    "cloud/modal_tasks.py",
+    "--tasks",
+    "stage6",
+    "--case-set",
+    "acceptance",
+    "--backends",
+    "cuda,triton",
+    "--fixtures",
+    "all",
+    "--cuda-graphs",
+    "--timeout-s",
+    "1200",
+    "--run-id",
+    "stage6-acceptance-20261111T170616Z"
+  ],
+  "run_id": "stage6-acceptance-20261111T170616Z",
+  "benchmark": true,
+  "cold_start": true,
+  "cuda_graphs": true,
+  "source_manifest_sha256": "bcdea24fb705193fd211dc4fe2ed40608daf6e37e62beaf4a156b6a15e9f438c",
+  "source_files": 277,
+  "source_git_revision": "64148690e0efbe354e58bd2cff7cedc2c4122c49",
+  "case_ids": {
+    "lora_shrink_bgmv": [
+      "tokens64_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16"
+    ],
+    "lora_expand_bgmv": [
+      "tokens64_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16"
+    ],
+    "lora_segment_metadata": [
+      "tokens4096_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16"
+    ],
+    "lora_shrink_sgmv": [
+      "tokens4096_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16"
+    ],
+    "lora_expand_sgmv": [
+      "tokens4096_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16"
+    ],
+    "lora_fused_sgmv": [
+      "tokens4096_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16"
+    ]
+  },
+  "estimated_wall_s": 8561.9144586465,
+  "estimate_model": "1.5 * matched smoke row wall + explicit shape-scaled extra budget + 300s startup",
+  "estimate_limitations": "Estimate only. 600s is not demonstrated for new shapes; request 1200s per case. Cold compile, profiling/sort cost and allocator peaks remain GPU checks.",
+  "timeout_s": 1200,
+  "gpu_lock": true,
+  "gpu_lock_timeout_s": 600,
+  "maximum_projected_row_s": 388.1802085425,
+  "projected_row_budget_below_case_cap": true,
+  "expected_outcome_counts": {
+    "passed": 56,
+    "failed": 0,
+    "unavailable": 0
+  },
+  "expected_outcomes": {
+    "honest": "verify under relative gate (metadata exact), authored >=0.9, zero library time",
+    "hack": "verification succeeds; provenance fails",
+    "wrong": "verification fails",
+    "wrong_padding": "verification fails where padded ranks exist; unavailable only without padding",
+    "wrong_skip": "verification fails with idx=-1; unavailable only without skipped tokens",
+    "fp16_intermediate": "diagnostic attached to honest rows, never an expected-failure row",
+    "gpu_busy": "environment unavailable, excluded from training advantages; report any occurrence"
+  },
+  "additional_honest_checks": "bench available; eager/compile/generated graph capture and replay successful; report failures separately from reward outcomes",
+  "maximum_gpu_planning_budget_bytes": 106799303296,
+  "gpu_capacity_bytes": 141000000000,
+  "memory_limitations": "Symbolic/static estimates with graph, full verifier and runtime reserves; actual compiler/allocator peak not measured",
+  "expected_outputs": "agenticrl-cuda-artifacts:/stage6-acceptance-20261111T170616Z",
+  "download_destination": "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifacts/runs/stage6-acceptance-20261111T170616Z",
+  "tracking_owner": "Claude downloads JSON/log evidence and logs once to W&B after review",
+  "evidence_plan": "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifacts/runs/stage6-gpu-lock-local-20261111T170616Z/RUN_PLAN.md"
+}

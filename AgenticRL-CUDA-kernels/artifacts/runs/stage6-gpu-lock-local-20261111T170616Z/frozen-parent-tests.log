@@ -1,0 +1,17 @@
+test_busy_task_suite_stops_before_supplemental_diagnostics (tests.test_gpu_lock.BusyAdvantageTests.test_busy_task_suite_stops_before_supplemental_diagnostics) ... ok
+test_only_gpu_busy_is_excluded_with_original_group_boundaries (tests.test_gpu_lock.BusyAdvantageTests.test_only_gpu_busy_is_excluded_with_original_group_boundaries) ... ok
+test_all_measurement_stages_share_lock_and_release_on_failure (tests.test_gpu_lock.GPULockTests.test_all_measurement_stages_share_lock_and_release_on_failure) ... ok
+test_config_flags_validation_and_torch_free_import (tests.test_gpu_lock.GPULockTests.test_config_flags_validation_and_torch_free_import) ... ok
+test_cpu_opt_out_and_unknown_uuid (tests.test_gpu_lock.GPULockTests.test_cpu_opt_out_and_unknown_uuid) ... ok
+test_lock_wait_cap_is_gpu_busy_never_task_timeout (tests.test_gpu_lock.GPULockTests.test_lock_wait_cap_is_gpu_busy_never_task_timeout) ... ok
+test_sigkill_holder_releases_to_waiter (tests.test_gpu_lock.GPULockTests.test_sigkill_holder_releases_to_waiter) ... ok
+test_two_processes_wait_and_extend_rollout_deadline (tests.test_gpu_lock.GPULockTests.test_two_processes_wait_and_extend_rollout_deadline) ... ok
+test_visible_device_mapping_uuid_keys_and_bad_output (tests.test_gpu_lock.GPULockTests.test_visible_device_mapping_uuid_keys_and_bad_output) ... ok
+test_all_fixtures_are_enumerated_and_applicability_is_honest (tests.test_stage6_plan.Stage6PlanTests.test_all_fixtures_are_enumerated_and_applicability_is_honest) ... ok
+test_decode_and_largest_case_skips_and_headroom (tests.test_stage6_plan.Stage6PlanTests.test_decode_and_largest_case_skips_and_headroom) ... ok
+test_stratified_covers_binding_axes_and_is_stable (tests.test_stage6_plan.Stage6PlanTests.test_stratified_covers_binding_axes_and_is_stable) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 2.631s
+
+OK

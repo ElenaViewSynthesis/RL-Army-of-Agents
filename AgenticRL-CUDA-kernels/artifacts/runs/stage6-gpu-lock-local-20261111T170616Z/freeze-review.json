@@ -1,0 +1,18 @@
+{
+  "acceptance": {
+    "source": "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifacts/sources/stage6/gpu-lock-20261111T170616Z-acceptance",
+    "source_files": 277,
+    "manifest_sha256": "bcdea24fb705193fd211dc4fe2ed40608daf6e37e62beaf4a156b6a15e9f438c",
+    "mismatches": [],
+    "new_code_tests_legal_files_present": true,
+    "launched": false
+  },
+  "stratified": {
+    "source": "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifacts/sources/stage6/gpu-lock-20261111T170616Z-stratified",
+    "source_files": 277,
+    "manifest_sha256": "6ab6e18e50b034182cec97552c9c74585fb23e62265a5b1b1087085a27941bd8",
+    "mismatches": [],
+    "new_code_tests_legal_files_present": true,
+    "launched": false
+  }
+}

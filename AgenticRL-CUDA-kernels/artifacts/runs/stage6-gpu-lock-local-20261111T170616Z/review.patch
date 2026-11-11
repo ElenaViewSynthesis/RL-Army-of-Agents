@@ -1,0 +1,1328 @@
+--- a/utils/config.py
++++ b/utils/config.py
+@@ -38,6 +38,8 @@
+     run_name: str = ""
+     tags: list[str] = field(default_factory=list)
+     relative_error_bounds: bool = False
++    gpu_lock: bool = True
++    gpu_lock_timeout_s: float = 600.0
+ 
+     def __post_init__(self):
+         for name, choices in {"backend": BACKEND_CHOICES,
+@@ -53,6 +55,10 @@
+         # Rotation needs each impl in each position equally often.
+         if self.bench_rounds % 3:
+             raise ValueError("bench_rounds must be a multiple of 3")
++        if (isinstance(self.gpu_lock_timeout_s, bool)
++                or not isinstance(self.gpu_lock_timeout_s, (int, float))
++                or not math.isfinite(self.gpu_lock_timeout_s) or self.gpu_lock_timeout_s <= 0):
++            raise ValueError("gpu_lock_timeout_s must be a positive finite number")
+         for name in ("timeout_s", "provenance_threshold", "speedup_margin",
+                      "clip_low", "clip_high", "kl_coef"):
+             if not math.isfinite(getattr(self, name)):
+@@ -74,7 +80,7 @@
+         if self.cuda_graphs is True and self.benchmark is not True:
+             raise ValueError("cuda_graphs requires benchmark")
+         for name in ("benchmark", "cuda_graphs", "diagnostics", "filter_tied_groups",
+-                     "exact_integer_outputs", "relative_error_bounds"):
++                     "exact_integer_outputs", "relative_error_bounds", "gpu_lock"):
+             if not isinstance(getattr(self, name), bool):
+                 raise ValueError(f"{name} must be bool")
+         if not isinstance(self.seed, int) or not isinstance(self.run_name, str):
+--- a/utils/rollout_env.py
++++ b/utils/rollout_env.py
+@@ -1,12 +1,13 @@
+ """Subprocess-isolated task evaluation; safe to import without Torch.
+ 
+-The deadline covers compile + verification + profiling together. Each child
++The deadline covers all stages, excluding GPU lock wait. Each child
+ gets a new POSIX process group, killed as a unit on timeout (including nvcc
+ and torch.compile workers). This provides crash/timeout isolation, not an OS
+ security sandbox for hostile code. Use a restricted container in phase 2.
+ """
+ 
+ import argparse
++import contextlib
+ import json
+ import os
+ import signal
+@@ -19,6 +20,7 @@
+ 
+ from utils.backend import BACKENDS, detect_backend
+ from utils.config import RolloutConfig
++from utils.gpu_lock import MeasurementLock
+ from utils.reward import compute_reward
+ 
+ 
+@@ -136,6 +138,12 @@
+         "meta/task_id": path.name,
+         "meta/algo": cfg.algo,
+         "meta/seed": cfg.seed,
++        "meta/gpu_uuid": None,
++        "meta/gpu_name": None,
++        "meta/gpu_uuid_reason": "measurement stages not reached",
++        "meta/gpu_lock_key": None,
++        "meta/gpu_lock_wait_s": 0.0,
++        "meta/gpu_lock": "not_reached",
+         "log/compile_tail": "",
+         "log/stderr_tail": "",
+     }
+@@ -155,6 +163,7 @@
+         return result
+ 
+     stage = "workdir"
++    measurement_stack = contextlib.ExitStack()
+     try:
+         if not path.is_dir():
+             raise FileNotFoundError(f"Task directory does not exist: {path}")
+@@ -200,6 +209,14 @@
+                          *(["--bench-samples", str(samples)] if cfg.benchmark else [])]),)
+         profile = None
+         for stage, module, args in stages:
++            if stage == "profiling":
++                lock = measurement_stack.enter_context(MeasurementLock(
++                    env, cfg.gpu_lock, cfg.gpu_lock_timeout_s))
++                result.update(lock.metadata)
++                if lock.busy:
++                    return finish("gpu_busy")
++                # Only waiting is exempt; discovery and every stage still count.
++                deadline += lock.metadata["meta/gpu_lock_wait_s"]
+             stage_started = time.monotonic()
+             code, stdout, stderr, timed_out = _stage(module, args, path, env, deadline)
+             if stage_times_out is not None:
+@@ -246,6 +263,7 @@
+                 profile = json.loads(stdout.strip().splitlines()[-1])
+                 if profile_out is not None:
+                     profile_out.update(profile)
++        measurement_stack.close()
+         for field in ("t_eager_us", "t_compile_us", "t_gen_us", "provenance"):
+             result["env/" + field] = profile[field]
+         for share in SHARES:
+@@ -276,6 +294,8 @@
+         for key in [k for k in result if k.startswith("bench/")]:
+             del result[key]
+         return finish(stage)
++    finally:
++        measurement_stack.close()
+ 
+ 
+ def main():
+--- a/utils/grpo.py
++++ b/utils/grpo.py
+@@ -1,7 +1,9 @@
+ """Torch-free GRPO/Dr.GRPO advantages and DAPO tied-group filtering.
+ 
+ build_batch takes aligned task_ids and rollout dicts (run_task's flat schema).
+-Each task must have a whole number of groups; incomplete groups are errors.
++Each task must have a whole number of submitted groups; incomplete groups are
++errors. Only gpu_busy environment failures are omitted within their original
++group before normalization/filtering; groups never borrow rows from each other.
+ rollout_id defaults to its input index. Reward stats cover *all* submitted
+ rollouts; advantage stats cover the retained groups. Standard deviations use
+ population normalization, and turns/p95 is the nearest-rank percentile.
+@@ -62,7 +64,10 @@
+         if len(rows) % cfg.group_size:
+             raise ValueError("Incomplete same-task group; collect cfg.group_size rollouts")
+         groups.extend(rows[i:i + cfg.group_size] for i in range(0, len(rows), cfg.group_size))
+-    kept, dropped = filter_groups(groups, cfg.filter_tied_groups)
++    excluded = sum(r.get("reward/reason") == "gpu_busy" for group in groups for r in group)
++    eligible = [[r for r in group if r.get("reward/reason") != "gpu_busy"] for group in groups]
++    eligible = [group for group in eligible if group]
++    kept, dropped = filter_groups(eligible, cfg.filter_tied_groups)
+     pairs = []
+     for group in kept:
+         advantages = group_advantages([_reward(r) for r in group], cfg.adv_norm)
+@@ -73,7 +78,8 @@
+     n = len(rollouts)
+     mean = lambda values: statistics.fmean(values) if values else 0.0
+     stats = {
+-        "adv/frac_dropped": dropped / len(groups) if groups else 0.0,
++        "adv/frac_dropped": dropped / len(eligible) if eligible else 0.0,
++        "adv/gpu_busy_excluded": excluded,
+         "adv/mean": mean(advantages),
+         "adv/std": statistics.pstdev(advantages) if advantages else 0.0,
+         "reward/mean": mean(rewards),
+--- a/utils/task_catalog.py
++++ b/utils/task_catalog.py
+@@ -255,7 +255,12 @@
+     if selection == "smoke":
+         return task.cases[:1]
+     if selection == "stratified" and task.stage == 6:
+-        return task.cases
++        # Paired catalog rows: six stable representatives, never the full grid.
++        # single/rank8/1 slice; mixed; distinct; none; rank256/3 slices;
++        # then bf16 at the same high-rank shape. Widest shapes run separately
++        # under acceptance; both dtypes exercise skipped rows here.
++        indices = (0, 3, 8, 11, 12, 13)
++        return tuple(task.cases[i] for i in indices)
+     if selection == "acceptance":
+         if task_name == "gemm_tensor_core":
+             return (get_case(task_name, "m4096_n4096_k4096_bfloat16"),)
+--- a/utils/task_suite.py
++++ b/utils/task_suite.py
+@@ -12,6 +12,7 @@
+ 
+ from utils.backend import BACKENDS, available_backends
+ from utils.config import RolloutConfig
++from utils.gpu_lock import MeasurementLock
+ from utils.provenance import PROVENANCE_RULESET
+ from utils.rollout_env import _stage, run_task
+ from utils.task_catalog import SOURCES, TASKS, get_case, get_task, select_cases, validate_usage, workload
+@@ -155,6 +156,7 @@
+     with case_environment(task_name, case_id, device, cold_start, path / "benchmark-samples"):
+         raw = run_task(str(path), dataclasses.replace(
+             config, timeout_s=max(.001, deadline - time.monotonic())), turns_used=1, profile_out=profile)
++    deadline += raw.get("meta/gpu_lock_wait_s", 0.0)
+     graded = apply_task_policy(raw, profile, config, turns_used=1)
+     changed = any(not (path / name).is_file()
+                   or hashlib.sha256((path / name).read_bytes()).hexdigest() != digest
+@@ -164,6 +166,8 @@
+         result.update({"suite/status": "failed", "suite/reason": "protected_task_files_modified",
+                        "reward/value": -1.0, "reward/base": -1, "reward/reason": "verification",
+                        "reward/overlong_penalty": 0.0})
++    elif result.get("reward/reason") == "gpu_busy":
++        result.update({"suite/status": "unavailable", "suite/reason": "gpu_busy"})
+     else:
+         passed = expected_outcome(result, variant)
+         result.update({"suite/status": "passed" if passed else "failed",
+@@ -184,9 +188,24 @@
+         with case_environment(task_name, case_id, device):
+             env.update({key: os.environ[key] for key in
+                         ("CUDA_AGENT_TASK", "CUDA_AGENT_TASK_CASE", "CUDA_AGENT_DEVICE", "TRITON_INTERPRET")})
+-            code, stdout, stderr, timed_out = _stage(
+-                "utils.task_ceiling", ["--seed", str(config.seed), "--samples-json", str(samples)],
+-                path, env, deadline)
++            # This auxiliary timing stage runs after run_task releases its lock.
++            # Reacquire the same device lock; numerical-only LoRA checks below
++            # are verification work and do not take a measurement lock.
++            with MeasurementLock(env, config.gpu_lock, config.gpu_lock_timeout_s) as lock:
++                wait = lock.metadata["meta/gpu_lock_wait_s"]
++                previous_wait = result.get("meta/gpu_lock_wait_s", 0.0)
++                result.update(lock.metadata)
++                result["meta/gpu_lock_wait_s"] = previous_wait + wait
++                deadline += wait
++                if lock.busy:
++                    result.update({"suite/status": "unavailable", "suite/reason": "gpu_busy",
++                                   "reward/value": -1.0, "reward/base": -1,
++                                   "reward/reason": "gpu_busy", "reward/overlong_penalty": 0.0})
++                    code, stdout, stderr, timed_out = None, "", "", False
++                else:
++                    code, stdout, stderr, timed_out = _stage(
++                        "utils.task_ceiling", ["--seed", str(config.seed), "--samples-json", str(samples)],
++                        path, env, deadline)
+         (path / "ceiling.stdout.log").write_text(stdout)
+         (path / "ceiling.stderr.log").write_text(stderr)
+         try:
+@@ -217,7 +236,7 @@
+         result.update({"suite/status": "unavailable",
+                        "suite/reason": "cuBLAS ceiling not yet recorded"})
+     numerics = None
+-    if task_name.startswith("lora_") and task_name != "lora_segment_metadata" and variant == "honest" and result.get("env/verify_ok"):
++    if task_name.startswith("lora_") and task_name != "lora_segment_metadata" and variant == "honest" and result.get("env/verify_ok") and result.get("reward/reason") != "gpu_busy":
+         target = path / "lora-numerics.json"
+         env = os.environ.copy()
+         with case_environment(task_name, case_id, device):
+--- a/tests/support.py
++++ b/tests/support.py
+@@ -57,6 +57,8 @@
+     "env/provenance_library", "env/provenance_torch", "env/provenance_memory",
+     "env/wall_s", "env/turns_used", "reward/value", "reward/base", "reward/reason",
+     "reward/overlong_penalty", "meta/backend", "meta/task_id", "meta/algo", "meta/seed",
++    "meta/gpu_uuid", "meta/gpu_name", "meta/gpu_uuid_reason",
++    "meta/gpu_lock_key", "meta/gpu_lock_wait_s", "meta/gpu_lock",
+     "log/compile_tail", "log/stderr_tail"})
+ ARTIFACT_KEYS = frozenset({"artifact/report", "artifact/trace", "artifact/kernels",
+                            "artifact/unavailable_reason"})
+--- a/tests/test_lora_stage6.py
++++ b/tests/test_lora_stage6.py
+@@ -30,7 +30,7 @@
+             task = get_task(name)
+             validate_usage(name, "train")
+             self.assertFalse(task.eval_only)
+-            self.assertEqual(select_cases(name, "stratified"), task.cases)
++            self.assertEqual(len(select_cases(name, "stratified")), 6)
+             self.assertEqual(len({c.id for c in task.cases}), len(task.cases))
+             for key, values in (("hidden", {2048,4096,5120,8192,14336}),
+                                 ("rank", {8,16,32,64,128,256}), ("slices", {1,2,3}),
+--- a/Architecture-decision/0002-wandb-tracking-contract.md
++++ b/Architecture-decision/0002-wandb-tracking-contract.md
+@@ -73,10 +73,12 @@
+ from scalar metrics; referenced files are artifact data when available.
+ Synthetic group demo values stay in labelled raw artifacts, not metric history.
+ 
+-Step 2's env/provenance_* result keys have NOT landed. This task preserves the
+-18-key default result schema: an opt-in profile_out dictionary captures the same
+-profiling pass in the trusted parent without SDK/Torch imports or an extra GPU
+-pass. The tracking row contains the four shares; run_task's result does not.
++The current default result schema has 28 keys, including the four diagnostic
++`env/provenance_*` shares and six `meta/gpu_*` identity/lock fields. An opt-in
++`profile_out` dictionary captures the same profiling pass in the trusted parent
++without SDK/Torch imports or an extra GPU pass. GPU identity and lock wait never
++enter `compute_reward`; only the approved `gpu_busy` environment failure is
++excluded within its original group before advantage normalization/filtering.
+ Validation artifacts now persist those profiles, full base/case/group configs,
+ candidate hashes and rule-set ID. Live evidence artifacts include candidate files,
+ trusted utils sources and requirement pins. The name-recorder header carries full config
+@@ -120,6 +122,8 @@
+ | `cfg:cfg/iters` | config | cfg | int | 1 | never | config | environment |
+ | `cfg:cfg/exact_integer_outputs` | config | cfg | bool | 1 | not recorded in historical configs | verification/config; forced true only by progressive suite | environment |
+ | `cfg:cfg/relative_error_bounds` | config | cfg | bool | 1 | not recorded in historical configs | Stage 6 relative verification/config; forced true only for Stage 6 arithmetic | environment |
++| `cfg:cfg/gpu_lock` | config | cfg | bool | 1 | not recorded in historical configs | GPU measurement serialization/config | environment |
++| `cfg:cfg/gpu_lock_timeout_s` | config | cfg | float | s | not recorded in historical configs | GPU wait cap/config | environment |
+ | `cfg:cfg/benchmark` | config | cfg | bool | 1 | never | config | environment |
+ | `cfg:cfg/bench_warmup_iters` | config | cfg | int | 1 | never | config | environment |
+ | `cfg:cfg/bench_rounds` | config | cfg | int | 1 | never | config | environment |
+@@ -163,6 +167,12 @@
+ | `result:meta/backend` | table | meta | str | 1 | never | identity | environment |
+ | `result:meta/seed` | table | meta | int | 1 | never | identity | environment |
+ | `result:meta/task_id` | table | meta | str | 1 | never | identity | environment |
++| `result:meta/gpu_uuid` | table | meta | str | UUID | CPU/unavailable/not reached | measured identity | environment |
++| `result:meta/gpu_name` | table | meta | str | device name | CPU/unavailable/not reached | diagnostic | environment |
++| `result:meta/gpu_uuid_reason` | table | meta | str | reason | UUID resolved | diagnostic | environment |
++| `result:meta/gpu_lock_key` | table | meta | str | lock identity | CPU/not reached | diagnostic | environment |
++| `result:meta/gpu_lock_wait_s` | table | meta | float | s | never; zero uncontended/no lock | diagnostic; excluded from deadline only | environment |
++| `result:meta/gpu_lock` | table | meta | str | lock status | never | diagnostic | environment |
+ | `result:log/compile_tail` | weave | log | str | text | empty if none | diagnostic | environment |
+ | `result:log/stderr_tail` | weave | log | str | text | empty if none | diagnostic | environment |
+ | `result:artifact/*` | artifact | artifact | str | path | artifact unavailable | diagnostic | environment |
+@@ -310,6 +320,7 @@
+ | `batch:adv/frac_dropped` | metric | adv | float | 1 | no complete batch | diagnostic | environment |
+ | `batch:adv/mean` | metric | adv | float | 1 | no complete batch | diagnostic | environment |
+ | `batch:adv/std` | metric | adv | float | 1 | no complete batch | diagnostic | environment |
++| `batch:adv/gpu_busy_excluded` | metric | adv | int | rollouts | no complete batch | excluded environment failure count | environment |
+ | `batch:reward/mean` | metric | reward | float | reward | no complete batch | reward aggregate | environment |
+ | `batch:reward/frac_3` | metric | reward | float | 1 | no complete batch | reward aggregate | environment |
+ | `batch:reward/frac_provenance_fail` | metric | reward | float | 1 | no complete batch | reward aggregate | environment |
+@@ -396,10 +407,14 @@
+ | `results:config/diagnostics` | config | config | bool | 1 | historical artifact did not persist it | config | environment |
+ | `results:config/exact_integer_outputs` | config | config | bool | 1 | historical artifact did not persist it | config | environment |
+ | `results:config/relative_error_bounds` | config | config | bool | 1 | historical artifact did not persist it | config | environment |
++| `results:config/gpu_lock` | config | config | bool | 1 | historical artifact did not persist it | config | environment |
++| `results:config/gpu_lock_timeout_s` | config | config | float | s | historical artifact did not persist it | config | environment |
+ | `results:case_configs/*/cuda_graphs` | table | case_configs | bool | 1 | historical artifact did not persist it | config | environment |
+ | `results:case_configs/*/diagnostics` | table | case_configs | bool | 1 | historical artifact did not persist it | config | environment |
+ | `results:case_configs/*/exact_integer_outputs` | table | case_configs | bool | 1 | historical artifact did not persist it | config | environment |
+ | `results:case_configs/*/relative_error_bounds` | table | case_configs | bool | 1 | historical artifact did not persist it | config | environment |
++| `results:case_configs/*/gpu_lock` | table | case_configs | bool | 1 | historical artifact did not persist it | config | environment |
++| `results:case_configs/*/gpu_lock_timeout_s` | table | case_configs | float | s | historical artifact did not persist it | config | environment |
+ | `results:config/timeout_s` | config | config | float | s | historical artifact did not persist it | config | environment |
+ | `results:case_configs/*/timeout_s` | table | case_configs | float | s | historical artifact did not persist it | config | environment |
+ | `results:config/provenance_threshold` | config | config | float | 1 | historical artifact did not persist it | config | environment |
+@@ -454,10 +469,14 @@
+ | `names:config/diagnostics` | config | config | bool | 1 | historical artifact did not persist it | config | environment |
+ | `names:config/exact_integer_outputs` | config | config | bool | 1 | historical artifact did not persist it | config | environment |
+ | `names:config/relative_error_bounds` | config | config | bool | 1 | historical artifact did not persist it | config | environment |
++| `names:config/gpu_lock` | config | config | bool | 1 | historical artifact did not persist it | config | environment |
++| `names:config/gpu_lock_timeout_s` | config | config | float | s | historical artifact did not persist it | config | environment |
+ | `names:case_configs/*/cuda_graphs` | table | case_configs | bool | 1 | historical artifact did not persist it | config | environment |
+ | `names:case_configs/*/diagnostics` | table | case_configs | bool | 1 | historical artifact did not persist it | config | environment |
+ | `names:case_configs/*/exact_integer_outputs` | table | case_configs | bool | 1 | historical artifact did not persist it | config | environment |
+ | `names:case_configs/*/relative_error_bounds` | table | case_configs | bool | 1 | historical artifact did not persist it | config | environment |
++| `names:case_configs/*/gpu_lock` | table | case_configs | bool | 1 | historical artifact did not persist it | config | environment |
++| `names:case_configs/*/gpu_lock_timeout_s` | table | case_configs | float | s | historical artifact did not persist it | config | environment |
+ | `names:config/timeout_s` | config | config | float | s | historical artifact did not persist it | config | environment |
+ | `names:case_configs/*/timeout_s` | table | case_configs | float | s | historical artifact did not persist it | config | environment |
+ | `names:config/provenance_threshold` | config | config | float | 1 | historical artifact did not persist it | config | environment |
+@@ -502,6 +521,8 @@
+ | `results:group_configs/*/diagnostics` | config | group_configs | bool | 1 | historical artifact did not persist it | diagnostic | environment |
+ | `results:group_configs/*/exact_integer_outputs` | config | group_configs | bool | 1 | historical artifact did not persist it | diagnostic | environment |
+ | `results:group_configs/*/relative_error_bounds` | config | group_configs | bool | 1 | historical artifact did not persist it | diagnostic | environment |
++| `results:group_configs/*/gpu_lock` | config | group_configs | bool | 1 | historical artifact did not persist it | diagnostic | environment |
++| `results:group_configs/*/gpu_lock_timeout_s` | config | group_configs | float | s | historical artifact did not persist it | diagnostic | environment |
+ | `results:group_configs/*/timeout_s` | config | group_configs | float | s | historical artifact did not persist it | diagnostic | environment |
+ | `results:group_configs/*/provenance_threshold` | config | group_configs | float | 1 | historical artifact did not persist it | diagnostic | environment |
+ | `results:group_configs/*/speedup_margin` | config | group_configs | float | 1 | historical artifact did not persist it | diagnostic | environment |
+@@ -527,6 +548,7 @@
+ | `results:measured_groups/*/stats/adv/frac_dropped` | metric | measured_groups | float | 1 | group unavailable | diagnostic | environment |
+ | `results:measured_groups/*/stats/adv/mean` | metric | measured_groups | float | 1 | group unavailable | diagnostic | environment |
+ | `results:measured_groups/*/stats/adv/std` | metric | measured_groups | float | 1 | group unavailable | diagnostic | environment |
++| `results:measured_groups/*/stats/adv/gpu_busy_excluded` | metric | measured_groups | int | rollouts | group unavailable | excluded environment failure count | environment |
+ | `results:measured_groups/*/stats/reward/mean` | metric | measured_groups | float | 1 | group unavailable | diagnostic | environment |
+ | `results:measured_groups/*/stats/reward/frac_3` | metric | measured_groups | float | 1 | group unavailable | diagnostic | environment |
+ | `results:measured_groups/*/stats/reward/frac_provenance_fail` | metric | measured_groups | float | 1 | group unavailable | diagnostic | environment |
+@@ -593,7 +615,9 @@
+ | `metric:adv/mean` | metric | adv | float | 1 | no batch | diagnostic | environment |
+ | `metric:batch/*/adv/mean` | metric | batch | float | 1 | no batch | diagnostic | environment |
+ | `metric:adv/std` | metric | adv | float | 1 | no batch | diagnostic | environment |
++| `metric:adv/gpu_busy_excluded` | metric | adv | int | rollouts | no batch | excluded environment failure count | environment |
+ | `metric:batch/*/adv/std` | metric | batch | float | 1 | no batch | diagnostic | environment |
++| `metric:batch/*/adv/gpu_busy_excluded` | metric | batch | int | rollouts | no batch | excluded environment failure count | environment |
+ | `metric:reward/mean` | metric | reward | float | 1 | no batch | diagnostic | environment |
+ | `metric:batch/*/reward/mean` | metric | batch | float | 1 | no batch | diagnostic | environment |
+ | `metric:reward/frac_3` | metric | reward | float | 1 | no batch | diagnostic | environment |
+--- a/tracking/wandb_log.py
++++ b/tracking/wandb_log.py
+@@ -20,7 +20,7 @@
+ PROJECT = os.environ.get("WANDB_PROJECT", "CUDA-gen")
+ MANIFEST = Path(__file__).with_name("h200_runs.json")
+ SHARES = ("agent", "library", "torch", "memory")
+-BATCH_KEYS = ("adv/frac_dropped", "adv/mean", "adv/std", "reward/mean", "reward/frac_3",
++BATCH_KEYS = ("adv/gpu_busy_excluded", "adv/frac_dropped", "adv/mean", "adv/std", "reward/mean", "reward/frac_3",
+               "reward/frac_provenance_fail", "reward/frac_max_turns",
+               "reward/mean_overlong_penalty", "turns/mean", "turns/p95")
+ 
+--- a/README.md
++++ b/README.md
+@@ -698,8 +698,8 @@
+ 
+ - **Environment only.** There is no trainer, policy weights, agent loop, Modal orchestration, MLflow or W&B code in this phase.
+ - **Not a hostile-code sandbox.** Process groups isolate crashes and kill descendants on timeout. A production Modal sandbox still needs filesystem, network and resource limits and a container-level deadline.
+-- **Shared-GPU timing skews rewards.** Avoid concurrent profiling on one sandbox GPU, because contention changes both milestone rewards and group-relative advantages.
+-- **Cold starts count against the deadline.** nvcc / JIT / autotune and `torch.compile` warmup all fall inside the 180 s deadline; Level-3 tasks may need more.
++- **Shared-GPU timing requires cooperation.** Measurement stages now share a GPU lock. External GPU work and deliberately concurrent compile/verification can still perturb timings; workers must share the lock directory.
++- **Cold starts count against the deadline.** nvcc / JIT / autotune and `torch.compile` warmup fall inside the configured task deadline (180 s stock default); GPU lock wait extends it. Larger tasks may need more.
+ 
+ Full evidence, raw command output and what each test establishes are in [VALIDATION.md](VALIDATION.md). Open issues are in [KNOWN_ISSUES.md](KNOWN_ISSUES.md).
+ 
+@@ -732,3 +732,50 @@
+ regression evidence and remaining GPU limits are recorded in VALIDATION.md.
+ The earlier H200 smoke used the old floating check; it does not validate this
+ new gate or replay repair. No rerun is launched as part of the repair.
++
++
++## GPU contention lock
++
++Measurement stages in `run_task` share a per-GPU `fcntl.flock`: profiling,
++benchmark and diagnostics hold one lock until all three finish. Compilation
++and verification remain concurrent. UUID/name discovery uses `nvidia-smi`
++with the child's logical ordinal mapped through `CUDA_VISIBLE_DEVICES`;
++a failed query records a reason and uses the selected visibility token as
++a fallback identity. CPU evaluation takes no lock. Workers sharing a GPU
++must share `CUDA_AGENT_GPU_LOCK_DIR` (default `/tmp/agenticrl-gpu-locks`).
++The OS releases the lock on normal exit, stage failure, timeout or SIGKILL.
++
++`gpu_lock=True` is the default; `--no-gpu-lock` disables acquisition.
++`--gpu-lock-timeout-s` defaults to 600. Lock wait extends the task deadline;
++`env/wall_s` still includes the wait. A capped wait returns reward −1 with
++reason `gpu_busy`, excluded within its original group before advantages
++and tied-group filtering. `adv/gpu_busy_excluded` counts excluded rows;
++other failures and all submitted-row reward statistics retain their meaning.
++`meta/gpu_*` fields are diagnostic. Auxiliary GEMM ceiling timing reacquires
++the same lock; numerical-only LoRA checks remain verification work.
++
++## Prepared Stage 6 GPU run plan (2026-11-11)
++
++The H200 fp16 smoke rerun passed 46 applicable rows with all 12 honest graph
++captures/replays passing (`stage6-smoke-rerun-20261111T031847Z`). That evidence
++predates this contention-lock implementation. The next runs are prepared for
++Claude to review and launch in order, reporting after each; none is launched here.
++
++| Run | Cases | Rows (applicable) | Estimated wall | Case cap |
++|---|---:|---:|---:|---:|
++| Acceptance | 6 | 56 (56) | 2.4 h | 1200 s |
++| Stratified covering subset | 36 | 336 (312) | 3.9 h | 1200 s |
++
++Stratified selects six stable cases per task covering both dtypes, rank 8/256,
++slices 1/3, mixed ranks, and none/mixed/single/distinct patterns. Widest shapes
++run in acceptance. The paired catalog already tests 256-token decode at hidden
++4096; its widest 14336-hidden BGMV acceptance row uses 64 tokens. No catalog
++shape was added. Every acceptance case includes skipped tokens.
++
++These are estimates from archived smoke wall times and explicit sizing budgets,
++not new GPU measurements. Largest-case planning budget: 106.8 GB of 141 GB,
++including full float64 verification and graph-pool allowances. Allocator peaks,
++cold compilation and largest-case correctness remain hardware checks.
++[Case IDs, resource assumptions, test evidence and prepared requests](artifacts/runs/stage6-gpu-lock-local-20261111T170616Z/README.md)
++are retained together. Both requests use detached H200 execution, all fixtures,
++both backends and CUDA graphs. The fp16-intermediate comparison stays diagnostic.
+--- a/VALIDATION.md
++++ b/VALIDATION.md
+@@ -2578,3 +2578,102 @@
+ skipped tokens and the largest cases are not yet GPU-tested. Evidence:
+ `artifacts/runs/stage6-smoke-rerun-20261111T031847Z/` (JSON, logs and the
+ source manifest).
++
++
++## Stage 6 GPU preparation and contention lock (2026-11-11)
++
++Local evidence: `artifacts/runs/stage6-gpu-lock-local-20261111T170616Z/`. No Modal run, live W&B write or commit is performed.
++The separate fp16 H200 rerun above remains historical GPU evidence; these new
++sources have not run on a GPU. Both required discovery runs completed:
++
++`utils/gpu_lock.py` resolves UUID/name with `nvidia-smi` and maps logical CUDA
++ordinals through visibility order. CPU and disabled paths do not acquire a
++lock. A failed UUID query records its reason and a visibility-token identity;
++GPU driver nodes also detect GPU hosts without `nvidia-smi`. Polling uses
++nonblocking `flock`, a 600 s default wait cap and a shared overridable lock
++directory. File descriptors close on exec and are released by the OS at death;
++lock files are never unlinked. One handle spans profiling, benchmark and
++profile-artifact diagnostics. Auxiliary GEMM ceiling timing is serialized too;
++numerical-only LoRA checks remain verification work. Lock wait extends the
++rollout and case diagnostic deadline, but remains visible in total wall time.
++`gpu_busy` is the only added reward reason and advantage exclusion. No inputs
++to `compute_reward` or other failure gates changed. Exclusion happens within
++original complete submitted groups before normalization/tied filtering; rows
++never move between groups. Aggregate reward statistics still cover all rows.
++
++Focused synthetic protocol/process tests passed: 71 tests / 44.261 s / OK
++(skipped=6: Torch-dependent cases under system Python), then 29 measurement and
++policy tests / 15.417 s / OK, then the final 9 lock/exclusion tests / 3.339 s / OK.
++The final pass adds default-CUDA driver-node discovery without importing Torch.
++Tests cover two contending processes, compile/verify outside the lock, waiting
++beyond the original deadline with exact extension, SIGKILL releasing the lock,
++cap expiry as `gpu_busy`, holding across all measured stages, release on failed
++or timed-out profiling, UUID visibility mapping/fallback, CPU/opt-out and only
++`gpu_busy` exclusion under all three presets. Protocol GPU timings are synthetic.
++
++`run-plan.json` records every case/fixture/backend row and the sizing assumptions.
++The stratified grid is six deterministic cases per task (36 total), rather than
++all 112 cases. Coverage: both dtypes; genuine mixed slot ranks; none, mixed,
++single, distinct; ranks 8 and 256; slices 1 and 3. Widest cases run separately in
++acceptance. Acceptance: 56/56 applicable; stratified: 312/336 applicable (14
++wrong-skip controls have no skipped tokens, 10 wrong-padding controls have no
++rank padding). fp16-intermediate never becomes an expected-failure row.
++
++Decode finding: existing catalog rows already reach 256 tokens at hidden 4096;
++the paired grid's last/widest row is 64 tokens at hidden 14336. No shape change
++was made. Each acceptance case has idx=-1 tokens (1024 at T4096, 16 at T64).
++Memory budgets include physical NaN padding, input/builder copies, reference
++workspace, graph pools and full-array float64 error/quantile workspace, with a
++16 GiB runtime reserve. The largest budget is 106.799303296 GB, leaving
++34.200696704 GB against the supplied 141 GB H200 capacity. These are conservative
++planning allowances, not measured peaks or a bound on arbitrary compiler memory.
++Every fixture shares the applicable task budget. `scripts.size_stage6` probes
++full-size CPU meta tensors, including the Torch controls and a reference-storage
++proxy for authored kernels; authored GPU execution and hidden workspaces remain
++unmeasured. No large payload tensor was allocated by that sizing probe.
++
++Wall estimates use actual archived smoke per-task/backend/fixture wall times
++from `stage6-smoke-rerun-20261111T031847Z`, proxying wrong-skip with wrong-output,
++then multiply by 1.5, add explicit shape-scaled budgets (300 s for widest honest/
++hack, 120 s for verification-only controls), and 300 s startup. They predict
++8561.914 s (2.38 h) for acceptance and
++14092.250 s (3.91 h) for stratified,
++under the 20700 s suite/21600 s function limits. 600 s per new case is not
++established by the smoke. Prepared requests use 1200 s; cold specialization,
++full-size sort cost and actual allocator peaks remain hardware checks. These
++estimates do not promise runtime or establish GPU performance/acceptance.
++
++
++system interpreter:
++
++```text
++Ran 318 tests in 342.187s
++
++OK (skipped=78)
++```
++
++runtime interpreter:
++
++```text
++Ran 323 tests in 1073.095s
++
++OK (skipped=29)
++```
++
++Full logs are retained. Skips reflect absent Torch/backends or GPUs and
++opt-in live integrations; they are not passing hardware checks. Existing
++SQLite ResourceWarnings are retained. The final driver-node fallback
++branch was also checked by `final-lock.log` (9 tests, OK), after full
++discovery had begun. No prior/reaped test job was restarted.
++
++The final lock/run-plan checks also pass with the installed runtime
++under python -S: 12 tests in 2.699 s, OK (`final-runtime-parent.log`).
++
++All 39 full-size symbolic scenarios completed; maximum visible builder
++storage was 1199968332 bytes and reference-plus-fixture live storage was
++3593734672 bytes. These exclude hidden operator/allocator workspaces;
++the larger planning budget remains the relevant GPU capacity estimate.
++
++Each prepared request points to its own fresh public source freeze and
++manifest SHA-256. Claude launches acceptance, reports, then launches
++stratified only after review/approval. No Modal/W&B write or commit was made.
+--- a/KNOWN_ISSUES.md
++++ b/KNOWN_ISSUES.md
+@@ -387,3 +387,23 @@
+   offending implementation is not identified by those traces. No Modal run
+   or commit is made by this repair. See the new local evidence bundle and
+   both HANDOFF_CODEX_STAGE6_GATE.md / HANDOFF_CODEX_STAGE6_REPLAY_CRASHES.md.
++
++
++- **GPU contention lock: locally verified, hardware concurrency unverified.**
++  Measurement stages now use an OS lock keyed by the child's GPU UUID (or an
++  explicitly labelled visibility-token fallback). Cooperating processes must
++  share the lock directory. Unknown UUID aliases cannot be reconciled across
++  different visibility conventions; metadata records the fallback and reason.
++  The lock is advisory and does not serialize external GPU users. Compile and
++  verification intentionally remain concurrent. Lock wait extends the deadline;
++  the separate cap produces `gpu_busy`, excluded only from advantages. Real
++  process contention, SIGKILL and timeout cleanup are covered without a GPU.
++- **Stage 6 wider GPU evidence is prepared, not run.** Acceptance and a six-case
++  per-task stratified subset cover bf16, mixed ranks and skipped tokens. All
++  acceptance cases have skipped tokens. The catalog already includes 256-token
++  BGMV at hidden 4096; its widest acceptance case has 64 tokens, and no combined
++  256-token/14336-hidden acceptance is claimed. Resource budgets are symbolic
++  estimates; hidden compiler/allocator workspaces, full gate sorts, cold compile
++  time and wider-case honest bounds still require hardware evidence. Request
++  1200 s per case rather than extrapolating the smoke's demonstrated 600 s cap.
++  fp16-intermediate remains diagnostic. No Modal run or live W&B write was made.
+--- a/Benchmark_diagnostics_task.md
++++ b/Benchmark_diagnostics_task.md
+@@ -219,7 +219,12 @@
+ - **Graphs need explicit options.** When profiling graph-replay runs, choose whether to profile individual graph nodes or the whole graph (Nsight Compute `--graph-profiling`, Nsight Systems `--cuda-graph-trace`). By default, a graph launch can appear as one opaque unit.
+ - **Flag names vary by version.** Confirm them against `--help` for the installed versions and record those versions in `report.json`.
+ 
+-## Step 5: Representative workloads
++## Step 5: Representative workloads (implemented)
++
++The Stage 0–6 task suite (`utils/task_suite.py`, `tasks/`, `scripts.validate`)
++implements this step, including per-task honest/hack/wrong controls and the
++approved task-only exact/relative verification modes. Hardware coverage and
++remaining larger-case checks are recorded in VALIDATION.md.
+ 
+ Add separate task fixtures, e.g. under `tasks/<name>/`, each shaped like a workdir with its own `model.py`. The root `model.py` stays untouched. Cover:
+ 
+@@ -232,13 +237,28 @@
+ 
+ **ASK** before changing verification tolerances for reduced precision. The upstream checks use atol/rtol = 1e-2.
+ 
+-## Step 6: GPU contention control
++## Step 6: GPU contention control (implemented; local process tests)
+ 
+ Serialize the **measurement** stages (profiling, benchmark, diagnostics) per physical GPU, keyed by GPU UUID, for example with a file lock in a configurable directory. Compile and verification may still run concurrently. Record the actual device (`meta/gpu_uuid`, `meta/gpu_name`) and the lock wait time. Make sure locks are released on crash and timeout.
+ 
+ Separate workdirs prevent build collisions, not timing interference.
+ 
+-**ASK** how lock wait interacts with the task deadline. A candidate must not get `reason: "timeout"` because another rollout held the GPU.
++User decision (2026-11-11): lock wait extends the task deadline. A separate
++`gpu_lock_timeout_s` cap (default 600 s) returns `gpu_busy`, reward −1, and
++excludes only those rows from group advantages. Other failure reasons and
++`compute_reward` inputs are unchanged. `gpu_lock=True` by default; the CLI
++supports `--no-gpu-lock`. `utils/gpu_lock.py` polls nonblocking `flock` in
++`CUDA_AGENT_GPU_LOCK_DIR` (default shared temporary directory), resolves the
++child's visible device without Torch, records an explicit fallback when the
++UUID cannot be read, and relies on OS close/process-death cleanup. Compile and
++verification run outside the lock. `run_task` holds one lock across profiling,
++benchmark and diagnostics, then releases it. Auxiliary GEMM ceiling measurements
++reacquire that same lock; numerical-only LoRA diagnostics are verification work.
++The result records UUID/name, identity reason/key, status and wait; those fields
++never enter `compute_reward`. Tests cover contention/deadline extension, capped
++wait, SIGKILL, failure/timeout cleanup, visibility mapping, CPU, opt-out and the
++narrow advantage exclusion. See VALIDATION.md for raw summaries. Real-GPU
++contention and shared-directory deployment remain unverified.
+ 
+ ## Step 7: Execution isolation (design first)
+ 
+--- a/MULTI_LORA_STAGE6.md
++++ b/MULTI_LORA_STAGE6.md
+@@ -75,9 +75,12 @@
+ The paired, deterministic catalog covers hidden/output dimensions
+ 2048/4096/5120/8192/14336, all ranks 8/16/32/64/128/256, slots 1/4/16,
+ slices 1/2/3 and fp16/bf16. It covers mixed ranks and single, distinct,
+-round-robin, mixed-skipped and all-skipped assignments. `stratified` selects
+-this entire small paired grid, not a Cartesian product. BGMV stops at 256
+-tokens. SGMV uses 512 and 4096 tokens; acceptance selects the final
++round-robin, mixed-skipped and all-skipped assignments. `all` selects the
++entire paired grid. The approved 2026-11-11 run plan makes `stratified` a stable
++six-case subset per task: both dtypes, mixed slot ranks, none/mixed/single/
++distinct patterns, ranks 8/256 and slices 1/3. Widest shapes run in acceptance.
++BGMV stops at 256 tokens (at hidden 4096); its widest hidden-14336 acceptance
++row uses 64 tokens. No combined 256-token/widest case was added. SGMV uses 512 and 4096 tokens; acceptance selects the final
+ 4096-token, 14336-hidden/output, rank-256, 16-slot, three-slice bf16 case.
+ Rank 512 and 8192-token shapes remain stretch extensions.
+ 
+--- a/MULTI_LORA_kernels_task.md
++++ b/MULTI_LORA_kernels_task.md
+@@ -103,7 +103,10 @@
+ - Do not take the full product. Define the cases as Stage 5 did, with
+   `smoke` = the smallest case and `acceptance` = the largest prefill case
+   (4096 tokens, 14336 hidden, rank 256, 16 slots, 3 slices). Add a
+-  deterministic `stratified` selection that covers every axis value.
++  deterministic `stratified` covering subset. The approved 2026-11-11 run
++  plan selects six cases per task covering both dtypes, a mixed-rank batch,
++  none/mixed/single/distinct patterns, ranks 8/256 and slices 1/3. `all`
++  retains the full declared paired grid; acceptance runs the widest shapes.
+ 
+ ## Fixtures (every task)
+ 
+--- /dev/null
++++ b/utils/gpu_lock.py
+@@ -0,0 +1,124 @@
++"""Torch-free, process-owned advisory locks for GPU measurement stages.
++
++All cooperating workers must share CUDA_AGENT_GPU_LOCK_DIR (default: a shared
++temporary directory). Files are never unlinked: replacing an inode would let
++two workers lock the same device independently. flock is released by the OS
++on close or process death; child stage executables do not inherit the fd.
++"""
++
++import fcntl
++import hashlib
++import os
++import re
++import shutil
++import subprocess
++import tempfile
++import time
++from pathlib import Path
++
++
++def _has_cuda_driver():
++    # GPU containers and WSL can expose CUDA without shipping nvidia-smi.
++    return any(Path(name).exists() for name in ('/dev/nvidiactl', '/dev/nvidia0', '/dev/dxg'))
++
++
++def device_identity(env):
++    """Resolve the child's logical CUDA ordinal through CUDA_VISIBLE_DEVICES."""
++    device = env.get("CUDA_AGENT_DEVICE", "cuda")
++    visible = env.get("CUDA_VISIBLE_DEVICES")
++    info = {"meta/gpu_uuid": None, "meta/gpu_name": None,
++            "meta/gpu_uuid_reason": None, "meta/gpu_lock_key": None,
++            "meta/gpu_lock": "none_cpu", "meta/gpu_lock_wait_s": 0.0}
++    if device.startswith("cpu") or visible is not None and visible.strip() in ("", "-1"):
++        info["meta/gpu_uuid_reason"] = "CPU requested or CUDA devices hidden"
++        return info
++    ordinal = int(device.split(":", 1)[1]) if ":" in device else 0
++    tokens = [token.strip() for token in visible.split(",")] if visible is not None else None
++    selected = tokens[ordinal] if tokens is not None and 0 <= ordinal < len(tokens) else str(ordinal)
++    binary = shutil.which("nvidia-smi", path=env.get("PATH"))
++    if binary is None and "CUDA_AGENT_DEVICE" not in env and visible is None and not _has_cuda_driver():
++        info["meta/gpu_uuid_reason"] = "No CUDA driver device, nvidia-smi or explicit CUDA selection"
++        return info
++    try:
++        if tokens is not None and (ordinal >= len(tokens) or ordinal < 0):
++            raise ValueError("CUDA ordinal is outside CUDA_VISIBLE_DEVICES")
++        if binary is None:
++            raise FileNotFoundError("nvidia-smi unavailable")
++        query = subprocess.run(
++            [binary, "--query-gpu=uuid,name", "--format=csv,noheader", "-i", selected],
++            env=env, capture_output=True, text=True, timeout=5, check=True)
++        rows = [row for row in query.stdout.splitlines() if row.strip()]
++        if len(rows) != 1:
++            raise ValueError("nvidia-smi did not return exactly one device")
++        gpu_uuid, name = (value.strip() for value in rows[0].split(",", 1))
++        if not gpu_uuid.startswith(("GPU-", "MIG-")) or not name:
++            raise ValueError("nvidia-smi returned an invalid UUID/name")
++        info.update({"meta/gpu_uuid": gpu_uuid, "meta/gpu_name": name,
++                     "meta/gpu_lock_key": gpu_uuid, "meta/gpu_lock": "held"})
++    except (OSError, ValueError, subprocess.SubprocessError) as exc:
++        # A visible UUID is already a usable identity even when the utility
++        # fails, but it remains explicitly unverified in gpu_uuid metadata.
++        key = selected if selected.startswith(("GPU-", "MIG-")) else "visible-" + hashlib.sha256(
++            selected.encode()).hexdigest()
++        info.update({"meta/gpu_lock_key": key, "meta/gpu_lock": "unknown_uuid",
++                     "meta/gpu_uuid_reason": f"{type(exc).__name__}: {exc}"[:512]})
++    return info
++
++
++class MeasurementLock:
++    """Nonblocking polling, a separate wait cap, and exactly zero free-lock wait."""
++
++    def __init__(self, env, enabled=True, timeout_s=600.0):
++        self.env, self.enabled, self.timeout_s = env, enabled, timeout_s
++        self.metadata = None
++        self.acquired = False
++        self.file = None
++
++    def __enter__(self):
++        self.metadata = device_identity(self.env)
++        if not self.enabled:
++            self.metadata["meta/gpu_lock"] = "disabled"
++            return self
++        if self.metadata["meta/gpu_lock_key"] is None:
++            return self
++        directory = Path(self.env.get("CUDA_AGENT_GPU_LOCK_DIR") or
++                         str(Path(tempfile.gettempdir()) / "agenticrl-gpu-locks"))
++        directory.mkdir(parents=True, exist_ok=True)
++        key = self.metadata["meta/gpu_lock_key"]
++        filename = key if re.fullmatch(r"[A-Za-z0-9_-]+", key) else hashlib.sha256(key.encode()).hexdigest()
++        self.file = (directory / (filename + ".lock")).open("a+")
++        started = time.monotonic()
++        blocked = False
++        try:
++            while True:
++                if blocked and time.monotonic() - started >= self.timeout_s:
++                    self.metadata["meta/gpu_lock_wait_s"] = time.monotonic() - started
++                    self.metadata["meta/gpu_lock"] = "gpu_busy"
++                    return self
++                try:
++                    fcntl.flock(self.file, fcntl.LOCK_EX | fcntl.LOCK_NB)
++                    self.acquired = True
++                    if blocked:
++                        self.metadata["meta/gpu_lock_wait_s"] = time.monotonic() - started
++                    return self
++                except BlockingIOError:
++                    blocked = True
++                    elapsed = time.monotonic() - started
++                    self.metadata["meta/gpu_lock_wait_s"] = elapsed
++                    if elapsed >= self.timeout_s:
++                        self.metadata["meta/gpu_lock"] = "gpu_busy"
++                        return self
++                    time.sleep(min(.05, self.timeout_s - elapsed))
++        except BaseException:
++            self.__exit__(None, None, None)
++            raise
++
++    def __exit__(self, *exc):
++        if self.file is not None:
++            self.file.close()
++            self.file = None
++        self.acquired = False
++
++    @property
++    def busy(self):
++        return self.metadata["meta/gpu_lock"] == "gpu_busy"
+--- /dev/null
++++ b/scripts/plan_stage6.py
+@@ -0,0 +1,131 @@
++"""Torch-free Stage 6 run sizing. Estimates are planning assumptions, not timings."""
++
++import argparse
++import json
++from pathlib import Path
++
++from utils.lora_contracts import LORA_TASKS, slot_ranks, token_slots
++from utils.task_catalog import select_cases
++
++
++FIXTURES = ('honest', 'hack', 'wrong', 'wrong_padding', 'wrong_skip')
++
++
++def size_case(name, item):
++    """Conservative explicit-tensor budget, including graph pools and float64 gate.
++
++    This is not an allocator peak guarantee: compiler/runtime workspaces are
++    unknown until a GPU run. All byte counts use full padded physical shapes.
++    """
++    p = item.params
++    t, h, n, r, l, s = (p[k] for k in ('tokens', 'hidden', 'out', 'rank', 'slots', 'slices'))
++    r = (r + 15) // 16 * 16
++    parts = dict(x=2*t*h, a=2*l*s*r*h, b=2*l*s*n*r,
++                 y=2*t*s*(n+16), buf=4*s*t*r,
++                 idx=4*t, ranks=4*l, scales=4*l, offsets=4*s,
++                 metadata=4*(t+3*l+1))
++    if name == 'lora_segment_metadata':
++        inputs = parts['idx'] + parts['ranks']
++        output = parts['metadata']
++        builder = inputs
++        workspace = 64*t*l + 64*t
++        gate = 0
++    else:
++        fields = (('x', 'a', 'b', 'y', 'idx', 'ranks', 'scales', 'offsets') if 'fused' in name
++                  else ('x', 'a', 'idx', 'ranks', 'scales') if 'shrink' in name
++                  else ('buf', 'b', 'y', 'idx', 'ranks', 'offsets'))
++        inputs = sum(parts[key] for key in fields)
++        if name.endswith('sgmv'):
++            inputs += parts['metadata']
++        # The builder constructs both weights and all x/y/buf arrays, including
++        # arrays not returned. Account for simultaneous random/division buffers.
++        builder = sum(parts.values()) + 2*max(parts['a'], parts['b'])
++        output = parts['buf'] if 'shrink' in name else parts['y']
++        # Full per-slot reference matmuls, fp32 weights, x, masks, slice gathers,
++        # copies and fp32 scratch. Each term is a padded, physical shape.
++        workspace = (4*s*t*r + 4*t*h + 8*s*r*h if 'shrink' in name else
++                     4*s*t*n + 8*s*n*r + 32*t*n + 8*s*t*r)
++        if 'fused' in name:
++            workspace += 4*s*t*r + 4*t*h + 8*s*r*h
++        # Full gate, not a sample: two double selections, error, normalization,
++        # masks, sorting values/indices and temporary reductions. Includes y gaps.
++        elements = s*t*r if 'shrink' in name else t*s*(n+16)
++        gate = 96*elements
++    reserve = 16*1024**3
++    budget = 8*builder + 12*workspace + 12*output + 2*gate + reserve
++    return dict(input_bytes=inputs, output_bytes=output, builder_peak_budget_bytes=builder,
++                reference_workspace_budget_bytes=workspace, gate_workspace_budget_bytes=gate,
++                gpu_planning_budget_bytes=budget, gpu_capacity_bytes=141_000_000_000,
++                gpu_headroom_bytes=141_000_000_000-budget,
++                scope='Explicit-tensor planning budget, not measured allocator/compiler peak',
++                assumptions='8 builder/input copies; 12 workspace/output pools; 2 full gate workspaces; 16 GiB runtime reserve',
++                skipped_tokens=token_slots(p).count(-1),
++                rank_padding=min(slot_ranks(p)) < r)
++
++
++def planned_rows(selection):
++    rows = []
++    for name in LORA_TASKS:
++        for item in select_cases(name, selection):
++            size = size_case(name, item)
++            for backend in ('cuda', 'triton'):
++                for fixture in FIXTURES[:3] if name == 'lora_segment_metadata' else FIXTURES:
++                    applicable = (fixture != 'wrong_skip' or size['skipped_tokens'] > 0)
++                    applicable &= fixture != 'wrong_padding' or size['rank_padding']
++                    rows.append(dict(task=name, case=item.id, backend=backend, fixture=fixture,
++                                     applicable=applicable))
++    return rows
++
++
++def plan(smoke):
++    """Project from the actual smoke rows with explicit extra large-case budgets."""
++    smoke_rows = json.loads((Path(smoke)/'suite/suite.json').read_text())['rows']
++    wall = {(r['suite/task'], r['suite/backend'], r['suite/fixture']): r['suite/wall_s']
++            for r in smoke_rows if 'suite/wall_s' in r}
++    result = {'schema': 'stage6-gpu-plan-v1', 'smoke_evidence': str(smoke),
++              'gpu_timings_measured_for_new_cases': False, 'runs': {}}
++    for selection in ('acceptance', 'stratified'):
++        cases = {name: [dict(case=c.to_dict(), sizing=size_case(name, c))
++                        for c in select_cases(name, selection)] for name in LORA_TASKS}
++        rows = planned_rows(selection)
++        baseline = sum(wall[(r['task'], r['backend'],
++                             'wrong' if r['fixture'] == 'wrong_skip' else r['fixture'])]
++                       for r in rows if r['applicable'])
++        # At the widest shape, reserve additional 300 s per honest/hack row and
++        # 120 s per verification-only control, linearly with output/weight volume.
++        # This pays for unmeasured compiler specialization, CPU random builders,
++        # repeated full gates/sorts and uncached graph pools. It is an assumption.
++        extra = 0.
++        for row in rows:
++            if not row['applicable'] or row['task'] == 'lora_segment_metadata':
++                continue
++            entry = next(c for c in cases[row['task']] if c['case']['id'] == row['case'])
++            p = entry['case']['parameters']
++            scale = (p['hidden']/14336)*(p['rank']/256)*(p['slices']/3)*max(p['tokens']/4096, .05)
++            extra += scale * (300 if row['fixture'] in ('honest', 'hack') else 120)
++        estimate = 1.5*baseline + extra + 300
++        result['runs'][selection] = dict(
++            cases=cases, rows=rows, total_rows=len(rows), applicable_rows=sum(r['applicable'] for r in rows),
++            smoke_baseline_projection_s=baseline, extra_large_case_budget_s=extra,
++            estimated_wall_s=estimate, per_case_timeout_s=1200,
++            suite_budget_s=20700, modal_function_limit_s=21600,
++            estimate_within_suite_budget=estimate < 20700,
++            time_model='1.5 * matched smoke row wall + explicit shape-scaled extra budget + 300s startup',
++            time_limitations='Estimate only. 600s is not demonstrated for new shapes; request 1200s per case. Cold compile, profiling/sort cost and allocator peaks remain GPU checks.')
++    result['decode_finding'] = (
++        'The paired catalog already includes 256-token BGMV at hidden=4096. '
++        'The last/widest acceptance row is 64 tokens at hidden=14336. '
++        'No catalog change; combined 256-token/widest shape is not claimed.')
++    return result
++
++
++def main():
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument('--smoke', type=Path, required=True)
++    parser.add_argument('--output', type=Path, required=True)
++    args = parser.parse_args()
++    args.output.write_text(json.dumps(plan(args.smoke), indent=2, allow_nan=False)+'\n')
++
++
++if __name__ == '__main__':
++    main()
+--- /dev/null
++++ b/scripts/size_stage6.py
+@@ -0,0 +1,108 @@
++"""CPU symbolic storage probe of largest Stage 6 references and Torch fixtures.
++
++Meta tensors allocate no payloads. Counts describe live Python-visible storage,
++not GPU allocator peaks, hidden operator workspaces, or authored kernel latency.
++"""
++
++import argparse
++import json
++import time
++import weakref
++
++from scripts.plan_stage6 import size_case
++from utils.lora_contracts import LORA_TASKS
++from utils.task_catalog import select_cases
++
++
++def probe():
++    import torch
++    from torch.utils._python_dispatch import TorchDispatchMode
++    from torch.utils._pytree import tree_flatten
++    from utils.lora_controls import control
++    from utils.lora_reference import forward, make_inputs
++    from utils.task_fixtures import wrong_output
++
++    class StorageTrace(TorchDispatchMode):
++        def __init__(self):
++            super().__init__()
++            self.refs, self.storages = {}, {}
++            self.live = self.peak = 0
++
++        def record(self, value):
++            if not isinstance(value, torch.Tensor) or id(value) in self.refs:
++                return
++            storage = value.untyped_storage()
++            key, size, ident = storage._cdata, storage.nbytes(), id(value)
++            if key not in self.storages:
++                self.storages[key] = [0, size]
++                self.live += size
++                self.peak = max(self.live, self.peak)
++            self.storages[key][0] += 1
++            def release(ref):
++                self.refs.pop(ident, None)
++                entry = self.storages[key]
++                entry[0] -= 1
++                if not entry[0]:
++                    self.live -= entry[1]
++                    del self.storages[key]
++            self.refs[ident] = weakref.ref(value, release)
++
++        def __torch_dispatch__(self, fn, types, args=(), kwargs=None):
++            output = fn(*args, **(kwargs or {}))
++            for value in tree_flatten(output)[0]:
++                self.record(value)
++            return output
++
++    results = []
++    for name in LORA_TASKS:
++        item = select_cases(name, 'acceptance')[0]
++        sizes = size_case(name, item)
++        variants = ('reference', 'honest_storage_proxy', 'hack', 'wrong')
++        if name != 'lora_segment_metadata':
++            variants += ('wrong_padding', 'wrong_skip', 'fp16_intermediate')
++        for variant in variants:
++            start = time.monotonic()
++            trace = StorageTrace()
++            with trace, torch.device('meta'), torch.no_grad():
++                inputs = make_inputs(name, item)
++                builder_peak = trace.peak
++                input_bytes = sum(t.numel()*t.element_size() for t in inputs)
++                assert input_bytes == sizes['input_bytes'], (name, input_bytes, sizes['input_bytes'])
++                trace.peak = trace.live
++                expected = forward(name, *inputs)
++                if variant in ('reference', 'honest_storage_proxy', 'hack'):
++                    actual = forward(name, *inputs)
++                elif variant == 'wrong':
++                    actual = wrong_output(forward(name, *inputs))
++                else:
++                    actual = control(name, variant, *inputs)
++                shapes = [list(t.shape) for t in tree_flatten(actual)[0]]
++                output_bytes = sum(t.numel()*t.element_size() for t in tree_flatten(actual)[0])
++                assert output_bytes == sizes['output_bytes']
++                reference_peak = trace.peak
++                del actual, expected, inputs
++            assert max(builder_peak, reference_peak) < sizes['gpu_planning_budget_bytes']
++            row = dict(task=name, case=item.id, fixture=variant, input_bytes=input_bytes,
++                       output_shapes=shapes, output_bytes=output_bytes,
++                       symbolic_builder_peak_bytes=builder_peak,
++                       symbolic_reference_plus_candidate_peak_bytes=reference_peak,
++                       cpu_symbolic_probe_wall_s=time.monotonic()-start)
++            results.append(row)
++            print(json.dumps(row), flush=True)
++    return dict(schema='stage6-symbolic-sizing-v1', torch_version=torch.__version__,
++                scope='Meta payloads only: no GPU execution or measured allocator peak',
++                honest_proxy='Authored kernels require GPU. Reference working storage is used as a conservative proxy; native sources allocate outputs and fused fp32 scratch.',
++                gate='Full-array float64 masks/errors/sort are budgeted separately by plan_stage6; dynamic boolean selection is not executed on meta.',
++                rows=results)
++
++
++def main():
++    from pathlib import Path
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument('--output', type=Path, required=True)
++    args = parser.parse_args()
++    args.output.write_text(json.dumps(probe(), indent=2, allow_nan=False)+'\n')
++
++
++if __name__ == '__main__':
++    main()
+--- /dev/null
++++ b/tests/test_gpu_lock.py
+@@ -0,0 +1,253 @@
++"""Synthetic device discovery and real OS-lock/process-death tests; no GPU."""
++
++import argparse
++import dataclasses
++import fcntl
++import json
++import os
++import selectors
++import subprocess
++import sys
++import tempfile
++import time
++import unittest
++from pathlib import Path
++from unittest.mock import patch
++
++from tests.support import ROOT, mock_rollout
++from utils.config import RolloutConfig
++from utils.gpu_lock import MeasurementLock, device_identity
++from utils.grpo import build_batch, group_advantages
++from utils.rollout_env import run_task
++
++
++HOLDER = '''
++import os
++from utils.gpu_lock import MeasurementLock
++with MeasurementLock(os.environ, timeout_s=8) as lock:
++    assert lock.acquired
++    print("HELD", flush=True)
++    os.read(0, 1)
++'''
++
++WAITER = '''
++import json, os, sys
++from unittest.mock import patch
++from utils.config import RolloutConfig
++from utils.rollout_env import run_task
++deadlines = []
++def stage(module, args, path, env, deadline):
++    deadlines.append(deadline)
++    if module == "utils.verification":
++        print("VERIFIED", flush=True)
++        return 0, "[PASS] verify success", "", False
++    if module == "utils.profiling":
++        return 0, json.dumps(dict(t_eager_us=100, t_compile_us=80, t_gen_us=50, provenance=1)), "", False
++    return 0, "", "", False
++with patch("utils.rollout_env._stage", side_effect=stage):
++    result = run_task(sys.argv[1], RolloutConfig(backend="triton", timeout_s=.2,
++                                               gpu_lock_timeout_s=float(sys.argv[2])))
++print(json.dumps(dict(result=result, deadlines=deadlines)), flush=True)
++'''
++
++
++class GPULockTests(unittest.TestCase):
++    def setUp(self):
++        self.temp = tempfile.TemporaryDirectory(prefix='gpu-lock-')
++        self.addCleanup(self.temp.cleanup)
++        self.root = Path(self.temp.name)
++        self.task = self.root / 'task'
++        self.task.mkdir()
++        binary = self.root / 'nvidia-smi'
++        binary.write_text('#!/bin/sh\nprintf "GPU-test-shared, Synthetic H200\\n"\n')
++        binary.chmod(0o755)
++        self.env = {**os.environ, 'CUDA_AGENT_DEVICE': 'cuda', 'CUDA_VISIBLE_DEVICES': '3,1',
++                    'CUDA_AGENT_GPU_LOCK_DIR': str(self.root / 'locks'),
++                    'PATH': str(self.root), 'PYTHONDONTWRITEBYTECODE': '1'}
++
++    def process(self, code, *args):
++        proc = subprocess.Popen([sys.executable, '-S', '-u', '-c', code, *args], cwd=ROOT,
++                                env=self.env, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
++                                stderr=subprocess.PIPE, text=True)
++        def cleanup():
++            if proc.poll() is None:
++                proc.kill()
++            proc.communicate(timeout=10)
++        self.addCleanup(cleanup)
++        return proc
++
++    def line(self, proc):
++        with selectors.DefaultSelector() as selector:
++            selector.register(proc.stdout, selectors.EVENT_READ)
++            self.assertTrue(selector.select(timeout=10), 'child did not report readiness')
++        return proc.stdout.readline().strip()
++
++    def test_two_processes_wait_and_extend_rollout_deadline(self):
++        holder = self.process(HOLDER)
++        self.assertEqual(self.line(holder), 'HELD')
++        waiter = self.process(WAITER, str(self.task), '8')
++        # Compilation/verification complete while the other process holds the GPU.
++        self.assertEqual(self.line(waiter), 'VERIFIED')
++        time.sleep(.3)
++        holder.stdin.write('x'); holder.stdin.flush()
++        out, err = waiter.communicate(timeout=10)
++        self.assertEqual(waiter.returncode, 0, err)
++        data = json.loads(out)
++        result, deadlines = data['result'], data['deadlines']
++        self.assertEqual(result['reward/reason'], 'faster_than_both')
++        wait = result['meta/gpu_lock_wait_s']
++        self.assertGreaterEqual(wait, .25)
++        self.assertEqual(deadlines[0], deadlines[1])
++        self.assertAlmostEqual(deadlines[2] - deadlines[1], wait, places=6)
++        self.assertGreater(result['env/wall_s'], .2)
++        self.assertEqual(result['meta/gpu_uuid'], 'GPU-test-shared')
++
++    def test_sigkill_holder_releases_to_waiter(self):
++        holder = self.process(HOLDER)
++        self.assertEqual(self.line(holder), 'HELD')
++        waiter = self.process(WAITER, str(self.task), '8')
++        self.assertEqual(self.line(waiter), 'VERIFIED')
++        time.sleep(.15)
++        started = time.monotonic()
++        holder.kill(); holder.wait(timeout=5)
++        out, err = waiter.communicate(timeout=8)
++        self.assertEqual(waiter.returncode, 0, err)
++        self.assertLess(time.monotonic() - started, 5)
++        self.assertEqual(json.loads(out)['result']['meta/gpu_lock'], 'held')
++
++    def test_lock_wait_cap_is_gpu_busy_never_task_timeout(self):
++        holder = self.process(HOLDER)
++        self.assertEqual(self.line(holder), 'HELD')
++        waiter = self.process(WAITER, str(self.task), '.3')
++        self.assertEqual(self.line(waiter), 'VERIFIED')
++        out, err = waiter.communicate(timeout=8)
++        self.assertEqual(waiter.returncode, 0, err)
++        data = json.loads(out)
++        self.assertEqual(len(data['deadlines']), 2)
++        self.assertEqual((data['result']['reward/reason'], data['result']['reward/value']), ('gpu_busy', -1))
++        self.assertGreaterEqual(data['result']['meta/gpu_lock_wait_s'], .3)
++
++    def test_all_measurement_stages_share_lock_and_release_on_failure(self):
++        def stage(module, args, path, env, deadline):
++            measurement = module not in ('utils.compile', 'utils.verification')
++            with MeasurementLock(env, timeout_s=.03) as contender:
++                self.assertEqual(contender.busy, measurement, module)
++            if module == 'utils.verification':
++                return 0, '[PASS] verify success', '', False
++            if module == 'utils.profiling':
++                return 0, json.dumps(dict(t_eager_us=100, t_compile_us=80, t_gen_us=50, provenance=1)), '', False
++            return 0, '{}', '', False
++        with patch.dict(os.environ, self.env, clear=True), patch('utils.rollout_env._stage', side_effect=stage):
++            result = run_task(str(self.task), RolloutConfig(backend='triton', benchmark=True, diagnostics=True))
++        self.assertEqual(result['meta/gpu_lock_wait_s'], 0.)
++        self.assertEqual(result['reward/value'], 3)
++        for failure in ((1, '', 'crash', False), (None, '', '', True), ValueError('bad profile')):
++            outcomes = [(0, '', '', False), (0, '[PASS] verify success', '', False), failure]
++            with patch.dict(os.environ, self.env, clear=True), patch('utils.rollout_env._stage', side_effect=outcomes):
++                result = run_task(str(self.task), RolloutConfig(backend='triton'))
++            self.assertEqual(result['reward/reason'], 'timeout' if isinstance(failure, tuple) and failure[3] else 'profiling')
++            with MeasurementLock(self.env, timeout_s=.03) as lock:
++                self.assertTrue(lock.acquired)
++
++    def test_cpu_opt_out_and_unknown_uuid(self):
++        for env in ({**self.env, 'CUDA_AGENT_DEVICE': 'cpu'}, {**self.env, 'CUDA_VISIBLE_DEVICES': ''}):
++            with patch('utils.gpu_lock.subprocess.run') as probe, MeasurementLock(env) as lock:
++                self.assertEqual(lock.metadata['meta/gpu_lock'], 'none_cpu')
++                self.assertEqual(lock.metadata['meta/gpu_lock_wait_s'], 0.)
++                probe.assert_not_called()
++        with MeasurementLock(self.env, enabled=False) as lock:
++            self.assertEqual(lock.metadata['meta/gpu_lock'], 'disabled')
++            self.assertFalse(lock.acquired)
++        missing = {**self.env, 'PATH': str(self.root / 'missing')}
++        with MeasurementLock(missing) as lock:
++            self.assertTrue(lock.acquired)
++            self.assertEqual(lock.metadata['meta/gpu_lock'], 'unknown_uuid')
++            self.assertIsNone(lock.metadata['meta/gpu_uuid'])
++            self.assertIn('unavailable', lock.metadata['meta/gpu_uuid_reason'])
++        cpu = {k: v for k, v in missing.items() if k not in ('CUDA_AGENT_DEVICE', 'CUDA_VISIBLE_DEVICES')}
++        with patch('utils.gpu_lock._has_cuda_driver', return_value=False):
++            self.assertEqual(device_identity(cpu)['meta/gpu_lock'], 'none_cpu')
++        with patch('utils.gpu_lock._has_cuda_driver', return_value=True):
++            self.assertEqual(device_identity(cpu)['meta/gpu_lock'], 'unknown_uuid')
++
++    def test_visible_device_mapping_uuid_keys_and_bad_output(self):
++        for device, visible, selected in [('cuda', '3,1', '3'), ('cuda:1', '3,1', '1'),
++                                           ('cuda', 'GPU-visible', 'GPU-visible'), ('cuda:1', None, '1')]:
++            env = {**self.env, 'CUDA_AGENT_DEVICE': device}
++            if visible is None:
++                env.pop('CUDA_VISIBLE_DEVICES', None)
++            else:
++                env['CUDA_VISIBLE_DEVICES'] = visible
++            with patch('utils.gpu_lock.subprocess.run', return_value=subprocess.CompletedProcess([], 0, 'GPU-test, Fake\n')) as probe:
++                info = device_identity(env)
++            self.assertEqual(probe.call_args.args[0][-1], selected)
++            self.assertEqual(info['meta/gpu_lock_key'], 'GPU-test')
++        with patch('utils.gpu_lock.subprocess.run', return_value=subprocess.CompletedProcess([], 0, 'bad output')):
++            self.assertEqual(device_identity(self.env)['meta/gpu_lock'], 'unknown_uuid')
++        with patch('utils.gpu_lock.subprocess.run', side_effect=subprocess.TimeoutExpired('probe', 5)):
++            info = device_identity({**self.env, 'CUDA_VISIBLE_DEVICES': 'GPU-visible'})
++        self.assertEqual(info['meta/gpu_lock_key'], 'GPU-visible')
++        self.assertIsNone(info['meta/gpu_uuid'])
++        # Different visibility lists resolving to the same UUID contend on one inode.
++        with MeasurementLock(self.env) as first, MeasurementLock({**self.env, 'CUDA_VISIBLE_DEVICES': '7'}, timeout_s=.03) as second:
++            self.assertTrue(first.acquired)
++            self.assertTrue(second.busy)
++
++    def test_config_flags_validation_and_torch_free_import(self):
++        parser = argparse.ArgumentParser()
++        RolloutConfig.add_args(parser)
++        cfg = RolloutConfig.from_args(parser.parse_args(['--no-gpu-lock', '--gpu-lock-timeout-s', '.25']))
++        self.assertFalse(cfg.gpu_lock)
++        self.assertEqual(cfg.gpu_lock_timeout_s, .25)
++        for value in (0, -1, float('nan'), float('inf'), True, 'bad'):
++            with self.subTest(value=value), self.assertRaises(ValueError):
++                RolloutConfig(gpu_lock_timeout_s=value)
++        with self.assertRaises(ValueError):
++            RolloutConfig(gpu_lock='yes')
++        subprocess.run([sys.executable, '-S', '-c',
++                        'import sys; from utils import gpu_lock,rollout_env; assert "torch" not in sys.modules'],
++                       cwd=ROOT, check=True, timeout=10)
++
++
++class BusyAdvantageTests(unittest.TestCase):
++    def test_busy_task_suite_stops_before_supplemental_diagnostics(self):
++        from utils.task_catalog import select_cases
++        from utils.task_suite import evaluate_case
++        with tempfile.TemporaryDirectory() as tmp:
++            target = Path(tmp)/'case'
++            def fake_run(*args, **kwargs):
++                return {'env/verify_ok': True, 'reward/value': -1., 'reward/base': -1,
++                        'reward/reason': 'gpu_busy', 'meta/gpu_lock_wait_s': .25}
++            with patch('utils.task_suite.cuda_unavailable', return_value=None), \
++                    patch('utils.task_suite.available_backends', return_value={'triton': None}), \
++                    patch('utils.task_suite.run_task', side_effect=fake_run), \
++                    patch('utils.task_suite._stage') as stage:
++                case = select_cases('lora_fused_sgmv', 'smoke')[0]
++                result = evaluate_case('lora_fused_sgmv', case.id, 'triton', 'honest', target)
++            stage.assert_not_called()
++            self.assertEqual((result['suite/status'], result['suite/reason']), ('unavailable', 'gpu_busy'))
++            self.assertEqual(result['reward/reason'], 'gpu_busy')
++
++    def test_only_gpu_busy_is_excluded_with_original_group_boundaries(self):
++        reasons = ('compile', 'verification', 'profiling', 'timeout', 'provenance',
++                   'max_turns', 'unmeasured', 'timing', 'correctness', 'diagnostic_profile')
++        for algo in ('grpo', 'dapo', 'cispo'):
++            cfg = dataclasses.replace(RolloutConfig.preset(algo), group_size=3, adv_norm='none')
++            for reason in reasons:
++                rows = [mock_rollout(3), mock_rollout(-1, reason), mock_rollout(-1, 'gpu_busy')]
++                pairs, stats = build_batch(['task'] * 3, rows, cfg)
++                self.assertEqual(pairs, [('0', 2), ('1', -2)], (algo, reason))
++                self.assertEqual(stats['adv/gpu_busy_excluded'], 1)
++                self.assertEqual(stats['reward/mean'], 1/3)
++                normal = rows[:2] + [mock_rollout(1)]
++                old_pairs, normal_stats = build_batch(['task'] * 3, normal, cfg)
++                self.assertEqual([a for _, a in old_pairs], group_advantages([3, -1, 1], 'none'))
++                self.assertEqual(normal_stats['adv/gpu_busy_excluded'], 0)
++            rows = [mock_rollout(3), mock_rollout(-1, 'gpu_busy'), mock_rollout(-1, 'gpu_busy'),
++                    mock_rollout(-1, 'gpu_busy'), mock_rollout(1), mock_rollout(3)]
++            pairs, stats = build_batch(['task'] * 6, rows, cfg)
++            self.assertEqual(pairs, ([('0', 0)] if algo == 'grpo' else []) + [('4', -1), ('5', 1)])
++            self.assertEqual(stats['adv/gpu_busy_excluded'], 3)
++            pairs, stats = build_batch(['task'] * 3, [mock_rollout(-1, 'gpu_busy')] * 3, cfg)
++            self.assertEqual(pairs, [])
++            self.assertEqual(stats['adv/gpu_busy_excluded'], 3)
+--- /dev/null
++++ b/tests/test_stage6_plan.py
+@@ -0,0 +1,60 @@
++"""Deterministic covering selection and physical memory sizing, without Torch."""
++
++import json
++import unittest
++
++from scripts.plan_stage6 import planned_rows, size_case
++from utils.lora_contracts import LORA_TASKS, slot_ranks, token_slots
++from utils.task_catalog import get_task, select_cases
++
++
++class Stage6PlanTests(unittest.TestCase):
++    def test_stratified_covers_binding_axes_and_is_stable(self):
++        for name in LORA_TASKS:
++            selected = select_cases(name, 'stratified')
++            self.assertEqual(len(selected), 6)
++            self.assertEqual(len({c.id for c in selected}), 6)
++            self.assertEqual({c.dtype for c in selected}, {'float16', 'bfloat16'})
++            self.assertTrue({'none', 'mixed', 'single', 'distinct'} <= {c.params['pattern'] for c in selected})
++            self.assertTrue({8, 256} <= {c.params['rank'] for c in selected})
++            self.assertTrue({1, 3} <= {c.params['slices'] for c in selected})
++            self.assertTrue(any(len(set(slot_ranks(c.params))) > 1 for c in selected))
++            # Calls of other selections/tasks cannot affect the choice or order.
++            select_cases(name, 'acceptance'); select_cases(LORA_TASKS[-1], 'all')
++            self.assertEqual(selected, select_cases(name, 'stratified'))
++            self.assertTrue(all(c in get_task(name).cases for c in selected))
++            self.assertTrue(any(c.dtype == 'bfloat16' and c.params['rank'] == 256 for c in selected))
++            none = next(c for c in selected if c.params['pattern'] == 'none')
++            mixed = next(c for c in selected if c.params['pattern'] == 'mixed')
++            self.assertEqual(token_slots(none.params), [-1]*none.params['tokens'])
++            self.assertIn(-1, token_slots(mixed.params))
++            self.assertTrue(any(i >= 0 for i in token_slots(mixed.params)))
++
++    def test_decode_and_largest_case_skips_and_headroom(self):
++        for name in LORA_TASKS:
++            item = select_cases(name, 'acceptance')[0]
++            self.assertIn(-1, token_slots(item.params))
++            self.assertGreater(size_case(name, item)['gpu_headroom_bytes'], 32_000_000_000)
++            if name.endswith('bgmv'):
++                self.assertEqual(max(c.params['tokens'] for c in get_task(name).cases), 256)
++                self.assertEqual(item.params['tokens'], 64)
++            else:
++                self.assertEqual(item.params['tokens'], 4096)
++            # Input and output counts must agree with the actual padded ABI.
++            sized = size_case(name, item)
++            if 'expand' in name or 'fused' in name:
++                p = item.params
++                self.assertEqual(sized['output_bytes'], 2*p['tokens']*p['slices']*(p['out']+16))
++            json.dumps(sized, allow_nan=False)
++
++    def test_all_fixtures_are_enumerated_and_applicability_is_honest(self):
++        rows = planned_rows('acceptance')
++        self.assertEqual(len(rows), 56)
++        self.assertTrue(all(r['applicable'] for r in rows))
++        rows = planned_rows('stratified')
++        self.assertEqual(len(rows), 336)
++        self.assertEqual(sum(r['applicable'] for r in rows), 312)
++        for row in rows:
++            if not row['applicable']:
++                self.assertIn(row['fixture'], ('wrong_skip', 'wrong_padding'))
++        self.assertFalse(any(r['fixture'] == 'fp16_intermediate' for r in rows))

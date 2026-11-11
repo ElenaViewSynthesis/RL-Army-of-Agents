@@ -1,0 +1,24 @@
+......................F.E...
+======================================================================
+ERROR: test_pipeline_keys_have_exactly_one_adr_category (tests.test_tracking.ContractTests.test_pipeline_keys_have_exactly_one_adr_category)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/tests/test_tracking.py", line 248, in test_pipeline_keys_have_exactly_one_adr_category
+    for k in stats:self.assertEqual(classify('batch',k),'metric')
+                                    ^^^^^^^^^^^^^^^^^^^
+  File "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/tracking/contract.py", line 24, in classify
+    raise ValueError(f'{source}:{key} has {len(matches)} contract classifications')
+ValueError: batch:adv/gpu_busy_excluded has 0 contract classifications
+
+======================================================================
+FAIL: test_live_batch_stats_and_standalone_identity (tests.test_tracking.ContractTests.test_live_batch_stats_and_standalone_identity)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/tests/test_tracking.py", line 318, in test_live_batch_stats_and_standalone_identity
+    self.assertTrue(set(stats)<=set(run.logged[0][0]))
+AssertionError: False is not true
+
+----------------------------------------------------------------------
+Ran 28 tests in 28.458s
+
+FAILED (failures=1, errors=1)
