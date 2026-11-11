@@ -24,3 +24,18 @@ artifacts/timing-diagnostic-*/timing/*/gen.json
 
 # Session handoff notes between agents stay local
 HANDOFF*.md
+
+# GPU run downloads: keep JSON/logs and the source manifest, not copies of
+# the scaffolded task sources or the uploaded source tree (both duplicate
+# committed files; the manifest pins them).
+artifacts/runs/*/suite/**/*.py
+artifacts/runs/*/suite/**/*.cu
+artifacts/runs/*/suite/**/*.cpp
+artifacts/runs/*/suite/**/*.h
+artifacts/runs/*/suite/**/*.sh
+artifacts/runs/*/suite/**/*.txt
+artifacts/runs/stage*/source/*
+!artifacts/runs/stage*/source/task-source-manifest.json
+artifacts/runs/task-*/source/*
+!artifacts/runs/task-*/source/task-source-manifest.json
+
