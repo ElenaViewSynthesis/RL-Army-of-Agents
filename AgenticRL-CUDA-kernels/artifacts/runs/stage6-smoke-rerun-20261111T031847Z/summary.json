@@ -1,0 +1,17 @@
+{
+  "run_id": "stage6-smoke-rerun-20261111T031847Z",
+  "execution": {
+    "command": "python -m scripts.validate --suite lora_shrink_bgmv,lora_expand_bgmv,lora_segment_metadata,lora_shrink_sgmv,lora_expand_sgmv,lora_fused_sgmv --device cuda --purpose eval --case-set smoke --fixtures all --timeout-s 600 --suite-out /artifacts/stage6-smoke-rerun-20261111T031847Z/suite --backends cuda,triton --benchmark --cold-start --cuda-graphs",
+    "returncode": 0,
+    "timed_out": false,
+    "wall_s": 1343.087301873
+  },
+  "counts": {
+    "passed": 46,
+    "failed": 0,
+    "unavailable": 10
+  },
+  "status": "partial",
+  "source_mismatches": [],
+  "scope": "selected workload cases only; no stock AXPBY acceptance or timing-cause claim"
+}

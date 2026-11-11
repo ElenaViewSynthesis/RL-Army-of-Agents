@@ -1,0 +1,11 @@
+Note that running a local entrypoint in detached mode only keeps the last triggered Modal function alive after the parent process has been killed or disconnected.
+✓ Initialized. View run at 
+https://modal.com/apps/elenamylocuda/main/ap-rt7IyBm5ruN4OacWcciJzd
+✓ Created objects.
+├── ✓ Uploaded /tmp/task-stage6-gpu-source-20261111T031847Z/cloud/modal_tasks.py
+├── ✓ Uploaded 
+│   /tmp/task-stage6-gpu-source-20261111T031847Z/artifacts/upstream.json
+├── ✓ Uploaded /tmp/task-stage6-gpu-source-20261111T031847Z
+└── ✓ Created Function evaluate.
+{"run_id": "stage6-smoke-rerun-20261111T031847Z", "function_call_id": "fc-01M749VVTSE22QRP4KQKPFB2RK", "volume": "agenticrl-cuda-artifacts", "remote": "/artifacts/stage6-smoke-rerun-20261111T031847Z"}
+{"function_call_id": "fc-01M749VVTSE22QRP4KQKPFB2RK"}

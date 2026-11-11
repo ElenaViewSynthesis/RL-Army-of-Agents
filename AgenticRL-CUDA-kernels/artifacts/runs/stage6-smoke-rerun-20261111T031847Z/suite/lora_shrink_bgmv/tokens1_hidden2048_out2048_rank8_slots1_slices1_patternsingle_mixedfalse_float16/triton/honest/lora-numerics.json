@@ -1,0 +1,69 @@
+{
+  "schema": "multi-lora-numerics-v1",
+  "task": "lora_shrink_bgmv",
+  "diagnostic_only": true,
+  "fp16_intermediate_expected_failure": false,
+  "honest_gate": {
+    "task": "lora_shrink_bgmv",
+    "activation_dtype": "torch.float16",
+    "outputs": [
+      {
+        "output": "output",
+        "kind": "relative",
+        "coefficient": 0.005,
+        "checked_elements": 16,
+        "max_abs_ref": 2.744758367538452,
+        "max_abs_error": 2.980232238769531e-07,
+        "bound": 0.013723791837692262,
+        "ratio_to_bound": 2.1715807657358603e-05,
+        "p50_normalized_error": 0.0,
+        "p99_normalized_error": 1.0532166713818922e-07,
+        "finite": true,
+        "skipped_rows_bit_exact": true,
+        "zero_reference_exact": true,
+        "passed": true
+      }
+    ],
+    "passed": true
+  },
+  "fp16_intermediate_gate": {
+    "task": "lora_shrink_bgmv",
+    "activation_dtype": "torch.float16",
+    "outputs": [
+      {
+        "output": "output",
+        "kind": "relative",
+        "coefficient": 0.005,
+        "checked_elements": 16,
+        "max_abs_ref": 2.744758367538452,
+        "max_abs_error": 0.0006840229034423828,
+        "bound": 0.013723791837692262,
+        "ratio_to_bound": 0.04984212173516947,
+        "p50_normalized_error": 2.1390070542498228e-06,
+        "p99_normalized_error": 0.0002455884119585999,
+        "finite": true,
+        "skipped_rows_bit_exact": true,
+        "zero_reference_exact": true,
+        "passed": true
+      }
+    ],
+    "passed": true
+  },
+  "fp16_intermediate_would_fail_relative_bound": false,
+  "honest": {
+    "finite": true,
+    "max_abs": 2.980232238769531e-07,
+    "p50_abs": 0.0,
+    "p99_abs": 2.890825498980121e-07,
+    "max_abs_over_max_ref": 1.0857903828679302e-07,
+    "original_relative_bound": 0.005
+  },
+  "fp16_intermediate": {
+    "finite": true,
+    "max_abs": 0.0006840229034423828,
+    "p50_abs": 5.8710575103759766e-06,
+    "p99_abs": 0.0006740808603353798,
+    "max_abs_over_max_ref": 0.00024921060867584734,
+    "original_relative_bound": 0.005
+  }
+}
