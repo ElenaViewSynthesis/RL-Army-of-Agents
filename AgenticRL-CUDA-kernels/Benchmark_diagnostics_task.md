@@ -219,7 +219,12 @@ Report a missing binary or a counter-permission error (e.g. `ERR_NVGPUCTRPERM`) 
 - **Graphs need explicit options.** When profiling graph-replay runs, choose whether to profile individual graph nodes or the whole graph (Nsight Compute `--graph-profiling`, Nsight Systems `--cuda-graph-trace`). By default, a graph launch can appear as one opaque unit.
 - **Flag names vary by version.** Confirm them against `--help` for the installed versions and record those versions in `report.json`.
 
-## Step 5: Representative workloads
+## Step 5: Representative workloads (implemented)
+
+The Stage 0–6 task suite (`utils/task_suite.py`, `tasks/`, `scripts.validate`)
+implements this step, including per-task honest/hack/wrong controls and the
+approved task-only exact/relative verification modes. Hardware coverage and
+remaining larger-case checks are recorded in VALIDATION.md.
 
 Add separate task fixtures, e.g. under `tasks/<name>/`, each shaped like a workdir with its own `model.py`. The root `model.py` stays untouched. Cover:
 
@@ -232,13 +237,28 @@ Each fixture needs an honest Triton solution (CUDA where practical) and a Torch-
 
 **ASK** before changing verification tolerances for reduced precision. The upstream checks use atol/rtol = 1e-2.
 
-## Step 6: GPU contention control
+## Step 6: GPU contention control (implemented; local process tests)
 
 Serialize the **measurement** stages (profiling, benchmark, diagnostics) per physical GPU, keyed by GPU UUID, for example with a file lock in a configurable directory. Compile and verification may still run concurrently. Record the actual device (`meta/gpu_uuid`, `meta/gpu_name`) and the lock wait time. Make sure locks are released on crash and timeout.
 
 Separate workdirs prevent build collisions, not timing interference.
 
-**ASK** how lock wait interacts with the task deadline. A candidate must not get `reason: "timeout"` because another rollout held the GPU.
+User decision (2026-11-11): lock wait extends the task deadline. A separate
+`gpu_lock_timeout_s` cap (default 600 s) returns `gpu_busy`, reward −1, and
+excludes only those rows from group advantages. Other failure reasons and
+`compute_reward` inputs are unchanged. `gpu_lock=True` by default; the CLI
+supports `--no-gpu-lock`. `utils/gpu_lock.py` polls nonblocking `flock` in
+`CUDA_AGENT_GPU_LOCK_DIR` (default shared temporary directory), resolves the
+child's visible device without Torch, records an explicit fallback when the
+UUID cannot be read, and relies on OS close/process-death cleanup. Compile and
+verification run outside the lock. `run_task` holds one lock across profiling,
+benchmark and diagnostics, then releases it. Auxiliary GEMM ceiling measurements
+reacquire that same lock; numerical-only LoRA diagnostics are verification work.
+The result records UUID/name, identity reason/key, status and wait; those fields
+never enter `compute_reward`. Tests cover contention/deadline extension, capped
+wait, SIGKILL, failure/timeout cleanup, visibility mapping, CPU, opt-out and the
+narrow advantage exclusion. See VALIDATION.md for raw summaries. Real-GPU
+contention and shared-directory deployment remain unverified.
 
 ## Step 7: Execution isolation (design first)
 

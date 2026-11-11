@@ -75,9 +75,12 @@ padding controls together.
 The paired, deterministic catalog covers hidden/output dimensions
 2048/4096/5120/8192/14336, all ranks 8/16/32/64/128/256, slots 1/4/16,
 slices 1/2/3 and fp16/bf16. It covers mixed ranks and single, distinct,
-round-robin, mixed-skipped and all-skipped assignments. `stratified` selects
-this entire small paired grid, not a Cartesian product. BGMV stops at 256
-tokens. SGMV uses 512 and 4096 tokens; acceptance selects the final
+round-robin, mixed-skipped and all-skipped assignments. `all` selects the
+entire paired grid. The approved 2026-11-11 run plan makes `stratified` a stable
+six-case subset per task: both dtypes, mixed slot ranks, none/mixed/single/
+distinct patterns, ranks 8/256 and slices 1/3. Widest shapes run in acceptance.
+BGMV stops at 256 tokens (at hidden 4096); its widest hidden-14336 acceptance
+row uses 64 tokens. No combined 256-token/widest case was added. SGMV uses 512 and 4096 tokens; acceptance selects the final
 4096-token, 14336-hidden/output, rank-256, 16-slot, three-slice bf16 case.
 Rank 512 and 8192-token shapes remain stretch extensions.
 

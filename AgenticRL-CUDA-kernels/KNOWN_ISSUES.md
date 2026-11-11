@@ -387,3 +387,23 @@
   offending implementation is not identified by those traces. No Modal run
   or commit is made by this repair. See the new local evidence bundle and
   both HANDOFF_CODEX_STAGE6_GATE.md / HANDOFF_CODEX_STAGE6_REPLAY_CRASHES.md.
+
+
+- **GPU contention lock: locally verified, hardware concurrency unverified.**
+  Measurement stages now use an OS lock keyed by the child's GPU UUID (or an
+  explicitly labelled visibility-token fallback). Cooperating processes must
+  share the lock directory. Unknown UUID aliases cannot be reconciled across
+  different visibility conventions; metadata records the fallback and reason.
+  The lock is advisory and does not serialize external GPU users. Compile and
+  verification intentionally remain concurrent. Lock wait extends the deadline;
+  the separate cap produces `gpu_busy`, excluded only from advantages. Real
+  process contention, SIGKILL and timeout cleanup are covered without a GPU.
+- **Stage 6 wider GPU evidence is prepared, not run.** Acceptance and a six-case
+  per-task stratified subset cover bf16, mixed ranks and skipped tokens. All
+  acceptance cases have skipped tokens. The catalog already includes 256-token
+  BGMV at hidden 4096; its widest acceptance case has 64 tokens, and no combined
+  256-token/14336-hidden acceptance is claimed. Resource budgets are symbolic
+  estimates; hidden compiler/allocator workspaces, full gate sorts, cold compile
+  time and wider-case honest bounds still require hardware evidence. Request
+  1200 s per case rather than extrapolating the smoke's demonstrated 600 s cap.
+  fp16-intermediate remains diagnostic. No Modal run or live W&B write was made.

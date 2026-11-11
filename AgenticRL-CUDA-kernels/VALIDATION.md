@@ -2578,3 +2578,102 @@ Times are profiler device time per call. Scope: fp16 smoke cases only (rank
 skipped tokens and the largest cases are not yet GPU-tested. Evidence:
 `artifacts/runs/stage6-smoke-rerun-20261111T031847Z/` (JSON, logs and the
 source manifest).
+
+
+## Stage 6 GPU preparation and contention lock (2026-11-11)
+
+Local evidence: `artifacts/runs/stage6-gpu-lock-local-20261111T170616Z/`. No Modal run, live W&B write or commit is performed.
+The separate fp16 H200 rerun above remains historical GPU evidence; these new
+sources have not run on a GPU. Both required discovery runs completed:
+
+`utils/gpu_lock.py` resolves UUID/name with `nvidia-smi` and maps logical CUDA
+ordinals through visibility order. CPU and disabled paths do not acquire a
+lock. A failed UUID query records its reason and a visibility-token identity;
+GPU driver nodes also detect GPU hosts without `nvidia-smi`. Polling uses
+nonblocking `flock`, a 600 s default wait cap and a shared overridable lock
+directory. File descriptors close on exec and are released by the OS at death;
+lock files are never unlinked. One handle spans profiling, benchmark and
+profile-artifact diagnostics. Auxiliary GEMM ceiling timing is serialized too;
+numerical-only LoRA checks remain verification work. Lock wait extends the
+rollout and case diagnostic deadline, but remains visible in total wall time.
+`gpu_busy` is the only added reward reason and advantage exclusion. No inputs
+to `compute_reward` or other failure gates changed. Exclusion happens within
+original complete submitted groups before normalization/tied filtering; rows
+never move between groups. Aggregate reward statistics still cover all rows.
+
+Focused synthetic protocol/process tests passed: 71 tests / 44.261 s / OK
+(skipped=6: Torch-dependent cases under system Python), then 29 measurement and
+policy tests / 15.417 s / OK, then the final 9 lock/exclusion tests / 3.339 s / OK.
+The final pass adds default-CUDA driver-node discovery without importing Torch.
+Tests cover two contending processes, compile/verify outside the lock, waiting
+beyond the original deadline with exact extension, SIGKILL releasing the lock,
+cap expiry as `gpu_busy`, holding across all measured stages, release on failed
+or timed-out profiling, UUID visibility mapping/fallback, CPU/opt-out and only
+`gpu_busy` exclusion under all three presets. Protocol GPU timings are synthetic.
+
+`run-plan.json` records every case/fixture/backend row and the sizing assumptions.
+The stratified grid is six deterministic cases per task (36 total), rather than
+all 112 cases. Coverage: both dtypes; genuine mixed slot ranks; none, mixed,
+single, distinct; ranks 8 and 256; slices 1 and 3. Widest cases run separately in
+acceptance. Acceptance: 56/56 applicable; stratified: 312/336 applicable (14
+wrong-skip controls have no skipped tokens, 10 wrong-padding controls have no
+rank padding). fp16-intermediate never becomes an expected-failure row.
+
+Decode finding: existing catalog rows already reach 256 tokens at hidden 4096;
+the paired grid's last/widest row is 64 tokens at hidden 14336. No shape change
+was made. Each acceptance case has idx=-1 tokens (1024 at T4096, 16 at T64).
+Memory budgets include physical NaN padding, input/builder copies, reference
+workspace, graph pools and full-array float64 error/quantile workspace, with a
+16 GiB runtime reserve. The largest budget is 106.799303296 GB, leaving
+34.200696704 GB against the supplied 141 GB H200 capacity. These are conservative
+planning allowances, not measured peaks or a bound on arbitrary compiler memory.
+Every fixture shares the applicable task budget. `scripts.size_stage6` probes
+full-size CPU meta tensors, including the Torch controls and a reference-storage
+proxy for authored kernels; authored GPU execution and hidden workspaces remain
+unmeasured. No large payload tensor was allocated by that sizing probe.
+
+Wall estimates use actual archived smoke per-task/backend/fixture wall times
+from `stage6-smoke-rerun-20261111T031847Z`, proxying wrong-skip with wrong-output,
+then multiply by 1.5, add explicit shape-scaled budgets (300 s for widest honest/
+hack, 120 s for verification-only controls), and 300 s startup. They predict
+8561.914 s (2.38 h) for acceptance and
+14092.250 s (3.91 h) for stratified,
+under the 20700 s suite/21600 s function limits. 600 s per new case is not
+established by the smoke. Prepared requests use 1200 s; cold specialization,
+full-size sort cost and actual allocator peaks remain hardware checks. These
+estimates do not promise runtime or establish GPU performance/acceptance.
+
+
+system interpreter:
+
+```text
+Ran 318 tests in 342.187s
+
+OK (skipped=78)
+```
+
+runtime interpreter:
+
+```text
+Ran 323 tests in 1073.095s
+
+OK (skipped=29)
+```
+
+Full logs are retained. Skips reflect absent Torch/backends or GPUs and
+opt-in live integrations; they are not passing hardware checks. Existing
+SQLite ResourceWarnings are retained. The final driver-node fallback
+branch was also checked by `final-lock.log` (9 tests, OK), after full
+discovery had begun. No prior/reaped test job was restarted.
+
+The final lock/run-plan checks also pass with the installed runtime
+under python -S: 12 tests in 2.699 s, OK (`final-runtime-parent.log`).
+
+All 39 full-size symbolic scenarios completed; maximum visible builder
+storage was 1199968332 bytes and reference-plus-fixture live storage was
+3593734672 bytes. These exclude hidden operator/allocator workspaces;
+the larger planning budget remains the relevant GPU capacity estimate.
+
+Each prepared request points to its own fresh public source freeze and
+manifest SHA-256. Claude launches acceptance, reports, then launches
+stratified only after review/approval. No Modal/W&B write or commit was made.

@@ -103,7 +103,10 @@ of every shrink/expand task, not separate tasks.
 - Do not take the full product. Define the cases as Stage 5 did, with
   `smoke` = the smallest case and `acceptance` = the largest prefill case
   (4096 tokens, 14336 hidden, rank 256, 16 slots, 3 slices). Add a
-  deterministic `stratified` selection that covers every axis value.
+  deterministic `stratified` covering subset. The approved 2026-11-11 run
+  plan selects six cases per task covering both dtypes, a mixed-rank batch,
+  none/mixed/single/distinct patterns, ranks 8/256 and slices 1/3. `all`
+  retains the full declared paired grid; acceptance runs the widest shapes.
 
 ## Fixtures (every task)
 

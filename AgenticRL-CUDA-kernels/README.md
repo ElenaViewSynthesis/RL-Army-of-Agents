@@ -698,8 +698,8 @@ AgenticRL-CUDA-kernels/
 
 - **Environment only.** There is no trainer, policy weights, agent loop, Modal orchestration, MLflow or W&B code in this phase.
 - **Not a hostile-code sandbox.** Process groups isolate crashes and kill descendants on timeout. A production Modal sandbox still needs filesystem, network and resource limits and a container-level deadline.
-- **Shared-GPU timing skews rewards.** Avoid concurrent profiling on one sandbox GPU, because contention changes both milestone rewards and group-relative advantages.
-- **Cold starts count against the deadline.** nvcc / JIT / autotune and `torch.compile` warmup all fall inside the 180 s deadline; Level-3 tasks may need more.
+- **Shared-GPU timing requires cooperation.** Measurement stages now share a GPU lock. External GPU work and deliberately concurrent compile/verification can still perturb timings; workers must share the lock directory.
+- **Cold starts count against the deadline.** nvcc / JIT / autotune and `torch.compile` warmup fall inside the configured task deadline (180 s stock default); GPU lock wait extends it. Larger tasks may need more.
 
 Full evidence, raw command output and what each test establishes are in [VALIDATION.md](VALIDATION.md). Open issues are in [KNOWN_ISSUES.md](KNOWN_ISSUES.md).
 
@@ -732,3 +732,50 @@ The replay helper retains static buffers for the capture lifetime. Local
 regression evidence and remaining GPU limits are recorded in VALIDATION.md.
 The earlier H200 smoke used the old floating check; it does not validate this
 new gate or replay repair. No rerun is launched as part of the repair.
+
+
+## GPU contention lock
+
+Measurement stages in `run_task` share a per-GPU `fcntl.flock`: profiling,
+benchmark and diagnostics hold one lock until all three finish. Compilation
+and verification remain concurrent. UUID/name discovery uses `nvidia-smi`
+with the child's logical ordinal mapped through `CUDA_VISIBLE_DEVICES`;
+a failed query records a reason and uses the selected visibility token as
+a fallback identity. CPU evaluation takes no lock. Workers sharing a GPU
+must share `CUDA_AGENT_GPU_LOCK_DIR` (default `/tmp/agenticrl-gpu-locks`).
+The OS releases the lock on normal exit, stage failure, timeout or SIGKILL.
+
+`gpu_lock=True` is the default; `--no-gpu-lock` disables acquisition.
+`--gpu-lock-timeout-s` defaults to 600. Lock wait extends the task deadline;
+`env/wall_s` still includes the wait. A capped wait returns reward −1 with
+reason `gpu_busy`, excluded within its original group before advantages
+and tied-group filtering. `adv/gpu_busy_excluded` counts excluded rows;
+other failures and all submitted-row reward statistics retain their meaning.
+`meta/gpu_*` fields are diagnostic. Auxiliary GEMM ceiling timing reacquires
+the same lock; numerical-only LoRA checks remain verification work.
+
+## Prepared Stage 6 GPU run plan (2026-11-11)
+
+The H200 fp16 smoke rerun passed 46 applicable rows with all 12 honest graph
+captures/replays passing (`stage6-smoke-rerun-20261111T031847Z`). That evidence
+predates this contention-lock implementation. The next runs are prepared for
+Claude to review and launch in order, reporting after each; none is launched here.
+
+| Run | Cases | Rows (applicable) | Estimated wall | Case cap |
+|---|---:|---:|---:|---:|
+| Acceptance | 6 | 56 (56) | 2.4 h | 1200 s |
+| Stratified covering subset | 36 | 336 (312) | 3.9 h | 1200 s |
+
+Stratified selects six stable cases per task covering both dtypes, rank 8/256,
+slices 1/3, mixed ranks, and none/mixed/single/distinct patterns. Widest shapes
+run in acceptance. The paired catalog already tests 256-token decode at hidden
+4096; its widest 14336-hidden BGMV acceptance row uses 64 tokens. No catalog
+shape was added. Every acceptance case includes skipped tokens.
+
+These are estimates from archived smoke wall times and explicit sizing budgets,
+not new GPU measurements. Largest-case planning budget: 106.8 GB of 141 GB,
+including full float64 verification and graph-pool allowances. Allocator peaks,
+cold compilation and largest-case correctness remain hardware checks.
+[Case IDs, resource assumptions, test evidence and prepared requests](artifacts/runs/stage6-gpu-lock-local-20261111T170616Z/README.md)
+are retained together. Both requests use detached H200 execution, all fixtures,
+both backends and CUDA graphs. The fp16-intermediate comparison stays diagnostic.
