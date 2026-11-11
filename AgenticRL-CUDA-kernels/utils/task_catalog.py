@@ -255,7 +255,12 @@ def select_cases(task_name, selection="smoke"):
     if selection == "smoke":
         return task.cases[:1]
     if selection == "stratified" and task.stage == 6:
-        return task.cases
+        # Paired catalog rows: six stable representatives, never the full grid.
+        # single/rank8/1 slice; mixed; distinct; none; rank256/3 slices;
+        # then bf16 at the same high-rank shape. Widest shapes run separately
+        # under acceptance; both dtypes exercise skipped rows here.
+        indices = (0, 3, 8, 11, 12, 13)
+        return tuple(task.cases[i] for i in indices)
     if selection == "acceptance":
         if task_name == "gemm_tensor_core":
             return (get_case(task_name, "m4096_n4096_k4096_bfloat16"),)

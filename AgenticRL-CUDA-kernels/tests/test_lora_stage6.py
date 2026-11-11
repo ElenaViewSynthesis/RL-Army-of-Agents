@@ -30,7 +30,7 @@ class LoraContracts(unittest.TestCase):
             task = get_task(name)
             validate_usage(name, "train")
             self.assertFalse(task.eval_only)
-            self.assertEqual(select_cases(name, "stratified"), task.cases)
+            self.assertEqual(len(select_cases(name, "stratified")), 6)
             self.assertEqual(len({c.id for c in task.cases}), len(task.cases))
             for key, values in (("hidden", {2048,4096,5120,8192,14336}),
                                 ("rank", {8,16,32,64,128,256}), ("slices", {1,2,3}),

@@ -12,6 +12,7 @@ from pathlib import Path
 
 from utils.backend import BACKENDS, available_backends
 from utils.config import RolloutConfig
+from utils.gpu_lock import MeasurementLock
 from utils.provenance import PROVENANCE_RULESET
 from utils.rollout_env import _stage, run_task
 from utils.task_catalog import SOURCES, TASKS, get_case, get_task, select_cases, validate_usage, workload
@@ -155,6 +156,7 @@ def evaluate_case(task_name, case_id, backend, variant, destination, *, device="
     with case_environment(task_name, case_id, device, cold_start, path / "benchmark-samples"):
         raw = run_task(str(path), dataclasses.replace(
             config, timeout_s=max(.001, deadline - time.monotonic())), turns_used=1, profile_out=profile)
+    deadline += raw.get("meta/gpu_lock_wait_s", 0.0)
     graded = apply_task_policy(raw, profile, config, turns_used=1)
     changed = any(not (path / name).is_file()
                   or hashlib.sha256((path / name).read_bytes()).hexdigest() != digest
@@ -164,6 +166,8 @@ def evaluate_case(task_name, case_id, backend, variant, destination, *, device="
         result.update({"suite/status": "failed", "suite/reason": "protected_task_files_modified",
                        "reward/value": -1.0, "reward/base": -1, "reward/reason": "verification",
                        "reward/overlong_penalty": 0.0})
+    elif result.get("reward/reason") == "gpu_busy":
+        result.update({"suite/status": "unavailable", "suite/reason": "gpu_busy"})
     else:
         passed = expected_outcome(result, variant)
         result.update({"suite/status": "passed" if passed else "failed",
@@ -184,9 +188,24 @@ def evaluate_case(task_name, case_id, backend, variant, destination, *, device="
         with case_environment(task_name, case_id, device):
             env.update({key: os.environ[key] for key in
                         ("CUDA_AGENT_TASK", "CUDA_AGENT_TASK_CASE", "CUDA_AGENT_DEVICE", "TRITON_INTERPRET")})
-            code, stdout, stderr, timed_out = _stage(
-                "utils.task_ceiling", ["--seed", str(config.seed), "--samples-json", str(samples)],
-                path, env, deadline)
+            # This auxiliary timing stage runs after run_task releases its lock.
+            # Reacquire the same device lock; numerical-only LoRA checks below
+            # are verification work and do not take a measurement lock.
+            with MeasurementLock(env, config.gpu_lock, config.gpu_lock_timeout_s) as lock:
+                wait = lock.metadata["meta/gpu_lock_wait_s"]
+                previous_wait = result.get("meta/gpu_lock_wait_s", 0.0)
+                result.update(lock.metadata)
+                result["meta/gpu_lock_wait_s"] = previous_wait + wait
+                deadline += wait
+                if lock.busy:
+                    result.update({"suite/status": "unavailable", "suite/reason": "gpu_busy",
+                                   "reward/value": -1.0, "reward/base": -1,
+                                   "reward/reason": "gpu_busy", "reward/overlong_penalty": 0.0})
+                    code, stdout, stderr, timed_out = None, "", "", False
+                else:
+                    code, stdout, stderr, timed_out = _stage(
+                        "utils.task_ceiling", ["--seed", str(config.seed), "--samples-json", str(samples)],
+                        path, env, deadline)
         (path / "ceiling.stdout.log").write_text(stdout)
         (path / "ceiling.stderr.log").write_text(stderr)
         try:
@@ -217,7 +236,7 @@ def evaluate_case(task_name, case_id, backend, variant, destination, *, device="
         result.update({"suite/status": "unavailable",
                        "suite/reason": "cuBLAS ceiling not yet recorded"})
     numerics = None
-    if task_name.startswith("lora_") and task_name != "lora_segment_metadata" and variant == "honest" and result.get("env/verify_ok"):
+    if task_name.startswith("lora_") and task_name != "lora_segment_metadata" and variant == "honest" and result.get("env/verify_ok") and result.get("reward/reason") != "gpu_busy":
         target = path / "lora-numerics.json"
         env = os.environ.copy()
         with case_environment(task_name, case_id, device):
