@@ -33,6 +33,10 @@ def main():
     parser.add_argument("--cuda-graphs", action="store_true", help="Diagnostic graph capture and replay; requires --benchmark")
     parser.add_argument("--cold-start", action="store_true", help="Separate first-forward diagnostic sample")
     args = parser.parse_args()
+    if args.cuda_graphs and not args.benchmark:
+        parser.error("--cuda-graphs requires --benchmark")
+    if args.cuda_graphs and not args.suite:
+        parser.error("--cuda-graphs applies only to --suite runs")
     if args.suite:
         from datetime import datetime, timezone
         from uuid import uuid4

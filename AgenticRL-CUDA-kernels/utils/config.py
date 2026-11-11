@@ -70,6 +70,9 @@ class RolloutConfig:
         low_ok = (0 <= self.clip_low <= 1) if self.algo == "cispo" else (0 <= self.clip_low < 1)
         if not low_ok or self.clip_high < 0 or self.kl_coef < 0:
             raise ValueError("Invalid clip range or kl_coef")
+        # Graph replay is part of the benchmark stage; alone it would be silently ignored.
+        if self.cuda_graphs is True and self.benchmark is not True:
+            raise ValueError("cuda_graphs requires benchmark")
         for name in ("benchmark", "cuda_graphs", "diagnostics", "filter_tied_groups",
                      "exact_integer_outputs", "relative_error_bounds"):
             if not isinstance(getattr(self, name), bool):
