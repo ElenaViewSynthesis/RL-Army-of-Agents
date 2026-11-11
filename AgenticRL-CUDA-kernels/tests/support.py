@@ -57,6 +57,8 @@ DEFAULT_RESULT_KEYS = frozenset({
     "env/provenance_library", "env/provenance_torch", "env/provenance_memory",
     "env/wall_s", "env/turns_used", "reward/value", "reward/base", "reward/reason",
     "reward/overlong_penalty", "meta/backend", "meta/task_id", "meta/algo", "meta/seed",
+    "meta/gpu_uuid", "meta/gpu_name", "meta/gpu_uuid_reason",
+    "meta/gpu_lock_key", "meta/gpu_lock_wait_s", "meta/gpu_lock",
     "log/compile_tail", "log/stderr_tail"})
 ARTIFACT_KEYS = frozenset({"artifact/report", "artifact/trace", "artifact/kernels",
                            "artifact/unavailable_reason"})

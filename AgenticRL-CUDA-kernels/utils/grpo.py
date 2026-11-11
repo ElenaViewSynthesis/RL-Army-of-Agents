@@ -1,7 +1,9 @@
 """Torch-free GRPO/Dr.GRPO advantages and DAPO tied-group filtering.
 
 build_batch takes aligned task_ids and rollout dicts (run_task's flat schema).
-Each task must have a whole number of groups; incomplete groups are errors.
+Each task must have a whole number of submitted groups; incomplete groups are
+errors. Only gpu_busy environment failures are omitted within their original
+group before normalization/filtering; groups never borrow rows from each other.
 rollout_id defaults to its input index. Reward stats cover *all* submitted
 rollouts; advantage stats cover the retained groups. Standard deviations use
 population normalization, and turns/p95 is the nearest-rank percentile.
@@ -62,7 +64,10 @@ def build_batch(task_ids, rollouts, cfg):
         if len(rows) % cfg.group_size:
             raise ValueError("Incomplete same-task group; collect cfg.group_size rollouts")
         groups.extend(rows[i:i + cfg.group_size] for i in range(0, len(rows), cfg.group_size))
-    kept, dropped = filter_groups(groups, cfg.filter_tied_groups)
+    excluded = sum(r.get("reward/reason") == "gpu_busy" for group in groups for r in group)
+    eligible = [[r for r in group if r.get("reward/reason") != "gpu_busy"] for group in groups]
+    eligible = [group for group in eligible if group]
+    kept, dropped = filter_groups(eligible, cfg.filter_tied_groups)
     pairs = []
     for group in kept:
         advantages = group_advantages([_reward(r) for r in group], cfg.adv_norm)
@@ -73,7 +78,8 @@ def build_batch(task_ids, rollouts, cfg):
     n = len(rollouts)
     mean = lambda values: statistics.fmean(values) if values else 0.0
     stats = {
-        "adv/frac_dropped": dropped / len(groups) if groups else 0.0,
+        "adv/frac_dropped": dropped / len(eligible) if eligible else 0.0,
+        "adv/gpu_busy_excluded": excluded,
         "adv/mean": mean(advantages),
         "adv/std": statistics.pstdev(advantages) if advantages else 0.0,
         "reward/mean": mean(rewards),

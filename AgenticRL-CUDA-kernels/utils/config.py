@@ -38,6 +38,8 @@ class RolloutConfig:
     run_name: str = ""
     tags: list[str] = field(default_factory=list)
     relative_error_bounds: bool = False
+    gpu_lock: bool = True
+    gpu_lock_timeout_s: float = 600.0
 
     def __post_init__(self):
         for name, choices in {"backend": BACKEND_CHOICES,
@@ -53,6 +55,10 @@ class RolloutConfig:
         # Rotation needs each impl in each position equally often.
         if self.bench_rounds % 3:
             raise ValueError("bench_rounds must be a multiple of 3")
+        if (isinstance(self.gpu_lock_timeout_s, bool)
+                or not isinstance(self.gpu_lock_timeout_s, (int, float))
+                or not math.isfinite(self.gpu_lock_timeout_s) or self.gpu_lock_timeout_s <= 0):
+            raise ValueError("gpu_lock_timeout_s must be a positive finite number")
         for name in ("timeout_s", "provenance_threshold", "speedup_margin",
                      "clip_low", "clip_high", "kl_coef"):
             if not math.isfinite(getattr(self, name)):
@@ -74,7 +80,7 @@ class RolloutConfig:
         if self.cuda_graphs is True and self.benchmark is not True:
             raise ValueError("cuda_graphs requires benchmark")
         for name in ("benchmark", "cuda_graphs", "diagnostics", "filter_tied_groups",
-                     "exact_integer_outputs", "relative_error_bounds"):
+                     "exact_integer_outputs", "relative_error_bounds", "gpu_lock"):
             if not isinstance(getattr(self, name), bool):
                 raise ValueError(f"{name} must be bool")
         if not isinstance(self.seed, int) or not isinstance(self.run_name, str):

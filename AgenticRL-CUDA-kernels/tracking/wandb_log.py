@@ -20,7 +20,7 @@ ENTITY = os.environ.get("WANDB_ENTITY") or None
 PROJECT = os.environ.get("WANDB_PROJECT", "CUDA-gen")
 MANIFEST = Path(__file__).with_name("h200_runs.json")
 SHARES = ("agent", "library", "torch", "memory")
-BATCH_KEYS = ("adv/frac_dropped", "adv/mean", "adv/std", "reward/mean", "reward/frac_3",
+BATCH_KEYS = ("adv/gpu_busy_excluded", "adv/frac_dropped", "adv/mean", "adv/std", "reward/mean", "reward/frac_3",
               "reward/frac_provenance_fail", "reward/frac_max_turns",
               "reward/mean_overlong_penalty", "turns/mean", "turns/p95")
 

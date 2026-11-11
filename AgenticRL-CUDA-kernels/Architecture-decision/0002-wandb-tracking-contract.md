@@ -73,10 +73,12 @@ excluded from W&B scalar history, tables and summary. Artifact paths are dropped
 from scalar metrics; referenced files are artifact data when available.
 Synthetic group demo values stay in labelled raw artifacts, not metric history.
 
-Step 2's env/provenance_* result keys have NOT landed. This task preserves the
-18-key default result schema: an opt-in profile_out dictionary captures the same
-profiling pass in the trusted parent without SDK/Torch imports or an extra GPU
-pass. The tracking row contains the four shares; run_task's result does not.
+The current default result schema has 28 keys, including the four diagnostic
+`env/provenance_*` shares and six `meta/gpu_*` identity/lock fields. An opt-in
+`profile_out` dictionary captures the same profiling pass in the trusted parent
+without SDK/Torch imports or an extra GPU pass. GPU identity and lock wait never
+enter `compute_reward`; only the approved `gpu_busy` environment failure is
+excluded within its original group before advantage normalization/filtering.
 Validation artifacts now persist those profiles, full base/case/group configs,
 candidate hashes and rule-set ID. Live evidence artifacts include candidate files,
 trusted utils sources and requirement pins. The name-recorder header carries full config
@@ -120,6 +122,8 @@ saves the sampler output (enabled in the Modal test runner).
 | `cfg:cfg/iters` | config | cfg | int | 1 | never | config | environment |
 | `cfg:cfg/exact_integer_outputs` | config | cfg | bool | 1 | not recorded in historical configs | verification/config; forced true only by progressive suite | environment |
 | `cfg:cfg/relative_error_bounds` | config | cfg | bool | 1 | not recorded in historical configs | Stage 6 relative verification/config; forced true only for Stage 6 arithmetic | environment |
+| `cfg:cfg/gpu_lock` | config | cfg | bool | 1 | not recorded in historical configs | GPU measurement serialization/config | environment |
+| `cfg:cfg/gpu_lock_timeout_s` | config | cfg | float | s | not recorded in historical configs | GPU wait cap/config | environment |
 | `cfg:cfg/benchmark` | config | cfg | bool | 1 | never | config | environment |
 | `cfg:cfg/bench_warmup_iters` | config | cfg | int | 1 | never | config | environment |
 | `cfg:cfg/bench_rounds` | config | cfg | int | 1 | never | config | environment |
@@ -163,6 +167,12 @@ saves the sampler output (enabled in the Modal test runner).
 | `result:meta/backend` | table | meta | str | 1 | never | identity | environment |
 | `result:meta/seed` | table | meta | int | 1 | never | identity | environment |
 | `result:meta/task_id` | table | meta | str | 1 | never | identity | environment |
+| `result:meta/gpu_uuid` | table | meta | str | UUID | CPU/unavailable/not reached | measured identity | environment |
+| `result:meta/gpu_name` | table | meta | str | device name | CPU/unavailable/not reached | diagnostic | environment |
+| `result:meta/gpu_uuid_reason` | table | meta | str | reason | UUID resolved | diagnostic | environment |
+| `result:meta/gpu_lock_key` | table | meta | str | lock identity | CPU/not reached | diagnostic | environment |
+| `result:meta/gpu_lock_wait_s` | table | meta | float | s | never; zero uncontended/no lock | diagnostic; excluded from deadline only | environment |
+| `result:meta/gpu_lock` | table | meta | str | lock status | never | diagnostic | environment |
 | `result:log/compile_tail` | weave | log | str | text | empty if none | diagnostic | environment |
 | `result:log/stderr_tail` | weave | log | str | text | empty if none | diagnostic | environment |
 | `result:artifact/*` | artifact | artifact | str | path | artifact unavailable | diagnostic | environment |
@@ -310,6 +320,7 @@ saves the sampler output (enabled in the Modal test runner).
 | `batch:adv/frac_dropped` | metric | adv | float | 1 | no complete batch | diagnostic | environment |
 | `batch:adv/mean` | metric | adv | float | 1 | no complete batch | diagnostic | environment |
 | `batch:adv/std` | metric | adv | float | 1 | no complete batch | diagnostic | environment |
+| `batch:adv/gpu_busy_excluded` | metric | adv | int | rollouts | no complete batch | excluded environment failure count | environment |
 | `batch:reward/mean` | metric | reward | float | reward | no complete batch | reward aggregate | environment |
 | `batch:reward/frac_3` | metric | reward | float | 1 | no complete batch | reward aggregate | environment |
 | `batch:reward/frac_provenance_fail` | metric | reward | float | 1 | no complete batch | reward aggregate | environment |
@@ -396,10 +407,14 @@ saves the sampler output (enabled in the Modal test runner).
 | `results:config/diagnostics` | config | config | bool | 1 | historical artifact did not persist it | config | environment |
 | `results:config/exact_integer_outputs` | config | config | bool | 1 | historical artifact did not persist it | config | environment |
 | `results:config/relative_error_bounds` | config | config | bool | 1 | historical artifact did not persist it | config | environment |
+| `results:config/gpu_lock` | config | config | bool | 1 | historical artifact did not persist it | config | environment |
+| `results:config/gpu_lock_timeout_s` | config | config | float | s | historical artifact did not persist it | config | environment |
 | `results:case_configs/*/cuda_graphs` | table | case_configs | bool | 1 | historical artifact did not persist it | config | environment |
 | `results:case_configs/*/diagnostics` | table | case_configs | bool | 1 | historical artifact did not persist it | config | environment |
 | `results:case_configs/*/exact_integer_outputs` | table | case_configs | bool | 1 | historical artifact did not persist it | config | environment |
 | `results:case_configs/*/relative_error_bounds` | table | case_configs | bool | 1 | historical artifact did not persist it | config | environment |
+| `results:case_configs/*/gpu_lock` | table | case_configs | bool | 1 | historical artifact did not persist it | config | environment |
+| `results:case_configs/*/gpu_lock_timeout_s` | table | case_configs | float | s | historical artifact did not persist it | config | environment |
 | `results:config/timeout_s` | config | config | float | s | historical artifact did not persist it | config | environment |
 | `results:case_configs/*/timeout_s` | table | case_configs | float | s | historical artifact did not persist it | config | environment |
 | `results:config/provenance_threshold` | config | config | float | 1 | historical artifact did not persist it | config | environment |
@@ -454,10 +469,14 @@ saves the sampler output (enabled in the Modal test runner).
 | `names:config/diagnostics` | config | config | bool | 1 | historical artifact did not persist it | config | environment |
 | `names:config/exact_integer_outputs` | config | config | bool | 1 | historical artifact did not persist it | config | environment |
 | `names:config/relative_error_bounds` | config | config | bool | 1 | historical artifact did not persist it | config | environment |
+| `names:config/gpu_lock` | config | config | bool | 1 | historical artifact did not persist it | config | environment |
+| `names:config/gpu_lock_timeout_s` | config | config | float | s | historical artifact did not persist it | config | environment |
 | `names:case_configs/*/cuda_graphs` | table | case_configs | bool | 1 | historical artifact did not persist it | config | environment |
 | `names:case_configs/*/diagnostics` | table | case_configs | bool | 1 | historical artifact did not persist it | config | environment |
 | `names:case_configs/*/exact_integer_outputs` | table | case_configs | bool | 1 | historical artifact did not persist it | config | environment |
 | `names:case_configs/*/relative_error_bounds` | table | case_configs | bool | 1 | historical artifact did not persist it | config | environment |
+| `names:case_configs/*/gpu_lock` | table | case_configs | bool | 1 | historical artifact did not persist it | config | environment |
+| `names:case_configs/*/gpu_lock_timeout_s` | table | case_configs | float | s | historical artifact did not persist it | config | environment |
 | `names:config/timeout_s` | config | config | float | s | historical artifact did not persist it | config | environment |
 | `names:case_configs/*/timeout_s` | table | case_configs | float | s | historical artifact did not persist it | config | environment |
 | `names:config/provenance_threshold` | config | config | float | 1 | historical artifact did not persist it | config | environment |
@@ -502,6 +521,8 @@ saves the sampler output (enabled in the Modal test runner).
 | `results:group_configs/*/diagnostics` | config | group_configs | bool | 1 | historical artifact did not persist it | diagnostic | environment |
 | `results:group_configs/*/exact_integer_outputs` | config | group_configs | bool | 1 | historical artifact did not persist it | diagnostic | environment |
 | `results:group_configs/*/relative_error_bounds` | config | group_configs | bool | 1 | historical artifact did not persist it | diagnostic | environment |
+| `results:group_configs/*/gpu_lock` | config | group_configs | bool | 1 | historical artifact did not persist it | diagnostic | environment |
+| `results:group_configs/*/gpu_lock_timeout_s` | config | group_configs | float | s | historical artifact did not persist it | diagnostic | environment |
 | `results:group_configs/*/timeout_s` | config | group_configs | float | s | historical artifact did not persist it | diagnostic | environment |
 | `results:group_configs/*/provenance_threshold` | config | group_configs | float | 1 | historical artifact did not persist it | diagnostic | environment |
 | `results:group_configs/*/speedup_margin` | config | group_configs | float | 1 | historical artifact did not persist it | diagnostic | environment |
@@ -527,6 +548,7 @@ saves the sampler output (enabled in the Modal test runner).
 | `results:measured_groups/*/stats/adv/frac_dropped` | metric | measured_groups | float | 1 | group unavailable | diagnostic | environment |
 | `results:measured_groups/*/stats/adv/mean` | metric | measured_groups | float | 1 | group unavailable | diagnostic | environment |
 | `results:measured_groups/*/stats/adv/std` | metric | measured_groups | float | 1 | group unavailable | diagnostic | environment |
+| `results:measured_groups/*/stats/adv/gpu_busy_excluded` | metric | measured_groups | int | rollouts | group unavailable | excluded environment failure count | environment |
 | `results:measured_groups/*/stats/reward/mean` | metric | measured_groups | float | 1 | group unavailable | diagnostic | environment |
 | `results:measured_groups/*/stats/reward/frac_3` | metric | measured_groups | float | 1 | group unavailable | diagnostic | environment |
 | `results:measured_groups/*/stats/reward/frac_provenance_fail` | metric | measured_groups | float | 1 | group unavailable | diagnostic | environment |
@@ -593,7 +615,9 @@ saves the sampler output (enabled in the Modal test runner).
 | `metric:adv/mean` | metric | adv | float | 1 | no batch | diagnostic | environment |
 | `metric:batch/*/adv/mean` | metric | batch | float | 1 | no batch | diagnostic | environment |
 | `metric:adv/std` | metric | adv | float | 1 | no batch | diagnostic | environment |
+| `metric:adv/gpu_busy_excluded` | metric | adv | int | rollouts | no batch | excluded environment failure count | environment |
 | `metric:batch/*/adv/std` | metric | batch | float | 1 | no batch | diagnostic | environment |
+| `metric:batch/*/adv/gpu_busy_excluded` | metric | batch | int | rollouts | no batch | excluded environment failure count | environment |
 | `metric:reward/mean` | metric | reward | float | 1 | no batch | diagnostic | environment |
 | `metric:batch/*/reward/mean` | metric | batch | float | 1 | no batch | diagnostic | environment |
 | `metric:reward/frac_3` | metric | reward | float | 1 | no batch | diagnostic | environment |

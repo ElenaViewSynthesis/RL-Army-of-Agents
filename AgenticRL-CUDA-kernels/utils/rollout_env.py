@@ -1,12 +1,13 @@
 """Subprocess-isolated task evaluation; safe to import without Torch.
 
-The deadline covers compile + verification + profiling together. Each child
+The deadline covers all stages, excluding GPU lock wait. Each child
 gets a new POSIX process group, killed as a unit on timeout (including nvcc
 and torch.compile workers). This provides crash/timeout isolation, not an OS
 security sandbox for hostile code. Use a restricted container in phase 2.
 """
 
 import argparse
+import contextlib
 import json
 import os
 import signal
@@ -19,6 +20,7 @@ from pathlib import Path
 
 from utils.backend import BACKENDS, detect_backend
 from utils.config import RolloutConfig
+from utils.gpu_lock import MeasurementLock
 from utils.reward import compute_reward
 
 
@@ -136,6 +138,12 @@ def run_task(workdir: str, cfg: RolloutConfig, turns_used: int | None = None, *,
         "meta/task_id": path.name,
         "meta/algo": cfg.algo,
         "meta/seed": cfg.seed,
+        "meta/gpu_uuid": None,
+        "meta/gpu_name": None,
+        "meta/gpu_uuid_reason": "measurement stages not reached",
+        "meta/gpu_lock_key": None,
+        "meta/gpu_lock_wait_s": 0.0,
+        "meta/gpu_lock": "not_reached",
         "log/compile_tail": "",
         "log/stderr_tail": "",
     }
@@ -155,6 +163,7 @@ def run_task(workdir: str, cfg: RolloutConfig, turns_used: int | None = None, *,
         return result
 
     stage = "workdir"
+    measurement_stack = contextlib.ExitStack()
     try:
         if not path.is_dir():
             raise FileNotFoundError(f"Task directory does not exist: {path}")
@@ -200,6 +209,14 @@ def run_task(workdir: str, cfg: RolloutConfig, turns_used: int | None = None, *,
                          *(["--bench-samples", str(samples)] if cfg.benchmark else [])]),)
         profile = None
         for stage, module, args in stages:
+            if stage == "profiling":
+                lock = measurement_stack.enter_context(MeasurementLock(
+                    env, cfg.gpu_lock, cfg.gpu_lock_timeout_s))
+                result.update(lock.metadata)
+                if lock.busy:
+                    return finish("gpu_busy")
+                # Only waiting is exempt; discovery and every stage still count.
+                deadline += lock.metadata["meta/gpu_lock_wait_s"]
             stage_started = time.monotonic()
             code, stdout, stderr, timed_out = _stage(module, args, path, env, deadline)
             if stage_times_out is not None:
@@ -246,6 +263,7 @@ def run_task(workdir: str, cfg: RolloutConfig, turns_used: int | None = None, *,
                 profile = json.loads(stdout.strip().splitlines()[-1])
                 if profile_out is not None:
                     profile_out.update(profile)
+        measurement_stack.close()
         for field in ("t_eager_us", "t_compile_us", "t_gen_us", "provenance"):
             result["env/" + field] = profile[field]
         for share in SHARES:
@@ -276,6 +294,8 @@ def run_task(workdir: str, cfg: RolloutConfig, turns_used: int | None = None, *,
         for key in [k for k in result if k.startswith("bench/")]:
             del result[key]
         return finish(stage)
+    finally:
+        measurement_stack.close()
 
 
 def main():
