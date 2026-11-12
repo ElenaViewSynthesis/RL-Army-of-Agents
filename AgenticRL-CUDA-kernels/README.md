@@ -731,13 +731,7 @@ The fresh environment artifact packaging was also verified remotely.
 See VALIDATION.md for raw artifacts and remaining attribution limits.
 
 
-Stage 6 correction pending GPU review: the approved activation-dependent global
-relative bound now gates arithmetic verification (fp16 0.005, bf16 0.01). Skipped
-y rows are exact and excluded from the bound. Stock/Stages 0–5 are unchanged.
-The replay helper retains static buffers for the capture lifetime. Local
-regression evidence and remaining GPU limits are recorded in VALIDATION.md.
-The earlier H200 smoke used the old floating check; it does not validate this
-new gate or replay repair. No rerun is launched as part of the repair.
+Stage 6 verification uses the approved activation-dependent global relative bound (fp16 0.005, bf16 0.01). Skipped `y` rows must be bit-exact and are excluded from the bound. Stock and Stages 0–5 are unchanged. The graph-replay helper keeps static buffers alive for the capture's lifetime. Both were confirmed on the H200 by the smoke rerun, acceptance and stratified runs (results above); [VALIDATION.md](VALIDATION.md) keeps the local regression evidence.
 
 
 ## GPU contention lock
@@ -760,28 +754,32 @@ other failures and all submitted-row reward statistics retain their meaning.
 `meta/gpu_*` fields are diagnostic. Auxiliary GEMM ceiling timing reacquires
 the same lock; numerical-only LoRA checks remain verification work.
 
-## Prepared Stage 6 GPU run plan (2026-11-11)
+## Stage 6 GPU runs: plan and outcome
 
-The H200 fp16 smoke rerun passed 46 applicable rows with all 12 honest graph
-captures/replays passing (`stage6-smoke-rerun-20261111T031847Z`). That evidence
-predates this contention-lock implementation. The next runs are prepared for
-Claude to review and launch in order, reporting after each; none is launched here.
+The acceptance and stratified runs were planned on 2026-11-11 and ran on
+2026-11-12, each on one NVIDIA H200 on Modal with the GPU contention lock,
+all fixtures, both backends and CUDA graphs. The fp16-intermediate comparison
+stays diagnostic and is not part of these suites.
 
-| Run | Cases | Rows (applicable) | Estimated wall | Case cap |
-|---|---:|---:|---:|---:|
-| Acceptance (ran: 56/56 in 51 min) | 6 | 56 (56) | 2.4 h | 1200 s |
-| Stratified covering subset (ran: 312 passed, 24 not applicable, in 2.6 h) | 36 | 336 (312) | 3.9 h | 1200 s |
+| Run | Cases | Rows (applicable) | Planned wall | Measured wall | Result |
+|---|---:|---:|---:|---:|---|
+| Acceptance `stage6-acceptance-20261112T030910Z` | 6 | 56 (56) | 2.4 h | 51 min | 56 passed |
+| Stratified `stage6-stratified-20261112T094226Z` | 36 | 336 (312) | 3.9 h | 2.6 h | 312 passed, 24 not applicable |
 
 Stratified selects six stable cases per task covering both dtypes, rank 8/256,
 slices 1/3, mixed ranks, and none/mixed/single/distinct patterns. Widest shapes
 run in acceptance. The paired catalog already tests 256-token decode at hidden
-4096; its widest 14336-hidden BGMV acceptance row uses 64 tokens. No catalog
-shape was added. Every acceptance case includes skipped tokens.
+4096; its widest 14336-hidden BGMV acceptance row uses 64 tokens. Every
+acceptance case includes skipped tokens. The planning budget for the largest
+case was 106.8 GB of the H200's 141 GB, and the acceptance run completed
+within it.
 
-These are estimates from archived smoke wall times and explicit sizing budgets,
-not new GPU measurements. Largest-case planning budget: 106.8 GB of 141 GB,
-including full float64 verification and graph-pool allowances. Allocator peaks,
-cold compilation and largest-case correctness remain hardware checks.
-[Case IDs, resource assumptions, test evidence and prepared requests](artifacts/runs/stage6-gpu-lock-local-20261111T170616Z/README.md)
-are retained together. Both requests use detached H200 execution, all fixtures,
-both backends and CUDA graphs. The fp16-intermediate comparison stays diagnostic.
+Not-applicable rows are negative controls with nothing to test: `wrong_skip`
+on a case with no skipped tokens, and `wrong_padding` on a case whose ranks
+need no padding. They stay `unavailable` rows with a `control_not_applicable_*`
+reason. Since 2026-11-12, the suite report also counts them as
+`not_applicable` and reports `pass` when they are the only unavailable rows.
+Earlier summaries, including these two runs, still read `partial` for that
+reason.
+[Case IDs, resource assumptions and the prepared requests](artifacts/runs/stage6-gpu-lock-local-20261111T170616Z/README.md)
+are kept with the planning evidence.
