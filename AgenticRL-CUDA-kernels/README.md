@@ -146,7 +146,7 @@ Candidate top-k and the two 32k-context attention kernels are correct but untune
 **Figure 2.** Time per call at each Stage 5 task's largest case, as reward-profiler device time on a log scale from microseconds to seconds.
 Filled circles are eager PyTorch, hollow circles `torch.compile`, squares the CUDA solution and triangles the Triton solution.
 The gap between a solution and the two baselines shows the headroom: `torch.compile` beats every reference solution on the 32k attention tasks and top-k.
-All 71 suite rows passed in run `task-stage5-gpu-acceptance-20261110T002043Z`; data, LaTeX table and captions are in [`assets/stage5/`](assets/stage5/).
+All 71 suite rows passed in run `task-stage5-gpu-acceptance-20261110T002043Z`; data, LaTeX table and captions are in [`assets/stage5/`](assets/stage5/). An interactive dashboard of the same timings (per task and backend, against eager and `torch.compile`) is published as a Claude artifact, [Stage 5 kernel timings](https://claude.ai/artifact/Efm4o8YvrYm29LMbtM9sy2) (private; access is granted from the page's Share menu). It reads the CSV in `assets/stage5/` as a fixed dataset.
 
 | Stage | Focus | H200 status |
 |---|---|---|
