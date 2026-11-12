@@ -3,6 +3,7 @@ import json
 import os
 import subprocess
 import sys
+import types
 import unittest
 from pathlib import Path
 from unittest.mock import patch
@@ -69,7 +70,20 @@ class TaskCatalogTests(unittest.TestCase):
             self.assertNotIn("reward/value", result)
             report = run_suite(["row_softmax"], Path(tmp) / "run", device="cpu")
             self.assertEqual(report["counts"], {"passed": 0, "failed": 0, "unavailable": 6})
+            self.assertEqual(report["not_applicable"], 0)
             self.assertEqual(report["status"], "partial")
+
+    def test_not_applicable_controls_do_not_make_a_run_partial(self):
+        # SYNTHETIC rows: one pass plus one control with nothing to test is a pass;
+        # any other unavailable row still makes the run partial.
+        passed = {"suite/status": "passed", "suite/reason": None}
+        skip = {"suite/status": "unavailable", "suite/reason": "control_not_applicable_no_skipped_tokens"}
+        other = {"suite/status": "unavailable", "suite/reason": "cuda_unavailable"}
+        for rows, status, count in (([passed, skip], "pass", 1), ([passed, skip, other], "partial", 1)):
+            with self.subTest(status=status), scratch("task-na-") as tmp,                     patch("utils.task_suite.evaluate_case", side_effect=[dict(r) for r in rows]),                     patch("utils.task_suite.select_cases", return_value=[types.SimpleNamespace(id="c")] ):
+                report = run_suite(["row_softmax"], Path(tmp) / "run", device="cpu",
+                                   backends=("triton",), variants=("honest",) * len(rows))
+                self.assertEqual((report["status"], report["not_applicable"]), (status, count))
 
     def test_contract_only_is_never_executed(self):
         with patch("utils.task_suite.run_task", side_effect=AssertionError("must not run")):

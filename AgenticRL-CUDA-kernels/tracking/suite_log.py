@@ -73,6 +73,8 @@ def suite_payload(folder):
         "summary": {"suite/status": summary["status"],
                     "suite/source_mismatches": len(summary.get("source_mismatches") or []),
                     "suite/wall_s": summary.get("execution", {}).get("wall_s"),
+                    # Present from 2026-11-12; older suite.json files have no such count.
+                    **({"suite/not_applicable": suite["not_applicable"]} if "not_applicable" in suite else {}),
                     **{f"suite/{k}": v for k, v in counts.items()}},
         "rows": rows,
         "files": files,

@@ -103,6 +103,9 @@ def candidate_sources(path):
             and not any(part in (".cache", "__pycache__") for part in item.relative_to(path).parts)}
 
 
+NOT_APPLICABLE_PREFIX = "control_not_applicable_"
+
+
 def evaluate_case(task_name, case_id, backend, variant, destination, *, device="cuda",
                   purpose="eval", cfg=None, cold_start=False):
     started = time.monotonic()
@@ -346,9 +349,15 @@ def run_suite(names, output, *, case_set="smoke", backends=None, variants=VARIAN
                     print(json.dumps(result, allow_nan=False), flush=True)
     counts = {status: sum(row["suite/status"] == status for row in records)
               for status in ("passed", "failed", "unavailable")}
+    # Controls with nothing to test (no skipped tokens, no rank padding) stay
+    # "unavailable" rows, but they are planned and do not make the run partial.
+    not_applicable = sum(row["suite/status"] == "unavailable"
+                         and str(row.get("suite/reason") or "").startswith(NOT_APPLICABLE_PREFIX)
+                         for row in records)
     report = {"schema": "progressive-task-suite-v1", "purpose": purpose, "device": device,
-              "case_set": case_set, "counts": counts, "rows": records,
-              "status": "fail" if counts["failed"] else ("partial" if counts["unavailable"] else "pass"),
+              "case_set": case_set, "counts": counts, "not_applicable": not_applicable, "rows": records,
+              "status": "fail" if counts["failed"] else
+                        ("partial" if counts["unavailable"] > not_applicable else "pass"),
               "limitations": ["Captured cases only; unavailable is never passed.",
                               "Name attribution is a heuristic, not proof of authorship.",
                               "Benchmark rates are diagnostics, not reward inputs."]}

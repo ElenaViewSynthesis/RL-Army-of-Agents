@@ -118,6 +118,7 @@ def evaluate(run_id: str, tasks: str, case_set: str, backends: str, fixtures: st
     except (OSError, ValueError):
         suite = {}
     summary = {"run_id": run_id, "execution": execution, "counts": suite.get("counts"),
+               "not_applicable": suite.get("not_applicable"),
                "status": suite.get("status", "incomplete"), "source_mismatches": mismatches,
                "scope": "selected workload cases only; no stock AXPBY acceptance or timing-cause claim"}
     if execution["timed_out"] or execution["returncode"] not in (0, 1) or mismatches:
