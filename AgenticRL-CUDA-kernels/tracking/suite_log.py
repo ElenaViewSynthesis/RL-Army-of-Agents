@@ -37,7 +37,11 @@ def suite_payload(folder):
     """Build the W&B payload for one evidence folder; raises if it is incomplete."""
     folder = Path(folder)
     summary, request, suite = _load(folder / "summary.json"), _load(folder / "request.json"), _suite(folder)
-    manifest_path = folder / "source-manifest.json"
+    # Stage 5 evidence keeps the manifest at the top level; frozen-suite runs
+    # (Stage 6 onward) keep it at source/task-source-manifest.json.
+    manifest_path = next((p for p in (folder / "source-manifest.json",
+                                      folder / "source" / "task-source-manifest.json") if p.is_file()),
+                         folder / "source-manifest.json")
     manifest = _load(manifest_path) if manifest_path.is_file() else {}
     rows = [{k: v for k, v in row.items() if not k.startswith(DROPPED)} for row in suite["rows"]]
     counts = suite["counts"]

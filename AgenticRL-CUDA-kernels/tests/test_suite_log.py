@@ -51,6 +51,14 @@ class SuiteLogTests(unittest.TestCase):
         self.assertFalse(any(f.endswith(".bin") for f in payload["files"]))
         json.dumps(payload, allow_nan=False)
 
+    def test_manifest_under_source_folder_is_found(self):
+        manifest = self.folder / "source-manifest.json"
+        (self.folder / "source").mkdir()
+        manifest.replace(self.folder / "source" / "task-source-manifest.json")
+        payload = suite_log.suite_payload(self.folder)
+        self.assertEqual(payload["config"]["source/git_revision"], "abc1234")
+        self.assertRegex(payload["config"]["source/manifest_sha256"], r"^[0-9a-f]{64}$")
+
     def test_inconsistent_counts_are_rejected(self):
         suite = json.loads((self.folder / "suite" / "suite.json").read_text())
         suite["counts"]["passed"] = 5
