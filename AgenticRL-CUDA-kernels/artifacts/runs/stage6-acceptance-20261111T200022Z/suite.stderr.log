@@ -1,0 +1,6 @@
+usage: validate.py [-h] [--device {cpu,cuda}] [--timeout-s TIMEOUT_S]
+                   [--backends BACKENDS] [--suite SUITE] [--case-set CASE_SET]
+                   [--fixtures FIXTURES] [--purpose {eval,train}]
+                   [--suite-out SUITE_OUT] [--benchmark] [--cuda-graphs]
+                   [--cold-start]
+validate.py: error: cuda_graphs requires benchmark

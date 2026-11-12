@@ -209,6 +209,10 @@ Tasks run through `python -m scripts.validate --suite <names|stageN|all> --devic
 
 Stage 6 results above are from the H200 fp16 smoke rerun `stage6-smoke-rerun-20261111T031847Z` (commit `b79f0e3`, relative-bound gate on, `--cuda-graphs`): 46 passed, 0 failed, and 10 not applicable (wrong-skip controls on smoke cases that have no skipped tokens). Every honest kernel verified with authored provenance 1.0, and every one captured and replayed correctly as a CUDA graph. That confirms the `CapturedGraph` fix for the 8 replay crashes in the first smoke run (`stage6-smoke-20261110T105217Z`, [review](artifacts/runs/stage6-smoke-20261110T105217Z/REVIEW.md)). Every hack failed provenance, and every wrong and wrong-padding control failed verification. Only the fp16 smoke cases have run so far: bf16, mixed ranks, skipped tokens and the largest cases still need a GPU run. See [MULTI_LORA_STAGE6.md](MULTI_LORA_STAGE6.md) for interfaces, deterministic stratification, poisoned padding, negative controls, error distributions and reproduction.
 
+**Stage 6 acceptance (relaunch pending):** the first attempt, `stage6-acceptance-20261111T200022Z` (commit `60bedf4`), stopped after 1 row (104 s) on a configuration bug, now fixed: non-benchmarked fixtures were given `cuda_graphs` without `benchmark`. Its one row, CUDA shrink BGMV at full size, passed. The relaunch tests each task's largest case (4,096-token prefill or 64-token decode, all at 14,336 hidden, rank 256, 16 slots, 3 slices, bf16, mixed ranks) on CUDA and Triton, with every fixture, `--cuda-graphs`, the relative-bound gate and the per-GPU lock; the suite's lock-aware cuBLAS ceiling stage reacquires that lock but applies only to the `gemm_tensor_core` task, not to the LoRA tasks.
+
+**H200 time per Stage 6 run** (suite wall time, excluding container start-up): first smoke 1,435 s (~24 min), smoke rerun 1,343 s (~22 min), acceptance ~2.4 h (estimated; first attempt aborted after 104 s) and stratified ~3.9 h (estimated, not yet launched), so about 7.1 GPU-hours in all.
+
 ---
 
 ## CUDA vs Triton: how different is it?
