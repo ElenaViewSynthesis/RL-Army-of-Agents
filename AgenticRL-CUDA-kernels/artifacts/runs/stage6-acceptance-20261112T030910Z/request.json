@@ -1,0 +1,19 @@
+{
+  "run_id": "stage6-acceptance-20261112T030910Z",
+  "tasks": [
+    "lora_shrink_bgmv",
+    "lora_expand_bgmv",
+    "lora_segment_metadata",
+    "lora_shrink_sgmv",
+    "lora_expand_sgmv",
+    "lora_fused_sgmv"
+  ],
+  "case_set": "acceptance",
+  "backends": "cuda,triton",
+  "fixtures": "all",
+  "timeout_s": 1200,
+  "benchmark": true,
+  "cold_start": true,
+  "cuda_graphs": true,
+  "gpu_requested": "H200"
+}

@@ -1,0 +1,17 @@
+{
+  "run_id": "stage6-acceptance-20261112T030910Z",
+  "execution": {
+    "command": "python -m scripts.validate --suite lora_shrink_bgmv,lora_expand_bgmv,lora_segment_metadata,lora_shrink_sgmv,lora_expand_sgmv,lora_fused_sgmv --device cuda --purpose eval --case-set acceptance --fixtures all --timeout-s 1200 --suite-out /artifacts/stage6-acceptance-20261112T030910Z/suite --backends cuda,triton --benchmark --cold-start --cuda-graphs",
+    "returncode": 0,
+    "timed_out": false,
+    "wall_s": 3032.467383621
+  },
+  "counts": {
+    "passed": 56,
+    "failed": 0,
+    "unavailable": 0
+  },
+  "status": "pass",
+  "source_mismatches": [],
+  "scope": "selected workload cases only; no stock AXPBY acceptance or timing-cause claim"
+}

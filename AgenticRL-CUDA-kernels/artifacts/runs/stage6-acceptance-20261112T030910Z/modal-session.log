@@ -1,0 +1,12 @@
+Note that running a local entrypoint in detached mode only keeps the last triggered Modal function alive after the parent process has been killed or disconnected.
+✓ Initialized. View run at 
+https://modal.com/apps/elenamylocuda/main/ap-QJZIwSYoQj8c5JlGuirr96
+✓ Created objects.
+├── ✓ Uploaded 
+│   /tmp/stage6-acceptance-20261112T030910Z-source/cloud/modal_tasks.py
+├── ✓ Uploaded 
+│   /tmp/stage6-acceptance-20261112T030910Z-source/artifacts/upstream.json
+├── ✓ Uploaded /tmp/stage6-acceptance-20261112T030910Z-source
+└── ✓ Created Function evaluate.
+{"run_id": "stage6-acceptance-20261112T030910Z", "function_call_id": "fc-01M76VQ8W20HK8EK0R0YNWNETK", "volume": "agenticrl-cuda-artifacts", "remote": "/artifacts/stage6-acceptance-20261112T030910Z"}
+{"function_call_id": "fc-01M76VQ8W20HK8EK0R0YNWNETK"}
