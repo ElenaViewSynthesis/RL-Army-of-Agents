@@ -94,14 +94,14 @@ user UI inspection; see `artifacts/tracking-live-check-20261108T142009Z/report.j
 and `artifacts/tracking-backfill-20261108T144457Z/report.json`. Legacy history
 was preserved; current summaries and latest table snapshots follow this contract.
 
-## Trainer-owned reservations and open decisions
+## Trainer-owned reservations and definitions
 
-The trainer rows below reserve names only; environment logging never emits
-fabricated entropy, IS clip fractions, collapse steps, trajectories or eval
-cohort aggregates. ASK the trainer owner for token/trajectory masking and
-weighting, collapse criterion, failed/unmeasured eval denominator and workload
-weights before emitting those metrics. Existing env/turns_used is agent turns,
-not generated-token trajectory length. No trainer or optimizer is implemented.
+[ADR 0004](0004-trainer-metric-definitions.md) defines masking, denominators,
+collapse detection, eval cohorts/weights and their instrumentation dependencies.
+The trainer rows below remain reservations: environment logging never emits
+fabricated trainer metrics. `env/turns_used` is agent turns, not policy tokens;
+token counts/log-probabilities require the future episode ledger and trainer.
+No trainer or optimizer is implemented by these definitions.
 
 ## Machine-checked classification table
 
@@ -602,14 +602,14 @@ saves the sampler output (enabled in the Modal test runner).
 | `weave:profile/*` | weave | profile | JSON | field-specific | input unavailable | diagnostic | environment |
 | `weave:backfilled` | weave | backfilled | JSON | field-specific | input unavailable | diagnostic | environment |
 | `weave:source` | weave | source | JSON | field-specific | input unavailable | diagnostic | environment |
-| `trainer:train/entropy` | metric | train | float | nats/token or trajectory (TBD) | trainer not implemented | trainer-owned diagnostic | trainer |
-| `trainer:train/is_ratio_clip_fraction` | metric | train | float | fraction denominator TBD | trainer not implemented | trainer-owned diagnostic | trainer |
-| `trainer:train/trajectory_length_tokens` | metric | train | float | tokens | trainer not implemented | trainer-owned diagnostic | trainer |
-| `trainer:train/trajectory_length_turns` | metric | train | float | turns | trainer not implemented | trainer-owned diagnostic | trainer |
-| `trainer:eval/pass_rate` | metric | eval | float | fraction cohort TBD | trainer not implemented | trainer-owned diagnostic | trainer |
-| `trainer:eval/faster_rate_vs_compile` | metric | eval | float | fraction cohort TBD | trainer not implemented | trainer-owned diagnostic | trainer |
-| `trainer:eval/geomean_speedup_vs_compile` | metric | eval | float | ratio cohort TBD | trainer not implemented | trainer-owned diagnostic | trainer |
-| `trainer:train/collapse_step` | summary | train | int | iteration | not defined/not observed | trainer-owned diagnostic | trainer |
+| `trainer:train/entropy` | metric | train | float | nats/policy token | zero policy tokens, incomplete actor/token data, or non-finite entropy | trainer-owned diagnostic | trainer |
+| `trainer:train/is_ratio_clip_fraction` | metric | train | float | fraction of policy tokens | zero policy tokens, missing/invalid log-probabilities or clip bounds | trainer-owned diagnostic | trainer |
+| `trainer:train/trajectory_length_tokens` | metric | train | float | tokens/episode | empty collection or any unknown token ledger | trainer-owned diagnostic | trainer |
+| `trainer:train/trajectory_length_turns` | metric | train | float | agent turns/episode | empty collection or unknown/inconsistent turn count | trainer-owned diagnostic | trainer |
+| `trainer:eval/pass_rate` | metric | eval | float | weighted fraction of attempted episodes | empty/incomplete cohort or unknown weights/protocol | trainer-owned diagnostic | trainer |
+| `trainer:eval/faster_rate_vs_compile` | metric | eval | float | weighted fraction of attempted episodes | empty/incomplete cohort or unknown weights/protocol | trainer-owned diagnostic | trainer |
+| `trainer:eval/geomean_speedup_vs_compile` | metric | eval | float | ratio | empty/incomplete cohort, zero accepted weight, or invalid/underflowed aggregate | trainer-owned diagnostic | trainer |
+| `trainer:train/collapse_step` | summary | train | int | iteration (zero-based) | detector unavailable or no confirmed collapse | trainer-owned diagnostic | trainer |
 | `metric:adv/frac_dropped` | metric | adv | float | 1 | no batch | diagnostic | environment |
 | `metric:batch/*/adv/frac_dropped` | metric | batch | float | 1 | no batch | diagnostic | environment |
 | `metric:adv/mean` | metric | adv | float | 1 | no batch | diagnostic | environment |
