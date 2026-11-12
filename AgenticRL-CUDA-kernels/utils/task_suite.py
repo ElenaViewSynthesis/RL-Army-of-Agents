@@ -141,8 +141,13 @@ def evaluate_case(task_name, case_id, backend, variant, destination, *, device="
         result["suite/reason"] = str(exc)
         return result
     requested = cfg or RolloutConfig()
+    # Only honest solutions are benchmarked. Graph replay is part of the
+    # benchmark, so a fixture that is not benchmarked must drop cuda_graphs too
+    # (RolloutConfig rejects cuda_graphs without benchmark).
+    benchmarked = requested.benchmark and variant in ("honest", "chain_replay")
     config = dataclasses.replace(
-        requested, backend=backend, benchmark=requested.benchmark and variant in ("honest", "chain_replay"),
+        requested, backend=backend, benchmark=benchmarked,
+        cuda_graphs=requested.cuda_graphs and benchmarked,
         exact_integer_outputs=True,
         relative_error_bounds=spec.stage == 6 and task_name != "lora_segment_metadata",
         provenance_threshold=max(requested.provenance_threshold,

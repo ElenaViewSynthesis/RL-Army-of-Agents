@@ -15,6 +15,7 @@ import json
 import subprocess
 import sys
 import unittest
+from pathlib import Path
 from unittest.mock import patch
 
 from tests.support import ROOT, make_task, scratch
@@ -70,6 +71,30 @@ class RequiresBenchmarkTests(unittest.TestCase):
                                       cwd=ROOT, capture_output=True, text=True)
                 self.assertEqual(proc.returncode, 2, proc.stderr)
                 self.assertIn(message, proc.stderr)
+
+
+class TaskSuiteGraphConfigTests(unittest.TestCase):
+    def test_every_fixture_gets_a_valid_config_with_cuda_graphs(self):
+        # Regression: run stage6-acceptance-20261111T200022Z aborted after one row
+        # because non-honest fixtures got cuda_graphs=True with benchmark=False.
+        from utils.task_catalog import select_cases
+        from utils.task_suite import VARIANTS, evaluate_case
+        seen = {}
+
+        def fake_run(workdir, cfg, *args, **kwargs):
+            seen[Path(workdir).name] = (cfg.benchmark, cfg.cuda_graphs)
+            return {"env/verify_ok": False, "reward/value": -1.0, "reward/base": -1,
+                    "reward/reason": "verification"}
+
+        requested = RolloutConfig(benchmark=True, cuda_graphs=True)
+        case = select_cases("lora_shrink_bgmv", "smoke")[0]
+        with scratch() as tmp, patch("utils.task_suite.cuda_unavailable", return_value=None),                 patch("utils.task_suite.available_backends", return_value={"triton": None}),                 patch("utils.task_suite.run_task", side_effect=fake_run),                 patch("utils.task_suite._stage", return_value=(1, "", "", False)):
+            for variant in VARIANTS:
+                evaluate_case("lora_shrink_bgmv", case.id, "triton", variant, Path(tmp) / variant,
+                              cfg=requested)
+        self.assertEqual(seen["honest"], (True, True))
+        for variant in set(VARIANTS) - {"honest"}:
+            self.assertEqual(seen[variant], (False, False), variant)
 
 
 class RewardNeverReadsGraphsTests(unittest.TestCase):
