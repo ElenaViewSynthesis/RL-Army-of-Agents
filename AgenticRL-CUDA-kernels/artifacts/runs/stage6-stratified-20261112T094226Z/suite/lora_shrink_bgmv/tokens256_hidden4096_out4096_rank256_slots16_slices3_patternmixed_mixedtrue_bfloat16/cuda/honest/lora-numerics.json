@@ -1,0 +1,69 @@
+{
+  "schema": "multi-lora-numerics-v1",
+  "task": "lora_shrink_bgmv",
+  "diagnostic_only": true,
+  "fp16_intermediate_expected_failure": false,
+  "honest_gate": {
+    "task": "lora_shrink_bgmv",
+    "activation_dtype": "torch.bfloat16",
+    "outputs": [
+      {
+        "output": "output",
+        "kind": "relative",
+        "coefficient": 0.01,
+        "checked_elements": 196608,
+        "max_abs_ref": 26.140966415405273,
+        "max_abs_error": 3.719329833984375e-05,
+        "bound": 0.26140966415405276,
+        "ratio_to_bound": 0.0001422797372859374,
+        "p50_normalized_error": 0.0,
+        "p99_normalized_error": 2.371328954765623e-07,
+        "finite": true,
+        "skipped_rows_bit_exact": true,
+        "zero_reference_exact": true,
+        "passed": true
+      }
+    ],
+    "passed": true
+  },
+  "fp16_intermediate_gate": {
+    "task": "lora_shrink_bgmv",
+    "activation_dtype": "torch.bfloat16",
+    "outputs": [
+      {
+        "output": "output",
+        "kind": "relative",
+        "coefficient": 0.01,
+        "checked_elements": 196608,
+        "max_abs_ref": 26.140966415405273,
+        "max_abs_error": 0.00775909423828125,
+        "bound": 0.26140966415405276,
+        "ratio_to_bound": 0.029681742116881706,
+        "p50_normalized_error": 0.0,
+        "p99_normalized_error": 7.261611212226998e-05,
+        "finite": true,
+        "skipped_rows_bit_exact": true,
+        "zero_reference_exact": true,
+        "passed": true
+      }
+    ],
+    "passed": true
+  },
+  "fp16_intermediate_would_fail_relative_bound": false,
+  "honest": {
+    "finite": true,
+    "max_abs": 3.719329833984375e-05,
+    "p50_abs": 0.0,
+    "p99_abs": 6.198883056640625e-06,
+    "max_abs_over_max_ref": 1.422797372859374e-06,
+    "original_relative_bound": 0.01
+  },
+  "fp16_intermediate": {
+    "finite": true,
+    "max_abs": 0.00775909423828125,
+    "p50_abs": 0.0,
+    "p99_abs": 0.001898256246931851,
+    "max_abs_over_max_ref": 0.0002968174211688171,
+    "original_relative_bound": 0.01
+  }
+}

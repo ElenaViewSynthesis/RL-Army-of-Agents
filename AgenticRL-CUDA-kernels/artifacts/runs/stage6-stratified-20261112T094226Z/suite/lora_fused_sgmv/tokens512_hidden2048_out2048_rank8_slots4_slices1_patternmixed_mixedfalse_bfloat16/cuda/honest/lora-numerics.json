@@ -1,0 +1,69 @@
+{
+  "schema": "multi-lora-numerics-v1",
+  "task": "lora_fused_sgmv",
+  "diagnostic_only": true,
+  "fp16_intermediate_expected_failure": false,
+  "honest_gate": {
+    "task": "lora_fused_sgmv",
+    "activation_dtype": "torch.bfloat16",
+    "outputs": [
+      {
+        "output": "output",
+        "kind": "relative",
+        "coefficient": 0.01,
+        "checked_elements": 792576,
+        "max_abs_ref": 27.75,
+        "max_abs_error": 0.015625,
+        "bound": 0.2775,
+        "ratio_to_bound": 0.0563063063063063,
+        "p50_normalized_error": 0.0,
+        "p99_normalized_error": 0.0,
+        "finite": true,
+        "skipped_rows_bit_exact": true,
+        "zero_reference_exact": true,
+        "passed": true
+      }
+    ],
+    "passed": true
+  },
+  "fp16_intermediate_gate": {
+    "task": "lora_fused_sgmv",
+    "activation_dtype": "torch.bfloat16",
+    "outputs": [
+      {
+        "output": "output",
+        "kind": "relative",
+        "coefficient": 0.01,
+        "checked_elements": 792576,
+        "max_abs_ref": 27.75,
+        "max_abs_error": 0.125,
+        "bound": 0.2775,
+        "ratio_to_bound": 0.4504504504504504,
+        "p50_normalized_error": 0.0,
+        "p99_normalized_error": 0.0005630630630630631,
+        "finite": true,
+        "skipped_rows_bit_exact": true,
+        "zero_reference_exact": true,
+        "passed": true
+      }
+    ],
+    "passed": true
+  },
+  "fp16_intermediate_would_fail_relative_bound": false,
+  "honest": {
+    "finite": true,
+    "max_abs": 0.015625,
+    "p50_abs": 0.0,
+    "p99_abs": 0.0,
+    "max_abs_over_max_ref": 3.814697265625e-06,
+    "original_relative_bound": 0.01
+  },
+  "fp16_intermediate": {
+    "finite": true,
+    "max_abs": 0.125,
+    "p50_abs": 0.0,
+    "p99_abs": 0.015625,
+    "max_abs_over_max_ref": 3.0517578125e-05,
+    "original_relative_bound": 0.01
+  }
+}
