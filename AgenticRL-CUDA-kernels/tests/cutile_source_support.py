@@ -5,7 +5,8 @@ from pathlib import Path
 from tests.support import ROOT
 
 CUTILE_TASKS = ('rmsnorm', 'row_softmax', 'cispo_clip_weight', 'fused_adamw', 'grpo_group_norm',
-                'log_softmax_gather', 'residual_rmsnorm', 'gemm_div_sum_scale', 'gemm_tensor_core')
+                'log_softmax_gather', 'residual_rmsnorm', 'gemm_div_sum_scale', 'gemm_tensor_core',
+                'relu_squared', 'silu_and_mul', 'geglu_tanh', 'rotary_embedding')
 TORCH_CALLS = {'torch.empty', 'torch.empty_like', 'torch.cuda.current_stream', 'torch.cuda.device'}
 METADATA_CALLS = {'view', 'numel', 'is_contiguous', 'bit_length'}
 # Export spellings inspected in the pinned cuda-tile 1.8.0 wheel, not a claim

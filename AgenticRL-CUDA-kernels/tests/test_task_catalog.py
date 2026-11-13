@@ -15,7 +15,7 @@ from utils.task_suite import case_environment, evaluate_case, expected_outcome, 
 
 class TaskCatalogTests(unittest.TestCase):
     def test_known_curriculum_and_case_identifiers(self):
-        self.assertEqual(len(TASKS), 35)
+        self.assertEqual(len(TASKS), 39)
         self.assertEqual([t.name for t in TASKS.values() if t.stage == 0], ["gemm_div_sum_scale"])
         for task in TASKS.values():
             self.assertTrue(task.cases)
@@ -50,7 +50,7 @@ class TaskCatalogTests(unittest.TestCase):
         self.assertEqual(select_cases("flash_attention_fwd", "acceptance")[0].params["s"], 2048)
         self.assertEqual(select_tasks(["bootstrap", "stage1"]),
                          ["gemm_div_sum_scale", "row_softmax", "masked_mean", "prefix_sum"])
-        self.assertEqual(len(select_tasks(["all", "stage1"])), 35)
+        self.assertEqual(len(select_tasks(["all", "stage1"])), 39)
 
     def test_synthetic_operation_and_byte_counts(self):
         description = workload("gemm_tensor_core", case("bfloat16", m=2, n=3, k=4))
@@ -180,10 +180,13 @@ class CuTileOptInCatalogTests(unittest.TestCase):
     def test_existing_cases_and_default_backends_are_unchanged(self):
         import hashlib
         from tests.cutile_source_support import CUTILE_TASKS
-        cases = {n: [c.to_dict() for c in t.cases] for n, t in TASKS.items()}
+        # Fingerprint the 35 pre-Stage-7 tasks: adding Stage 7 must not change them.
+        existing = {n: t for n, t in TASKS.items() if t.stage != 7}
+        self.assertEqual(len(existing), 35)
+        cases = {n: [c.to_dict() for c in t.cases] for n, t in existing.items()}
         self.assertEqual(hashlib.sha256(json.dumps(cases, sort_keys=True).encode()).hexdigest(),
                          'b00890e4555a494954ece8fd7af57d8de0e411aa773e9f696c2fec69a452b6c0')
-        defaults = {n: list(t.backends) for n, t in TASKS.items()}
+        defaults = {n: list(t.backends) for n, t in existing.items()}
         self.assertEqual(hashlib.sha256(json.dumps(defaults, sort_keys=True).encode()).hexdigest(),
                          '0bdccd9f5a4f75c58b411f98acebfe14f4dfa5f5a9f98e5ac4fda82b43bb282c')
         for name in CUTILE_TASKS:
