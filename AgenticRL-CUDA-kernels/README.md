@@ -18,7 +18,7 @@ This project extends the environment released with [CUDA-Agent](https://github.c
 
 New to the terminology (CUDA-graph replay, provenance, BGMV/SGMV, the relative-error bound, GRPO vs DAPO vs CISPO and more)? See the [glossary](GLOSSARY.md).
 
-## Benchmarks, papers and sources we build on
+## Prior work, RL for kernel generation and benchmarks
 
 Task contracts, shape grids and kernel techniques here come from public benchmarks and reference code. Each task records its sources in `utils/task_catalog.py` (`SOURCES`) and in its own README; candidates still may not call library kernels from any of them.
 
