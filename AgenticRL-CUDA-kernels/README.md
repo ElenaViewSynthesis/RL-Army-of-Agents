@@ -50,6 +50,32 @@ New to the terminology (CUDA-graph replay, provenance, BGMV/SGMV, the relative-e
 > [review and 76-file frozen source snapshot](artifacts/fresh-gpu-20261108T164430Z)
 > retain the new validation independently of earlier measurements.
 
+## GPU trace run: Nsight traces of CUDA-graph capture and replay
+
+A GPU trace run records Nsight Systems traces of CUDA-graph capture and replay, with CUDA-graph node tracing (`--cuda-graph-trace=node`) so every kernel inside a `cudaGraphLaunch` appears as its own graph node. The tool repeats the benchmark's capture steps inside named NVTX phases (two ordinary forwards, side-stream warm-up, capture, five replays) for the generated kernel and its eager PyTorch reference, then renders one timeline per implementation. Run `graph-trace-20261112T220601Z` traced all 12 honest Stage 6 kernels on one H200: in every trace the capture phase runs no GPU kernel, and each replay is exactly one `cudaGraphLaunch` running all of the forward's kernels as graph nodes. Results, timelines and the per-task table are in [What capture and replay look like](#cuda-graph-replay---cuda-graphs); the images are in [`assets/graph-trace/`](assets/graph-trace/). Diagnostic only: nothing here feeds a reward.
+
+```bash
+# GPU trace run on one Modal H200, detached: every honest Stage 6 kernel at its largest case.
+# From WSL, launch from a Linux-filesystem copy of the repo; uploading from /mnt/c can kill the client.
+MODAL_GPU=H200 modal run --detach cloud/modal_graph_trace.py   --tasks stage6 --backends cuda,triton --case-set acceptance --replays 5   --run-id graph-trace-$(date -u +%Y%m%dT%H%M%SZ)
+
+# Download the Nsight traces, worker records and timelines from the Modal volume
+modal volume get agenticrl-cuda-artifacts /graph-trace-<UTC>/ artifacts/runs/
+
+# Same GPU trace run on a local GPU host with nsys on PATH (one task and backend here)
+python -m scripts.graph_trace --tasks lora_fused_sgmv --backends triton   --case-set acceptance --replays 5 --output-dir artifacts/runs/graph-trace-local
+
+# The underlying Nsight Systems command, with CUDA-graph node tracing
+nsys profile --trace=cuda,nvtx --cuda-graph-trace=node --sample=none --cpuctxsw=none   --export=sqlite --output trace python <your capture-and-replay script>
+
+# Re-render timelines from an existing SQLite export (standard library only, no GPU)
+python -m scripts.render_nsys_timeline trace.sqlite --out-dir timelines --title "lora_fused_sgmv · triton"
+
+# Count cudaGraphLaunch and capture API calls, or open the trace in the Nsight Systems GUI
+nsys stats --report cuda_api_sum trace.nsys-rep
+nsys-ui trace.nsys-rep
+```
+
 
 ---
 
@@ -440,6 +466,27 @@ What happens for each implementation (eager, `torch.compile` and the candidate),
 A graph comparison is only meaningful when all three implementations captured (`bench/graph_all_capturable`); a graph-replayed candidate is never compared with non-graph baselines.
 
 **Buffer ownership (fixed 2026-11-10).** A `torch.cuda.CUDAGraph` does not keep its static input and output tensors alive. The benchmark used to keep only the graph, so the buffers were freed after capture, and later replays read and wrote memory that other tensors had reused. In the Stage 6 smoke run (`stage6-smoke-20261110T105217Z`), 8 of 12 honest benchmark stages crashed this way, with an illegal memory access or a PyTorch index-out-of-bounds assert. `CapturedGraph` in `utils/benchmark.py` now holds the graph together with its buffers for its whole lifetime, and `tests/test_graph_lifetime.py` fails on the old behaviour. The H200 rerun `stage6-smoke-rerun-20261111T031847Z` confirmed the fix: all 12 Stage 6 honest kernels captured and replayed correctly.
+
+**What capture and replay look like (Nsight Systems, 2026-11-12).** Run `graph-trace-20261112T220601Z` traced every honest Stage 6 kernel at its largest case on one H200 with `nsys profile --trace=cuda,nvtx --cuda-graph-trace=node` (`cloud/modal_graph_trace.py` → `scripts/graph_trace.py`). The worker (`utils/graph_trace_worker.py`) repeats the benchmark's steps inside named NVTX phases: two ordinary forwards, the side-stream warm-up, the capture, then five replays with fresh inputs. `scripts/render_nsys_timeline.py` draws one timeline per implementation from the exported trace. In all 24 traces (12 generated kernels and their 12 eager references), the capture phase issues kernel launches but runs no kernel on the GPU, every replay is exactly one `cudaGraphLaunch` whose kernels all run as graph nodes, and every replay matched the reference.
+
+![Eager expand BGMV under CUDA-graph capture and replay: 593 kernels per forward become 593 graph nodes launched by one cudaGraphLaunch](assets/graph-trace/lora_expand_bgmv-cuda-eager.png)
+
+| Task | Backend | Generated: kernels per forward → nodes per replay | Eager: kernels per forward → nodes per replay | Eager host API calls per forward → per replay | Eager time per forward → per replay | Replays correct |
+|---|---|---:|---:|---:|---:|---|
+| `lora_shrink_bgmv` | cuda | 1 → 1 | 210 → 210 | 405 → 7 | 8.75 ms → 8.67 ms | yes |
+| `lora_shrink_bgmv` | triton | 2 → 2 | 210 → 210 | 405 → 7 | 8.75 ms → 8.67 ms | yes |
+| `lora_expand_bgmv` | cuda | 2 → 2 | 593 → 593 | 1172 → 8 | 11.1 ms → 4.35 ms | yes |
+| `lora_expand_bgmv` | triton | 2 → 2 | 593 → 593 | 1172 → 8 | 9.59 ms → 4.3 ms | yes |
+| `lora_segment_metadata` | cuda | 1 → 1 | 38 → 38 | 83 → 4 | 685 µs → 196 µs | yes |
+| `lora_segment_metadata` | triton | 2 → 2 | 38 → 38 | 83 → 4 | 702 µs → 190 µs | yes |
+| `lora_shrink_sgmv` | cuda | 1 → 1 | 210 → 210 | 405 → 12 | 42 ms → 42.1 ms | yes |
+| `lora_shrink_sgmv` | triton | 2 → 2 | 210 → 210 | 405 → 12 | 41.9 ms → 41.8 ms | yes |
+| `lora_expand_sgmv` | cuda | 2 → 2 | 593 → 593 | 1172 → 13 | 86.2 ms → 86 ms | yes |
+| `lora_expand_sgmv` | triton | 2 → 2 | 593 → 593 | 1172 → 13 | 86 ms → 85.9 ms | yes |
+| `lora_fused_sgmv` | cuda | 3 → 3 | 803 → 803 | 1576 → 15 | 128 ms → 128 ms | yes |
+| `lora_fused_sgmv` | triton | 4 → 4 | 803 → 803 | 1576 → 15 | 128 ms → 128 ms | yes |
+
+Times are host-measured phase times under Nsight tracing; a replay phase also copies fresh inputs into the static buffers. The eager reference gains most where it is launch-bound (expand BGMV, segment metadata: hundreds of launches replaced by one); where the GPU work dominates (the 4,096-token SGMV cases), replay time equals forward time. The generated kernels already issue 1 to 4 launches per forward. All 24 timelines are in [`assets/graph-trace/`](assets/graph-trace/); per-phase counts are in each `timeline-summary.json` under [`artifacts/runs/graph-trace-20261112T220601Z/`](artifacts/runs/graph-trace-20261112T220601Z/). The raw `.nsys-rep` and SQLite exports (35 MB) stay in the Modal volume. Diagnostic only: nothing here feeds a reward.
 
 Where to turn it on. It always requires the benchmark, and every entry point rejects `--cuda-graphs` without it rather than ignoring it: `RolloutConfig` and the `run_task` CLI raise `cuda_graphs requires benchmark`, `scripts.validate` exits with a usage error (and accepts it only with `--suite`), and the Modal task runner refuses `--no-benchmark --cuda-graphs`.
 

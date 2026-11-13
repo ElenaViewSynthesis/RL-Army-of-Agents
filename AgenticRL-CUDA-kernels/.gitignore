@@ -26,6 +26,11 @@ artifacts/timing-diagnostic-*/timing/*/gen.json
 HANDOFF*.md
 INTERVIEW*.md
 
+# Nsight Systems trace exports (kept in the Modal volume; JSON summaries are committed)
+artifacts/runs/graph-trace-*/**/*.nsys-rep
+artifacts/runs/graph-trace-*/**/*.sqlite
+artifacts/runs/graph-trace-*/**/*.svg
+
 # GPU run downloads: keep JSON/logs and the source manifest, not copies of
 # the scaffolded task sources or the uploaded source tree (both duplicate
 # committed files; the manifest pins them).
