@@ -89,3 +89,19 @@ class SymbolProvenanceTests(unittest.TestCase):
         self.assertEqual(classify_kernel('void not_axpby_kernel<1>()', ['axpby_kernel'], 'cuda'), 'torch')
         self.assertEqual(classify_kernel('axpby_kernel_bad', ['axpby_kernel'], 'triton'), 'torch')
         self.assertEqual(classify_kernel('prefix_axpby_tilelang_kernel', ['axpby_tilelang'], 'tilelang'), 'torch')
+
+
+class CuTileTaskSymbolSourceTests(unittest.TestCase):
+    def test_discovered_names_match_only_synthetic_cutile_symbols(self):
+        from tests.cutile_source_support import CUTILE_TASKS
+        from tests.support import ROOT
+        for task in CUTILE_TASKS:
+            names = agent_kernel_names(ROOT/'tasks'/task, 'cutile')
+            self.assertTrue(names)
+            for name in names:
+                with self.subTest(task=task, kernel=name):
+                    # Hypothetical protocol names, NOT observed task GPU symbols.
+                    self.assertEqual(classify_kernel(name+'_Kt1_SYNTHETIC', names, 'cutile'), 'agent')
+                    self.assertEqual(classify_kernel('prefix_'+name+'_Kt1_SYNTHETIC', names, 'cutile'), 'torch')
+                    self.assertEqual(classify_kernel('aten::'+name+'_Kt1_SYNTHETIC', names, 'cutile'), 'torch')
+                    self.assertEqual(classify_kernel('cublasLtMatmul', names, 'cutile'), 'torch')

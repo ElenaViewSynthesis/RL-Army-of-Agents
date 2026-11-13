@@ -176,5 +176,66 @@ class TaskReferenceTests(unittest.TestCase):
         self.assertTrue(torch.all(result[0] > 0))
 
 
+class CuTileOptInCatalogTests(unittest.TestCase):
+    def test_existing_cases_and_default_backends_are_unchanged(self):
+        import hashlib
+        from tests.cutile_source_support import CUTILE_TASKS
+        cases = {n: [c.to_dict() for c in t.cases] for n, t in TASKS.items()}
+        self.assertEqual(hashlib.sha256(json.dumps(cases, sort_keys=True).encode()).hexdigest(),
+                         'b00890e4555a494954ece8fd7af57d8de0e411aa773e9f696c2fec69a452b6c0')
+        defaults = {n: list(t.backends) for n, t in TASKS.items()}
+        self.assertEqual(hashlib.sha256(json.dumps(defaults, sort_keys=True).encode()).hexdigest(),
+                         '0bdccd9f5a4f75c58b411f98acebfe14f4dfa5f5a9f98e5ac4fda82b43bb282c')
+        for name in CUTILE_TASKS:
+            self.assertIn('cutile', get_task(name).stretch_backends)
+            self.assertNotIn('cutile', get_task(name).backends)
+
+    def test_readme_static_contract_matches_renderer(self):
+        from scripts.task_readme import render
+        from tests.cutile_source_support import CUTILE_TASKS
+        marker = 'Unavailable: no measured GPU baseline has been recorded here.'
+        for name in CUTILE_TASKS:
+            prefix = render(name).split(marker)[0]
+            self.assertTrue((ROOT/'tasks'/name/'README.md').read_text().startswith(prefix), name)
+            self.assertIn('cuTile timing, speedup and provenance are **not measured**', prefix)
+
+    def test_default_rows_do_not_add_stretch_backends(self):
+        import contextlib
+        import io
+        from tests.cutile_source_support import CUTILE_TASKS
+        with scratch('cutile-default-') as tmp, contextlib.redirect_stdout(io.StringIO()):
+            report = run_suite(CUTILE_TASKS, Path(tmp)/'suite', device='cpu')
+        expected = sum(3*len(get_task(n).backends) for n in CUTILE_TASKS)
+        self.assertEqual(len(report['rows']), expected)
+        self.assertFalse(any(r['suite/backend']=='cutile' for r in report['rows']))
+
+    def test_explicit_cutile_selection_reaches_all_three_fixture_gates(self):
+        # Synthetic subprocess protocol results; no compilation or GPU measurement.
+        from tests.cutile_source_support import CUTILE_TASKS
+        from utils.backend import detect_backend
+        def fake_run(path, cfg, turns_used, profile_out):
+            self.assertEqual(detect_backend(path), 'cutile')
+            self.assertEqual(cfg.backend, 'cutile')
+            variant = Path(path).name
+            if variant == 'wrong':
+                return {'env/verify_ok': False, 'reward/value': -1, 'reward/base': -1,
+                        'reward/reason': 'verification'}
+            authored = 1. if variant == 'honest' else 0.
+            profile_out.update({'provenance/agent': authored, 'provenance/library': 0.,
+                                'provenance/torch': 1.-authored, 'provenance/memory': 0.})
+            return {'env/verify_ok': True, 'env/t_eager_us': 100., 'env/t_compile_us': 80.,
+                    'env/t_gen_us': 50., 'env/provenance': authored,
+                    'reward/value': 3 if authored else -1, 'reward/base': 3 if authored else -1,
+                    'reward/reason': 'faster_than_both' if authored else 'provenance'}
+        with scratch('cutile-explicit-') as tmp, \
+                patch('utils.task_suite.cuda_unavailable', return_value=None), \
+                patch('utils.task_suite.available_backends', return_value={'cutile':None}), \
+                patch('utils.task_suite.run_task', side_effect=fake_run):
+            for name in CUTILE_TASKS:
+                for variant in ('honest', 'hack', 'wrong'):
+                    result = evaluate_case(name, get_task(name).cases[0].id, 'cutile', variant,
+                                           Path(tmp)/name/variant)
+                    self.assertEqual(result['suite/status'], 'passed', result)
+
 if __name__ == "__main__":
     unittest.main()

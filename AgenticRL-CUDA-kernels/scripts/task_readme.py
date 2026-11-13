@@ -33,7 +33,7 @@ DETAILS = {
         "bf16-rounded GEMM converted to fp32 afterward. Triton retains bf16/fp16 dot operands "
         "and accumulates in fp32. The CUDA fixture uses explicit WMMA/mma Tensor Core work "
         "with double-buffered shared-memory tiles. CuTe DSL must use MMA/copy atoms, not "
-        "CUTLASS utility GEMM templates. The honest fixture acceptance target is Triton "
+        "CUTLASS utility GEMM templates. The honest fixture acceptance target is Triton and opt-in cuTile "
         "**at least 60% of the recorded cuBLAS throughput at bf16 4096^3 on H200**, "
         "with authored non-memory provenance **exactly 1.0**. This is unaccepted until "
         "measured. Skinny M=8 and M=64 cases are included. Candidates may not call cuBLAS."),
@@ -110,6 +110,19 @@ DETAILS = {
 }
 
 
+CUTILE_DETAILS = {
+    "gemm_div_sum_scale": "32x64x32 MMA tiles with a ct.full fp32 accumulator; native fp32 is not converted to tf32. A separate 1024-wide row kernel divides before summing N and applies scale afterward; product scratch is fp32 and both launches use the current stream.",
+    "gemm_tensor_core": "64x128x64 MMA tiles (16x128x64 for M <= 16), fp16/bf16 operands and a ct.full fp32 accumulator, bias epilogue and fp32 output. The opt-in cuTile bf16 4096^3 acceptance keeps the same 60% cuBLAS target and exactly 1.0 authored provenance; GPU acceptance is unmeasured.",
+    "log_softmax_gather": "One block per row scans 1024-wide tiles with online fp32 log-sum-exp, then gathers the requested token. Negative-infinity padding handles vocabulary tails such as 128256; the live tile never grows to 131072.",
+    "residual_rmsnorm": "One full power-of-two row tile up to 8192; the fp32 x+residual is explicitly rounded to bf16 before the fp32 RMS reduction. One launch returns two new bf16 tensors; no inputs are mutated.",
+    "rmsnorm": "One block per row, one power-of-two row tile (up to 8192); fp32 square/sum/rsqrt and input-dtype output. A full row tile avoids scratch and a second pass; register/occupancy behavior is not measured.",
+    "row_softmax": "One block per row, power-of-two tile up to 8192; negative-infinity gather padding for max, fp32 exp/sum, input-dtype output. Out-of-range stores are skipped.",
+    "cispo_clip_weight": "1024-element flattened tiles; bounds-checked gathers/scatters, fp32 exp and minimum/maximum, boolean where and sequence-advantage gather. This implements only the existing forward contract.",
+    "fused_adamw": "1024-element flattened tiles; one launch writes all three fp32 outputs. Bias corrections are scalar hyperparameter arithmetic; every input remains read-only.",
+    "grpo_group_norm": "One block per group with the next power-of-two width (1/4/8/16 in the catalog); masked centered tails, population variance and sqrt(variance)+eps.",
+}
+
+
 DENSE_DETAILS = """
 ### Dense-MoE BF16 adaptation
 
@@ -179,6 +192,11 @@ def render(task_name, records=(), evidence=None, limitations=()):
                 "math, tie rules, history conventions, workload counts and source deviations. "
                 "CUDA and Triton sources are provided; GPU acceptance is not yet measured. "
                 "Use `--fixtures all` for the wrong-ancestor control and, for GDN on Triton, chain replay.")
+    if "cutile" in task.stretch_backends:
+        note += ("\n\n### cuTile source candidate (opt-in)\n\n" + CUTILE_DETAILS[task_name]
+                 + " cuTile timing, speedup and provenance are **not measured**: no GPU execution "
+                   "has validated these task kernels. Select `--backends cutile --fixtures all` "
+                   "explicitly; default backend rows are unchanged.")
     license_note = (
         "\n**Held-out evaluation only.** GPU MODE's June 9 Researcher Reciprocity License "
         "covers evaluation/benchmarking for training as Training Use. This modified "
@@ -287,7 +305,7 @@ are not a new blanket license for this repository.
   device time, no library-kernel time, and 100% authored for gemm_tensor_core.
   Stock AXPBY attribution/reward rules are unchanged.
 - No triton.ops, flash-attn packages, cuBLAS/cuDNN/CUTLASS-library candidate calls.
-  tl.dot and authored CuTe MMA/copy atoms are allowed.
+  tl.dot, ct.mma and authored CuTe MMA/copy atoms are allowed.
 - Name matching remains a heuristic, not proof of authorship or a security sandbox.
 - CPU/missing capabilities are **unavailable**, never GPU passes.
 

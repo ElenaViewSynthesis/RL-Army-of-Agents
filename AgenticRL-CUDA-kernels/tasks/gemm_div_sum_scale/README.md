@@ -6,6 +6,10 @@ scale * sum((A.float() @ B.float()) / divisor, dim=1, keepdim=True); output fp32
 
 This adapts KernelBench level 2 problem 14, `KernelBench/level2/14_Gemm_Divide_Sum_Scaling.py`. Upstream stores the right-hand weight as a module parameter; this functional task takes `A,B` as inputs instead. The constructor is `(divisor=2.0, scale=1.5)`, its state_dict is empty, and the output is `(M,1)` fp32. There is no bias. Sum over N, not M. FP32 reference matmul uses highest precision. Honest fixtures perform a real GEMM then reduction; the reported GEMM FLOP convention excludes the reduction epilogue.
 
+### cuTile source candidate (opt-in)
+
+32x64x32 MMA tiles with a ct.full fp32 accumulator; native fp32 is not converted to tf32. A separate 1024-wide row kernel divides before summing N and applies scale afterward; product scratch is fp32 and both launches use the current stream. cuTile timing, speedup and provenance are **not measured**: no GPU execution has validated these task kernels. Select `--backends cutile --fixtures all` explicitly; default backend rows are unchanged.
+
 The reference constructor and state_dict must match ModelNew. These functional
 tasks take weights/state arrays as inputs; state_dict is empty. Candidate wrappers
 may allocate tensors and inspect metadata, but must not perform Torch computation.
@@ -84,19 +88,20 @@ are not a new blanket license for this repository.
 ## Fixtures and gates
 
 - Honest backends: triton, cuda.
-- Stretch backends: none declared.
+- Stretch backends: cutile.
 - `model_new.py` selects the default honest fixture. `model_new_hack.py` is an
   intentional Torch reference-compute attack; it must verify then fail provenance.
 - `model_new_wrong.py` intentionally returns NaNs or invalid integer sentinels;
   it must fail verification, not merely compilation.
 - Verification uses five fresh random inputs; floating outputs keep atol=rtol=1e-2.
-  The progressive suite requires exact equality for integer outputs. The direct
-  strict entrypoint is `utils.task_verification`; stock AXPBY defaults stay unchanged.
+  The progressive suite requires exact equality for integer outputs, including
+  token IDs and prefix sums. `utils.task_verification` exposes the same strict
+  check directly; stock `utils.verification` and AXPBY defaults stay unchanged.
 - The suite alone applies authored-only provenance: at least 90% of non-memory
   device time, no library-kernel time, and 100% authored for gemm_tensor_core.
   Stock AXPBY attribution/reward rules are unchanged.
 - No triton.ops, flash-attn packages, cuBLAS/cuDNN/CUTLASS-library candidate calls.
-  tl.dot and authored CuTe MMA/copy atoms are allowed.
+  tl.dot, ct.mma and authored CuTe MMA/copy atoms are allowed.
 - Name matching remains a heuristic, not proof of authorship or a security sandbox.
 - CPU/missing capabilities are **unavailable**, never GPU passes.
 

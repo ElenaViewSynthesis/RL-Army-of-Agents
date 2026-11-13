@@ -108,5 +108,77 @@ class CuTeDSLAxpbyTests(AxpbyChecks, unittest.TestCase):
     module = "kernels.cutedsl"
 
 
+class CuTileTaskSourceTests(unittest.TestCase):
+    """Source checks only: no cuTile import, compilation or numerical execution."""
+
+    def test_task_layout_lazy_exports_and_kernel_discovery(self):
+        import ast
+        from pathlib import Path
+        from utils.backend import agent_kernel_names, detect_backend
+        from tests.support import scratch
+        from utils.task_suite import scaffold
+        from tests.cutile_source_support import CUTILE_TASKS, task_trees
+        for name in CUTILE_TASKS:
+            with self.subTest(task=name):
+                trees = task_trees(name)
+                init = trees[1][1]
+                self.assertTrue(any(isinstance(n, ast.FunctionDef) and n.name == '__getattr__' for n in init.body))
+                self.assertFalse(any(isinstance(n, (ast.Import, ast.ImportFrom)) for n in init.body))
+                with scratch('cutile-source-') as tmp:
+                    for variant in ('honest', 'hack', 'wrong'):
+                        task = scaffold(name, 'cutile', variant, Path(tmp)/variant)
+                        self.assertEqual(detect_backend(task), 'cutile')
+                        self.assertTrue(agent_kernel_names(task, 'cutile'))
+                # Reference and candidate expose the same explicit constructor defaults.
+                reference = ast.parse((trees[0][0].parent/'model.py').read_text())
+                cls = next(n for n in trees[0][1].body if isinstance(n, ast.ClassDef))
+                ref_cls = next(n for n in reference.body if isinstance(n, ast.ClassDef))
+                init_fn = next((n for n in cls.body if isinstance(n, ast.FunctionDef) and n.name == '__init__'), None)
+                ref_init = next((n for n in ref_cls.body if isinstance(n, ast.FunctionDef) and n.name == '__init__'), None)
+                self.assertEqual(ast.dump(init_fn.args) if init_fn else None, ast.dump(ref_init.args) if ref_init else None)
+
+    def test_launch_signatures_and_read_only_kernel_inputs(self):
+        import ast
+        from tests.cutile_source_support import CUTILE_TASKS, dotted, task_trees
+        for name in CUTILE_TASKS:
+            path, tree = task_trees(name)[2]
+            kernels = {n.name:n for n in tree.body if isinstance(n, ast.FunctionDef)
+                       and any(dotted(d)=='ct.kernel' for d in n.decorator_list)}
+            for node in ast.walk(tree):
+                if isinstance(node, ast.Call) and dotted(node.func)=='ct.launch':
+                    self.assertIsInstance(node.args[2], ast.Name)
+                    self.assertIsInstance(node.args[3], ast.Tuple)
+                    self.assertEqual(len(node.args[3].elts), len(kernels[node.args[2].id].args.args))
+            for fn in kernels.values():
+                for node in ast.walk(fn):
+                    if isinstance(node, ast.Call) and dotted(node.func) in ('ct.scatter','ct.store'):
+                        self.assertIn(node.args[0].id, ('out','product','updated','new_m','new_v','summed'))
+            self.assertNotIn('tfloat32', path.read_text())
+
+    def test_no_host_tensor_compute_and_only_pinned_api_exports(self):
+        import ast
+        from tests.cutile_source_support import (CUTILE_TASKS, CT_EXPORTS_USED,
+                                                check_host_source, dotted, task_trees)
+        for name in CUTILE_TASKS:
+            for path, tree in task_trees(name):
+                with self.subTest(path=str(path)):
+                    for node in tree.body:
+                        if isinstance(node, ast.FunctionDef):
+                            is_kernel = any(dotted(d) == 'ct.kernel' for d in node.decorator_list)
+                            if not is_kernel:
+                                check_host_source(self, node, {a.arg for a in node.args.args})
+                        elif isinstance(node, ast.ClassDef):
+                            for method in node.body:
+                                if isinstance(method, ast.FunctionDef):
+                                    check_host_source(self, method, {a.arg for a in method.args.args if a.arg != 'self'})
+                    for node in ast.walk(tree):
+                        if isinstance(node, ast.Attribute) and dotted(node).startswith('ct.'):
+                            self.assertIn(dotted(node).split('.')[1], CT_EXPORTS_USED)
+                    if path.stem == name:
+                        source = path.read_text()
+                        self.assertIn('torch.cuda.current_stream()', source)
+                        self.assertIn('with torch.cuda.device(', source)
+                        self.assertNotIn('torch.cuda.synchronize', source)
+
 if __name__ == "__main__":
     unittest.main()

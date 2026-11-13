@@ -141,5 +141,58 @@ class TaskMeasurementTests(unittest.TestCase):
                                     payload["protected_sha256_after"][name])
 
 
+class CuTileGemmGateTests(unittest.TestCase):
+    """Synthetic acceptance protocols; not cuTile performance evidence."""
+
+    def case(self, fraction=None, authored=1., benchmark=True, case='m4096_n4096_k4096_bfloat16'):
+        def fake_run(path, cfg, turns_used, profile_out):
+            self.assertEqual(cfg.provenance_threshold, 1.0)
+            profile_out.update({'provenance/agent':authored,'provenance/library':0.,
+                                'provenance/torch':1.-authored,'provenance/memory':0.})
+            return {'env/verify_ok':True,'env/t_eager_us':100.,'env/t_compile_us':80.,
+                    'env/t_gen_us':90.,'env/provenance':authored,'reward/value':2.,
+                    'reward/base':2,'reward/reason':'faster_than_eager'}
+        record = {**ceiling(), 'ceiling/device_name':'NVIDIA H200', 'ceiling/device_capability':'9.0'}
+        if fraction is not None:
+            record['ceiling/generated_event_us_median']=record['ceiling/cublas_event_us_median']/fraction
+            record['ceiling/cublas_fraction']=fraction
+            record['ceiling/generated_tflops']=record['ceiling/flops']/(record['ceiling/generated_event_us_median']*1e6)
+        with scratch('cutile-gemm-gate-') as tmp, \
+                mock.patch('utils.task_suite.cuda_unavailable',return_value=None), \
+                mock.patch('utils.task_suite.available_backends',return_value={'cutile':None}), \
+                mock.patch('utils.task_suite.run_task',side_effect=fake_run), \
+                mock.patch('utils.task_suite._stage',return_value=(0,json.dumps(record) if fraction is not None else '{}','',False)):
+            return evaluate_case('gemm_tensor_core',case,'cutile','honest',Path(tmp)/'case',
+                                 cfg=RolloutConfig(benchmark=benchmark,gpu_lock=False,provenance_threshold=.5))
+
+    def test_same_performance_floor_and_reward_is_not_recomputed(self):
+        passed=self.case(.6)
+        self.assertEqual(passed['task/minimum_cublas_fraction'],.6)
+        self.assertTrue(passed['task/performance_required'])
+        self.assertTrue(passed['task/performance_accepted'])
+        self.assertEqual(passed['suite/status'],'passed')
+        failed=self.case(.59)
+        self.assertEqual(failed['suite/status'],'failed')
+        self.assertEqual(failed['suite/reason'],'below_60_percent_cublas')
+        self.assertEqual((passed['reward/value'],failed['reward/value']),(2.,2.))
+
+    def test_missing_or_disabled_measurement_cannot_accept(self):
+        for enabled in (False,True):
+            with self.subTest(benchmark=enabled):
+                result=self.case(benchmark=enabled)
+                self.assertEqual(result['suite/status'],'unavailable')
+                self.assertIsNone(result['task/performance_accepted'])
+
+    def test_one_hundred_percent_authored_gate_is_not_lowered(self):
+        result=self.case(.9,authored=.999)
+        self.assertEqual(result['reward/reason'],'provenance')
+        self.assertEqual(result['suite/status'],'failed')
+        self.assertIsNone(result['task/performance_accepted'])
+
+    def test_smoke_does_not_claim_flagship_acceptance(self):
+        result=self.case(benchmark=False,case='m512_n512_k512_bfloat16')
+        self.assertFalse(result['task/performance_required'])
+        self.assertEqual(result['suite/status'],'passed')
+
 if __name__ == "__main__":
     unittest.main()

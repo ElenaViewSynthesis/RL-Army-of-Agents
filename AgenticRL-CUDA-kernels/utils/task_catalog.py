@@ -89,12 +89,12 @@ TASKS = {
         "scale * sum((A.float() @ B.float()) / divisor, dim=1, keepdim=True); output fp32",
         tuple(case(dtype, m=m, n=n, k=k) for dtype in ("float32", "bfloat16")
               for m, n, k in product((256, 512, 1024), repeat=3)),
-        ("kernelbench", "tutorials")),
+        ("kernelbench", "tutorials"), stretch_backends=("cutile",)),
     "row_softmax": Task(
         "row_softmax", 1, "Stable row softmax with fp32 accumulation; output input dtype",
         tuple(case(dtype, b=b, h=h) for dtype in ("float32", "float16", "bfloat16")
               for b, h in product((64, 512), (128, 1024, 8192))),
-        ("kernelbench", "tutorials")),
+        ("kernelbench", "tutorials"), stretch_backends=("cutile",)),
     "masked_mean": Task(
         "masked_mean", 1,
         "Mean of x[row,:lengths[row]]; empty rows return fp32 zero; this is not trimmed mean",
@@ -114,24 +114,24 @@ TASKS = {
               for s in (512, 1024, 2048, 4096))
         + tuple(case(dtype, m=m, n=4096, k=4096)
                 for dtype in ("bfloat16", "float16") for m in (8, 64)),
-        ("tritonbench", "tutorials"), backends=("triton", "cuda", "cutedsl")),
+        ("tritonbench", "tutorials"), backends=("triton", "cuda", "cutedsl"), stretch_backends=("cutile",)),
     "rmsnorm": Task(
         "rmsnorm", 2,
         "x * rsqrt(mean(x.float()**2)+eps) * weight[H]; output input dtype",
         tuple(case(dtype, b=b, h=h) for dtype in ("bfloat16", "float32")
               for b, h in product((64, 512), (1024, 2048, 4096, 8192))),
-        ("tritonbench", "tutorials")),
+        ("tritonbench", "tutorials"), stretch_backends=("cutile",)),
     "log_softmax_gather": Task(
         "log_softmax_gather", 2,
         "Stable fp32 log-softmax followed by one token-index gather per row; fp32 output",
         tuple(case(dtype, b=b, v=v) for dtype in ("bfloat16", "float32")
               for b, v in product((32, 256), (1024, 8192, 128256))),
-        ("local",)),
+        ("local",), stretch_backends=("cutile",)),
     "fused_adamw": Task(
         "fused_adamw", 2,
         "Functional bias-corrected AdamW: return (new_parameter,new_m,new_v), never mutate inputs",
         tuple(case(n=n) for n in (4096, 1048576, 8388608)),
-        ("local",)),
+        ("local",), stretch_backends=("cutile",)),
     "layernorm_residual_gelu": Task(
         "layernorm_residual_gelu", 2,
         "Affine population LayerNorm, residual add, exact erf GELU; fp32 arithmetic then output cast",
@@ -142,12 +142,12 @@ TASKS = {
         "grpo_group_norm", 3,
         "(reward-population_mean)/(population_std+1e-6), matching utils.grpo.group_advantages",
         tuple(case(b=b, g=g) for b, g in product((64, 512), (1, 4, 8, 16))),
-        ("local",)),
+        ("local",), stretch_backends=("cutile",)),
     "cispo_clip_weight": Task(
         "cispo_clip_weight", 3,
         "mask * clip(exp(log_ratio),0,5).detach() * sequence_advantage; fp32 forward weights",
         tuple(case(b=b, s=s) for b, s in product((8, 64), (128, 1024, 8192))),
-        ("local",)),
+        ("local",), stretch_backends=("cutile",)),
     "packed_varlen_reduction": Task(
         "packed_varlen_reduction", 3,
         "Per-segment fp32 mean or sum from packed values and monotone offsets; empty segments return zero",
@@ -175,7 +175,7 @@ TASKS = {
         "BF16 residual sum, fp32 RMSNorm accumulation; return (normalized,residual_sum), both bf16",
         tuple(case("bfloat16", b=b, s=s, h=h)
               for b, s, h in product((1, 4), (128, 512, 2048), (1024, 4096, 8192))),
-        ("flashinfer",)),
+        ("flashinfer",), stretch_backends=("cutile",)),
     "decode_attention": Task(
         "decode_attention", 4,
         "Single last-position query, 32 query heads / 8 KV heads, d=64; bf16 inputs/output",

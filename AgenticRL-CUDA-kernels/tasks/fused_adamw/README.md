@@ -6,6 +6,10 @@ Functional bias-corrected AdamW: return (new_parameter,new_m,new_v), never mutat
 
 Forward returns `(updated_parameter,new_m,new_v)` without mutating any input. The constructor supplies learning rate, beta1/beta2, epsilon, weight decay and step; bias correction is explicit. This is a functional numerical kernel benchmark, not a trainer or an integrated optimizer.
 
+### cuTile source candidate (opt-in)
+
+1024-element flattened tiles; one launch writes all three fp32 outputs. Bias corrections are scalar hyperparameter arithmetic; every input remains read-only. cuTile timing, speedup and provenance are **not measured**: no GPU execution has validated these task kernels. Select `--backends cutile --fixtures all` explicitly; default backend rows are unchanged.
+
 The reference constructor and state_dict must match ModelNew. These functional
 tasks take weights/state arrays as inputs; state_dict is empty. Candidate wrappers
 may allocate tensors and inspect metadata, but must not perform Torch computation.
@@ -32,19 +36,20 @@ are not a new blanket license for this repository.
 ## Fixtures and gates
 
 - Honest backends: triton, cuda.
-- Stretch backends: none declared.
+- Stretch backends: cutile.
 - `model_new.py` selects the default honest fixture. `model_new_hack.py` is an
   intentional Torch reference-compute attack; it must verify then fail provenance.
 - `model_new_wrong.py` intentionally returns NaNs or invalid integer sentinels;
   it must fail verification, not merely compilation.
 - Verification uses five fresh random inputs; floating outputs keep atol=rtol=1e-2.
-  The progressive suite requires exact equality for integer outputs. The direct
-  strict entrypoint is `utils.task_verification`; stock AXPBY defaults stay unchanged.
+  The progressive suite requires exact equality for integer outputs, including
+  token IDs and prefix sums. `utils.task_verification` exposes the same strict
+  check directly; stock `utils.verification` and AXPBY defaults stay unchanged.
 - The suite alone applies authored-only provenance: at least 90% of non-memory
   device time, no library-kernel time, and 100% authored for gemm_tensor_core.
   Stock AXPBY attribution/reward rules are unchanged.
 - No triton.ops, flash-attn packages, cuBLAS/cuDNN/CUTLASS-library candidate calls.
-  tl.dot and authored CuTe MMA/copy atoms are allowed.
+  tl.dot, ct.mma and authored CuTe MMA/copy atoms are allowed.
 - Name matching remains a heuristic, not proof of authorship or a security sandbox.
 - CPU/missing capabilities are **unavailable**, never GPU passes.
 

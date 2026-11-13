@@ -120,7 +120,7 @@ def evaluate_case(task_name, case_id, backend, variant, destination, *, device="
     if spec.contract_only:
         result["suite/reason"] = "contract_only"
         return result
-    if backend not in spec.backends:
+    if backend not in (*spec.backends, *spec.stretch_backends):
         result["suite/reason"] = "backend_fixture_not_provided"
         return result
     if task_name.startswith("lora_") and variant in ("wrong_skip", "wrong_padding"):
@@ -181,7 +181,7 @@ def evaluate_case(task_name, case_id, backend, variant, destination, *, device="
         result.update({"suite/status": "passed" if passed else "failed",
                        "suite/reason": "expected_outcome" if passed else result.get("reward/reason")})
     perf_required = (task_name == "gemm_tensor_core" and variant == "honest"
-                     and backend == "triton" and item.dtype == "bfloat16"
+                     and backend in ("triton", "cutile") and item.dtype == "bfloat16"
                      and item.params == {"m": 4096, "n": 4096, "k": 4096})
     result.update({"task/performance_required": perf_required,
                    "task/minimum_cublas_fraction": 0.6 if perf_required else None,
