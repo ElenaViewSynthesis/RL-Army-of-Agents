@@ -1,0 +1,14 @@
+{
+  "run_id": "stage7-relu-triton-rerun-20261113T190106Z",
+  "tasks": [
+    "relu_squared"
+  ],
+  "case_set": "smoke",
+  "backends": "triton",
+  "fixtures": "all",
+  "timeout_s": 1200,
+  "benchmark": true,
+  "cold_start": true,
+  "cuda_graphs": false,
+  "gpu_requested": "H200"
+}

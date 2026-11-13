@@ -1,0 +1,14 @@
+Note that running a local entrypoint in detached mode only keeps the last triggered Modal function alive after the parent process has been killed or disconnected.
+✓ Initialized. View run at 
+https://modal.com/apps/elenamylocuda/main/ap-bSBmdPSSQplYqPpWI8Uwg1
+✓ Created objects.
+├── ✓ Uploaded /tmp/stage7-tier1-20261113T175914Z/cloud/modal_tasks.py
+├── ✓ Uploaded /tmp/stage7-tier1-20261113T175914Z/artifacts/upstream.json
+├── ✓ Uploaded /tmp/stage7-tier1-20261113T175914Z
+└── ✓ Created Function evaluate.
+{"run_id": "stage7-relu-triton-rerun-20261113T190106Z", "function_call_id": "fc-01M7B4J4DMRQFXFHDGG4CH36AK", "volume": "agenticrl-cuda-artifacts", "remote": "/artifacts/stage7-relu-triton-rerun-20261113T190106Z"}
+{"function_call_id": "fc-01M7B4J4DMRQFXFHDGG4CH36AK"}
+{"completed": 2, "last_task": "relu_squared", "last_status": "passed"}
+{"run_id": "stage7-relu-triton-rerun-20261113T190106Z", "execution": {"command": "python -m scripts.validate --suite relu_squared --device cuda --purpose eval --case-set smoke --fixtures all --timeout-s 1200 --suite-out /artifacts/stage7-relu-triton-rerun-20261113T190106Z/suite --backends triton --benchmark --cold-start", "returncode": 0, "timed_out": false, "wall_s": 65.343211795}, "counts": {"passed": 3, "failed": 0, "unavailable": 0}, "not_applicable": 0, "status": "pass", "source_mismatches": [], "scope": "selected workload cases only; no stock AXPBY acceptance or timing-cause claim"}
+✓ App completed. View run at 
+https://modal.com/apps/elenamylocuda/main/ap-bSBmdPSSQplYqPpWI8Uwg1

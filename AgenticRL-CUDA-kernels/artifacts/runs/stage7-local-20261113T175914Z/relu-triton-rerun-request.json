@@ -1,0 +1,71 @@
+{
+  "purpose": "Rerun of the one failed row of stage7-tier1-smoke-20261113T175914Z (relu_squared, triton, honest: empty_profile:gen) with its two controls, from the same frozen source, to see whether the empty profiler capture repeats. No code changed.",
+  "tasks": [
+    "relu_squared"
+  ],
+  "case_set": "smoke",
+  "case_ids": {
+    "relu_squared": [
+      "b64_h1024_float32"
+    ]
+  },
+  "backends": [
+    "triton"
+  ],
+  "fixtures": [
+    "honest",
+    "hack",
+    "wrong"
+  ],
+  "expected_rows": 3,
+  "expected_counts_if_capture_miss_was_one_off": {
+    "passed": 3,
+    "failed": 0,
+    "unavailable": 0
+  },
+  "estimated_wall_s": 190,
+  "estimate_definition": "Wall of the same three rows in the first run (about 70 s) plus 120 s startup; a planning allowance, not a measurement.",
+  "source_target": "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifacts/sources/stage7/tier1-20261113T175914Z",
+  "launch_copy": "/tmp/stage7-tier1-20261113T175914Z",
+  "git_revision": "a4a7e9cfcc0db0ddaf897199e79944517c0a698f",
+  "source_manifest_sha256": "abecc24e54c70d971e567d5705039117b65fc37d76b36a9f8029bd2b5f502742",
+  "source_file_count": 245,
+  "run_id": "stage7-relu-triton-rerun-20261113T190106Z",
+  "approval": "User approved on 2026-11-13: 'rerun the failed row'",
+  "approval_required": true,
+  "launched": true,
+  "automatic_rerun": false,
+  "cwd": "/tmp/stage7-tier1-20261113T175914Z",
+  "env": {
+    "PYTHONPATH": "/tmp/stage7-tier1-20261113T175914Z",
+    "MODAL_GPU": "H200"
+  },
+  "argv": [
+    "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/.venv/bin/modal",
+    "run",
+    "--detach",
+    "cloud/modal_tasks.py",
+    "--tasks",
+    "relu_squared",
+    "--case-set",
+    "smoke",
+    "--backends",
+    "triton",
+    "--fixtures",
+    "all",
+    "--timeout-s",
+    "1200",
+    "--run-id",
+    "stage7-relu-triton-rerun-20261113T190106Z"
+  ],
+  "command": "cd /tmp/stage7-tier1-20261113T175914Z && PYTHONPATH=\"$PWD\" MODAL_GPU=H200 /mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/.venv/bin/modal run --detach cloud/modal_tasks.py --tasks relu_squared --case-set smoke --backends triton --fixtures all --timeout-s 1200 --run-id stage7-relu-triton-rerun-20261113T190106Z",
+  "benchmark": true,
+  "cold_start": true,
+  "cuda_graphs": false,
+  "output": {
+    "volume": "agenticrl-cuda-artifacts",
+    "remote": "/stage7-relu-triton-rerun-20261113T190106Z/",
+    "local": "artifacts/runs/stage7-relu-triton-rerun-20261113T190106Z/"
+  },
+  "next_step": "Stop and report; no further rerun automatically."
+}

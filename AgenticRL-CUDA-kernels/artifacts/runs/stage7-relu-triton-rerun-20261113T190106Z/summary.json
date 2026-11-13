@@ -1,0 +1,18 @@
+{
+  "run_id": "stage7-relu-triton-rerun-20261113T190106Z",
+  "execution": {
+    "command": "python -m scripts.validate --suite relu_squared --device cuda --purpose eval --case-set smoke --fixtures all --timeout-s 1200 --suite-out /artifacts/stage7-relu-triton-rerun-20261113T190106Z/suite --backends triton --benchmark --cold-start",
+    "returncode": 0,
+    "timed_out": false,
+    "wall_s": 65.343211795
+  },
+  "counts": {
+    "passed": 3,
+    "failed": 0,
+    "unavailable": 0
+  },
+  "not_applicable": 0,
+  "status": "pass",
+  "source_mismatches": [],
+  "scope": "selected workload cases only; no stock AXPBY acceptance or timing-cause claim"
+}
