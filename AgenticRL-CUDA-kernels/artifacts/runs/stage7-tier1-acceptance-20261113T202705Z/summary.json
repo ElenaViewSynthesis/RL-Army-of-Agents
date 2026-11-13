@@ -1,0 +1,18 @@
+{
+  "run_id": "stage7-tier1-acceptance-20261113T202705Z",
+  "execution": {
+    "command": "python -m scripts.validate --suite relu_squared,silu_and_mul,geglu_tanh,rotary_embedding --device cuda --purpose eval --case-set acceptance --fixtures all --timeout-s 1200 --suite-out /artifacts/stage7-tier1-acceptance-20261113T202705Z/suite --backends triton,cuda,cutile --benchmark --cold-start",
+    "returncode": 0,
+    "timed_out": false,
+    "wall_s": 877.936907915
+  },
+  "counts": {
+    "passed": 36,
+    "failed": 0,
+    "unavailable": 0
+  },
+  "not_applicable": 0,
+  "status": "pass",
+  "source_mismatches": [],
+  "scope": "selected workload cases only; no stock AXPBY acceptance or timing-cause claim"
+}

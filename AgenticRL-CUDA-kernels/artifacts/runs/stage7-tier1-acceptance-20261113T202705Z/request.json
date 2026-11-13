@@ -1,0 +1,17 @@
+{
+  "run_id": "stage7-tier1-acceptance-20261113T202705Z",
+  "tasks": [
+    "relu_squared",
+    "silu_and_mul",
+    "geglu_tanh",
+    "rotary_embedding"
+  ],
+  "case_set": "acceptance",
+  "backends": "triton,cuda,cutile",
+  "fixtures": "all",
+  "timeout_s": 1200,
+  "benchmark": true,
+  "cold_start": true,
+  "cuda_graphs": false,
+  "gpu_requested": "H200"
+}

@@ -1,0 +1,97 @@
+{
+  "purpose": "Stage 7 Tier 1 acceptance: each task's largest case in bf16, on triton, cuda and cutile, with honest, hack and wrong fixtures. Same frozen source as the smoke run; no code changed.",
+  "tasks": [
+    "relu_squared",
+    "silu_and_mul",
+    "geglu_tanh",
+    "rotary_embedding"
+  ],
+  "case_set": "acceptance",
+  "case_ids": {
+    "relu_squared": [
+      "b4096_h14336_bfloat16"
+    ],
+    "silu_and_mul": [
+      "b4096_h14336_bfloat16"
+    ],
+    "geglu_tanh": [
+      "b4096_h16384_bfloat16"
+    ],
+    "rotary_embedding": [
+      "b8_hq32_hkv8_s8192_d128_bfloat16"
+    ]
+  },
+  "backends": [
+    "triton",
+    "cuda",
+    "cutile"
+  ],
+  "fixtures": [
+    "honest",
+    "hack",
+    "wrong"
+  ],
+  "expected_rows": 36,
+  "expected_counts": {
+    "passed": 36,
+    "failed": 0,
+    "unavailable": 0
+  },
+  "estimated_wall_s": 2620,
+  "estimate_definition": "3 x the measured wall of the 36 fp32 smoke rows (832 s in stage7-tier1-smoke-20261113T175914Z) plus 120 s startup.",
+  "estimate_limitations": "Planning allowance, not a measurement. The factor of 3 for larger inputs is a guess; CPU input generation at the largest shapes may dominate. Queue and container start are excluded. Per-row deadline 1200 s.",
+  "prior_evidence": {
+    "smoke": "stage7-tier1-smoke-20261113T175914Z (35/36; relu_squared triton honest failed with empty_profile:gen)",
+    "rerun": "stage7-relu-triton-rerun-20261113T190106Z (3/3)"
+  },
+  "not_verified": "No Stage 7 kernel has run in bf16, at a width that is not a multiple of 1024 (14,336), or at these sizes on a GPU. This request is the first test of all three.",
+  "source_target": "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifacts/sources/stage7/tier1-20261113T175914Z",
+  "launch_copy": "/tmp/stage7-tier1-acceptance-20261113T202705Z-source",
+  "git_revision": "a4a7e9cfcc0db0ddaf897199e79944517c0a698f",
+  "source_manifest_sha256": "abecc24e54c70d971e567d5705039117b65fc37d76b36a9f8029bd2b5f502742",
+  "source_file_count": 245,
+  "run_id": "stage7-tier1-acceptance-20261113T202705Z",
+  "approval": "User approved on 2026-11-13: 'prepare the acceptance run. launch the real paid run'",
+  "approval_required": true,
+  "launched": true,
+  "stop_after_run_and_report": true,
+  "automatic_rerun": false,
+  "cwd": "/tmp/stage7-tier1-acceptance-20261113T202705Z-source",
+  "env": {
+    "PYTHONPATH": "/tmp/stage7-tier1-acceptance-20261113T202705Z-source",
+    "MODAL_GPU": "H200"
+  },
+  "argv": [
+    "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/.venv/bin/modal",
+    "run",
+    "--detach",
+    "cloud/modal_tasks.py",
+    "--tasks",
+    "stage7",
+    "--case-set",
+    "acceptance",
+    "--backends",
+    "triton,cuda,cutile",
+    "--fixtures",
+    "all",
+    "--timeout-s",
+    "1200",
+    "--run-id",
+    "stage7-tier1-acceptance-20261113T202705Z"
+  ],
+  "command": "cd /tmp/stage7-tier1-acceptance-20261113T202705Z-source && PYTHONPATH=\"$PWD\" MODAL_GPU=H200 /mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/.venv/bin/modal run --detach cloud/modal_tasks.py --tasks stage7 --case-set acceptance --backends triton,cuda,cutile --fixtures all --timeout-s 1200 --run-id stage7-tier1-acceptance-20261113T202705Z",
+  "benchmark": true,
+  "cold_start": true,
+  "cuda_graphs": false,
+  "expected_fixture_outcomes": {
+    "honest": "verification passes; authored share >= 0.9, zero library time",
+    "hack": "verification passes, provenance fails, reward -1",
+    "wrong": "verification fails, reward -1"
+  },
+  "output": {
+    "volume": "agenticrl-cuda-artifacts",
+    "remote": "/stage7-tier1-acceptance-20261113T202705Z/",
+    "local": "artifacts/runs/stage7-tier1-acceptance-20261113T202705Z/"
+  },
+  "next_step": "Stop and report; failures are quoted, not retried or fixed."
+}
