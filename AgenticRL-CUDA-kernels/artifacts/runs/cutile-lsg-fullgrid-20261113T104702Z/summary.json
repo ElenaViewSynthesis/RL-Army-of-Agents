@@ -1,0 +1,18 @@
+{
+  "run_id": "cutile-lsg-fullgrid-20261113T104702Z",
+  "execution": {
+    "command": "python -m scripts.validate --suite log_softmax_gather --device cuda --purpose eval --case-set all --fixtures all --timeout-s 1200 --suite-out /artifacts/cutile-lsg-fullgrid-20261113T104702Z/suite --backends cutile --benchmark --cold-start",
+    "returncode": 0,
+    "timed_out": false,
+    "wall_s": 643.933972477
+  },
+  "counts": {
+    "passed": 36,
+    "failed": 0,
+    "unavailable": 0
+  },
+  "not_applicable": 0,
+  "status": "pass",
+  "source_mismatches": [],
+  "scope": "selected workload cases only; no stock AXPBY acceptance or timing-cause claim"
+}

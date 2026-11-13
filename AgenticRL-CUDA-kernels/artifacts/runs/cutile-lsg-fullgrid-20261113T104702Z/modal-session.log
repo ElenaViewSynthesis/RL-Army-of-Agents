@@ -1,0 +1,35 @@
+Note that running a local entrypoint in detached mode only keeps the last triggered Modal function alive after the parent process has been killed or disconnected.
+✓ Initialized. View run at 
+https://modal.com/apps/elenamylocuda/main/ap-yG18vhC5jCyDELgGsANoIz
+✓ Created objects.
+├── ✓ Uploaded 
+│   /tmp/cutile-lsg-fullgrid-20261113T104702Z-source/cloud/modal_tasks.py
+├── ✓ Uploaded 
+│   /tmp/cutile-lsg-fullgrid-20261113T104702Z-source/artifacts/upstream.json
+├── ✓ Uploaded /tmp/cutile-lsg-fullgrid-20261113T104702Z-source
+└── ✓ Created Function evaluate.
+{"run_id": "cutile-lsg-fullgrid-20261113T104702Z", "function_call_id": "fc-01M7A89P36KV33BH4Y2KTAB5R5", "volume": "agenticrl-cuda-artifacts", "remote": "/artifacts/cutile-lsg-fullgrid-20261113T104702Z"}
+{"function_call_id": "fc-01M7A89P36KV33BH4Y2KTAB5R5"}
+{"completed": 1, "last_task": "log_softmax_gather", "last_status": "passed"}
+{"completed": 3, "last_task": "log_softmax_gather", "last_status": "passed"}
+{"completed": 4, "last_task": "log_softmax_gather", "last_status": "passed"}
+{"completed": 6, "last_task": "log_softmax_gather", "last_status": "passed"}
+{"completed": 8, "last_task": "log_softmax_gather", "last_status": "passed"}
+{"completed": 9, "last_task": "log_softmax_gather", "last_status": "passed"}
+{"completed": 12, "last_task": "log_softmax_gather", "last_status": "passed"}
+{"completed": 13, "last_task": "log_softmax_gather", "last_status": "passed"}
+{"completed": 15, "last_task": "log_softmax_gather", "last_status": "passed"}
+{"completed": 16, "last_task": "log_softmax_gather", "last_status": "passed"}
+{"completed": 18, "last_task": "log_softmax_gather", "last_status": "passed"}
+{"completed": 20, "last_task": "log_softmax_gather", "last_status": "passed"}
+{"completed": 21, "last_task": "log_softmax_gather", "last_status": "passed"}
+{"completed": 24, "last_task": "log_softmax_gather", "last_status": "passed"}
+{"completed": 25, "last_task": "log_softmax_gather", "last_status": "passed"}
+{"completed": 27, "last_task": "log_softmax_gather", "last_status": "passed"}
+{"completed": 29, "last_task": "log_softmax_gather", "last_status": "passed"}
+{"completed": 30, "last_task": "log_softmax_gather", "last_status": "passed"}
+{"completed": 33, "last_task": "log_softmax_gather", "last_status": "passed"}
+{"completed": 34, "last_task": "log_softmax_gather", "last_status": "passed"}
+{"run_id": "cutile-lsg-fullgrid-20261113T104702Z", "execution": {"command": "python -m scripts.validate --suite log_softmax_gather --device cuda --purpose eval --case-set all --fixtures all --timeout-s 1200 --suite-out /artifacts/cutile-lsg-fullgrid-20261113T104702Z/suite --backends cutile --benchmark --cold-start", "returncode": 0, "timed_out": false, "wall_s": 643.933972477}, "counts": {"passed": 36, "failed": 0, "unavailable": 0}, "not_applicable": 0, "status": "pass", "source_mismatches": [], "scope": "selected workload cases only; no stock AXPBY acceptance or timing-cause claim"}
+✓ App completed. View run at 
+https://modal.com/apps/elenamylocuda/main/ap-yG18vhC5jCyDELgGsANoIz

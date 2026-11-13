@@ -1,0 +1,14 @@
+{
+  "run_id": "cutile-lsg-fullgrid-20261113T104702Z",
+  "tasks": [
+    "log_softmax_gather"
+  ],
+  "case_set": "all",
+  "backends": "cutile",
+  "fixtures": "all",
+  "timeout_s": 1200,
+  "benchmark": true,
+  "cold_start": true,
+  "cuda_graphs": false,
+  "gpu_requested": "H200"
+}
