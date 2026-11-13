@@ -33,6 +33,17 @@ def make_inputs(task_name):
         return [torch.rand(p["n"], dtype=dtype)]
     if task_name == "rmsnorm":
         return [randn(p["b"], p["h"]), randn(p["h"])]
+    if task_name == "relu_squared":
+        return [randn(p["b"], p["h"])]
+    if task_name in ("silu_and_mul", "geglu_tanh"):
+        return [randn(p["b"], 2 * p["h"])]
+    if task_name == "rotary_embedding":
+        # Llama-style tables: theta_j = s / 10000**(2j/D) for j < D/2, fp32 [S, D/2].
+        half = p["d"] // 2
+        inv_freq = 1.0 / (10000.0 ** (torch.arange(half, dtype=torch.float32) * 2 / p["d"]))
+        angles = torch.arange(p["s"], dtype=torch.float32)[:, None] * inv_freq[None, :]
+        return [randn(p["b"], p["hq"], p["s"], p["d"]), randn(p["b"], p["hkv"], p["s"], p["d"]),
+                torch.cos(angles).contiguous(), torch.sin(angles).contiguous()]
     if task_name == "log_softmax_gather":
         return [randn(p["b"], p["v"]),
                 torch.randint(0, p["v"], (p["b"],), dtype=torch.int64)]

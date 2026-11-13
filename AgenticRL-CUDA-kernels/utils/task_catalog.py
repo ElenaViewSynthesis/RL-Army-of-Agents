@@ -225,6 +225,45 @@ for _key, _repo, _branch in (("punica", "punica-ai/punica", "591b59899f0a2076082
 TASKS.update(stage6_tasks(Task, case))
 
 
+# Stage 7: operators adapted from NVIDIA TileGym v1.5.1 (TILEGYM_kernels_task.md,
+# contracts in HANDOFF_CODEX_TILEGYM.md, approved 2026-11-13). Each grid ends
+# with its largest case, which is the acceptance case (select_cases).
+SOURCES["tilegym"] = {
+    "suite": "NVIDIA TileGym v1.5.1 (commit bb1a7e720594880be017e8fdf8f7e4f740656beb)",
+    "url": "https://github.com/NVIDIA/TileGym",
+    "license": "MIT (LICENSE Section A; kernel sources only)",
+    "license_url": "https://github.com/NVIDIA/TileGym/blob/bb1a7e720594880be017e8fdf8f7e4f740656beb/LICENSE",
+}
+SOURCES["liger"] = {
+    "suite": "Liger-Kernel (origin of TileGym's Liger-suite operator contracts)",
+    "url": "https://github.com/linkedin/Liger-Kernel",
+    "license": "BSD-2-Clause",
+    "license_url": "https://github.com/linkedin/Liger-Kernel/blob/42dc23c41dcaf1f95d858837aed5301fd4faa27a/LICENSE",
+}
+_ROW_GRID = lambda widths: tuple(case(dtype, b=b, h=h) for dtype in ("float32", "bfloat16")
+                                 for b, h in product((64, 4096), widths))
+TASKS.update({
+    "relu_squared": Task(
+        "relu_squared", 7,
+        "relu(x.float())**2 elementwise on [B,H]; output input dtype; inputs read-only",
+        _ROW_GRID((1024, 4096, 14336)), ("tilegym", "liger"), stretch_backends=("cutile",)),
+    "silu_and_mul": Task(
+        "silu_and_mul", 7,
+        "x [B,2H] -> silu(x[:, :H]) * x[:, H:] in fp32 (SiLU on the first half); output [B,H] input dtype",
+        _ROW_GRID((1024, 4096, 14336)), ("tilegym",), stretch_backends=("cutile",)),
+    "geglu_tanh": Task(
+        "geglu_tanh", 7,
+        "x [B,2H] -> x[:, :H] * gelu_tanh(x[:, H:]) in fp32 (tanh GELU on the second half); output [B,H] input dtype",
+        _ROW_GRID((1024, 4096, 16384)), ("tilegym",), stretch_backends=("cutile",)),
+    "rotary_embedding": Task(
+        "rotary_embedding", 7,
+        "Half-split RoPE on q [B,32,S,D] and k [B,8,S,D] with fp32 cos/sin [S,D/2]; returns new (q_rot, k_rot)",
+        tuple(case(dtype, b=b, hq=32, hkv=8, s=s, d=d) for dtype in ("float32", "bfloat16")
+              for b, s in ((1, 512), (4, 2048), (8, 8192)) for d in (64, 128)),
+        ("tilegym",), stretch_backends=("cutile",)),
+})
+
+
 def get_task(name):
     if name not in TASKS:
         raise ValueError(f"Unknown suite task: {name}")
@@ -266,7 +305,8 @@ def select_cases(task_name, selection="smoke"):
             return (get_case(task_name, "m4096_n4096_k4096_bfloat16"),)
         if task_name == "flash_attention_fwd":
             return task.cases[-1:]
-        return task.cases[-1:] if task.stage in (5, 6) else task.cases[:1]
+        # Stages 5-7 accept their largest (last) case; earlier stages keep their historical choice.
+        return task.cases[-1:] if task.stage in (5, 6, 7) else task.cases[:1]
     return (get_case(task_name, selection),)
 
 
@@ -319,6 +359,14 @@ def workload(task_name, item):
             logical_bytes += (count + 2 * p["h"]) * size
     elif task_name == "prefix_sum":
         logical_bytes = 2 * p["n"] * size
+    elif task_name == "relu_squared":
+        logical_bytes = 2 * p["b"] * p["h"] * size
+    elif task_name in ("silu_and_mul", "geglu_tanh"):
+        logical_bytes = 3 * p["b"] * p["h"] * size
+    elif task_name == "rotary_embedding":
+        elements = (p["hq"] + p["hkv"]) * p["b"] * p["s"] * p["d"]
+        flops, convention = 3 * elements, "two multiplies and one add per output element"
+        logical_bytes = 2 * elements * size + 2 * p["s"] * (p["d"] // 2) * 4
     elif task_name == "fused_adamw":
         logical_bytes = 7 * p["n"] * 4
     return {"flops": flops, "logical_io_bytes": logical_bytes, "flop_convention": convention,

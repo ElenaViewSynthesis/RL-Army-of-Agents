@@ -301,7 +301,7 @@ def select_tasks(names):
     for name in names:
         if name == "all":
             result.extend(TASKS)
-        elif name in ("bootstrap", "stage1", "stage2", "stage3", "stage4", "stage5", "stage6"):
+        elif name in ("bootstrap", "stage1", "stage2", "stage3", "stage4", "stage5", "stage6", "stage7"):
             stage = 0 if name == "bootstrap" else int(name[-1])
             result.extend(task.name for task in TASKS.values() if task.stage == stage)
         else:
