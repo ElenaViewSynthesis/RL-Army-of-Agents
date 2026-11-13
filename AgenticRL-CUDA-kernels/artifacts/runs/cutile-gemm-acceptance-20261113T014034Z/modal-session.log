@@ -1,0 +1,16 @@
+Note that running a local entrypoint in detached mode only keeps the last triggered Modal function alive after the parent process has been killed or disconnected.
+✓ Initialized. View run at 
+https://modal.com/apps/elenamylocuda/main/ap-OrH9MKOjMpT3DxHZl9YcWP
+✓ Created objects.
+├── ✓ Uploaded 
+│   /tmp/cutile-gemm-acceptance-20261113T014034Z-source/cloud/modal_tasks.py
+├── ✓ Uploaded 
+│   /tmp/cutile-gemm-acceptance-20261113T014034Z-source/artifacts/upstream.json
+├── ✓ Uploaded /tmp/cutile-gemm-acceptance-20261113T014034Z-source
+└── ✓ Created Function evaluate.
+{"run_id": "cutile-gemm-acceptance-20261113T014034Z", "function_call_id": "fc-01M7AC4MR7SVB2H3GXPQH89NG8", "volume": "agenticrl-cuda-artifacts", "remote": "/artifacts/cutile-gemm-acceptance-20261113T014034Z"}
+{"function_call_id": "fc-01M7AC4MR7SVB2H3GXPQH89NG8"}
+{"completed": 2, "last_task": "gemm_tensor_core", "last_status": "passed"}
+{"run_id": "cutile-gemm-acceptance-20261113T014034Z", "execution": {"command": "python -m scripts.validate --suite gemm_tensor_core --device cuda --purpose eval --case-set acceptance --fixtures all --timeout-s 1200 --suite-out /artifacts/cutile-gemm-acceptance-20261113T014034Z/suite --backends cutile --benchmark --cold-start", "returncode": 0, "timed_out": false, "wall_s": 65.197691753}, "counts": {"passed": 3, "failed": 0, "unavailable": 0}, "not_applicable": 0, "status": "pass", "source_mismatches": [], "scope": "selected workload cases only; no stock AXPBY acceptance or timing-cause claim"}
+✓ App completed. View run at 
+https://modal.com/apps/elenamylocuda/main/ap-OrH9MKOjMpT3DxHZl9YcWP

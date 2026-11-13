@@ -1,0 +1,14 @@
+{
+  "run_id": "cutile-gemm-acceptance-20261113T014034Z",
+  "tasks": [
+    "gemm_tensor_core"
+  ],
+  "case_set": "acceptance",
+  "backends": "cutile",
+  "fixtures": "all",
+  "timeout_s": 1200,
+  "benchmark": true,
+  "cold_start": true,
+  "cuda_graphs": false,
+  "gpu_requested": "H200"
+}
