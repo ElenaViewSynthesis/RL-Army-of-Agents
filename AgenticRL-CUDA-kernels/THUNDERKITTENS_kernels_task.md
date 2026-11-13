@@ -76,10 +76,17 @@ candidate. Two ways to use it; **the user decides before step 1 ends**:
 
 ### Excluded, with reasons
 
-- Blackwell and Vera Rubin kernels (`*_b200`, `*_b300`, `*_vr200`, `mxfp8_*`, `nvfp4_*`): sm_90
-  cannot run them.
-- `kernels/parallel`: multi-GPU; the environment runs one GPU per job.
-- `kernels/flux`: not reviewed; classify it in step 1.
+- Blackwell and Vera Rubin kernels (`*_b200`, `*_b300`, `*_vr200`, `mxfp8_*`, `nvfp4_*`): they use
+  instructions an sm_90 GPU does not have, so the H200 cannot run them. Excluded for this round, not
+  impossible: Modal offers B200 and B300 (Blackwell) GPUs (`MODAL_GPU=B200`; B300 needs CUDA 13.1+,
+  and this repo's image has 13.3), so a Blackwell round is possible as a separate, paid decision with
+  its own pins, baselines and tolerances. Modal lists no Rubin GPU (checked 2026-11-13), and Rubin
+  kernels (sm_107) need CUDA 13.4 or newer, newer than this repo's 13.3 pin.
+- `kernels/parallel`: multi-GPU. Modal allows up to 8 GPUs per container (`H200:8`), but the task
+  harness, the profiler and the GPU lock all assume one GPU per job; this needs its own design.
+- `kernels/flux`: two files, `flux_gate.cu` and `flux_gelu.cu`, with no README. Their names suggest
+  fused gate and GELU kernels for the FLUX image model, but that is unverified; read and classify
+  them in step 1 (they may overlap Stage 7's `geglu_tanh`).
 
 ## Order of work and stop points
 
