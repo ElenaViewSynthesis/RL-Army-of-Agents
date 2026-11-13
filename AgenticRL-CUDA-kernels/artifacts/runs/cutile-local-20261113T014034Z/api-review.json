@@ -1,0 +1,45 @@
+{
+  "version": "cuda-tile 1.8.0",
+  "used_exports": [
+    "Constant",
+    "PaddingMode",
+    "arange",
+    "bid",
+    "cdiv",
+    "exp",
+    "float32",
+    "full",
+    "gather",
+    "int32",
+    "kernel",
+    "launch",
+    "load",
+    "log",
+    "max",
+    "maximum",
+    "minimum",
+    "mma",
+    "reshape",
+    "rsqrt",
+    "scatter",
+    "sqrt",
+    "store",
+    "sum",
+    "where"
+  ],
+  "source": "wheel-source.json",
+  "inspected_files": [
+    "cuda/tile/__init__.py",
+    "cuda/tile/_stub.py",
+    "cuda/tile/_ir/ops.py"
+  ],
+  "findings": [
+    "gather supports tuple indices and padding_value; scatter skips out of bounds",
+    "load/store default check_bounds=True supports partial tiles",
+    "full supports scalar shape ()",
+    "mma supports native float32/float32 and fp16/bf16 operands with fp32 accumulation",
+    "astype defaults to round-to-nearest ties-to-even"
+  ],
+  "compilation_validated": false,
+  "device_execution_validated": false
+}

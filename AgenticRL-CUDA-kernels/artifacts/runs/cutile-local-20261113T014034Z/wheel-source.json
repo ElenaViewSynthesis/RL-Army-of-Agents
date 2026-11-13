@@ -1,0 +1,9 @@
+{
+  "filename": "cuda_tile-1.8.0-cp311-cp311-manylinux2014_x86_64.whl",
+  "url": "https://files.pythonhosted.org/packages/cf/e5/80e663206c593afeb2fc8229b333d2f697298718675d09ca70ac3389e6d8/cuda_tile-1.8.0-cp311-cp311-manylinux2014_x86_64.whl",
+  "digests": {
+    "blake2b_256": "cfe580e663206c593afeb2fc8229b333d2f697298718675d09ca70ac3389e6d8",
+    "md5": "1ae08f7549aadf4586c0b2ac9385f905",
+    "sha256": "860d239dafedf4c4164a7b2237d223aa5b75040d6235461ca3b4e07d1045990d"
+  }
+}

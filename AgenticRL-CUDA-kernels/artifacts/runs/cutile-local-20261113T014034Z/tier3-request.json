@@ -1,0 +1,147 @@
+{
+  "tasks": [
+    "gemm_div_sum_scale",
+    "gemm_tensor_core"
+  ],
+  "case_set": "smoke",
+  "case_ids": {
+    "gemm_div_sum_scale": [
+      "m256_n256_k256_float32"
+    ],
+    "gemm_tensor_core": [
+      "m512_n512_k512_bfloat16"
+    ]
+  },
+  "expected_rows": 6,
+  "expected_counts": {
+    "passed": 6,
+    "failed": 0,
+    "unavailable": 0
+  },
+  "estimated_wall_s": 644.2939097609999,
+  "basis": [
+    {
+      "task": "gemm_div_sum_scale",
+      "variant": "honest",
+      "archived_triton_wall_s": 29.998341091,
+      "proxy": false,
+      "source": "artifacts/task-stage1-20261109T004826Z",
+      "projected_wall_s": 224.9975116365
+    },
+    {
+      "task": "gemm_div_sum_scale",
+      "variant": "hack",
+      "archived_triton_wall_s": 17.72868226099999,
+      "proxy": false,
+      "source": "artifacts/task-stage1-20261109T004826Z",
+      "projected_wall_s": 26.593023391499983
+    },
+    {
+      "task": "gemm_div_sum_scale",
+      "variant": "wrong",
+      "archived_triton_wall_s": 6.004178012000011,
+      "proxy": false,
+      "source": "artifacts/task-stage1-20261109T004826Z",
+      "projected_wall_s": 9.006267018000017
+    },
+    {
+      "task": "gemm_tensor_core",
+      "variant": "honest",
+      "archived_triton_wall_s": 36.359857828,
+      "proxy": false,
+      "source": "artifacts/task-stage23-20261109T013032Z",
+      "projected_wall_s": 234.539786742
+    },
+    {
+      "task": "gemm_tensor_core",
+      "variant": "hack",
+      "archived_triton_wall_s": 14.194334842000018,
+      "proxy": false,
+      "source": "artifacts/task-stage23-20261109T013032Z",
+      "projected_wall_s": 21.291502263000027
+    },
+    {
+      "task": "gemm_tensor_core",
+      "variant": "wrong",
+      "archived_triton_wall_s": 5.24387913999999,
+      "proxy": false,
+      "source": "artifacts/task-stage23-20261109T013032Z",
+      "projected_wall_s": 7.865818709999985
+    }
+  ],
+  "estimate_definition": "1.5 x archived Triton smoke per-row wall, plus 60s per ordinary honest cuTile compilation, 180s per matrix honest compilation, 120s startup; flagship adds 180s honest / 30s each control. Proxy means used only when task row absent.",
+  "estimate_limitations": "Planning allowance, not cuTile timings. Compilation/correctness/performance unmeasured; per-row deadline 1200s.",
+  "source_target": "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifacts/sources/cutile/tier3-20261113T014034Z",
+  "run_id": "cutile-tier3-20261113T014034Z",
+  "launch_order": 3,
+  "authored_source_names": {
+    "gemm_div_sum_scale": [
+      "gemm_div_sum_scale_cutile_mma",
+      "gemm_div_sum_scale_cutile_reduce"
+    ],
+    "gemm_tensor_core": [
+      "gemm_tensor_core_cutile_mma"
+    ]
+  },
+  "gpu_results": {
+    "timing_us": null,
+    "speedup": null,
+    "provenance": null,
+    "observed_device_symbols": null,
+    "reason": "No cuTile task GPU run launched"
+  },
+  "approval_required": true,
+  "launch_owner": "Claude after review and user approval",
+  "launched": false,
+  "stop_after_run_and_report": true,
+  "automatic_rerun": false,
+  "cwd": "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifacts/sources/cutile/tier3-20261113T014034Z",
+  "env": {
+    "PYTHONPATH": "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifacts/sources/cutile/tier3-20261113T014034Z",
+    "MODAL_GPU": "H200"
+  },
+  "argv": [
+    "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/.venv/bin/modal",
+    "run",
+    "--detach",
+    "cloud/modal_tasks.py",
+    "--tasks",
+    "gemm_div_sum_scale,gemm_tensor_core",
+    "--case-set",
+    "smoke",
+    "--backends",
+    "cutile",
+    "--fixtures",
+    "all",
+    "--timeout-s",
+    "1200",
+    "--run-id",
+    "cutile-tier3-20261113T014034Z"
+  ],
+  "command": "cd /mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifacts/sources/cutile/tier3-20261113T014034Z && PYTHONPATH=\"$PWD\" MODAL_GPU=H200 /mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/.venv/bin/modal run --detach cloud/modal_tasks.py --tasks gemm_div_sum_scale,gemm_tensor_core --case-set smoke --backends cutile --fixtures all --timeout-s 1200 --run-id cutile-tier3-20261113T014034Z",
+  "source_manifest_sha256": "0a9ee6ed604c87a67ed13d08fdcdf5a4abd724f813971734d867de5b263942f2",
+  "source_file_count": 217,
+  "benchmark": true,
+  "cold_start": true,
+  "cuda_graphs": false,
+  "expected_fixture_outcomes": {
+    "honest": "verification passes; authored >=0.9 (1.0 for gemm_tensor_core), zero library time; real device names retained",
+    "hack": "verification passes, provenance fails, reward -1",
+    "wrong": "verification fails, reward -1"
+  },
+  "flagship_gate": "Only honest bf16 4096x4096x4096 GEMM requires paired cuBLAS timing and >=0.6 ceiling throughput; missing timing or failed floor stops acceptance. No reward semantics changed.",
+  "output": {
+    "volume": "agenticrl-cuda-artifacts",
+    "remote": "/cutile-tier3-20261113T014034Z/",
+    "local": "artifacts/runs/cutile-tier3-20261113T014034Z/"
+  },
+  "report_required": [
+    "device identity/versions",
+    "source mismatch check",
+    "all fixture outcomes and failures",
+    "observed authored device symbols",
+    "timings and authored/library shares or null+reason",
+    "flagship paired cuBLAS ratio where required"
+  ],
+  "next_step": "Stop and report after this request; no next tier, rerun, promotion or stretch work automatically."
+}

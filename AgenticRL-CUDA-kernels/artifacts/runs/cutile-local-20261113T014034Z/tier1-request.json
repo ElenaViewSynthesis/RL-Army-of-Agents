@@ -1,0 +1,239 @@
+{
+  "tasks": [
+    "rmsnorm",
+    "row_softmax",
+    "cispo_clip_weight",
+    "fused_adamw",
+    "grpo_group_norm"
+  ],
+  "case_set": "smoke",
+  "case_ids": {
+    "rmsnorm": [
+      "b64_h1024_bfloat16"
+    ],
+    "row_softmax": [
+      "b64_h128_float32"
+    ],
+    "cispo_clip_weight": [
+      "b8_s128_float32"
+    ],
+    "fused_adamw": [
+      "n4096_float32"
+    ],
+    "grpo_group_norm": [
+      "b64_g1_float32"
+    ]
+  },
+  "expected_rows": 15,
+  "expected_counts": {
+    "passed": 15,
+    "failed": 0,
+    "unavailable": 0
+  },
+  "estimated_wall_s": 843.6582850439995,
+  "basis": [
+    {
+      "task": "rmsnorm",
+      "variant": "honest",
+      "archived_triton_wall_s": 25.037724035999986,
+      "proxy": false,
+      "source": "artifacts/task-stage23-20261109T013032Z",
+      "projected_wall_s": 97.55658605399998
+    },
+    {
+      "task": "rmsnorm",
+      "variant": "hack",
+      "archived_triton_wall_s": 15.151361307999991,
+      "proxy": false,
+      "source": "artifacts/task-stage23-20261109T013032Z",
+      "projected_wall_s": 22.727041961999987
+    },
+    {
+      "task": "rmsnorm",
+      "variant": "wrong",
+      "archived_triton_wall_s": 5.097845756999959,
+      "proxy": false,
+      "source": "artifacts/task-stage23-20261109T013032Z",
+      "projected_wall_s": 7.646768635499939
+    },
+    {
+      "task": "row_softmax",
+      "variant": "honest",
+      "archived_triton_wall_s": 30.899717686000002,
+      "proxy": false,
+      "source": "artifacts/task-stage1-20261109T004826Z",
+      "projected_wall_s": 106.349576529
+    },
+    {
+      "task": "row_softmax",
+      "variant": "hack",
+      "archived_triton_wall_s": 17.10543031499998,
+      "proxy": false,
+      "source": "artifacts/task-stage1-20261109T004826Z",
+      "projected_wall_s": 25.658145472499967
+    },
+    {
+      "task": "row_softmax",
+      "variant": "wrong",
+      "archived_triton_wall_s": 5.907356804000017,
+      "proxy": false,
+      "source": "artifacts/task-stage1-20261109T004826Z",
+      "projected_wall_s": 8.861035206000025
+    },
+    {
+      "task": "cispo_clip_weight",
+      "variant": "honest",
+      "archived_triton_wall_s": 34.13072042299996,
+      "proxy": false,
+      "source": "artifacts/task-stage23-20261109T013032Z",
+      "projected_wall_s": 111.19608063449994
+    },
+    {
+      "task": "cispo_clip_weight",
+      "variant": "hack",
+      "archived_triton_wall_s": 16.85362698799986,
+      "proxy": false,
+      "source": "artifacts/task-stage23-20261109T013032Z",
+      "projected_wall_s": 25.28044048199979
+    },
+    {
+      "task": "cispo_clip_weight",
+      "variant": "wrong",
+      "archived_triton_wall_s": 5.6494884599999295,
+      "proxy": false,
+      "source": "artifacts/task-stage23-20261109T013032Z",
+      "projected_wall_s": 8.474232689999894
+    },
+    {
+      "task": "fused_adamw",
+      "variant": "honest",
+      "archived_triton_wall_s": 37.55918584799997,
+      "proxy": false,
+      "source": "artifacts/task-stage23-20261109T013032Z",
+      "projected_wall_s": 116.33877877199996
+    },
+    {
+      "task": "fused_adamw",
+      "variant": "hack",
+      "archived_triton_wall_s": 21.996117106000042,
+      "proxy": false,
+      "source": "artifacts/task-stage23-20261109T013032Z",
+      "projected_wall_s": 32.994175659000064
+    },
+    {
+      "task": "fused_adamw",
+      "variant": "wrong",
+      "archived_triton_wall_s": 6.109328631999915,
+      "proxy": false,
+      "source": "artifacts/task-stage23-20261109T013032Z",
+      "projected_wall_s": 9.163992947999873
+    },
+    {
+      "task": "grpo_group_norm",
+      "variant": "honest",
+      "archived_triton_wall_s": 36.705358875,
+      "proxy": false,
+      "source": "artifacts/task-stage23-20261109T013032Z",
+      "projected_wall_s": 115.0580383125
+    },
+    {
+      "task": "grpo_group_norm",
+      "variant": "hack",
+      "archived_triton_wall_s": 18.94498409400012,
+      "proxy": false,
+      "source": "artifacts/task-stage23-20261109T013032Z",
+      "projected_wall_s": 28.41747614100018
+    },
+    {
+      "task": "grpo_group_norm",
+      "variant": "wrong",
+      "archived_triton_wall_s": 5.290610364000031,
+      "proxy": false,
+      "source": "artifacts/task-stage23-20261109T013032Z",
+      "projected_wall_s": 7.935915546000047
+    }
+  ],
+  "estimate_definition": "1.5 x archived Triton smoke per-row wall, plus 60s per ordinary honest cuTile compilation, 180s per matrix honest compilation, 120s startup; flagship adds 180s honest / 30s each control. Proxy means used only when task row absent.",
+  "estimate_limitations": "Planning allowance, not cuTile timings. Compilation/correctness/performance unmeasured; per-row deadline 1200s.",
+  "source_target": "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifacts/sources/cutile/tier1-20261113T014034Z",
+  "run_id": "cutile-tier1-20261113T014034Z",
+  "launch_order": 1,
+  "authored_source_names": {
+    "rmsnorm": [
+      "rmsnorm_cutile_rows"
+    ],
+    "row_softmax": [
+      "row_softmax_cutile_rows"
+    ],
+    "cispo_clip_weight": [
+      "cispo_clip_weight_cutile_tiles"
+    ],
+    "fused_adamw": [
+      "fused_adamw_cutile_tiles"
+    ],
+    "grpo_group_norm": [
+      "grpo_group_norm_cutile_rows"
+    ]
+  },
+  "gpu_results": {
+    "timing_us": null,
+    "speedup": null,
+    "provenance": null,
+    "observed_device_symbols": null,
+    "reason": "No cuTile task GPU run launched"
+  },
+  "approval_required": true,
+  "launch_owner": "Claude after review and user approval",
+  "launched": false,
+  "stop_after_run_and_report": true,
+  "automatic_rerun": false,
+  "cwd": "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifacts/sources/cutile/tier1-20261113T014034Z",
+  "env": {
+    "PYTHONPATH": "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifacts/sources/cutile/tier1-20261113T014034Z",
+    "MODAL_GPU": "H200"
+  },
+  "argv": [
+    "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/.venv/bin/modal",
+    "run",
+    "--detach",
+    "cloud/modal_tasks.py",
+    "--tasks",
+    "rmsnorm,row_softmax,cispo_clip_weight,fused_adamw,grpo_group_norm",
+    "--case-set",
+    "smoke",
+    "--backends",
+    "cutile",
+    "--fixtures",
+    "all",
+    "--timeout-s",
+    "1200",
+    "--run-id",
+    "cutile-tier1-20261113T014034Z"
+  ],
+  "command": "cd /mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifacts/sources/cutile/tier1-20261113T014034Z && PYTHONPATH=\"$PWD\" MODAL_GPU=H200 /mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/.venv/bin/modal run --detach cloud/modal_tasks.py --tasks rmsnorm,row_softmax,cispo_clip_weight,fused_adamw,grpo_group_norm --case-set smoke --backends cutile --fixtures all --timeout-s 1200 --run-id cutile-tier1-20261113T014034Z",
+  "source_manifest_sha256": "0b84cebb7b7746c6a35aaec45b28a1ccc01017099b13db080ff788a9bab20f72",
+  "source_file_count": 271,
+  "benchmark": true,
+  "cold_start": true,
+  "cuda_graphs": false,
+  "expected_fixture_outcomes": {
+    "honest": "verification passes; authored >=0.9 (1.0 for gemm_tensor_core), zero library time; real device names retained",
+    "hack": "verification passes, provenance fails, reward -1",
+    "wrong": "verification fails, reward -1"
+  },
+  "flagship_gate": "Only honest bf16 4096x4096x4096 GEMM requires paired cuBLAS timing and >=0.6 ceiling throughput; missing timing or failed floor stops acceptance. No reward semantics changed.",
+  "output": {
+    "volume": "agenticrl-cuda-artifacts",
+    "remote": "/cutile-tier1-20261113T014034Z/",
+    "local": "artifacts/runs/cutile-tier1-20261113T014034Z/"
+  },
+  "report_required": [
+    "device identity/versions",
+    "source mismatch check",
+    "all fixture outcomes and failures",
+    "observed authored device symbols",
+    "timings and authored/library shares or null+reason",
+    "flagship paired cuBLAS ratio where required"
+  ],
+  "next_step": "Stop and report after this request; no next tier, rerun, promotion or stretch work automatically."
+}

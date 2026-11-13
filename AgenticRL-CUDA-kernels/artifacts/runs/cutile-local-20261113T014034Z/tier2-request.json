@@ -1,0 +1,146 @@
+{
+  "tasks": [
+    "log_softmax_gather",
+    "residual_rmsnorm"
+  ],
+  "case_set": "smoke",
+  "case_ids": {
+    "log_softmax_gather": [
+      "b32_v1024_bfloat16"
+    ],
+    "residual_rmsnorm": [
+      "b1_s128_h1024_bfloat16"
+    ]
+  },
+  "expected_rows": 6,
+  "expected_counts": {
+    "passed": 6,
+    "failed": 0,
+    "unavailable": 0
+  },
+  "estimated_wall_s": 390.1781869890001,
+  "basis": [
+    {
+      "task": "log_softmax_gather",
+      "variant": "honest",
+      "archived_triton_wall_s": 29.085249599000008,
+      "proxy": false,
+      "source": "artifacts/task-stage23-20261109T013032Z",
+      "projected_wall_s": 103.62787439850001
+    },
+    {
+      "task": "log_softmax_gather",
+      "variant": "hack",
+      "archived_triton_wall_s": 18.293394459000012,
+      "proxy": false,
+      "source": "artifacts/task-stage23-20261109T013032Z",
+      "projected_wall_s": 27.44009168850002
+    },
+    {
+      "task": "log_softmax_gather",
+      "variant": "wrong",
+      "archived_triton_wall_s": 6.847398397999996,
+      "proxy": false,
+      "source": "artifacts/task-stage23-20261109T013032Z",
+      "projected_wall_s": 10.271097596999994
+    },
+    {
+      "task": "residual_rmsnorm",
+      "variant": "honest",
+      "archived_triton_wall_s": 26.37344225100003,
+      "proxy": false,
+      "source": "artifacts/task-stage4-smoke-20261109T020100Z",
+      "projected_wall_s": 99.56016337650004
+    },
+    {
+      "task": "residual_rmsnorm",
+      "variant": "hack",
+      "archived_triton_wall_s": 14.292277837999961,
+      "proxy": false,
+      "source": "artifacts/task-stage4-smoke-20261109T020100Z",
+      "projected_wall_s": 21.438416756999942
+    },
+    {
+      "task": "residual_rmsnorm",
+      "variant": "wrong",
+      "archived_triton_wall_s": 5.227028781000001,
+      "proxy": false,
+      "source": "artifacts/task-stage4-smoke-20261109T020100Z",
+      "projected_wall_s": 7.840543171500002
+    }
+  ],
+  "estimate_definition": "1.5 x archived Triton smoke per-row wall, plus 60s per ordinary honest cuTile compilation, 180s per matrix honest compilation, 120s startup; flagship adds 180s honest / 30s each control. Proxy means used only when task row absent.",
+  "estimate_limitations": "Planning allowance, not cuTile timings. Compilation/correctness/performance unmeasured; per-row deadline 1200s.",
+  "source_target": "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifacts/sources/cutile/tier2-20261113T014034Z",
+  "run_id": "cutile-tier2-20261113T014034Z",
+  "launch_order": 2,
+  "authored_source_names": {
+    "log_softmax_gather": [
+      "log_softmax_gather_cutile_rows"
+    ],
+    "residual_rmsnorm": [
+      "residual_rmsnorm_cutile_rows"
+    ]
+  },
+  "gpu_results": {
+    "timing_us": null,
+    "speedup": null,
+    "provenance": null,
+    "observed_device_symbols": null,
+    "reason": "No cuTile task GPU run launched"
+  },
+  "approval_required": true,
+  "launch_owner": "Claude after review and user approval",
+  "launched": false,
+  "stop_after_run_and_report": true,
+  "automatic_rerun": false,
+  "cwd": "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifacts/sources/cutile/tier2-20261113T014034Z",
+  "env": {
+    "PYTHONPATH": "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifacts/sources/cutile/tier2-20261113T014034Z",
+    "MODAL_GPU": "H200"
+  },
+  "argv": [
+    "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/.venv/bin/modal",
+    "run",
+    "--detach",
+    "cloud/modal_tasks.py",
+    "--tasks",
+    "log_softmax_gather,residual_rmsnorm",
+    "--case-set",
+    "smoke",
+    "--backends",
+    "cutile",
+    "--fixtures",
+    "all",
+    "--timeout-s",
+    "1200",
+    "--run-id",
+    "cutile-tier2-20261113T014034Z"
+  ],
+  "command": "cd /mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifacts/sources/cutile/tier2-20261113T014034Z && PYTHONPATH=\"$PWD\" MODAL_GPU=H200 /mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/.venv/bin/modal run --detach cloud/modal_tasks.py --tasks log_softmax_gather,residual_rmsnorm --case-set smoke --backends cutile --fixtures all --timeout-s 1200 --run-id cutile-tier2-20261113T014034Z",
+  "source_manifest_sha256": "6d78312d8cba1503d1cfa661162e39a46e2476ba31eea7322d61992f8034a6d3",
+  "source_file_count": 214,
+  "benchmark": true,
+  "cold_start": true,
+  "cuda_graphs": false,
+  "expected_fixture_outcomes": {
+    "honest": "verification passes; authored >=0.9 (1.0 for gemm_tensor_core), zero library time; real device names retained",
+    "hack": "verification passes, provenance fails, reward -1",
+    "wrong": "verification fails, reward -1"
+  },
+  "flagship_gate": "Only honest bf16 4096x4096x4096 GEMM requires paired cuBLAS timing and >=0.6 ceiling throughput; missing timing or failed floor stops acceptance. No reward semantics changed.",
+  "output": {
+    "volume": "agenticrl-cuda-artifacts",
+    "remote": "/cutile-tier2-20261113T014034Z/",
+    "local": "artifacts/runs/cutile-tier2-20261113T014034Z/"
+  },
+  "report_required": [
+    "device identity/versions",
+    "source mismatch check",
+    "all fixture outcomes and failures",
+    "observed authored device symbols",
+    "timings and authored/library shares or null+reason",
+    "flagship paired cuBLAS ratio where required"
+  ],
+  "next_step": "Stop and report after this request; no next tier, rerun, promotion or stretch work automatically."
+}

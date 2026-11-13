@@ -1,0 +1,8 @@
+test_no_host_tensor_compute_and_only_pinned_api_exports (tests.test_dsl_kernels.CuTileTaskSourceTests.test_no_host_tensor_compute_and_only_pinned_api_exports) ... ok
+test_task_layout_lazy_exports_and_kernel_discovery (tests.test_dsl_kernels.CuTileTaskSourceTests.test_task_layout_lazy_exports_and_kernel_discovery) ... ok
+test_discovered_names_match_only_synthetic_cutile_symbols (tests.test_symbol_provenance.CuTileTaskSymbolSourceTests.test_discovered_names_match_only_synthetic_cutile_symbols) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 37.471s
+
+OK

@@ -1,0 +1,10 @@
+{
+  "scope": "new local evidence bundle",
+  "checks": [
+    "common API/access-key patterns",
+    "email addresses",
+    "JSON/log/Markdown-only file types"
+  ],
+  "finding_paths": [],
+  "limitations": "pattern scan; Claude still reviews before committing"
+}

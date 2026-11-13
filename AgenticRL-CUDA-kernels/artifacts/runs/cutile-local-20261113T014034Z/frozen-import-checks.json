@@ -1,0 +1,30 @@
+{
+  "tier1": {
+    "manifest_digest_matches_request": true,
+    "selected_task_cuTile_sources_parse": true,
+    "torch_free_imports": "Torch-free parent imports OK; no cuTile import/execution",
+    "returncode": 0,
+    "gpu_execution": false
+  },
+  "tier2": {
+    "manifest_digest_matches_request": true,
+    "selected_task_cuTile_sources_parse": true,
+    "torch_free_imports": "Torch-free parent imports OK; no cuTile import/execution",
+    "returncode": 0,
+    "gpu_execution": false
+  },
+  "tier3": {
+    "manifest_digest_matches_request": true,
+    "selected_task_cuTile_sources_parse": true,
+    "torch_free_imports": "Torch-free parent imports OK; no cuTile import/execution",
+    "returncode": 0,
+    "gpu_execution": false
+  },
+  "gemm-acceptance": {
+    "manifest_digest_matches_request": true,
+    "selected_task_cuTile_sources_parse": true,
+    "torch_free_imports": "Torch-free parent imports OK; no cuTile import/execution",
+    "returncode": 0,
+    "gpu_execution": false
+  }
+}

@@ -1,0 +1,902 @@
+--- before/KNOWN_ISSUES.md
++++ after/KNOWN_ISSUES.md
+@@ -407,3 +407,20 @@
+   time and wider-case honest bounds still require hardware evidence. Request
+   1200 s per case rather than extrapolating the smoke's demonstrated 600 s cap.
+   fp16-intermediate remains diagnostic. No Modal run or live W&B write was made.
++
++- **Nine cuTile task candidates: source checked, GPU unverified.** rmsnorm,
++  row_softmax, cispo_clip_weight, fused_adamw, grpo_group_norm,
++  log_softmax_gather, residual_rmsnorm, gemm_div_sum_scale and gemm_tensor_core
++  are opt-in stretch backends. No local cuTile compiler/runtime or CPU
++  interpreter is available; neither suite establishes their compilation,
++  numerical correctness, device symbols, provenance or speed. Full 8192-wide
++  row tiles may exert register pressure. Online 1024-wide vocabulary tiles
++  require up to 126 loop iterations. Native fp32 MMA support was inspected in
++  the pinned wheel, but lowering and error behavior remain GPU checks.
++  The flagship GEMM's unchanged 100% authored and 60%-of-cuBLAS gates can reject
++  this conservative candidate; stop and report measurements if it fails.
++  Smoke tests alone do not validate all catalog shapes/dtypes or flagship
++  acceptance. Prepared per-tier H200 smoke and flagship acceptance requests
++  are in `artifacts/runs/cutile-local-20261113T014034Z/`; none was launched.
++  No backend promotion, LoRA shrink or flash-attention stretch work begins
++  without the required GPU passes and user approval.
+--- before/README.md
++++ after/README.md
+@@ -18,10 +18,22 @@
+ 
+ New to the terminology (CUDA-graph replay, provenance, BGMV/SGMV, the relative-error bound, GRPO vs DAPO vs CISPO and more)? See the [glossary](GLOSSARY.md).
+ 
+-**Interactive reports** (Claude artifacts, built from the committed H200 evidence):
++**Interactive reports** (Claude artifacts, built from the committed H200 evidence). To view them you must be signed in to [claude.ai](https://claude.ai); a signed-out visitor sees a sign-in page instead.
+ 
+ - [Stage 5 kernel timings](https://claude.ai/artifact/Efm4o8YvrYm29LMbtM9sy2): per-task and per-backend kernel times against eager PyTorch and `torch.compile` for the nine EAGLE-4 tasks at their largest cases (run `task-stage5-gpu-acceptance-20261110T002043Z`).
+ - [Stage 6 Multi-LoRA Report](https://claude.ai/artifact/RmbhAQDXMQBgdopF1dBzMp): the six multi-LoRA tasks, token patterns and ranks, a coverage matrix with a detail view for every suite row, Nsight timelines of CUDA-graph capture and replay, performance, and H200 time across all Stage 6 runs.
++
++Two charts from the Stage 6 report, as static images:
++
++![Coverage matrix of the Stage 6 stratified run: one cell per task, case, backend and fixture; 312 passed, 0 failed, 24 planned not-applicable](assets/stage6/fig_stage6_coverage_stratified.svg)
++
++**Coverage matrix · Stratified** (`stage6-stratified-20261112T094226Z`): every row of the stratified H200 run, one cell per task × case × backend × fixture. Honest cells show the reward tier earned (3 = faster than eager and `torch.compile`, 2 = faster than eager, 1 = correct); control cells show whether the hack, wrong, wrong-padding or wrong-skip control was caught. Hatched cells are planned not-applicable controls (no skipped tokens or no rank padding to test), not failures; `lora_segment_metadata` has no padding or skip controls.
++
++![Per-slot ranks for every Stage 6 case in the evidence, with rank padding to a multiple of 16 hatched](assets/stage6/fig_stage6_slot_ranks.svg)
++
++**Per-slot ranks for every case in the evidence**: one row per Stage 6 case, one bar per adapter slot, on a log₂ rank axis. With mixed ranks, slot *i* gets rank `min(rank, (8, 16, 32, 64, 128, 256)[i mod 6])`. Hatched extensions are the padding to a multiple of 16, which is filled with NaN; the `wrong_padding` control reads it, so cases without padding have nothing for that control to catch.
++
++Both are regenerated from the committed suite rows with `python3 -m scripts.make_stage6_figures --out assets/stage6`.
+ 
+ > [!IMPORTANT]
+ > **First H200 measurements now exist.** Modal runs `20261106T142830Z` and
+@@ -177,7 +189,7 @@
+ **Figure 2.** Time per call at each Stage 5 task's largest case, as reward-profiler device time on a log scale from microseconds to seconds.
+ Filled circles are eager PyTorch, hollow circles `torch.compile`, squares the CUDA solution and triangles the Triton solution.
+ The gap between a solution and the two baselines shows the headroom: `torch.compile` beats every reference solution on the 32k attention tasks and top-k.
+-All 71 suite rows passed in run `task-stage5-gpu-acceptance-20261110T002043Z`; data, LaTeX table and captions are in [`assets/stage5/`](assets/stage5/). An interactive dashboard of the same timings (per task and backend, against eager and `torch.compile`) is published as a Claude artifact, [Stage 5 kernel timings](https://claude.ai/artifact/Efm4o8YvrYm29LMbtM9sy2) (private; access is granted from the page's Share menu). It reads the CSV in `assets/stage5/` as a fixed dataset.
++All 71 suite rows passed in run `task-stage5-gpu-acceptance-20261110T002043Z`; data, LaTeX table and captions are in [`assets/stage5/`](assets/stage5/). An interactive dashboard of the same timings (per task and backend, against eager and `torch.compile`) is published as a Claude artifact, [Stage 5 kernel timings](https://claude.ai/artifact/Efm4o8YvrYm29LMbtM9sy2) (viewing requires being signed in to claude.ai). It reads the CSV in `assets/stage5/` as a fixed dataset.
+ 
+ | Stage | Focus | H200 status |
+ |---|---|---|
+@@ -244,7 +256,7 @@
+ 
+ **Stage 6 stratified:** `stage6-stratified-20261112T094226Z` (commit `813f659`, manifest `318be689…`) ran six stable cases per task (36 cases, fp16 and bf16, ranks 8 to 256, 1 and 3 slices, mixed ranks, and none/mixed/single/distinct token patterns) on CUDA and Triton with every fixture, `--cuda-graphs`, the relative-bound gate and the per-GPU lock, on one NVIDIA H200 on Modal. 312 rows passed, 0 failed, and 24 were not applicable as planned (14 wrong-skip controls on cases with no skipped tokens, 10 wrong-padding controls on cases with no rank padding); the summary reads `partial` only because it counts those rows as unavailable. All 72 honest kernels verified with authored provenance 1.0 and captured and replayed correctly as CUDA graphs; all 72 hacks failed provenance; all 72 wrong, 50 wrong-padding and 46 wrong-skip controls failed verification. Honest rewards: Triton 32 `faster_than_both`, 3 `faster_than_eager`, 1 `correct`; CUDA 23, 6 and 7. [Evidence](artifacts/runs/stage6-stratified-20261112T094226Z/).
+ 
+-**Stage 6 technical report:** an interactive report built from the five runs' evidence (task and token-pattern diagrams, the per-row coverage matrix with a detail view for every row, CUDA-graph capture and replay snapshots, performance and H200 time) is published as a Claude artifact at <https://claude.ai/artifact/RmbhAQDXMQBgdopF1dBzMp> (private; access is granted from the page's Share menu). Every figure on it names the run ID and evidence field it was drawn from.
++**Stage 6 technical report:** an interactive report built from the five runs' evidence (task and token-pattern diagrams, the per-row coverage matrix with a detail view for every row, CUDA-graph capture and replay snapshots, performance and H200 time) is published as a Claude artifact at <https://claude.ai/artifact/RmbhAQDXMQBgdopF1dBzMp> (viewing requires being signed in to claude.ai). Every figure on it names the run ID and evidence field it was drawn from.
+ 
+ **H200 time per Stage 6 run** (every Stage 6 run uses one NVIDIA H200 on Modal; suite wall time, excluding container start-up and queueing): first smoke 1,435 s (~24 min), smoke rerun 1,343 s (~22 min), aborted acceptance 104 s, acceptance 3,032 s (~51 min; planned at 2.4 h) and stratified 9,247 s (~2.6 h; planned at 3.9 h; it also waited 53 min in Modal's H200 queue before starting), so about 4.2 GPU-hours for the suite runs. The Nsight graph-trace run `graph-trace-20261112T220601Z` added 427 s (~7 min, after ~17 min in the queue), backfilled from the Modal volume's file times in [`wall-time-backfill.json`](artifacts/runs/graph-trace-20261112T220601Z/wall-time-backfill.json) because the trace runner did not record it then (it now writes `execution.wall_s`); Stage 6 GPU work totals about 4.3 GPU-hours.
+ 
+@@ -838,3 +850,40 @@
+ reason.
+ [Case IDs, resource assumptions and the prepared requests](artifacts/runs/stage6-gpu-lock-local-20261111T170616Z/README.md)
+ are kept with the planning evidence.
++
++## Opt-in cuTile task candidates
++
++Nine existing tasks now have task-local cuTile source candidates, selected only
++with `--backends cutile`. They remain `stretch_backends`; default backends,
++cases, dtypes and suite row counts are unchanged.
++
++| Tier | Tasks | Fixed launch choices |
++|---|---|---|
++| 1 | rmsnorm, row_softmax, cispo_clip_weight, fused_adamw, grpo_group_norm | One power-of-two tile per reduction row/group; 1024-element tiles for elementwise work |
++| 2 | log_softmax_gather, residual_rmsnorm | Online log-sum-exp with 1024-wide vocabulary tiles; full power-of-two residual RMS row |
++| 3 | gemm_div_sum_scale, gemm_tensor_core | MMA 32x64x32 plus row reduction; MMA 64x128x64 (16-row tile for skinny M) plus bias |
++
++Each task's generated README records its design. Wrappers allocate outputs,
++read metadata and launch on the current stream; inputs are read-only. The
++residual sum rounds to bf16 before RMS accumulation. GEMM uses fp32 accumulation;
++fp32 input operands are not cast to TF32. Tile choices are source decisions,
++not measured performance recommendations.
++
++The flagship bf16 4096-cubed `gemm_tensor_core` cuTile row must satisfy the same
++100% authored-provenance and 60%-of-cuBLAS performance gates as Triton. Its
++512-cubed smoke row cannot establish flagship acceptance. No thresholds,
++reward rules, tolerances or attribution patterns were relaxed.
++
++Local checks are source/protocol checks only. These nine candidates have **not
++compiled or executed on a GPU**; their timing, speedup, provenance and observed
++device symbols are not measured. cuTile has no CPU interpreter. The existing
++AXPBY GPU results above do not validate these candidates. The optional package
++and pinned Modal image are unchanged.
++
++[Prepared requests and local evidence](artifacts/runs/cutile-local-20261113T014034Z/README.md)
++cover tier smoke runs (15, 6 and 6 rows; estimated 14.1, 6.5 and 10.7 minutes)
++and a separate flagship acceptance run (3 rows; estimated 10.4 minutes).
++Estimates use archived Triton wall times with explicit compile/startup allowances,
++not cuTile measurements. Claude reviews and launches each detached H200 request
++separately after approval. No Modal run was launched here. Backend promotion
++and the LoRA/attention stretch work require later GPU evidence and user approval.
+--- before/VALIDATION.md
++++ after/VALIDATION.md
+@@ -2677,3 +2677,73 @@
+ Each prepared request points to its own fresh public source freeze and
+ manifest SHA-256. Claude launches acceptance, reports, then launches
+ stratified only after review/approval. No Modal/W&B write or commit was made.
++
++## cuTile task candidates: local source and protocol checks, 2026-11-13
++
++Evidence: `artifacts/runs/cutile-local-20261113T014034Z/`. Nine existing tasks
++have opt-in task-local sources (10 device entry points). No cuTile kernel
++compiled or ran here. There is no CPU interpreter, and cuda-tile was not
++installed. The pinned 1.8.0 wheel's Python sources were inspected outside the
++repository for export spellings, gather/scatter tails, scalar tiles and MMA
++operand/accumulator support; the URL and digest are retained. This is API
++inspection, not compiler evidence.
++
++Source checks cover lazy exports, constructor signatures, AST parsing/backend
++and authored-name discovery, launch argument arity, fresh output targets,
++current-stream/device guards and absence of host Torch compute/synchronization.
++Symbol tests use explicitly synthetic `_Kt1_SYNTHETIC` names; they do not record
++observed device symbols. Protocol tests use mocked subprocess timings to check
++honest/hack/wrong gates and the flagship cuBLAS requirement, not device timing.
++The case/default-backend fingerprints and protected-file hashes are unchanged.
++Generated task READMEs retain their historical measured sections verbatim.
++
++Tier 1: 3 source tests, then 3 wiring tests, OK. Tier 2: 6 source tests, OK.
++The first Tier 1 run exposed a test guard treating AdamW scalar hyperparameters
++as tensors; the guard was corrected. The Tier 3 run had 20 passes and one
++constructor-signature failure: ModelNew inherited nn.Module's constructor while
++the reference declares `__init__(self)`. An explicit constructor fixed it;
++the final all-task layout check passed. Initial logs remain in the bundle.
++All final changes are covered by both full suites below.
++
++```bash
++PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover
++PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 .venv/bin/python -m unittest discover
++```
++
++System interpreter, raw summary:
++
++```text
++Ran 339 tests in 565.597s
++
++OK (skipped=78)
++```
++
++Installed runtime, raw summary:
++
++```text
++Ran 344 tests in 1444.943s
++
++OK (skipped=29)
++```
++
++Skips cover missing Torch/backend packages, GPUs and opt-in integrations.
++Existing SQLite ResourceWarnings and expected negative-test stderr are retained
++in full logs. No failed/reaped GPU job was restarted. No Modal launch, tracking
++write, dependency installation or commit occurred.
++
++Only explicit stretch selection was enabled in suite wiring. The flagship
++honest bf16 4096-cubed cuTile row additionally follows the existing Triton
++performance gate: paired cuBLAS timing is mandatory and throughput must reach
++60% of that ceiling. Authored provenance stays 1.0 for this task (0.9 elsewhere),
++with zero library time. Tests show a missing ceiling cannot yield acceptance;
++performance failure does not redefine the environment reward.
++
++Prepared detached H200 requests use `--backends cutile --fixtures all
++--timeout-s 1200`. Tier smoke row counts are 15/6/6; a separate flagship
++acceptance request has 3 rows. Estimated walls are 14.1/6.5/10.7/10.4 minutes,
++respectively, based on 1.5 times archived Triton per-row smoke wall plus 60 s
++ordinary or 180 s matrix honest compile allowance and 120 s startup. Flagship
++acceptance adds 180 s honest / 30 s each control. Exact inputs and proxy cases
++are in `run-plan.json`. These allowances are not cuTile measurements or promises.
++Claude reviews, launches one request, reports actual symbols/results, and stops
++before any next request. Full catalog correctness remains open after smoke.
+--- before/scripts/task_readme.py
++++ after/scripts/task_readme.py
+@@ -33,7 +33,7 @@
+         "bf16-rounded GEMM converted to fp32 afterward. Triton retains bf16/fp16 dot operands "
+         "and accumulates in fp32. The CUDA fixture uses explicit WMMA/mma Tensor Core work "
+         "with double-buffered shared-memory tiles. CuTe DSL must use MMA/copy atoms, not "
+-        "CUTLASS utility GEMM templates. The honest fixture acceptance target is Triton "
++        "CUTLASS utility GEMM templates. The honest fixture acceptance target is Triton and opt-in cuTile "
+         "**at least 60% of the recorded cuBLAS throughput at bf16 4096^3 on H200**, "
+         "with authored non-memory provenance **exactly 1.0**. This is unaccepted until "
+         "measured. Skinny M=8 and M=64 cases are included. Candidates may not call cuBLAS."),
+@@ -110,6 +110,19 @@
+ }
+ 
+ 
++CUTILE_DETAILS = {
++    "gemm_div_sum_scale": "32x64x32 MMA tiles with a ct.full fp32 accumulator; native fp32 is not converted to tf32. A separate 1024-wide row kernel divides before summing N and applies scale afterward; product scratch is fp32 and both launches use the current stream.",
++    "gemm_tensor_core": "64x128x64 MMA tiles (16x128x64 for M <= 16), fp16/bf16 operands and a ct.full fp32 accumulator, bias epilogue and fp32 output. The opt-in cuTile bf16 4096^3 acceptance keeps the same 60% cuBLAS target and exactly 1.0 authored provenance; GPU acceptance is unmeasured.",
++    "log_softmax_gather": "One block per row scans 1024-wide tiles with online fp32 log-sum-exp, then gathers the requested token. Negative-infinity padding handles vocabulary tails such as 128256; the live tile never grows to 131072.",
++    "residual_rmsnorm": "One full power-of-two row tile up to 8192; the fp32 x+residual is explicitly rounded to bf16 before the fp32 RMS reduction. One launch returns two new bf16 tensors; no inputs are mutated.",
++    "rmsnorm": "One block per row, one power-of-two row tile (up to 8192); fp32 square/sum/rsqrt and input-dtype output. A full row tile avoids scratch and a second pass; register/occupancy behavior is not measured.",
++    "row_softmax": "One block per row, power-of-two tile up to 8192; negative-infinity gather padding for max, fp32 exp/sum, input-dtype output. Out-of-range stores are skipped.",
++    "cispo_clip_weight": "1024-element flattened tiles; bounds-checked gathers/scatters, fp32 exp and minimum/maximum, boolean where and sequence-advantage gather. This implements only the existing forward contract.",
++    "fused_adamw": "1024-element flattened tiles; one launch writes all three fp32 outputs. Bias corrections are scalar hyperparameter arithmetic; every input remains read-only.",
++    "grpo_group_norm": "One block per group with the next power-of-two width (1/4/8/16 in the catalog); masked centered tails, population variance and sqrt(variance)+eps.",
++}
++
++
+ DENSE_DETAILS = """
+ ### Dense-MoE BF16 adaptation
+ 
+@@ -179,6 +192,11 @@
+                 "math, tie rules, history conventions, workload counts and source deviations. "
+                 "CUDA and Triton sources are provided; GPU acceptance is not yet measured. "
+                 "Use `--fixtures all` for the wrong-ancestor control and, for GDN on Triton, chain replay.")
++    if "cutile" in task.stretch_backends:
++        note += ("\n\n### cuTile source candidate (opt-in)\n\n" + CUTILE_DETAILS[task_name]
++                 + " cuTile timing, speedup and provenance are **not measured**: no GPU execution "
++                   "has validated these task kernels. Select `--backends cutile --fixtures all` "
++                   "explicitly; default backend rows are unchanged.")
+     license_note = (
+         "\n**Held-out evaluation only.** GPU MODE's June 9 Researcher Reciprocity License "
+         "covers evaluation/benchmarking for training as Training Use. This modified "
+@@ -287,7 +305,7 @@
+   device time, no library-kernel time, and 100% authored for gemm_tensor_core.
+   Stock AXPBY attribution/reward rules are unchanged.
+ - No triton.ops, flash-attn packages, cuBLAS/cuDNN/CUTLASS-library candidate calls.
+-  tl.dot and authored CuTe MMA/copy atoms are allowed.
++  tl.dot, ct.mma and authored CuTe MMA/copy atoms are allowed.
+ - Name matching remains a heuristic, not proof of authorship or a security sandbox.
+ - CPU/missing capabilities are **unavailable**, never GPU passes.
+ 
+--- before/tasks/cispo_clip_weight/README.md
++++ after/tasks/cispo_clip_weight/README.md
+@@ -5,6 +5,10 @@
+ mask * clip(exp(log_ratio),0,5).detach() * sequence_advantage; fp32 forward weights
+ 
+ `get_init_inputs()` derives `[1-clip_low,1+clip_high]` from `RolloutConfig.preset('cispo')` in `utils/config.py`, currently `[0,5]`. Inputs are fp32 `log_ratio:(B,S)`, sequence `advantage:(B,)`, and boolean mask `(B,S)`. The forward result is masked clipped IS weight times advantage. The detached IS-weight rule is explicit in the reference; this is a forward-only contract, not a claim of custom autograd, token-loss backpropagation or trainer integration.
++
++### cuTile source candidate (opt-in)
++
++1024-element flattened tiles; bounds-checked gathers/scatters, fp32 exp and minimum/maximum, boolean where and sequence-advantage gather. This implements only the existing forward contract. cuTile timing, speedup and provenance are **not measured**: no GPU execution has validated these task kernels. Select `--backends cutile --fixtures all` explicitly; default backend rows are unchanged.
+ 
+ The reference constructor and state_dict must match ModelNew. These functional
+ tasks take weights/state arrays as inputs; state_dict is empty. Candidate wrappers
+@@ -35,19 +39,20 @@
+ ## Fixtures and gates
+ 
+ - Honest backends: triton, cuda.
+-- Stretch backends: none declared.
++- Stretch backends: cutile.
+ - `model_new.py` selects the default honest fixture. `model_new_hack.py` is an
+   intentional Torch reference-compute attack; it must verify then fail provenance.
+ - `model_new_wrong.py` intentionally returns NaNs or invalid integer sentinels;
+   it must fail verification, not merely compilation.
+ - Verification uses five fresh random inputs; floating outputs keep atol=rtol=1e-2.
+-  The progressive suite requires exact equality for integer outputs. The direct
+-  strict entrypoint is `utils.task_verification`; stock AXPBY defaults stay unchanged.
++  The progressive suite requires exact equality for integer outputs, including
++  token IDs and prefix sums. `utils.task_verification` exposes the same strict
++  check directly; stock `utils.verification` and AXPBY defaults stay unchanged.
+ - The suite alone applies authored-only provenance: at least 90% of non-memory
+   device time, no library-kernel time, and 100% authored for gemm_tensor_core.
+   Stock AXPBY attribution/reward rules are unchanged.
+ - No triton.ops, flash-attn packages, cuBLAS/cuDNN/CUTLASS-library candidate calls.
+-  tl.dot and authored CuTe MMA/copy atoms are allowed.
++  tl.dot, ct.mma and authored CuTe MMA/copy atoms are allowed.
+ - Name matching remains a heuristic, not proof of authorship or a security sandbox.
+ - CPU/missing capabilities are **unavailable**, never GPU passes.
+ 
+--- before/tasks/fused_adamw/README.md
++++ after/tasks/fused_adamw/README.md
+@@ -5,6 +5,10 @@
+ Functional bias-corrected AdamW: return (new_parameter,new_m,new_v), never mutate inputs
+ 
+ Forward returns `(updated_parameter,new_m,new_v)` without mutating any input. The constructor supplies learning rate, beta1/beta2, epsilon, weight decay and step; bias correction is explicit. This is a functional numerical kernel benchmark, not a trainer or an integrated optimizer.
++
++### cuTile source candidate (opt-in)
++
++1024-element flattened tiles; one launch writes all three fp32 outputs. Bias corrections are scalar hyperparameter arithmetic; every input remains read-only. cuTile timing, speedup and provenance are **not measured**: no GPU execution has validated these task kernels. Select `--backends cutile --fixtures all` explicitly; default backend rows are unchanged.
+ 
+ The reference constructor and state_dict must match ModelNew. These functional
+ tasks take weights/state arrays as inputs; state_dict is empty. Candidate wrappers
+@@ -32,19 +36,20 @@
+ ## Fixtures and gates
+ 
+ - Honest backends: triton, cuda.
+-- Stretch backends: none declared.
++- Stretch backends: cutile.
+ - `model_new.py` selects the default honest fixture. `model_new_hack.py` is an
+   intentional Torch reference-compute attack; it must verify then fail provenance.
+ - `model_new_wrong.py` intentionally returns NaNs or invalid integer sentinels;
+   it must fail verification, not merely compilation.
+ - Verification uses five fresh random inputs; floating outputs keep atol=rtol=1e-2.
+-  The progressive suite requires exact equality for integer outputs. The direct
+-  strict entrypoint is `utils.task_verification`; stock AXPBY defaults stay unchanged.
++  The progressive suite requires exact equality for integer outputs, including
++  token IDs and prefix sums. `utils.task_verification` exposes the same strict
++  check directly; stock `utils.verification` and AXPBY defaults stay unchanged.
+ - The suite alone applies authored-only provenance: at least 90% of non-memory
+   device time, no library-kernel time, and 100% authored for gemm_tensor_core.
+   Stock AXPBY attribution/reward rules are unchanged.
+ - No triton.ops, flash-attn packages, cuBLAS/cuDNN/CUTLASS-library candidate calls.
+-  tl.dot and authored CuTe MMA/copy atoms are allowed.
++  tl.dot, ct.mma and authored CuTe MMA/copy atoms are allowed.
+ - Name matching remains a heuristic, not proof of authorship or a security sandbox.
+ - CPU/missing capabilities are **unavailable**, never GPU passes.
+ 
+--- before/tasks/gemm_div_sum_scale/README.md
++++ after/tasks/gemm_div_sum_scale/README.md
+@@ -5,6 +5,10 @@
+ scale * sum((A.float() @ B.float()) / divisor, dim=1, keepdim=True); output fp32
+ 
+ This adapts KernelBench level 2 problem 14, `KernelBench/level2/14_Gemm_Divide_Sum_Scaling.py`. Upstream stores the right-hand weight as a module parameter; this functional task takes `A,B` as inputs instead. The constructor is `(divisor=2.0, scale=1.5)`, its state_dict is empty, and the output is `(M,1)` fp32. There is no bias. Sum over N, not M. FP32 reference matmul uses highest precision. Honest fixtures perform a real GEMM then reduction; the reported GEMM FLOP convention excludes the reduction epilogue.
++
++### cuTile source candidate (opt-in)
++
++32x64x32 MMA tiles with a ct.full fp32 accumulator; native fp32 is not converted to tf32. A separate 1024-wide row kernel divides before summing N and applies scale afterward; product scratch is fp32 and both launches use the current stream. cuTile timing, speedup and provenance are **not measured**: no GPU execution has validated these task kernels. Select `--backends cutile --fixtures all` explicitly; default backend rows are unchanged.
+ 
+ The reference constructor and state_dict must match ModelNew. These functional
+ tasks take weights/state arrays as inputs; state_dict is empty. Candidate wrappers
+@@ -84,19 +88,20 @@
+ ## Fixtures and gates
+ 
+ - Honest backends: triton, cuda.
+-- Stretch backends: none declared.
++- Stretch backends: cutile.
+ - `model_new.py` selects the default honest fixture. `model_new_hack.py` is an
+   intentional Torch reference-compute attack; it must verify then fail provenance.
+ - `model_new_wrong.py` intentionally returns NaNs or invalid integer sentinels;
+   it must fail verification, not merely compilation.
+ - Verification uses five fresh random inputs; floating outputs keep atol=rtol=1e-2.
+-  The progressive suite requires exact equality for integer outputs. The direct
+-  strict entrypoint is `utils.task_verification`; stock AXPBY defaults stay unchanged.
++  The progressive suite requires exact equality for integer outputs, including
++  token IDs and prefix sums. `utils.task_verification` exposes the same strict
++  check directly; stock `utils.verification` and AXPBY defaults stay unchanged.
+ - The suite alone applies authored-only provenance: at least 90% of non-memory
+   device time, no library-kernel time, and 100% authored for gemm_tensor_core.
+   Stock AXPBY attribution/reward rules are unchanged.
+ - No triton.ops, flash-attn packages, cuBLAS/cuDNN/CUTLASS-library candidate calls.
+-  tl.dot and authored CuTe MMA/copy atoms are allowed.
++  tl.dot, ct.mma and authored CuTe MMA/copy atoms are allowed.
+ - Name matching remains a heuristic, not proof of authorship or a security sandbox.
+ - CPU/missing capabilities are **unavailable**, never GPU passes.
+ 
+--- before/tasks/gemm_tensor_core/README.md
++++ after/tasks/gemm_tensor_core/README.md
+@@ -4,7 +4,11 @@
+ 
+ A @ B + bias[N], fp16/bf16 operands with fp32 accumulation and fp32 output
+ 
+-Inputs are `A:(M,K)`, `B:(K,N)`, and fp32 `bias:(N,)`; output is fp32, not a bf16-rounded GEMM converted to fp32 afterward. Triton retains bf16/fp16 dot operands and accumulates in fp32. The CUDA fixture uses explicit WMMA/mma Tensor Core work with double-buffered shared-memory tiles. CuTe DSL must use MMA/copy atoms, not CUTLASS utility GEMM templates. The honest fixture acceptance target is Triton **at least 60% of the recorded cuBLAS throughput at bf16 4096^3 on H200**, with authored non-memory provenance **exactly 1.0**. This is unaccepted until measured. Skinny M=8 and M=64 cases are included. Candidates may not call cuBLAS.
++Inputs are `A:(M,K)`, `B:(K,N)`, and fp32 `bias:(N,)`; output is fp32, not a bf16-rounded GEMM converted to fp32 afterward. Triton retains bf16/fp16 dot operands and accumulates in fp32. The CUDA fixture uses explicit WMMA/mma Tensor Core work with double-buffered shared-memory tiles. CuTe DSL must use MMA/copy atoms, not CUTLASS utility GEMM templates. The honest fixture acceptance target is Triton and opt-in cuTile **at least 60% of the recorded cuBLAS throughput at bf16 4096^3 on H200**, with authored non-memory provenance **exactly 1.0**. This is unaccepted until measured. Skinny M=8 and M=64 cases are included. Candidates may not call cuBLAS.
++
++### cuTile source candidate (opt-in)
++
++64x128x64 MMA tiles (16x128x64 for M <= 16), fp16/bf16 operands and a ct.full fp32 accumulator, bias epilogue and fp32 output. The opt-in cuTile bf16 4096^3 acceptance keeps the same 60% cuBLAS target and exactly 1.0 authored provenance; GPU acceptance is unmeasured. cuTile timing, speedup and provenance are **not measured**: no GPU execution has validated these task kernels. Select `--backends cutile --fixtures all` explicitly; default backend rows are unchanged.
+ 
+ The reference constructor and state_dict must match ModelNew. These functional
+ tasks take weights/state arrays as inputs; state_dict is empty. Candidate wrappers
+@@ -42,19 +46,20 @@
+ ## Fixtures and gates
+ 
+ - Honest backends: triton, cuda, cutedsl.
+-- Stretch backends: none declared.
++- Stretch backends: cutile.
+ - `model_new.py` selects the default honest fixture. `model_new_hack.py` is an
+   intentional Torch reference-compute attack; it must verify then fail provenance.
+ - `model_new_wrong.py` intentionally returns NaNs or invalid integer sentinels;
+   it must fail verification, not merely compilation.
+ - Verification uses five fresh random inputs; floating outputs keep atol=rtol=1e-2.
+-  The progressive suite requires exact equality for integer outputs. The direct
+-  strict entrypoint is `utils.task_verification`; stock AXPBY defaults stay unchanged.
++  The progressive suite requires exact equality for integer outputs, including
++  token IDs and prefix sums. `utils.task_verification` exposes the same strict
++  check directly; stock `utils.verification` and AXPBY defaults stay unchanged.
+ - The suite alone applies authored-only provenance: at least 90% of non-memory
+   device time, no library-kernel time, and 100% authored for gemm_tensor_core.
+   Stock AXPBY attribution/reward rules are unchanged.
+ - No triton.ops, flash-attn packages, cuBLAS/cuDNN/CUTLASS-library candidate calls.
+-  tl.dot and authored CuTe MMA/copy atoms are allowed.
++  tl.dot, ct.mma and authored CuTe MMA/copy atoms are allowed.
+ - Name matching remains a heuristic, not proof of authorship or a security sandbox.
+ - CPU/missing capabilities are **unavailable**, never GPU passes.
+ 
+--- before/tasks/grpo_group_norm/README.md
++++ after/tasks/grpo_group_norm/README.md
+@@ -5,6 +5,10 @@
+ (reward-population_mean)/(population_std+1e-6), matching utils.grpo.group_advantages
+ 
+ The reference follows `utils/grpo.py:group_advantages`: population standard deviation and denominator `std + eps`, **not** `sqrt(variance + eps)`, with `eps=1e-6`. Singleton and constant-reward groups return zero. Group filtering and task grouping remain host-side; this kernel does not implement a trainer.
++
++### cuTile source candidate (opt-in)
++
++One block per group with the next power-of-two width (1/4/8/16 in the catalog); masked centered tails, population variance and sqrt(variance)+eps. cuTile timing, speedup and provenance are **not measured**: no GPU execution has validated these task kernels. Select `--backends cutile --fixtures all` explicitly; default backend rows are unchanged.
+ 
+ The reference constructor and state_dict must match ModelNew. These functional
+ tasks take weights/state arrays as inputs; state_dict is empty. Candidate wrappers
+@@ -37,19 +41,20 @@
+ ## Fixtures and gates
+ 
+ - Honest backends: triton, cuda.
+-- Stretch backends: none declared.
++- Stretch backends: cutile.
+ - `model_new.py` selects the default honest fixture. `model_new_hack.py` is an
+   intentional Torch reference-compute attack; it must verify then fail provenance.
+ - `model_new_wrong.py` intentionally returns NaNs or invalid integer sentinels;
+   it must fail verification, not merely compilation.
+ - Verification uses five fresh random inputs; floating outputs keep atol=rtol=1e-2.
+-  The progressive suite requires exact equality for integer outputs. The direct
+-  strict entrypoint is `utils.task_verification`; stock AXPBY defaults stay unchanged.
++  The progressive suite requires exact equality for integer outputs, including
++  token IDs and prefix sums. `utils.task_verification` exposes the same strict
++  check directly; stock `utils.verification` and AXPBY defaults stay unchanged.
+ - The suite alone applies authored-only provenance: at least 90% of non-memory
+   device time, no library-kernel time, and 100% authored for gemm_tensor_core.
+   Stock AXPBY attribution/reward rules are unchanged.
+ - No triton.ops, flash-attn packages, cuBLAS/cuDNN/CUTLASS-library candidate calls.
+-  tl.dot and authored CuTe MMA/copy atoms are allowed.
++  tl.dot, ct.mma and authored CuTe MMA/copy atoms are allowed.
+ - Name matching remains a heuristic, not proof of authorship or a security sandbox.
+ - CPU/missing capabilities are **unavailable**, never GPU passes.
+ 
+--- before/tasks/log_softmax_gather/README.md
++++ after/tasks/log_softmax_gather/README.md
+@@ -5,6 +5,10 @@
+ Stable fp32 log-softmax followed by one token-index gather per row; fp32 output
+ 
+ 
++
++### cuTile source candidate (opt-in)
++
++One block per row scans 1024-wide tiles with online fp32 log-sum-exp, then gathers the requested token. Negative-infinity padding handles vocabulary tails such as 128256; the live tile never grows to 131072. cuTile timing, speedup and provenance are **not measured**: no GPU execution has validated these task kernels. Select `--backends cutile --fixtures all` explicitly; default backend rows are unchanged.
+ 
+ The reference constructor and state_dict must match ModelNew. These functional
+ tasks take weights/state arrays as inputs; state_dict is empty. Candidate wrappers
+@@ -41,19 +45,20 @@
+ ## Fixtures and gates
+ 
+ - Honest backends: triton, cuda.
+-- Stretch backends: none declared.
++- Stretch backends: cutile.
+ - `model_new.py` selects the default honest fixture. `model_new_hack.py` is an
+   intentional Torch reference-compute attack; it must verify then fail provenance.
+ - `model_new_wrong.py` intentionally returns NaNs or invalid integer sentinels;
+   it must fail verification, not merely compilation.
+ - Verification uses five fresh random inputs; floating outputs keep atol=rtol=1e-2.
+-  The progressive suite requires exact equality for integer outputs. The direct
+-  strict entrypoint is `utils.task_verification`; stock AXPBY defaults stay unchanged.
++  The progressive suite requires exact equality for integer outputs, including
++  token IDs and prefix sums. `utils.task_verification` exposes the same strict
++  check directly; stock `utils.verification` and AXPBY defaults stay unchanged.
+ - The suite alone applies authored-only provenance: at least 90% of non-memory
+   device time, no library-kernel time, and 100% authored for gemm_tensor_core.
+   Stock AXPBY attribution/reward rules are unchanged.
+ - No triton.ops, flash-attn packages, cuBLAS/cuDNN/CUTLASS-library candidate calls.
+-  tl.dot and authored CuTe MMA/copy atoms are allowed.
++  tl.dot, ct.mma and authored CuTe MMA/copy atoms are allowed.
+ - Name matching remains a heuristic, not proof of authorship or a security sandbox.
+ - CPU/missing capabilities are **unavailable**, never GPU passes.
+ 
+--- before/tasks/residual_rmsnorm/README.md
++++ after/tasks/residual_rmsnorm/README.md
+@@ -5,6 +5,10 @@
+ BF16 residual sum, fp32 RMSNorm accumulation; return (normalized,residual_sum), both bf16
+ 
+ Flatten prefill tokens to `(B*S,H)`. Round the residual sum to bf16 **before** the fp32 RMS reduction, matching the reference. Return `(normalized,residual_sum)`, both bf16. Inputs are not mutated.
++
++### cuTile source candidate (opt-in)
++
++One full power-of-two row tile up to 8192; the fp32 x+residual is explicitly rounded to bf16 before the fp32 RMS reduction. One launch returns two new bf16 tensors; no inputs are mutated. cuTile timing, speedup and provenance are **not measured**: no GPU execution has validated these task kernels. Select `--backends cutile --fixtures all` explicitly; default backend rows are unchanged.
+ 
+ The reference constructor and state_dict must match ModelNew. These functional
+ tasks take weights/state arrays as inputs; state_dict is empty. Candidate wrappers
+@@ -47,19 +51,20 @@
+ ## Fixtures and gates
+ 
+ - Honest backends: triton, cuda.
+-- Stretch backends: none declared.
++- Stretch backends: cutile.
+ - `model_new.py` selects the default honest fixture. `model_new_hack.py` is an
+   intentional Torch reference-compute attack; it must verify then fail provenance.
+ - `model_new_wrong.py` intentionally returns NaNs or invalid integer sentinels;
+   it must fail verification, not merely compilation.
+ - Verification uses five fresh random inputs; floating outputs keep atol=rtol=1e-2.
+-  The progressive suite requires exact equality for integer outputs. The direct
+-  strict entrypoint is `utils.task_verification`; stock AXPBY defaults stay unchanged.
++  The progressive suite requires exact equality for integer outputs, including
++  token IDs and prefix sums. `utils.task_verification` exposes the same strict
++  check directly; stock `utils.verification` and AXPBY defaults stay unchanged.
+ - The suite alone applies authored-only provenance: at least 90% of non-memory
+   device time, no library-kernel time, and 100% authored for gemm_tensor_core.
+   Stock AXPBY attribution/reward rules are unchanged.
+ - No triton.ops, flash-attn packages, cuBLAS/cuDNN/CUTLASS-library candidate calls.
+-  tl.dot and authored CuTe MMA/copy atoms are allowed.
++  tl.dot, ct.mma and authored CuTe MMA/copy atoms are allowed.
+ - Name matching remains a heuristic, not proof of authorship or a security sandbox.
+ - CPU/missing capabilities are **unavailable**, never GPU passes.
+ 
+--- before/tasks/rmsnorm/README.md
++++ after/tasks/rmsnorm/README.md
+@@ -5,6 +5,10 @@
+ x * rsqrt(mean(x.float()**2)+eps) * weight[H]; output input dtype
+ 
+ 
++
++### cuTile source candidate (opt-in)
++
++One block per row, one power-of-two row tile (up to 8192); fp32 square/sum/rsqrt and input-dtype output. A full row tile avoids scratch and a second pass; register/occupancy behavior is not measured. cuTile timing, speedup and provenance are **not measured**: no GPU execution has validated these task kernels. Select `--backends cutile --fixtures all` explicitly; default backend rows are unchanged.
+ 
+ The reference constructor and state_dict must match ModelNew. These functional
+ tasks take weights/state arrays as inputs; state_dict is empty. Candidate wrappers
+@@ -46,19 +50,20 @@
+ ## Fixtures and gates
+ 
+ - Honest backends: triton, cuda.
+-- Stretch backends: none declared.
++- Stretch backends: cutile.
+ - `model_new.py` selects the default honest fixture. `model_new_hack.py` is an
+   intentional Torch reference-compute attack; it must verify then fail provenance.
+ - `model_new_wrong.py` intentionally returns NaNs or invalid integer sentinels;
+   it must fail verification, not merely compilation.
+ - Verification uses five fresh random inputs; floating outputs keep atol=rtol=1e-2.
+-  The progressive suite requires exact equality for integer outputs. The direct
+-  strict entrypoint is `utils.task_verification`; stock AXPBY defaults stay unchanged.
++  The progressive suite requires exact equality for integer outputs, including
++  token IDs and prefix sums. `utils.task_verification` exposes the same strict
++  check directly; stock `utils.verification` and AXPBY defaults stay unchanged.
+ - The suite alone applies authored-only provenance: at least 90% of non-memory
+   device time, no library-kernel time, and 100% authored for gemm_tensor_core.
+   Stock AXPBY attribution/reward rules are unchanged.
+ - No triton.ops, flash-attn packages, cuBLAS/cuDNN/CUTLASS-library candidate calls.
+-  tl.dot and authored CuTe MMA/copy atoms are allowed.
++  tl.dot, ct.mma and authored CuTe MMA/copy atoms are allowed.
+ - Name matching remains a heuristic, not proof of authorship or a security sandbox.
+ - CPU/missing capabilities are **unavailable**, never GPU passes.
+ 
+--- before/tasks/row_softmax/README.md
++++ after/tasks/row_softmax/README.md
+@@ -5,6 +5,10 @@
+ Stable row softmax with fp32 accumulation; output input dtype
+ 
+ 
++
++### cuTile source candidate (opt-in)
++
++One block per row, power-of-two tile up to 8192; negative-infinity gather padding for max, fp32 exp/sum, input-dtype output. Out-of-range stores are skipped. cuTile timing, speedup and provenance are **not measured**: no GPU execution has validated these task kernels. Select `--backends cutile --fixtures all` explicitly; default backend rows are unchanged.
+ 
+ The reference constructor and state_dict must match ModelNew. These functional
+ tasks take weights/state arrays as inputs; state_dict is empty. Candidate wrappers
+@@ -48,19 +52,20 @@
+ ## Fixtures and gates
+ 
+ - Honest backends: triton, cuda.
+-- Stretch backends: none declared.
++- Stretch backends: cutile.
+ - `model_new.py` selects the default honest fixture. `model_new_hack.py` is an
+   intentional Torch reference-compute attack; it must verify then fail provenance.
+ - `model_new_wrong.py` intentionally returns NaNs or invalid integer sentinels;
+   it must fail verification, not merely compilation.
+ - Verification uses five fresh random inputs; floating outputs keep atol=rtol=1e-2.
+-  The progressive suite requires exact equality for integer outputs. The direct
+-  strict entrypoint is `utils.task_verification`; stock AXPBY defaults stay unchanged.
++  The progressive suite requires exact equality for integer outputs, including
++  token IDs and prefix sums. `utils.task_verification` exposes the same strict
++  check directly; stock `utils.verification` and AXPBY defaults stay unchanged.
+ - The suite alone applies authored-only provenance: at least 90% of non-memory
+   device time, no library-kernel time, and 100% authored for gemm_tensor_core.
+   Stock AXPBY attribution/reward rules are unchanged.
+ - No triton.ops, flash-attn packages, cuBLAS/cuDNN/CUTLASS-library candidate calls.
+-  tl.dot and authored CuTe MMA/copy atoms are allowed.
++  tl.dot, ct.mma and authored CuTe MMA/copy atoms are allowed.
+ - Name matching remains a heuristic, not proof of authorship or a security sandbox.
+ - CPU/missing capabilities are **unavailable**, never GPU passes.
+ 
+--- before/tests/test_dsl_kernels.py
++++ after/tests/test_dsl_kernels.py
+@@ -108,5 +108,77 @@
+     module = "kernels.cutedsl"
+ 
+ 
++class CuTileTaskSourceTests(unittest.TestCase):
++    """Source checks only: no cuTile import, compilation or numerical execution."""
++
++    def test_task_layout_lazy_exports_and_kernel_discovery(self):
++        import ast
++        from pathlib import Path
++        from utils.backend import agent_kernel_names, detect_backend
++        from tests.support import scratch
++        from utils.task_suite import scaffold
++        from tests.cutile_source_support import CUTILE_TASKS, task_trees
++        for name in CUTILE_TASKS:
++            with self.subTest(task=name):
++                trees = task_trees(name)
++                init = trees[1][1]
++                self.assertTrue(any(isinstance(n, ast.FunctionDef) and n.name == '__getattr__' for n in init.body))
++                self.assertFalse(any(isinstance(n, (ast.Import, ast.ImportFrom)) for n in init.body))
++                with scratch('cutile-source-') as tmp:
++                    for variant in ('honest', 'hack', 'wrong'):
++                        task = scaffold(name, 'cutile', variant, Path(tmp)/variant)
++                        self.assertEqual(detect_backend(task), 'cutile')
++                        self.assertTrue(agent_kernel_names(task, 'cutile'))
++                # Reference and candidate expose the same explicit constructor defaults.
++                reference = ast.parse((trees[0][0].parent/'model.py').read_text())
++                cls = next(n for n in trees[0][1].body if isinstance(n, ast.ClassDef))
++                ref_cls = next(n for n in reference.body if isinstance(n, ast.ClassDef))
++                init_fn = next((n for n in cls.body if isinstance(n, ast.FunctionDef) and n.name == '__init__'), None)
++                ref_init = next((n for n in ref_cls.body if isinstance(n, ast.FunctionDef) and n.name == '__init__'), None)
++                self.assertEqual(ast.dump(init_fn.args) if init_fn else None, ast.dump(ref_init.args) if ref_init else None)
++
++    def test_launch_signatures_and_read_only_kernel_inputs(self):
++        import ast
++        from tests.cutile_source_support import CUTILE_TASKS, dotted, task_trees
++        for name in CUTILE_TASKS:
++            path, tree = task_trees(name)[2]
++            kernels = {n.name:n for n in tree.body if isinstance(n, ast.FunctionDef)
++                       and any(dotted(d)=='ct.kernel' for d in n.decorator_list)}
++            for node in ast.walk(tree):
++                if isinstance(node, ast.Call) and dotted(node.func)=='ct.launch':
++                    self.assertIsInstance(node.args[2], ast.Name)
++                    self.assertIsInstance(node.args[3], ast.Tuple)
++                    self.assertEqual(len(node.args[3].elts), len(kernels[node.args[2].id].args.args))
++            for fn in kernels.values():
++                for node in ast.walk(fn):
++                    if isinstance(node, ast.Call) and dotted(node.func) in ('ct.scatter','ct.store'):
++                        self.assertIn(node.args[0].id, ('out','product','updated','new_m','new_v','summed'))
++            self.assertNotIn('tfloat32', path.read_text())
++
++    def test_no_host_tensor_compute_and_only_pinned_api_exports(self):
++        import ast
++        from tests.cutile_source_support import (CUTILE_TASKS, CT_EXPORTS_USED,
++                                                check_host_source, dotted, task_trees)
++        for name in CUTILE_TASKS:
++            for path, tree in task_trees(name):
++                with self.subTest(path=str(path)):
++                    for node in tree.body:
++                        if isinstance(node, ast.FunctionDef):
++                            is_kernel = any(dotted(d) == 'ct.kernel' for d in node.decorator_list)
++                            if not is_kernel:
++                                check_host_source(self, node, {a.arg for a in node.args.args})
++                        elif isinstance(node, ast.ClassDef):
++                            for method in node.body:
++                                if isinstance(method, ast.FunctionDef):
++                                    check_host_source(self, method, {a.arg for a in method.args.args if a.arg != 'self'})
++                    for node in ast.walk(tree):
++                        if isinstance(node, ast.Attribute) and dotted(node).startswith('ct.'):
++                            self.assertIn(dotted(node).split('.')[1], CT_EXPORTS_USED)
++                    if path.stem == name:
++                        source = path.read_text()
++                        self.assertIn('torch.cuda.current_stream()', source)
++                        self.assertIn('with torch.cuda.device(', source)
++                        self.assertNotIn('torch.cuda.synchronize', source)
++
+ if __name__ == "__main__":
+     unittest.main()
+--- before/tests/test_symbol_provenance.py
++++ after/tests/test_symbol_provenance.py
+@@ -89,3 +89,19 @@
+         self.assertEqual(classify_kernel('void not_axpby_kernel<1>()', ['axpby_kernel'], 'cuda'), 'torch')
+         self.assertEqual(classify_kernel('axpby_kernel_bad', ['axpby_kernel'], 'triton'), 'torch')
+         self.assertEqual(classify_kernel('prefix_axpby_tilelang_kernel', ['axpby_tilelang'], 'tilelang'), 'torch')
++
++
++class CuTileTaskSymbolSourceTests(unittest.TestCase):
++    def test_discovered_names_match_only_synthetic_cutile_symbols(self):
++        from tests.cutile_source_support import CUTILE_TASKS
++        from tests.support import ROOT
++        for task in CUTILE_TASKS:
++            names = agent_kernel_names(ROOT/'tasks'/task, 'cutile')
++            self.assertTrue(names)
++            for name in names:
++                with self.subTest(task=task, kernel=name):
++                    # Hypothetical protocol names, NOT observed task GPU symbols.
++                    self.assertEqual(classify_kernel(name+'_Kt1_SYNTHETIC', names, 'cutile'), 'agent')
++                    self.assertEqual(classify_kernel('prefix_'+name+'_Kt1_SYNTHETIC', names, 'cutile'), 'torch')
++                    self.assertEqual(classify_kernel('aten::'+name+'_Kt1_SYNTHETIC', names, 'cutile'), 'torch')
++                    self.assertEqual(classify_kernel('cublasLtMatmul', names, 'cutile'), 'torch')
+--- before/tests/test_task_catalog.py
++++ after/tests/test_task_catalog.py
+@@ -176,5 +176,66 @@
+         self.assertTrue(torch.all(result[0] > 0))
+ 
+ 
++class CuTileOptInCatalogTests(unittest.TestCase):
++    def test_existing_cases_and_default_backends_are_unchanged(self):
++        import hashlib
++        from tests.cutile_source_support import CUTILE_TASKS
++        cases = {n: [c.to_dict() for c in t.cases] for n, t in TASKS.items()}
++        self.assertEqual(hashlib.sha256(json.dumps(cases, sort_keys=True).encode()).hexdigest(),
++                         'b00890e4555a494954ece8fd7af57d8de0e411aa773e9f696c2fec69a452b6c0')
++        defaults = {n: list(t.backends) for n, t in TASKS.items()}
++        self.assertEqual(hashlib.sha256(json.dumps(defaults, sort_keys=True).encode()).hexdigest(),
++                         '0bdccd9f5a4f75c58b411f98acebfe14f4dfa5f5a9f98e5ac4fda82b43bb282c')
++        for name in CUTILE_TASKS:
++            self.assertIn('cutile', get_task(name).stretch_backends)
++            self.assertNotIn('cutile', get_task(name).backends)
++
++    def test_readme_static_contract_matches_renderer(self):
++        from scripts.task_readme import render
++        from tests.cutile_source_support import CUTILE_TASKS
++        marker = 'Unavailable: no measured GPU baseline has been recorded here.'
++        for name in CUTILE_TASKS:
++            prefix = render(name).split(marker)[0]
++            self.assertTrue((ROOT/'tasks'/name/'README.md').read_text().startswith(prefix), name)
++            self.assertIn('cuTile timing, speedup and provenance are **not measured**', prefix)
++
++    def test_default_rows_do_not_add_stretch_backends(self):
++        import contextlib
++        import io
++        from tests.cutile_source_support import CUTILE_TASKS
++        with scratch('cutile-default-') as tmp, contextlib.redirect_stdout(io.StringIO()):
++            report = run_suite(CUTILE_TASKS, Path(tmp)/'suite', device='cpu')
++        expected = sum(3*len(get_task(n).backends) for n in CUTILE_TASKS)
++        self.assertEqual(len(report['rows']), expected)
++        self.assertFalse(any(r['suite/backend']=='cutile' for r in report['rows']))
++
++    def test_explicit_cutile_selection_reaches_all_three_fixture_gates(self):
++        # Synthetic subprocess protocol results; no compilation or GPU measurement.
++        from tests.cutile_source_support import CUTILE_TASKS
++        from utils.backend import detect_backend
++        def fake_run(path, cfg, turns_used, profile_out):
++            self.assertEqual(detect_backend(path), 'cutile')
++            self.assertEqual(cfg.backend, 'cutile')
++            variant = Path(path).name
++            if variant == 'wrong':
++                return {'env/verify_ok': False, 'reward/value': -1, 'reward/base': -1,
++                        'reward/reason': 'verification'}
++            authored = 1. if variant == 'honest' else 0.
++            profile_out.update({'provenance/agent': authored, 'provenance/library': 0.,
++                                'provenance/torch': 1.-authored, 'provenance/memory': 0.})
++            return {'env/verify_ok': True, 'env/t_eager_us': 100., 'env/t_compile_us': 80.,
++                    'env/t_gen_us': 50., 'env/provenance': authored,
++                    'reward/value': 3 if authored else -1, 'reward/base': 3 if authored else -1,
++                    'reward/reason': 'faster_than_both' if authored else 'provenance'}
++        with scratch('cutile-explicit-') as tmp, \
++                patch('utils.task_suite.cuda_unavailable', return_value=None), \
++                patch('utils.task_suite.available_backends', return_value={'cutile':None}), \
++                patch('utils.task_suite.run_task', side_effect=fake_run):
++            for name in CUTILE_TASKS:
++                for variant in ('honest', 'hack', 'wrong'):
++                    result = evaluate_case(name, get_task(name).cases[0].id, 'cutile', variant,
++                                           Path(tmp)/name/variant)
++                    self.assertEqual(result['suite/status'], 'passed', result)
++
+ if __name__ == "__main__":
+     unittest.main()
+--- before/tests/test_task_measurement.py
++++ after/tests/test_task_measurement.py
+@@ -141,5 +141,58 @@
+                                     payload["protected_sha256_after"][name])
+ 
+ 
++class CuTileGemmGateTests(unittest.TestCase):
++    """Synthetic acceptance protocols; not cuTile performance evidence."""
++
++    def case(self, fraction=None, authored=1., benchmark=True, case='m4096_n4096_k4096_bfloat16'):
++        def fake_run(path, cfg, turns_used, profile_out):
++            self.assertEqual(cfg.provenance_threshold, 1.0)
++            profile_out.update({'provenance/agent':authored,'provenance/library':0.,
++                                'provenance/torch':1.-authored,'provenance/memory':0.})
++            return {'env/verify_ok':True,'env/t_eager_us':100.,'env/t_compile_us':80.,
++                    'env/t_gen_us':90.,'env/provenance':authored,'reward/value':2.,
++                    'reward/base':2,'reward/reason':'faster_than_eager'}
++        record = {**ceiling(), 'ceiling/device_name':'NVIDIA H200', 'ceiling/device_capability':'9.0'}
++        if fraction is not None:
++            record['ceiling/generated_event_us_median']=record['ceiling/cublas_event_us_median']/fraction
++            record['ceiling/cublas_fraction']=fraction
++            record['ceiling/generated_tflops']=record['ceiling/flops']/(record['ceiling/generated_event_us_median']*1e6)
++        with scratch('cutile-gemm-gate-') as tmp, \
++                mock.patch('utils.task_suite.cuda_unavailable',return_value=None), \
++                mock.patch('utils.task_suite.available_backends',return_value={'cutile':None}), \
++                mock.patch('utils.task_suite.run_task',side_effect=fake_run), \
++                mock.patch('utils.task_suite._stage',return_value=(0,json.dumps(record) if fraction is not None else '{}','',False)):
++            return evaluate_case('gemm_tensor_core',case,'cutile','honest',Path(tmp)/'case',
++                                 cfg=RolloutConfig(benchmark=benchmark,gpu_lock=False,provenance_threshold=.5))
++
++    def test_same_performance_floor_and_reward_is_not_recomputed(self):
++        passed=self.case(.6)
++        self.assertEqual(passed['task/minimum_cublas_fraction'],.6)
++        self.assertTrue(passed['task/performance_required'])
++        self.assertTrue(passed['task/performance_accepted'])
++        self.assertEqual(passed['suite/status'],'passed')
++        failed=self.case(.59)
++        self.assertEqual(failed['suite/status'],'failed')
++        self.assertEqual(failed['suite/reason'],'below_60_percent_cublas')
++        self.assertEqual((passed['reward/value'],failed['reward/value']),(2.,2.))
++
++    def test_missing_or_disabled_measurement_cannot_accept(self):
++        for enabled in (False,True):
++            with self.subTest(benchmark=enabled):
++                result=self.case(benchmark=enabled)
++                self.assertEqual(result['suite/status'],'unavailable')
++                self.assertIsNone(result['task/performance_accepted'])
++
++    def test_one_hundred_percent_authored_gate_is_not_lowered(self):
++        result=self.case(.9,authored=.999)
++        self.assertEqual(result['reward/reason'],'provenance')
++        self.assertEqual(result['suite/status'],'failed')
++        self.assertIsNone(result['task/performance_accepted'])
++
++    def test_smoke_does_not_claim_flagship_acceptance(self):
++        result=self.case(benchmark=False,case='m512_n512_k512_bfloat16')
++        self.assertFalse(result['task/performance_required'])
++        self.assertEqual(result['suite/status'],'passed')
++
+ if __name__ == "__main__":
+     unittest.main()
+--- before/utils/task_catalog.py
++++ after/utils/task_catalog.py
+@@ -89,12 +89,12 @@
+         "scale * sum((A.float() @ B.float()) / divisor, dim=1, keepdim=True); output fp32",
+         tuple(case(dtype, m=m, n=n, k=k) for dtype in ("float32", "bfloat16")
+               for m, n, k in product((256, 512, 1024), repeat=3)),
+-        ("kernelbench", "tutorials")),
++        ("kernelbench", "tutorials"), stretch_backends=("cutile",)),
+     "row_softmax": Task(
+         "row_softmax", 1, "Stable row softmax with fp32 accumulation; output input dtype",
+         tuple(case(dtype, b=b, h=h) for dtype in ("float32", "float16", "bfloat16")
+               for b, h in product((64, 512), (128, 1024, 8192))),
+-        ("kernelbench", "tutorials")),
++        ("kernelbench", "tutorials"), stretch_backends=("cutile",)),
+     "masked_mean": Task(
+         "masked_mean", 1,
+         "Mean of x[row,:lengths[row]]; empty rows return fp32 zero; this is not trimmed mean",
+@@ -114,24 +114,24 @@
+               for s in (512, 1024, 2048, 4096))
+         + tuple(case(dtype, m=m, n=4096, k=4096)
+                 for dtype in ("bfloat16", "float16") for m in (8, 64)),
+-        ("tritonbench", "tutorials"), backends=("triton", "cuda", "cutedsl")),
++        ("tritonbench", "tutorials"), backends=("triton", "cuda", "cutedsl"), stretch_backends=("cutile",)),
+     "rmsnorm": Task(
+         "rmsnorm", 2,
+         "x * rsqrt(mean(x.float()**2)+eps) * weight[H]; output input dtype",
+         tuple(case(dtype, b=b, h=h) for dtype in ("bfloat16", "float32")
+               for b, h in product((64, 512), (1024, 2048, 4096, 8192))),
+-        ("tritonbench", "tutorials")),
++        ("tritonbench", "tutorials"), stretch_backends=("cutile",)),
+     "log_softmax_gather": Task(
+         "log_softmax_gather", 2,
+         "Stable fp32 log-softmax followed by one token-index gather per row; fp32 output",
+         tuple(case(dtype, b=b, v=v) for dtype in ("bfloat16", "float32")
+               for b, v in product((32, 256), (1024, 8192, 128256))),
+-        ("local",)),
++        ("local",), stretch_backends=("cutile",)),
+     "fused_adamw": Task(
+         "fused_adamw", 2,
+         "Functional bias-corrected AdamW: return (new_parameter,new_m,new_v), never mutate inputs",
+         tuple(case(n=n) for n in (4096, 1048576, 8388608)),
+-        ("local",)),
++        ("local",), stretch_backends=("cutile",)),
+     "layernorm_residual_gelu": Task(
+         "layernorm_residual_gelu", 2,
+         "Affine population LayerNorm, residual add, exact erf GELU; fp32 arithmetic then output cast",
+@@ -142,12 +142,12 @@
+         "grpo_group_norm", 3,
+         "(reward-population_mean)/(population_std+1e-6), matching utils.grpo.group_advantages",
+         tuple(case(b=b, g=g) for b, g in product((64, 512), (1, 4, 8, 16))),
+-        ("local",)),
++        ("local",), stretch_backends=("cutile",)),
+     "cispo_clip_weight": Task(
+         "cispo_clip_weight", 3,
+         "mask * clip(exp(log_ratio),0,5).detach() * sequence_advantage; fp32 forward weights",
+         tuple(case(b=b, s=s) for b, s in product((8, 64), (128, 1024, 8192))),
+-        ("local",)),
++        ("local",), stretch_backends=("cutile",)),
+     "packed_varlen_reduction": Task(
+         "packed_varlen_reduction", 3,
+         "Per-segment fp32 mean or sum from packed values and monotone offsets; empty segments return zero",
+@@ -175,7 +175,7 @@
+         "BF16 residual sum, fp32 RMSNorm accumulation; return (normalized,residual_sum), both bf16",
+         tuple(case("bfloat16", b=b, s=s, h=h)
+               for b, s, h in product((1, 4), (128, 512, 2048), (1024, 4096, 8192))),
+-        ("flashinfer",)),
++        ("flashinfer",), stretch_backends=("cutile",)),
+     "decode_attention": Task(
+         "decode_attention", 4,
+         "Single last-position query, 32 query heads / 8 KV heads, d=64; bf16 inputs/output",
+--- before/utils/task_suite.py
++++ after/utils/task_suite.py
+@@ -120,7 +120,7 @@
+     if spec.contract_only:
+         result["suite/reason"] = "contract_only"
+         return result
+-    if backend not in spec.backends:
++    if backend not in (*spec.backends, *spec.stretch_backends):
+         result["suite/reason"] = "backend_fixture_not_provided"
+         return result
+     if task_name.startswith("lora_") and variant in ("wrong_skip", "wrong_padding"):
+@@ -181,7 +181,7 @@
+         result.update({"suite/status": "passed" if passed else "failed",
+                        "suite/reason": "expected_outcome" if passed else result.get("reward/reason")})
+     perf_required = (task_name == "gemm_tensor_core" and variant == "honest"
+-                     and backend == "triton" and item.dtype == "bfloat16"
++                     and backend in ("triton", "cutile") and item.dtype == "bfloat16"
+                      and item.params == {"m": 4096, "n": 4096, "k": 4096})
+     result.update({"task/performance_required": perf_required,
+                    "task/minimum_cublas_fraction": 0.6 if perf_required else None,

@@ -1,0 +1,35 @@
+test_launch_signatures_and_read_only_kernel_inputs (tests.test_dsl_kernels.CuTileTaskSourceTests.test_launch_signatures_and_read_only_kernel_inputs) ... ok
+test_no_host_tensor_compute_and_only_pinned_api_exports (tests.test_dsl_kernels.CuTileTaskSourceTests.test_no_host_tensor_compute_and_only_pinned_api_exports) ... ok
+test_task_layout_lazy_exports_and_kernel_discovery (tests.test_dsl_kernels.CuTileTaskSourceTests.test_task_layout_lazy_exports_and_kernel_discovery) ... 
+  test_task_layout_lazy_exports_and_kernel_discovery (tests.test_dsl_kernels.CuTileTaskSourceTests.test_task_layout_lazy_exports_and_kernel_discovery) (task='gemm_tensor_core') ... FAIL
+test_discovered_names_match_only_synthetic_cutile_symbols (tests.test_symbol_provenance.CuTileTaskSymbolSourceTests.test_discovered_names_match_only_synthetic_cutile_symbols) ... ok
+test_default_rows_do_not_add_stretch_backends (tests.test_task_catalog.CuTileOptInCatalogTests.test_default_rows_do_not_add_stretch_backends) ... ok
+test_existing_cases_and_default_backends_are_unchanged (tests.test_task_catalog.CuTileOptInCatalogTests.test_existing_cases_and_default_backends_are_unchanged) ... ok
+test_explicit_cutile_selection_reaches_all_three_fixture_gates (tests.test_task_catalog.CuTileOptInCatalogTests.test_explicit_cutile_selection_reaches_all_three_fixture_gates) ... ok
+test_readme_static_contract_matches_renderer (tests.test_task_catalog.CuTileOptInCatalogTests.test_readme_static_contract_matches_renderer) ... ok
+test_missing_or_disabled_measurement_cannot_accept (tests.test_task_measurement.CuTileGemmGateTests.test_missing_or_disabled_measurement_cannot_accept) ... ok
+test_one_hundred_percent_authored_gate_is_not_lowered (tests.test_task_measurement.CuTileGemmGateTests.test_one_hundred_percent_authored_gate_is_not_lowered) ... ok
+test_same_performance_floor_and_reward_is_not_recomputed (tests.test_task_measurement.CuTileGemmGateTests.test_same_performance_floor_and_reward_is_not_recomputed) ... ok
+test_smoke_does_not_claim_flagship_acceptance (tests.test_task_measurement.CuTileGemmGateTests.test_smoke_does_not_claim_flagship_acceptance) ... ok
+test_ceiling_cannot_overwrite_reward_or_reduce_tensor_core_provenance (tests.test_task_measurement.TaskMeasurementTests.test_ceiling_cannot_overwrite_reward_or_reduce_tensor_core_provenance) ... ok
+test_flash_hack_uses_real_sdpa_and_stable_alias (tests.test_task_measurement.TaskMeasurementTests.test_flash_hack_uses_real_sdpa_and_stable_alias) ... ok
+test_missing_ceiling_is_unavailable (tests.test_task_measurement.TaskMeasurementTests.test_missing_ceiling_is_unavailable) ... ok
+test_no_invented_or_inconsistent_rates (tests.test_task_measurement.TaskMeasurementTests.test_no_invented_or_inconsistent_rates) ... ok
+test_nonfinite_zero_negative_and_boolean_latencies_fail_closed (tests.test_task_measurement.TaskMeasurementTests.test_nonfinite_zero_negative_and_boolean_latencies_fail_closed) ... ok
+test_optional_task_diagnostics_are_table_only (tests.test_task_measurement.TaskMeasurementTests.test_optional_task_diagnostics_are_table_only) ... ok
+test_protected_files_are_rechecked_after_optional_ceiling (tests.test_task_measurement.TaskMeasurementTests.test_protected_files_are_rechecked_after_optional_ceiling) ... ok
+test_shape_dtype_provider_and_counts_are_attested (tests.test_task_measurement.TaskMeasurementTests.test_shape_dtype_provider_and_counts_are_attested) ... ok
+test_valid_synthetic_ceiling_and_si_units (tests.test_task_measurement.TaskMeasurementTests.test_valid_synthetic_ceiling_and_si_units) ... ok
+
+======================================================================
+FAIL: test_task_layout_lazy_exports_and_kernel_discovery (tests.test_dsl_kernels.CuTileTaskSourceTests.test_task_layout_lazy_exports_and_kernel_discovery) (task='gemm_tensor_core')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/tests/test_dsl_kernels.py", line 138, in test_task_layout_lazy_exports_and_kernel_discovery
+    self.assertEqual(ast.dump(init_fn.args) if init_fn else None, ast.dump(ref_init.args) if ref_init else None)
+AssertionError: None != "arguments(posonlyargs=[], args=[arg(arg=[49 chars]=[])"
+
+----------------------------------------------------------------------
+Ran 21 tests in 185.999s
+
+FAILED (failures=1)

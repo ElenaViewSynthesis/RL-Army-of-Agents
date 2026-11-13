@@ -1,0 +1,30 @@
+{
+  "tier1": {
+    "files": 271,
+    "manifest_sha256": "0b84cebb7b7746c6a35aaec45b28a1ccc01017099b13db080ff788a9bab20f72",
+    "mismatches": [],
+    "freeze_command_stdout": "{\"source\": \"/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifacts/sources/cutile/tier1-20261113T014034Z\", \"tasks\": [\"rmsnorm\", \"row_softmax\", \"cispo_clip_weight\", \"fused_adamw\", \"grpo_group_norm\"], \"files\": 271}",
+    "command": "cd /mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifacts/sources/cutile/tier1-20261113T014034Z && PYTHONPATH=\"$PWD\" MODAL_GPU=H200 /mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/.venv/bin/modal run --detach cloud/modal_tasks.py --tasks rmsnorm,row_softmax,cispo_clip_weight,fused_adamw,grpo_group_norm --case-set smoke --backends cutile --fixtures all --timeout-s 1200 --run-id cutile-tier1-20261113T014034Z"
+  },
+  "tier2": {
+    "files": 214,
+    "manifest_sha256": "6d78312d8cba1503d1cfa661162e39a46e2476ba31eea7322d61992f8034a6d3",
+    "mismatches": [],
+    "freeze_command_stdout": "{\"source\": \"/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifacts/sources/cutile/tier2-20261113T014034Z\", \"tasks\": [\"log_softmax_gather\", \"residual_rmsnorm\"], \"files\": 214}",
+    "command": "cd /mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifacts/sources/cutile/tier2-20261113T014034Z && PYTHONPATH=\"$PWD\" MODAL_GPU=H200 /mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/.venv/bin/modal run --detach cloud/modal_tasks.py --tasks log_softmax_gather,residual_rmsnorm --case-set smoke --backends cutile --fixtures all --timeout-s 1200 --run-id cutile-tier2-20261113T014034Z"
+  },
+  "tier3": {
+    "files": 217,
+    "manifest_sha256": "0a9ee6ed604c87a67ed13d08fdcdf5a4abd724f813971734d867de5b263942f2",
+    "mismatches": [],
+    "freeze_command_stdout": "{\"source\": \"/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifacts/sources/cutile/tier3-20261113T014034Z\", \"tasks\": [\"gemm_div_sum_scale\", \"gemm_tensor_core\"], \"files\": 217}",
+    "command": "cd /mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifacts/sources/cutile/tier3-20261113T014034Z && PYTHONPATH=\"$PWD\" MODAL_GPU=H200 /mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/.venv/bin/modal run --detach cloud/modal_tasks.py --tasks gemm_div_sum_scale,gemm_tensor_core --case-set smoke --backends cutile --fixtures all --timeout-s 1200 --run-id cutile-tier3-20261113T014034Z"
+  },
+  "gemm-acceptance": {
+    "files": 198,
+    "manifest_sha256": "91741a1690708747607a65d3b650fb8c3ac68e35d6ff2a3dfb82ec0be6c0e08a",
+    "mismatches": [],
+    "freeze_command_stdout": "{\"source\": \"/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifacts/sources/cutile/gemm-acceptance-20261113T014034Z\", \"tasks\": [\"gemm_tensor_core\"], \"files\": 198}",
+    "command": "cd /mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifacts/sources/cutile/gemm-acceptance-20261113T014034Z && PYTHONPATH=\"$PWD\" MODAL_GPU=H200 /mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/.venv/bin/modal run --detach cloud/modal_tasks.py --tasks gemm_tensor_core --case-set acceptance --backends cutile --fixtures all --timeout-s 1200 --run-id cutile-gemm-acceptance-20261113T014034Z"
+  }
+}

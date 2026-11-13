@@ -1,0 +1,6 @@
+test_task_layout_lazy_exports_and_kernel_discovery (tests.test_dsl_kernels.CuTileTaskSourceTests.test_task_layout_lazy_exports_and_kernel_discovery) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 56.349s
+
+OK

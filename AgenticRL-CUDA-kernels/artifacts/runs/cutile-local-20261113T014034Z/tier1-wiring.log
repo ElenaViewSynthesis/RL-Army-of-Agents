@@ -1,0 +1,8 @@
+test_default_rows_do_not_add_stretch_backends (tests.test_task_catalog.CuTileOptInCatalogTests.test_default_rows_do_not_add_stretch_backends) ... ok
+test_existing_cases_and_default_backends_are_unchanged (tests.test_task_catalog.CuTileOptInCatalogTests.test_existing_cases_and_default_backends_are_unchanged) ... ok
+test_explicit_cutile_selection_reaches_all_three_fixture_gates (tests.test_task_catalog.CuTileOptInCatalogTests.test_explicit_cutile_selection_reaches_all_three_fixture_gates) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 56.229s
+
+OK

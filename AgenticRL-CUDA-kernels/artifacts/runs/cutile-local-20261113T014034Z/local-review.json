@@ -1,0 +1,381 @@
+{
+  "scope": "source/protocol validation only; no cuTile compilation or device execution",
+  "protected_files": {
+    "model.py": {
+      "before_sha256": "f92e69573f45f2043b0d2c63032b554653a8b935dddf71f5d7fb6c3190926ecf",
+      "after_sha256": "f92e69573f45f2043b0d2c63032b554653a8b935dddf71f5d7fb6c3190926ecf",
+      "unchanged": true
+    },
+    "model_new.py": {
+      "before_sha256": "2318132d3b21c6701aea6b84a6b64bab2fbf2756474153583454f8574449e3eb",
+      "after_sha256": "2318132d3b21c6701aea6b84a6b64bab2fbf2756474153583454f8574449e3eb",
+      "unchanged": true
+    },
+    "binding.cpp": {
+      "before_sha256": "43da662b9aedb537a4cb2f04c57d92aeddbe018a9b5f7374ae28ec9bba0b3b62",
+      "after_sha256": "43da662b9aedb537a4cb2f04c57d92aeddbe018a9b5f7374ae28ec9bba0b3b62",
+      "unchanged": true
+    },
+    "binding_registry.h": {
+      "before_sha256": "a829ca7d5de03049c439f30aa01f7f631c06418c31855cf19a67f23d69349e0f",
+      "after_sha256": "a829ca7d5de03049c439f30aa01f7f631c06418c31855cf19a67f23d69349e0f",
+      "unchanged": true
+    },
+    "kernels/axpby.cu": {
+      "before_sha256": "44a6b0ac7d98319e3d3aafc1fa3cb65e57375a4e2b0aac2c6d1028de292380f8",
+      "after_sha256": "44a6b0ac7d98319e3d3aafc1fa3cb65e57375a4e2b0aac2c6d1028de292380f8",
+      "unchanged": true
+    },
+    "kernels/axpby_binding.cpp": {
+      "before_sha256": "90b24e3495c73a5884fb1d61384dab6a5ddd97ee74510692e3792822d3f0a3c9",
+      "after_sha256": "90b24e3495c73a5884fb1d61384dab6a5ddd97ee74510692e3792822d3f0a3c9",
+      "unchanged": true
+    },
+    "SKILL.md": {
+      "before_sha256": "3161860fb45dea51a688f3fe217ace664df6bd16808d8865824684a58a786d63",
+      "after_sha256": "3161860fb45dea51a688f3fe217ace664df6bd16808d8865824684a58a786d63",
+      "unchanged": true
+    },
+    "kernels/cutile/axpby.py": {
+      "before_sha256": "703fe686e1505391b5bc6bec3c391b10e625fa8cf67a8adf1f1fee4275814bf2",
+      "after_sha256": "703fe686e1505391b5bc6bec3c391b10e625fa8cf67a8adf1f1fee4275814bf2",
+      "unchanged": true
+    },
+    "kernels/cutile/__init__.py": {
+      "before_sha256": "aff46b86128129df6bb4ba68e0c7114b509e87ffe24d0acdc24fab40d0540447",
+      "after_sha256": "aff46b86128129df6bb4ba68e0c7114b509e87ffe24d0acdc24fab40d0540447",
+      "unchanged": true
+    },
+    "model_new_cutile.py": {
+      "before_sha256": "a3ba3ccf7291b8efaa66fbd6767dd0094697629a1a77ac40edc684ed64eefec7",
+      "after_sha256": "a3ba3ccf7291b8efaa66fbd6767dd0094697629a1a77ac40edc684ed64eefec7",
+      "unchanged": true
+    },
+    "utils/reward.py": {
+      "before_sha256": "d1c70f6949d8ca6d0d67637aeb88e0db68c526398d1bde6dd582c2ffd26ddd82",
+      "after_sha256": "d1c70f6949d8ca6d0d67637aeb88e0db68c526398d1bde6dd582c2ffd26ddd82",
+      "unchanged": true
+    },
+    "utils/provenance.py": {
+      "before_sha256": "6e39c2c575667a8ddd8dc503449790f9fa787f7693b8f89a30bf7427f89b11d6",
+      "after_sha256": "6e39c2c575667a8ddd8dc503449790f9fa787f7693b8f89a30bf7427f89b11d6",
+      "unchanged": true
+    },
+    "requirements-cutile.txt": {
+      "before_sha256": "22576a40829ee774c2a6e0216343f07dc62e3cc5207d35de788198d683641c02",
+      "after_sha256": "22576a40829ee774c2a6e0216343f07dc62e3cc5207d35de788198d683641c02",
+      "unchanged": true
+    },
+    "cloud/modal_runtime.py": {
+      "before_sha256": "f272c5cf40c11e433d57447e661326e26a8173a8456f941a07fe9bcd08502e9d",
+      "after_sha256": "f272c5cf40c11e433d57447e661326e26a8173a8456f941a07fe9bcd08502e9d",
+      "unchanged": true
+    }
+  },
+  "task_count": 35,
+  "catalog_cases_unchanged": true,
+  "default_backends_unchanged": true,
+  "historical_task_readmes": {
+    "rmsnorm": {
+      "had_measured_section": true,
+      "historical_section_unchanged": true
+    },
+    "row_softmax": {
+      "had_measured_section": true,
+      "historical_section_unchanged": true
+    },
+    "cispo_clip_weight": {
+      "had_measured_section": true,
+      "historical_section_unchanged": true
+    },
+    "fused_adamw": {
+      "had_measured_section": true,
+      "historical_section_unchanged": true
+    },
+    "grpo_group_norm": {
+      "had_measured_section": true,
+      "historical_section_unchanged": true
+    },
+    "log_softmax_gather": {
+      "had_measured_section": true,
+      "historical_section_unchanged": true
+    },
+    "residual_rmsnorm": {
+      "had_measured_section": false,
+      "historical_section_unchanged": true
+    },
+    "gemm_div_sum_scale": {
+      "had_measured_section": true,
+      "historical_section_unchanged": true
+    },
+    "gemm_tensor_core": {
+      "had_measured_section": true,
+      "historical_section_unchanged": true
+    }
+  },
+  "files": [
+    {
+      "path": "utils/task_catalog.py",
+      "status": "modified",
+      "sha256": "c0d9b0cc14ee073665aa72ca0426ca8008f12e1a5c5714f5b9a914293839c0e3"
+    },
+    {
+      "path": "utils/task_suite.py",
+      "status": "modified",
+      "sha256": "13713f09aadf7ad3686d660d678b4a38b5325e0bb8b6a10fe0ad767e142288cc"
+    },
+    {
+      "path": "scripts/task_readme.py",
+      "status": "modified",
+      "sha256": "400eaf5b04791523db1993b5ecc85d8001a932c002bbb1f964c8985ad94841d0"
+    },
+    {
+      "path": "tests/test_dsl_kernels.py",
+      "status": "modified",
+      "sha256": "49f903ad5c25ff140d801b3bccbf4ad67590b5cee2cb96b26c9bc3fd70f633fe"
+    },
+    {
+      "path": "tests/test_symbol_provenance.py",
+      "status": "modified",
+      "sha256": "637b123a8731d199ef26c6db7c54261056799fb0998a9da3da0493abe61445f1"
+    },
+    {
+      "path": "tests/test_task_catalog.py",
+      "status": "modified",
+      "sha256": "e071b69e519619364bdcf21517024c86d0bb16746eb46ba002247c33ee1c8e29"
+    },
+    {
+      "path": "tests/test_task_measurement.py",
+      "status": "modified",
+      "sha256": "894b1d82f98f3e80d6ac7d4c77aeb5dd48a5a665d365d6285e63611cdba76f2d"
+    },
+    {
+      "path": "README.md",
+      "status": "modified",
+      "sha256": "faf7a3246d178ab34b991e19abd16b6a23442cff465e59b92e2379d09901eb3f"
+    },
+    {
+      "path": "VALIDATION.md",
+      "status": "modified",
+      "sha256": "3704401af57211ba010e85e1162768babba7047f4778ec619c7a911235d15959"
+    },
+    {
+      "path": "KNOWN_ISSUES.md",
+      "status": "modified",
+      "sha256": "c6b6a2749e7ad2ce05f57290f4f6a6f4492a7ef82ce2fa9582be301d65fcebde"
+    },
+    {
+      "path": "tasks/rmsnorm/README.md",
+      "status": "modified",
+      "sha256": "f6d5034ee6ad022289f605424c7ec7a730123fad965340f6a0186cab19c65cb7"
+    },
+    {
+      "path": "tasks/row_softmax/README.md",
+      "status": "modified",
+      "sha256": "7da9ea745e46c569b39d4dab6643b0645365fdebb32c5f2360aa4bc7d7ec01e7"
+    },
+    {
+      "path": "tasks/cispo_clip_weight/README.md",
+      "status": "modified",
+      "sha256": "4bf3d283dc8a617c2d03af48a7c4b5664d688b918a353888a2a1be78ed5057d2"
+    },
+    {
+      "path": "tasks/fused_adamw/README.md",
+      "status": "modified",
+      "sha256": "8351c70de1c486ae305e134acf5e33ebf31052669b34f8813a256d03bf11e024"
+    },
+    {
+      "path": "tasks/grpo_group_norm/README.md",
+      "status": "modified",
+      "sha256": "eb64b5a093a4759670f282b2336126a98222a27369067d6cdfb1786fe39b8f0f"
+    },
+    {
+      "path": "tasks/log_softmax_gather/README.md",
+      "status": "modified",
+      "sha256": "3304a712942cb4a6965b7c54f13d00ab20d77445101d72fd908f627798394165"
+    },
+    {
+      "path": "tasks/residual_rmsnorm/README.md",
+      "status": "modified",
+      "sha256": "101d8d0631d6b00a207398090948a9e7fabf348be11a5c1156473cc07be2fb13"
+    },
+    {
+      "path": "tasks/gemm_div_sum_scale/README.md",
+      "status": "modified",
+      "sha256": "0dc5e95a4f7a43175c34ae41680cdac0d313ede480d96ec531bd14e4e98389a5"
+    },
+    {
+      "path": "tasks/gemm_tensor_core/README.md",
+      "status": "modified",
+      "sha256": "54b4f337c84b94b3bf63c42890371cc74e3c06d0f2647fe6396dbdd2648fa42f"
+    },
+    {
+      "path": "tasks/rmsnorm/model_new_cutile.py",
+      "status": "added",
+      "sha256": "37e2c63cd5f2933df32a8efcd6a4d75e66a0e94b8efcee0dbdbcf024463333f7"
+    },
+    {
+      "path": "tasks/rmsnorm/kernels/cutile/__init__.py",
+      "status": "added",
+      "sha256": "8c88dfa40eddc0bdcb22dd622238b8eb5d0f98509fba2414307376933f19dfa7"
+    },
+    {
+      "path": "tasks/rmsnorm/kernels/cutile/rmsnorm.py",
+      "status": "added",
+      "sha256": "56a78f297e3b3bb087885271c3046f08b5aaf50472ebdede91fd25a1e986abac"
+    },
+    {
+      "path": "tasks/row_softmax/model_new_cutile.py",
+      "status": "added",
+      "sha256": "0e6d5dc185b8647172fc27198517546f1976fc478c3d3ae2bf24d75ce664b88c"
+    },
+    {
+      "path": "tasks/row_softmax/kernels/cutile/__init__.py",
+      "status": "added",
+      "sha256": "34160d7b4dae29398749e88892ad7b900d96cf4ff4b5a0ad9b9c49c2cfc07b2f"
+    },
+    {
+      "path": "tasks/row_softmax/kernels/cutile/row_softmax.py",
+      "status": "added",
+      "sha256": "9134bb67b198a7e283e3b2d98d51e9f3a6f19aae7cd337a2037befa30be20dc5"
+    },
+    {
+      "path": "tasks/cispo_clip_weight/model_new_cutile.py",
+      "status": "added",
+      "sha256": "d28f5d6b2a7939d574d9fdd6c991bd20d65d302b3fcb5d80669205f0d3f32c6c"
+    },
+    {
+      "path": "tasks/cispo_clip_weight/kernels/cutile/__init__.py",
+      "status": "added",
+      "sha256": "2f3988a4e6d9b351fce8d8a99be705db1af4f4a8a8f12c315d73afe0a72e6361"
+    },
+    {
+      "path": "tasks/cispo_clip_weight/kernels/cutile/cispo_clip_weight.py",
+      "status": "added",
+      "sha256": "fa716766c528f021e3e3fb1900e9f7fbb7e8f215750a60c1dd72538e1d783765"
+    },
+    {
+      "path": "tasks/fused_adamw/model_new_cutile.py",
+      "status": "added",
+      "sha256": "8e3b932d53e0b7d20faded67ba08842322df16ebc56f2313536cd64480f8a5e5"
+    },
+    {
+      "path": "tasks/fused_adamw/kernels/cutile/__init__.py",
+      "status": "added",
+      "sha256": "2b1075259564a26f7558ce65431969678b0821226cd3f5d8d8b6cedb6013eee6"
+    },
+    {
+      "path": "tasks/fused_adamw/kernels/cutile/fused_adamw.py",
+      "status": "added",
+      "sha256": "a9f546ded5ec2733d98eb247223f538898b977288478441a7a007648cef2759b"
+    },
+    {
+      "path": "tasks/grpo_group_norm/model_new_cutile.py",
+      "status": "added",
+      "sha256": "85a28b697ba57e2d981a06b6cde14db910465695f24e4a335082ff1e117526d3"
+    },
+    {
+      "path": "tasks/grpo_group_norm/kernels/cutile/__init__.py",
+      "status": "added",
+      "sha256": "5fd44d3ded72a873f67152f10845b23bd8cab3de0c9ee613544e4500d5634cbb"
+    },
+    {
+      "path": "tasks/grpo_group_norm/kernels/cutile/grpo_group_norm.py",
+      "status": "added",
+      "sha256": "1df0d1a16df72caf14f2a587a4b5dc509d4a2bb7f539a05ca384146f333359f0"
+    },
+    {
+      "path": "tasks/log_softmax_gather/model_new_cutile.py",
+      "status": "added",
+      "sha256": "078963e84531bb946d1b790ddb9553eed30eb6bf6b3dd7eb9f7a209fec7a7883"
+    },
+    {
+      "path": "tasks/log_softmax_gather/kernels/cutile/__init__.py",
+      "status": "added",
+      "sha256": "9d2a326c292421b2ccfe6712080c92ca1aec805d3adf282df4d1f27c8b6e3179"
+    },
+    {
+      "path": "tasks/log_softmax_gather/kernels/cutile/log_softmax_gather.py",
+      "status": "added",
+      "sha256": "68a73a9ac79f8581290d5a7054de2cbf50ae449f170ebee5b8181b54af8ad011"
+    },
+    {
+      "path": "tasks/residual_rmsnorm/model_new_cutile.py",
+      "status": "added",
+      "sha256": "cc90e87f06d6d82dad6bf4d65762b19393fa02e1b1706de7305ede1bc62ea90d"
+    },
+    {
+      "path": "tasks/residual_rmsnorm/kernels/cutile/__init__.py",
+      "status": "added",
+      "sha256": "ea935cd61c8854bb0b2b502b4a59226cc570ce8fb4550d22c7733823ca8e6f6b"
+    },
+    {
+      "path": "tasks/residual_rmsnorm/kernels/cutile/residual_rmsnorm.py",
+      "status": "added",
+      "sha256": "65a057375842edfefb2c15e973abec7040e748bc0798a512592ced152f86a97a"
+    },
+    {
+      "path": "tasks/gemm_div_sum_scale/model_new_cutile.py",
+      "status": "added",
+      "sha256": "a32899d8bca9eefc38e2318a40774cd92a289ab0677d944a4cd51ae93423748d"
+    },
+    {
+      "path": "tasks/gemm_div_sum_scale/kernels/cutile/__init__.py",
+      "status": "added",
+      "sha256": "3673b3d00a3c0e0b598c0e28117ef55fc0b186f29bb5e3c3b0754af491c7e4aa"
+    },
+    {
+      "path": "tasks/gemm_div_sum_scale/kernels/cutile/gemm_div_sum_scale.py",
+      "status": "added",
+      "sha256": "63482ce705f5bd9d0f2a23be51db75333d44cb772d1a7f035d247ea94f7e4138"
+    },
+    {
+      "path": "tasks/gemm_tensor_core/model_new_cutile.py",
+      "status": "added",
+      "sha256": "2ae649e1bef4701a4136d6482a0c89330286bd36c564ec66c15bfdfd434b73c1"
+    },
+    {
+      "path": "tasks/gemm_tensor_core/kernels/cutile/__init__.py",
+      "status": "added",
+      "sha256": "330189b42d0be44096f528562f2a16dc08bd146369e7d8361f46b84a81e466bb"
+    },
+    {
+      "path": "tasks/gemm_tensor_core/kernels/cutile/gemm_tensor_core.py",
+      "status": "added",
+      "sha256": "b568c6a919575c29cdaf3dac0249746699e3cbfde6b35593819ebaba44d5eb95"
+    },
+    {
+      "path": "tests/cutile_source_support.py",
+      "status": "added",
+      "sha256": "bcdfcd3ed97cf4a78d8eac5a2213d9682e111010c58b6c4c83650dc9a0366942"
+    }
+  ],
+  "local_suites": {
+    "system": {
+      "tests": 339,
+      "seconds": 565.597,
+      "skipped": 78,
+      "status": "OK"
+    },
+    "runtime": {
+      "tests": 344,
+      "seconds": 1444.943,
+      "skipped": 29,
+      "status": "OK",
+      "OMP_NUM_THREADS": 2,
+      "MKL_NUM_THREADS": 2
+    }
+  },
+  "gpu": {
+    "compile": null,
+    "correctness": null,
+    "timing_us": null,
+    "speedup": null,
+    "provenance": null,
+    "reason": "No cuTile task GPU run launched"
+  },
+  "modal_launched": false,
+  "tracking_write": false,
+  "committed": false,
+  "dependencies_installed": false
+}
