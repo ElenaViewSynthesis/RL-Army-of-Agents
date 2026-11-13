@@ -1,0 +1,15 @@
+{
+  "run_id": "cutile-tier3-20261113T014034Z",
+  "tasks": [
+    "gemm_div_sum_scale",
+    "gemm_tensor_core"
+  ],
+  "case_set": "smoke",
+  "backends": "cutile",
+  "fixtures": "all",
+  "timeout_s": 1200,
+  "benchmark": true,
+  "cold_start": true,
+  "cuda_graphs": false,
+  "gpu_requested": "H200"
+}

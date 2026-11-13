@@ -1,0 +1,78 @@
+{
+  "summary": {
+    "ceiling/available": true,
+    "ceiling/unavailable_reason": null,
+    "ceiling/provider": "_BlasBackend.Cublas",
+    "ceiling/definition": "cuBLAS GEMM only, fp32 output; generated includes bias; 2MNK FLOPs",
+    "ceiling/warmup_iters": 10,
+    "ceiling/rounds": 6,
+    "ceiling/iters_per_round": 10,
+    "ceiling/seed": 0,
+    "ceiling/dtype": "torch.bfloat16",
+    "ceiling/m": 512,
+    "ceiling/n": 512,
+    "ceiling/k": 512,
+    "ceiling/flops": 268435456,
+    "ceiling/order": "cublas,generated|generated,cublas|cublas,generated|generated,cublas|cublas,generated|generated,cublas",
+    "ceiling/cublas_event_us_median": 13.212800025939941,
+    "ceiling/generated_event_us_median": 24.52640011906624,
+    "ceiling/cublas_tflops": 20.316318681354133,
+    "ceiling/generated_tflops": 10.944755638693373,
+    "ceiling/cublas_fraction": 0.5387174620733935,
+    "ceiling/device_name": "NVIDIA H200",
+    "ceiling/device_uuid": "c8a1644c-7119-ed7f-ac71-1f5dc32320af",
+    "ceiling/device_capability": "9.0",
+    "ceiling/torch_version": "2.14.1+cu130",
+    "ceiling/cuda_version": "13.0",
+    "ceiling/nvcc_version": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2026 NVIDIA Corporation\nBuilt on Tue_Jun_09_02:43:40_PM_PDT_2026\nCuda compilation tools, release 13.3, V13.3.73\nBuild cuda_13.3.r13.3/compiler.38244171_0"
+  },
+  "raw": {
+    "samples": {
+      "cublas": {
+        "event_us": [
+          13.53600025177002,
+          16.156800091266632,
+          11.760000139474869,
+          13.222399353981018,
+          11.747200042009354,
+          13.203200697898865
+        ],
+        "wall_us": [
+          14.20560000013893,
+          16.899799999237075,
+          12.488000000132615,
+          13.929000000700853,
+          12.470599999403476,
+          13.817999999332642
+        ]
+      },
+      "generated": {
+        "event_us": [
+          29.08160090446472,
+          24.291199445724487,
+          24.52159970998764,
+          26.7520010471344,
+          24.531200528144836,
+          23.61920028924942
+        ],
+        "wall_us": [
+          29.840300000216757,
+          25.03160000060234,
+          25.2469000002975,
+          27.459700000065368,
+          25.262299999440074,
+          24.346499999694515
+        ]
+      }
+    },
+    "order": [
+      "cublas,generated",
+      "generated,cublas",
+      "cublas,generated",
+      "generated,cublas",
+      "cublas,generated",
+      "generated,cublas"
+    ]
+  },
+  "diagnostic_only": true
+}
