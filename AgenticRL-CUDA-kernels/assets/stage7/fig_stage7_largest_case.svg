@@ -1,0 +1,128 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 448" width="900" height="448" font-family="system-ui, -apple-system, Segoe UI, sans-serif" role="img" aria-label="Honest kernels at each Stage 7 task's largest bf16 case">
+<rect width="900" height="448" fill="#fcfcfb"/>
+<text x="16" y="28" font-size="16" font-weight="600" fill="#0b0b0b">Honest kernels at each task's largest bf16 case</text>
+<text x="16" y="48" font-size="12" fill="#52514e">Reward-profiler device time per forward, log scale · run stage7-tier1-acceptance-20261113T202705Z · one NVIDIA H200</text>
+<circle cx="22.0" cy="70.0" r="6" fill="#2a78d6"/>
+<text x="32" y="74" font-size="12" fill="#52514e">generated (authored kernel)</text>
+<rect x="238.0" y="65.0" width="10" height="10" fill="#fcfcfb" stroke="#eb6834" stroke-width="2"/>
+<text x="253" y="74" font-size="12" fill="#52514e">eager PyTorch</text>
+<path d="M366.0 64.0 L372.0 70.0 L366.0 76.0 L360.0 70.0 Z" fill="#1baf7a"/>
+<text x="376" y="74" font-size="12" fill="#52514e">torch.compile</text>
+<text x="760" y="84" font-size="11" fill="#898781">reward</text>
+<line x1="250.0" x2="250.0" y1="88" y2="414" stroke="#e1e0d9"/>
+<text x="250.0" y="430" font-size="11" fill="#898781" text-anchor="middle">10 µs</text>
+<line x1="416.7" x2="416.7" y1="88" y2="414" stroke="#e1e0d9"/>
+<text x="416.7" y="430" font-size="11" fill="#898781" text-anchor="middle">100 µs</text>
+<line x1="583.3" x2="583.3" y1="88" y2="414" stroke="#e1e0d9"/>
+<text x="583.3" y="430" font-size="11" fill="#898781" text-anchor="middle">1 ms</text>
+<line x1="750.0" x2="750.0" y1="88" y2="414" stroke="#e1e0d9"/>
+<text x="750.0" y="430" font-size="11" fill="#898781" text-anchor="middle">10 ms</text>
+<text x="16" y="109.0" font-size="12" font-family="ui-monospace, Consolas, monospace" fill="#0b0b0b">relu_squared</text>
+<text x="16" y="123.0" font-size="10.5" fill="#898781">4,096 × 14,336 bf16</text>
+<text x="240" y="109.0" font-size="11.5" fill="#52514e" text-anchor="end">Triton</text>
+<line x1="375.3" x2="530.0" y1="105.0" y2="105.0" stroke="#c3c2b7" stroke-width="2"/>
+<g><title>relu_squared · Triton: generated 59.3 µs, eager 478.8 µs, torch.compile 56.5 µs, faster_than_eager</title>
+<rect x="525.0" y="100.0" width="10" height="10" fill="#fcfcfb" stroke="#eb6834" stroke-width="2"/>
+<path d="M375.3 99.0 L381.3 105.0 L375.3 111.0 L369.3 105.0 Z" fill="#1baf7a"/>
+<circle cx="378.9" cy="105.0" r="6" fill="#2a78d6"/>
+</g>
+<text x="760" y="109.0" font-size="11.5" fill="#52514e">faster than eager</text>
+<text x="240" y="135.0" font-size="11.5" fill="#52514e" text-anchor="end">CUDA</text>
+<line x1="375.0" x2="530.1" y1="131.0" y2="131.0" stroke="#c3c2b7" stroke-width="2"/>
+<g><title>relu_squared · CUDA: generated 182.9 µs, eager 479.1 µs, torch.compile 56.3 µs, faster_than_eager</title>
+<rect x="525.1" y="126.0" width="10" height="10" fill="#fcfcfb" stroke="#eb6834" stroke-width="2"/>
+<path d="M375.0 125.0 L381.0 131.0 L375.0 137.0 L369.0 131.0 Z" fill="#1baf7a"/>
+<circle cx="460.4" cy="131.0" r="6" fill="#2a78d6"/>
+</g>
+<text x="760" y="135.0" font-size="11.5" fill="#52514e">faster than eager</text>
+<text x="240" y="161.0" font-size="11.5" fill="#52514e" text-anchor="end">cuTile</text>
+<line x1="374.9" x2="532.9" y1="157.0" y2="157.0" stroke="#c3c2b7" stroke-width="2"/>
+<g><title>relu_squared · cuTile: generated 59.2 µs, eager 498.1 µs, torch.compile 56.1 µs, faster_than_eager</title>
+<rect x="527.9" y="152.0" width="10" height="10" fill="#fcfcfb" stroke="#eb6834" stroke-width="2"/>
+<path d="M374.9 151.0 L380.9 157.0 L374.9 163.0 L368.9 157.0 Z" fill="#1baf7a"/>
+<circle cx="378.8" cy="157.0" r="6" fill="#2a78d6"/>
+</g>
+<text x="760" y="161.0" font-size="11.5" fill="#52514e">faster than eager</text>
+<line x1="16" x2="884" y1="170.0" y2="170.0" stroke="#c3c2b7"/>
+<text x="16" y="187.0" font-size="12" font-family="ui-monospace, Consolas, monospace" fill="#0b0b0b">silu_and_mul</text>
+<text x="16" y="201.0" font-size="10.5" fill="#898781">4,096 × 2 × 14,336 bf16</text>
+<text x="240" y="187.0" font-size="11.5" fill="#52514e" text-anchor="end">Triton</text>
+<line x1="401.9" x2="577.3" y1="183.0" y2="183.0" stroke="#c3c2b7" stroke-width="2"/>
+<g><title>silu_and_mul · Triton: generated 84.7 µs, eager 919.7 µs, torch.compile 81.5 µs, faster_than_eager</title>
+<rect x="572.3" y="178.0" width="10" height="10" fill="#fcfcfb" stroke="#eb6834" stroke-width="2"/>
+<path d="M401.9 177.0 L407.9 183.0 L401.9 189.0 L395.9 183.0 Z" fill="#1baf7a"/>
+<circle cx="404.6" cy="183.0" r="6" fill="#2a78d6"/>
+</g>
+<text x="760" y="187.0" font-size="11.5" fill="#52514e">faster than eager</text>
+<text x="240" y="213.0" font-size="11.5" fill="#52514e" text-anchor="end">CUDA</text>
+<line x1="404.5" x2="573.8" y1="209.0" y2="209.0" stroke="#c3c2b7" stroke-width="2"/>
+<g><title>silu_and_mul · CUDA: generated 233.8 µs, eager 876.0 µs, torch.compile 84.5 µs, faster_than_eager</title>
+<rect x="568.8" y="204.0" width="10" height="10" fill="#fcfcfb" stroke="#eb6834" stroke-width="2"/>
+<path d="M404.5 203.0 L410.5 209.0 L404.5 215.0 L398.5 209.0 Z" fill="#1baf7a"/>
+<circle cx="478.1" cy="209.0" r="6" fill="#2a78d6"/>
+</g>
+<text x="760" y="213.0" font-size="11.5" fill="#52514e">faster than eager</text>
+<text x="240" y="239.0" font-size="11.5" fill="#52514e" text-anchor="end">cuTile</text>
+<line x1="406.0" x2="577.7" y1="235.0" y2="235.0" stroke="#c3c2b7" stroke-width="2"/>
+<g><title>silu_and_mul · cuTile: generated 87.5 µs, eager 925.0 µs, torch.compile 86.3 µs, faster_than_eager</title>
+<rect x="572.7" y="230.0" width="10" height="10" fill="#fcfcfb" stroke="#eb6834" stroke-width="2"/>
+<path d="M406.0 229.0 L412.0 235.0 L406.0 241.0 L400.0 235.0 Z" fill="#1baf7a"/>
+<circle cx="407.0" cy="235.0" r="6" fill="#2a78d6"/>
+</g>
+<text x="760" y="239.0" font-size="11.5" fill="#52514e">faster than eager</text>
+<line x1="16" x2="884" y1="248.0" y2="248.0" stroke="#c3c2b7"/>
+<text x="16" y="265.0" font-size="12" font-family="ui-monospace, Consolas, monospace" fill="#0b0b0b">geglu_tanh</text>
+<text x="16" y="279.0" font-size="10.5" fill="#898781">4,096 × 2 × 16,384 bf16</text>
+<text x="240" y="265.0" font-size="11.5" fill="#52514e" text-anchor="end">Triton</text>
+<line x1="414.0" x2="628.2" y1="261.0" y2="261.0" stroke="#c3c2b7" stroke-width="2"/>
+<g><title>geglu_tanh · Triton: generated 96.4 µs, eager 1859.0 µs, torch.compile 97.4 µs, faster_than_eager</title>
+<rect x="623.2" y="256.0" width="10" height="10" fill="#fcfcfb" stroke="#eb6834" stroke-width="2"/>
+<path d="M414.7 255.0 L420.7 261.0 L414.7 267.0 L408.7 261.0 Z" fill="#1baf7a"/>
+<circle cx="414.0" cy="261.0" r="6" fill="#2a78d6"/>
+</g>
+<text x="760" y="265.0" font-size="11.5" fill="#52514e">faster than eager</text>
+<text x="240" y="291.0" font-size="11.5" fill="#52514e" text-anchor="end">CUDA</text>
+<line x1="414.7" x2="628.8" y1="287.0" y2="287.0" stroke="#c3c2b7" stroke-width="2"/>
+<g><title>geglu_tanh · CUDA: generated 271.2 µs, eager 1873.7 µs, torch.compile 97.3 µs, faster_than_eager</title>
+<rect x="623.8" y="282.0" width="10" height="10" fill="#fcfcfb" stroke="#eb6834" stroke-width="2"/>
+<path d="M414.7 281.0 L420.7 287.0 L414.7 293.0 L408.7 287.0 Z" fill="#1baf7a"/>
+<circle cx="488.9" cy="287.0" r="6" fill="#2a78d6"/>
+</g>
+<text x="760" y="291.0" font-size="11.5" fill="#52514e">faster than eager</text>
+<text x="240" y="317.0" font-size="11.5" fill="#52514e" text-anchor="end">cuTile</text>
+<line x1="414.7" x2="628.8" y1="313.0" y2="313.0" stroke="#c3c2b7" stroke-width="2"/>
+<g><title>geglu_tanh · cuTile: generated 116.7 µs, eager 1874.1 µs, torch.compile 97.3 µs, faster_than_eager</title>
+<rect x="623.8" y="308.0" width="10" height="10" fill="#fcfcfb" stroke="#eb6834" stroke-width="2"/>
+<path d="M414.7 307.0 L420.7 313.0 L414.7 319.0 L408.7 313.0 Z" fill="#1baf7a"/>
+<circle cx="427.8" cy="313.0" r="6" fill="#2a78d6"/>
+</g>
+<text x="760" y="317.0" font-size="11.5" fill="#52514e">faster than eager</text>
+<line x1="16" x2="884" y1="326.0" y2="326.0" stroke="#c3c2b7"/>
+<text x="16" y="343.0" font-size="12" font-family="ui-monospace, Consolas, monospace" fill="#0b0b0b">rotary_embedding</text>
+<text x="16" y="357.0" font-size="10.5" fill="#898781">8 × 8,192 tokens, D 128 bf16</text>
+<text x="240" y="343.0" font-size="11.5" fill="#52514e" text-anchor="end">Triton</text>
+<line x1="506.7" x2="703.7" y1="339.0" y2="339.0" stroke="#c3c2b7" stroke-width="2"/>
+<g><title>rotary_embedding · Triton: generated 346.9 µs, eager 5277.6 µs, torch.compile 383.6 µs, faster_than_both</title>
+<rect x="698.7" y="334.0" width="10" height="10" fill="#fcfcfb" stroke="#eb6834" stroke-width="2"/>
+<path d="M514.0 333.0 L520.0 339.0 L514.0 345.0 L508.0 339.0 Z" fill="#1baf7a"/>
+<circle cx="506.7" cy="339.0" r="6" fill="#2a78d6"/>
+</g>
+<text x="760" y="343.0" font-size="11.5" fill="#006300" font-weight="600">faster than both</text>
+<text x="240" y="369.0" font-size="11.5" fill="#52514e" text-anchor="end">CUDA</text>
+<line x1="515.8" x2="703.8" y1="365.0" y2="365.0" stroke="#c3c2b7" stroke-width="2"/>
+<g><title>rotary_embedding · CUDA: generated 873.9 µs, eager 5282.2 µs, torch.compile 393.2 µs, faster_than_eager</title>
+<rect x="698.8" y="360.0" width="10" height="10" fill="#fcfcfb" stroke="#eb6834" stroke-width="2"/>
+<path d="M515.8 359.0 L521.8 365.0 L515.8 371.0 L509.8 365.0 Z" fill="#1baf7a"/>
+<circle cx="573.6" cy="365.0" r="6" fill="#2a78d6"/>
+</g>
+<text x="760" y="369.0" font-size="11.5" fill="#52514e">faster than eager</text>
+<text x="240" y="395.0" font-size="11.5" fill="#52514e" text-anchor="end">cuTile</text>
+<line x1="515.7" x2="704.6" y1="391.0" y2="391.0" stroke="#c3c2b7" stroke-width="2"/>
+<g><title>rotary_embedding · cuTile: generated 408.4 µs, eager 5341.4 µs, torch.compile 393.1 µs, faster_than_eager</title>
+<rect x="699.6" y="386.0" width="10" height="10" fill="#fcfcfb" stroke="#eb6834" stroke-width="2"/>
+<path d="M515.7 385.0 L521.7 391.0 L515.7 397.0 L509.7 391.0 Z" fill="#1baf7a"/>
+<circle cx="518.5" cy="391.0" r="6" fill="#2a78d6"/>
+</g>
+<text x="760" y="395.0" font-size="11.5" fill="#52514e">faster than eager</text>
+<text x="16" y="444" font-size="10.5" fill="#898781">artifacts/runs/stage7-tier1-acceptance-20261113T202705Z/suite/progress.jsonl → env/t_gen_us, env/t_eager_us, env/t_compile_us, reward/reason</text>
+</svg>

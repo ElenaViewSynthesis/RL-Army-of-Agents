@@ -41,7 +41,7 @@ Task contracts, shape grids and kernel techniques here come from public benchmar
 **Interactive reports** (Claude artifacts, built from the committed H200 evidence). To view them you must be signed in to [claude.ai](https://claude.ai); a signed-out visitor sees a sign-in page instead.
 
 - [Stage 5 kernel timings](https://claude.ai/artifact/Efm4o8YvrYm29LMbtM9sy2): per-task and per-backend kernel times against eager PyTorch and `torch.compile` for the nine EAGLE-4 tasks at their largest cases (run `task-stage5-gpu-acceptance-20261110T002043Z`).
-- [Stage 6 Multi-LoRA Report](https://claude.ai/artifact/RmbhAQDXMQBgdopF1dBzMp): the six multi-LoRA tasks, token patterns and ranks, a coverage matrix with a detail view for every suite row, Nsight timelines of CUDA-graph capture and replay, performance, and H200 time across all Stage 6 runs.
+- [Stage 6 Multi-LoRA Report](https://claude.ai/artifact/RmbhAQDXMQBgdopF1dBzMp): the six multi-LoRA tasks, token patterns and ranks, a coverage matrix with a detail view for every suite row, Nsight timelines of CUDA-graph capture and replay, performance, and H200 time across all Stage 6 runs. A second page, reached by the arrow at its end or at [`#stages-7-8`](https://claude.ai/artifact/RmbhAQDXMQBgdopF1dBzMp#stages-7-8), covers the Stage 7 runs.
 
 Two charts from the Stage 6 report, as static images:
 
@@ -54,6 +54,14 @@ Two charts from the Stage 6 report, as static images:
 **Per-slot ranks for every case in the evidence**: one row per Stage 6 case, one bar per adapter slot, on a log₂ rank axis. With mixed ranks, slot *i* gets rank `min(rank, (8, 16, 32, 64, 128, 256)[i mod 6])`. Hatched extensions are the padding to a multiple of 16, which is filled with NaN; the `wrong_padding` control reads it, so cases without padding have nothing for that control to catch.
 
 Both are regenerated from the committed suite rows with `python3 -m scripts.make_stage6_figures --out assets/stage6`.
+
+One chart from the report's second page (Stages 7 and 8), as a static image:
+
+![Honest Stage 7 kernels at each task's largest bf16 case: generated, eager and torch.compile device time per forward on a log scale, with the reward earned](assets/stage7/fig_stage7_largest_case.svg)
+
+**Stage 7: TileGym-derived kernels** (`stage7-tier1-acceptance-20261113T202705Z`). Stage 7 adds four TileGym-derived kernels that every LLM forward pass runs: ReLU², SiLU-and-mul (the SwiGLU step), tanh-GEGLU and half-split rotary embedding. Each task has a trusted fp32-math reference and three honest solutions, in Triton, CUDA and cuTile, scored by the same compile, verify, profile and provenance pipeline as Stage 6. The chart shows each honest kernel at its task's largest bf16 case: the reward profiler's device time per forward for the generated kernel (circle), eager PyTorch (square) and `torch.compile` (diamond), on a log scale, with the reward earned. All 36 rows of the run passed; all 12 honest kernels verified with authored share 1.0. Every kernel beats eager, 2.6× to 19×, but only Triton RoPE also beats `torch.compile` (347 µs against 384 µs); the CUDA kernels are about 2 to 3 times slower than Triton and cuTile.
+
+Regenerated from the committed suite rows with `python3 -m scripts.make_stage7_figures --out assets/stage7`.
 
 > [!IMPORTANT]
 > **First H200 measurements now exist.** Modal runs `20261106T142830Z` and
