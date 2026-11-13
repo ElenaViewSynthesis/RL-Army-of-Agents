@@ -25,6 +25,7 @@ artifacts/timing-diagnostic-*/timing/*/gen.json
 # Session handoff notes between agents stay local
 HANDOFF*.md
 INTERVIEW*.md
+TODO.md
 
 # Nsight Systems trace exports (kept in the Modal volume; JSON summaries are committed)
 artifacts/runs/graph-trace-*/**/*.nsys-rep

@@ -53,5 +53,6 @@ Stage-specific references live in `utils/eagle_*.py` (Stage 5, EAGLE-4 speculati
 
 - Codex works in WSL (`.git` read-only there); Claude reviews, tests (in WSL), groups and commits from the Windows checkout (`core.autocrlf`, CRLF). Commit with focused imperative subjects ("Add …", "Fix …", "Record …"). Push only when asked.
 - `HANDOFF*.md` files are gitignored working notes; never commit them.
+- Read `TODO.md` at the start of a session for the current next steps and planned features (profilers, Kevin-32B as a policy and baseline, CUDA-graph replay). It is gitignored and local to this checkout: update it as items finish, never commit it, and if it is missing ask the user instead of recreating it from memory.
 - GPU evidence goes in `artifacts/runs/<run-id>/`: JSON/JSONL/logs/Markdown plus `source/task-source-manifest.json` only (no caches, build output or source copies; `.gitignore` drops suite scaffolds). Scan it for secrets and the user's email before committing. Leave `artifacts/volume-20261108T014026Z/` and `artifacts/wandb-offline-smoke-20261108T013827Z/` untracked.
 - W&B credentials come from `.env` (`WANDB_API_KEY`, `WANDB_ENTITY`, `WANDB_PROJECT`); load them without printing. MLflow is out of scope.
