@@ -1,0 +1,1606 @@
+{
+  "pin": {
+    "tag": "v1.5.1",
+    "commit": "bb1a7e720594880be017e8fdf8f7e4f740656beb",
+    "archive_url": "https://codeload.github.com/NVIDIA/TileGym/tar.gz/refs/tags/v1.5.1",
+    "archive_sha256": "17e769753731efe126829672fdc51a1a6506ac3d13a3879e51c278586cb720b6"
+  },
+  "files": [
+    {
+      "path": "src/tilegym/ops/cutile/silu_and_mul.py",
+      "sha256": "b0aad9b614300c0205ee0bdd10ad7f5d5c96daf86192c84c7aabae1af083250a",
+      "lines": 303,
+      "url": "https://github.com/NVIDIA/TileGym/blob/bb1a7e720594880be017e8fdf8f7e4f740656beb/src/tilegym/ops/cutile/silu_and_mul.py",
+      "definitions": [
+        {
+          "name": "_silu_and_mul_kernel_row_wise",
+          "start": 29,
+          "end": 61
+        },
+        {
+          "name": "_silu_and_mul_backward_kernel_row_wise",
+          "start": 70,
+          "end": 113
+        },
+        {
+          "name": "_ensure_contiguous",
+          "start": 116,
+          "end": 126
+        },
+        {
+          "name": "_silu_autotune_hints",
+          "start": 129,
+          "end": 135
+        },
+        {
+          "name": "_silu_autotune_settings",
+          "start": 138,
+          "end": 149
+        },
+        {
+          "name": "_launch_silu_kernel",
+          "start": 152,
+          "end": 171
+        },
+        {
+          "name": "_silu_and_mul_forward",
+          "start": 174,
+          "end": 180
+        },
+        {
+          "name": "_silu_and_mul_backward",
+          "start": 183,
+          "end": 214
+        },
+        {
+          "name": "_SiLUAndMulFunction",
+          "start": 217,
+          "end": 252
+        },
+        {
+          "name": "silu_and_mul",
+          "start": 255,
+          "end": 303
+        }
+      ],
+      "hazard_lines": {
+        "exhaustive_search": [
+          11,
+          159
+        ],
+        "get_device_capability": [
+          140
+        ],
+        "ByTarget": [],
+        "num_ctas": [
+          131,
+          142,
+          144,
+          146,
+          148
+        ],
+        "occupancy": [
+          23,
+          131
+        ],
+        "check_bounds=False": [],
+        "allow_tma": [],
+        "torch.autograd": [
+          217
+        ],
+        "torch.sum": [],
+        ".item()": [],
+        "fill_": []
+      }
+    },
+    {
+      "path": "src/tilegym/ops/cutile/activation/geglu.py",
+      "sha256": "5ee3b5da4c41b621357846f0147faddbd4b3063bd0a0ab446410b6ad933ca964",
+      "lines": 290,
+      "url": "https://github.com/NVIDIA/TileGym/blob/bb1a7e720594880be017e8fdf8f7e4f740656beb/src/tilegym/ops/cutile/activation/geglu.py",
+      "definitions": [
+        {
+          "name": "_gelu_bwd_ct",
+          "start": 23,
+          "end": 39
+        },
+        {
+          "name": "_gelu_tanh_bwd_ct",
+          "start": 42,
+          "end": 66
+        },
+        {
+          "name": "_geglu_fwd_kernel",
+          "start": 69,
+          "end": 115
+        },
+        {
+          "name": "_geglu_bwd_kernel",
+          "start": 118,
+          "end": 174
+        },
+        {
+          "name": "_GEGLU",
+          "start": 177,
+          "end": 270
+        },
+        {
+          "name": "geglu",
+          "start": 273,
+          "end": 290
+        }
+      ],
+      "hazard_lines": {
+        "exhaustive_search": [],
+        "get_device_capability": [],
+        "ByTarget": [],
+        "num_ctas": [],
+        "occupancy": [],
+        "check_bounds=False": [],
+        "allow_tma": [],
+        "torch.autograd": [
+          177
+        ],
+        "torch.sum": [],
+        ".item()": [],
+        "fill_": []
+      }
+    },
+    {
+      "path": "src/tilegym/ops/cutile/activation/gelu.py",
+      "sha256": "2e0a21ef4b5db253b43cb1668b277bc5812e78dbcd9920bcc22ea7e59662bb04",
+      "lines": 270,
+      "url": "https://github.com/NVIDIA/TileGym/blob/bb1a7e720594880be017e8fdf8f7e4f740656beb/src/tilegym/ops/cutile/activation/gelu.py",
+      "definitions": [
+        {
+          "name": "_sigmoid_ct",
+          "start": 17,
+          "end": 23
+        },
+        {
+          "name": "_tanh_ct",
+          "start": 26,
+          "end": 33
+        },
+        {
+          "name": "standard_normal_cdf_ct",
+          "start": 36,
+          "end": 55
+        },
+        {
+          "name": "standard_normal_pdf_ct",
+          "start": 58,
+          "end": 71
+        },
+        {
+          "name": "gelu_tanh_forward_ct",
+          "start": 74,
+          "end": 82
+        },
+        {
+          "name": "gelu_forward_ct",
+          "start": 85,
+          "end": 88
+        },
+        {
+          "name": "gelu_backward_ct",
+          "start": 91,
+          "end": 95
+        },
+        {
+          "name": "gelu_tanh_backward_ct",
+          "start": 98,
+          "end": 107
+        },
+        {
+          "name": "_gelu_kernel",
+          "start": 110,
+          "end": 142
+        },
+        {
+          "name": "_gelu_kernel_backward",
+          "start": 145,
+          "end": 187
+        },
+        {
+          "name": "_GeluCuTileFunction",
+          "start": 191,
+          "end": 255
+        },
+        {
+          "name": "gelu",
+          "start": 258,
+          "end": 270
+        }
+      ],
+      "hazard_lines": {
+        "exhaustive_search": [],
+        "get_device_capability": [],
+        "ByTarget": [],
+        "num_ctas": [],
+        "occupancy": [],
+        "check_bounds=False": [],
+        "allow_tma": [],
+        "torch.autograd": [
+          191
+        ],
+        "torch.sum": [],
+        ".item()": [],
+        "fill_": []
+      }
+    },
+    {
+      "path": "src/tilegym/ops/cutile/rope.py",
+      "sha256": "fb1decdfc1d83dc4e99e5850bf5d8631489acc3ee5385fbdc8c015e3a420119a",
+      "lines": 341,
+      "url": "https://github.com/NVIDIA/TileGym/blob/bb1a7e720594880be017e8fdf8f7e4f740656beb/src/tilegym/ops/cutile/rope.py",
+      "definitions": [
+        {
+          "name": "_rope_kernel",
+          "start": 23,
+          "end": 121
+        },
+        {
+          "name": "_rope_forward",
+          "start": 124,
+          "end": 179
+        },
+        {
+          "name": "_rope_tune_cache_key",
+          "start": 182,
+          "end": 198
+        },
+        {
+          "name": "_select_rope_kernel",
+          "start": 201,
+          "end": 246
+        },
+        {
+          "name": "_TileRopeFunction",
+          "start": 249,
+          "end": 284
+        },
+        {
+          "name": "apply_rope_base",
+          "start": 287,
+          "end": 312
+        },
+        {
+          "name": "get_apply_rope_func",
+          "start": 315,
+          "end": 341
+        }
+      ],
+      "hazard_lines": {
+        "exhaustive_search": [
+          9,
+          235
+        ],
+        "get_device_capability": [],
+        "ByTarget": [],
+        "num_ctas": [],
+        "occupancy": [
+          19,
+          205,
+          233,
+          244
+        ],
+        "check_bounds=False": [],
+        "allow_tma": [],
+        "torch.autograd": [
+          249
+        ],
+        "torch.sum": [],
+        ".item()": [],
+        "fill_": []
+      }
+    },
+    {
+      "path": "src/tilegym/suites/liger/cutile/relu_squared.py",
+      "sha256": "3584c553cd68764f11e7d2d6be2ce2b929ee94a1a4f53fdbcce45bdc38b87b54",
+      "lines": 193,
+      "url": "https://github.com/NVIDIA/TileGym/blob/bb1a7e720594880be017e8fdf8f7e4f740656beb/src/tilegym/suites/liger/cutile/relu_squared.py",
+      "definitions": [
+        {
+          "name": "_relu_squared_fwd_ct_aligned",
+          "start": 35,
+          "end": 52
+        },
+        {
+          "name": "_relu_squared_fwd_ct",
+          "start": 55,
+          "end": 72
+        },
+        {
+          "name": "_relu_squared_bwd_ct_aligned",
+          "start": 75,
+          "end": 97
+        },
+        {
+          "name": "_relu_squared_bwd_ct",
+          "start": 100,
+          "end": 119
+        },
+        {
+          "name": "_calculate_block_size",
+          "start": 122,
+          "end": 134
+        },
+        {
+          "name": "ReLUSquaredCuTileFunction",
+          "start": 137,
+          "end": 179
+        },
+        {
+          "name": "relu_squared",
+          "start": 182,
+          "end": 193
+        }
+      ],
+      "hazard_lines": {
+        "exhaustive_search": [],
+        "get_device_capability": [],
+        "ByTarget": [],
+        "num_ctas": [],
+        "occupancy": [
+          15
+        ],
+        "check_bounds=False": [
+          19,
+          42,
+          49,
+          52,
+          83,
+          93,
+          94,
+          97,
+          126
+        ],
+        "allow_tma": [],
+        "torch.autograd": [
+          137
+        ],
+        "torch.sum": [],
+        ".item()": [],
+        "fill_": []
+      }
+    },
+    {
+      "path": "src/tilegym/suites/liger/cutile/kl_div.py",
+      "sha256": "a03a78125088fa216d5b3ba36bf2f9248754b3404955cb6657227e6b251f596d",
+      "lines": 321,
+      "url": "https://github.com/NVIDIA/TileGym/blob/bb1a7e720594880be017e8fdf8f7e4f740656beb/src/tilegym/suites/liger/cutile/kl_div.py",
+      "definitions": [
+        {
+          "name": "_kldiv_fwd_none_ct",
+          "start": 47,
+          "end": 94
+        },
+        {
+          "name": "_kldiv_fwd_reduce_ct",
+          "start": 97,
+          "end": 149
+        },
+        {
+          "name": "_kldiv_bwd_ct",
+          "start": 152,
+          "end": 194
+        },
+        {
+          "name": "_kldiv_forward_ct",
+          "start": 197,
+          "end": 245
+        },
+        {
+          "name": "_kldiv_backward_ct",
+          "start": 248,
+          "end": 270
+        },
+        {
+          "name": "KLDivCuTileFunction",
+          "start": 273,
+          "end": 309
+        },
+        {
+          "name": "kl_div",
+          "start": 312,
+          "end": 321
+        }
+      ],
+      "hazard_lines": {
+        "exhaustive_search": [],
+        "get_device_capability": [],
+        "ByTarget": [],
+        "num_ctas": [],
+        "occupancy": [],
+        "check_bounds=False": [
+          20,
+          56,
+          61,
+          67,
+          70,
+          71,
+          79,
+          106,
+          111,
+          119,
+          122,
+          123,
+          160,
+          167,
+          171,
+          174,
+          181
+        ],
+        "allow_tma": [],
+        "torch.autograd": [
+          273
+        ],
+        "torch.sum": [],
+        ".item()": [
+          294
+        ],
+        "fill_": []
+      }
+    },
+    {
+      "path": "src/tilegym/suites/liger/cutile/jsd.py",
+      "sha256": "8aa4c88b98952d43fe4034e651590c717b8c9be2a6cd8e97a077fb69e28aa935",
+      "lines": 218,
+      "url": "https://github.com/NVIDIA/TileGym/blob/bb1a7e720594880be017e8fdf8f7e4f740656beb/src/tilegym/suites/liger/cutile/jsd.py",
+      "definitions": [
+        {
+          "name": "_ensure_contiguous",
+          "start": 21,
+          "end": 31
+        },
+        {
+          "name": "_jsd_kernel",
+          "start": 34,
+          "end": 119
+        },
+        {
+          "name": "_jsd_forward",
+          "start": 122,
+          "end": 161
+        },
+        {
+          "name": "_jsd_backward",
+          "start": 164,
+          "end": 167
+        },
+        {
+          "name": "JSDCuTileFunction",
+          "start": 170,
+          "end": 206
+        },
+        {
+          "name": "jsd",
+          "start": 209,
+          "end": 218
+        }
+      ],
+      "hazard_lines": {
+        "exhaustive_search": [],
+        "get_device_capability": [],
+        "ByTarget": [
+          34
+        ],
+        "num_ctas": [],
+        "occupancy": [
+          34
+        ],
+        "check_bounds=False": [],
+        "allow_tma": [],
+        "torch.autograd": [
+          170
+        ],
+        "torch.sum": [
+          161
+        ],
+        ".item()": [
+          131
+        ],
+        "fill_": []
+      }
+    },
+    {
+      "path": "src/tilegym/suites/liger/cutile/cross_entropy.py",
+      "sha256": "9a1a056df6d474edd3eb35465bdc1cc374a5b5f31e8361369389bb025679a513",
+      "lines": 563,
+      "url": "https://github.com/NVIDIA/TileGym/blob/bb1a7e720594880be017e8fdf8f7e4f740656beb/src/tilegym/suites/liger/cutile/cross_entropy.py",
+      "definitions": [
+        {
+          "name": "_get_tuned_ce_kernel",
+          "start": 36,
+          "end": 95
+        },
+        {
+          "name": "_select_block_size",
+          "start": 98,
+          "end": 101
+        },
+        {
+          "name": "_liger_cross_entropy_kernel",
+          "start": 104,
+          "end": 354
+        },
+        {
+          "name": "_scale_cross_entropy_backward",
+          "start": 357,
+          "end": 362
+        },
+        {
+          "name": "CrossEntropyCuTileFunction",
+          "start": 365,
+          "end": 506
+        },
+        {
+          "name": "cross_entropy",
+          "start": 509,
+          "end": 563
+        }
+      ],
+      "hazard_lines": {
+        "exhaustive_search": [
+          13,
+          31,
+          40,
+          84
+        ],
+        "get_device_capability": [
+          99
+        ],
+        "ByTarget": [],
+        "num_ctas": [],
+        "occupancy": [
+          29,
+          37,
+          90,
+          94
+        ],
+        "check_bounds=False": [
+          182,
+          187
+        ],
+        "allow_tma": [],
+        "torch.autograd": [
+          365
+        ],
+        "torch.sum": [
+          486,
+          487,
+          488
+        ],
+        ".item()": [
+          410,
+          427,
+          431
+        ],
+        "fill_": []
+      }
+    },
+    {
+      "path": "src/tilegym/suites/liger/cutile/grpo_loss.py",
+      "sha256": "e04c489922ab2f91d456d57e9a2f58573241f6e010e82d88de3467875ad9f320",
+      "lines": 1277,
+      "url": "https://github.com/NVIDIA/TileGym/blob/bb1a7e720594880be017e8fdf8f7e4f740656beb/src/tilegym/suites/liger/cutile/grpo_loss.py",
+      "definitions": [
+        {
+          "name": "_grpo_loss_fwd_ct",
+          "start": 55,
+          "end": 206
+        },
+        {
+          "name": "_grpo_loss_bwd_ct",
+          "start": 209,
+          "end": 345
+        },
+        {
+          "name": "_tuned_fwd_kernel",
+          "start": 364,
+          "end": 381
+        },
+        {
+          "name": "_grpo_loss_forward_ct",
+          "start": 384,
+          "end": 479
+        },
+        {
+          "name": "_grpo_loss_backward_ct",
+          "start": 482,
+          "end": 565
+        },
+        {
+          "name": "_grpo_loss_fwd_seq_ct",
+          "start": 573,
+          "end": 668
+        },
+        {
+          "name": "_grpo_loss_bwd_seq_ct",
+          "start": 671,
+          "end": 769
+        },
+        {
+          "name": "_compute_dapo_normalizer",
+          "start": 776,
+          "end": 795
+        },
+        {
+          "name": "_reduce_loss",
+          "start": 798,
+          "end": 811
+        },
+        {
+          "name": "_grpo_loss_forward_seq_ct",
+          "start": 814,
+          "end": 897
+        },
+        {
+          "name": "_grpo_loss_backward_seq_ct",
+          "start": 900,
+          "end": 968
+        },
+        {
+          "name": "GrpoLossCuTileFunction",
+          "start": 971,
+          "end": 1225
+        },
+        {
+          "name": "grpo_loss",
+          "start": 1228,
+          "end": 1277
+        }
+      ],
+      "hazard_lines": {
+        "exhaustive_search": [
+          31,
+          368
+        ],
+        "get_device_capability": [],
+        "ByTarget": [
+          30,
+          349,
+          350,
+          366,
+          374,
+          379,
+          772,
+          773
+        ],
+        "num_ctas": [],
+        "occupancy": [
+          348,
+          349,
+          350,
+          353,
+          355,
+          356,
+          357,
+          358,
+          366,
+          374,
+          377,
+          379,
+          772,
+          773
+        ],
+        "check_bounds=False": [
+          131,
+          188,
+          263,
+          310,
+          633,
+          653,
+          726
+        ],
+        "allow_tma": [],
+        "torch.autograd": [
+          971
+        ],
+        "torch.sum": [],
+        ".item()": [],
+        "fill_": []
+      }
+    },
+    {
+      "path": "src/tilegym/ops/cutile/group_gemm.py",
+      "sha256": "ba361a4467bb2dac3c857635b889825d66bbffa5fb06e054ca37df02b92af0be",
+      "lines": 197,
+      "url": "https://github.com/NVIDIA/TileGym/blob/bb1a7e720594880be017e8fdf8f7e4f740656beb/src/tilegym/ops/cutile/group_gemm.py",
+      "definitions": [
+        {
+          "name": "_group_gemm_autotune_configs",
+          "start": 22,
+          "end": 35
+        },
+        {
+          "name": "_group_gemm_kernel",
+          "start": 38,
+          "end": 119
+        },
+        {
+          "name": "_cutile_autotune_group_gemm",
+          "start": 122,
+          "end": 167
+        },
+        {
+          "name": "group_gemm",
+          "start": 170,
+          "end": 197
+        }
+      ],
+      "hazard_lines": {
+        "exhaustive_search": [
+          8,
+          129
+        ],
+        "get_device_capability": [
+          26
+        ],
+        "ByTarget": [],
+        "num_ctas": [
+          28,
+          29,
+          30,
+          32,
+          34,
+          35,
+          132,
+          141,
+          144,
+          149,
+          154,
+          163
+        ],
+        "occupancy": [
+          28,
+          29,
+          30,
+          32,
+          34,
+          35,
+          132,
+          141,
+          144,
+          149,
+          154,
+          163
+        ],
+        "check_bounds=False": [],
+        "allow_tma": [],
+        "torch.autograd": [],
+        "torch.sum": [],
+        ".item()": [],
+        "fill_": []
+      }
+    },
+    {
+      "path": "src/tilegym/ops/cutile/linear_gluact_linear.py",
+      "sha256": "f0e85cf9cb2cc8714faa914d6769360908602e42e31a42e9148c8d3d887f6a2f",
+      "lines": 402,
+      "url": "https://github.com/NVIDIA/TileGym/blob/bb1a7e720594880be017e8fdf8f7e4f740656beb/src/tilegym/ops/cutile/linear_gluact_linear.py",
+      "definitions": [
+        {
+          "name": "_sigmoid_ct",
+          "start": 31,
+          "end": 37
+        },
+        {
+          "name": "_silu_fwd_ct",
+          "start": 40,
+          "end": 43
+        },
+        {
+          "name": "_relu_fwd_ct",
+          "start": 46,
+          "end": 49
+        },
+        {
+          "name": "_gelu_tanh_fwd_ct",
+          "start": 52,
+          "end": 65
+        },
+        {
+          "name": "_linear_gluact_autotune_configs",
+          "start": 69,
+          "end": 92
+        },
+        {
+          "name": "_linear_gluact_fwd_kernel",
+          "start": 95,
+          "end": 179
+        },
+        {
+          "name": "_cutile_autotune_linear_gluact",
+          "start": 182,
+          "end": 249
+        },
+        {
+          "name": "_linear_gluact_linear_cutile_impl",
+          "start": 252,
+          "end": 379
+        },
+        {
+          "name": "linear_gluact_linear",
+          "start": 382,
+          "end": 402
+        }
+      ],
+      "hazard_lines": {
+        "exhaustive_search": [
+          13,
+          200
+        ],
+        "get_device_capability": [
+          73
+        ],
+        "ByTarget": [],
+        "num_ctas": [
+          78,
+          79,
+          80,
+          82,
+          83,
+          86,
+          87,
+          88,
+          91,
+          92,
+          221,
+          226
+        ],
+        "occupancy": [
+          78,
+          79,
+          80,
+          82,
+          83,
+          86,
+          87,
+          88,
+          91,
+          92,
+          221,
+          226
+        ],
+        "check_bounds=False": [],
+        "allow_tma": [],
+        "torch.autograd": [],
+        "torch.sum": [],
+        ".item()": [],
+        "fill_": []
+      }
+    },
+    {
+      "path": "src/tilegym/ops/cutile/moe.py",
+      "sha256": "6971e8c1ebfa9c032342c0f7be00743f91463c214a63018f1acb753a4cb0c519",
+      "lines": 225,
+      "url": "https://github.com/NVIDIA/TileGym/blob/bb1a7e720594880be017e8fdf8f7e4f740656beb/src/tilegym/ops/cutile/moe.py",
+      "definitions": [
+        {
+          "name": "_fused_moe_kernel",
+          "start": 20,
+          "end": 133
+        },
+        {
+          "name": "invoke_fused_moe_kernel",
+          "start": 136,
+          "end": 225
+        }
+      ],
+      "hazard_lines": {
+        "exhaustive_search": [],
+        "get_device_capability": [],
+        "ByTarget": [],
+        "num_ctas": [],
+        "occupancy": [],
+        "check_bounds=False": [],
+        "allow_tma": [],
+        "torch.autograd": [],
+        "torch.sum": [],
+        ".item()": [
+          97
+        ],
+        "fill_": []
+      }
+    },
+    {
+      "path": "src/tilegym/ops/cutile/moe_align_block.py",
+      "sha256": "b135e50869360fbeada4325380c47688b74dc58ee74b594feb2f82a1184ce5c4",
+      "lines": 311,
+      "url": "https://github.com/NVIDIA/TileGym/blob/bb1a7e720594880be017e8fdf8f7e4f740656beb/src/tilegym/ops/cutile/moe_align_block.py",
+      "definitions": [
+        {
+          "name": "_moe_align_block_size_stage1_kernel",
+          "start": 13,
+          "end": 42
+        },
+        {
+          "name": "_moe_align_block_size_stage2_kernel",
+          "start": 45,
+          "end": 57
+        },
+        {
+          "name": "_moe_align_block_size_stage3_kernel",
+          "start": 60,
+          "end": 92
+        },
+        {
+          "name": "_moe_align_block_size_stage4b_scatter_kernel",
+          "start": 95,
+          "end": 146
+        },
+        {
+          "name": "_ceil_div",
+          "start": 149,
+          "end": 150
+        },
+        {
+          "name": "_moe_align_block_size",
+          "start": 166,
+          "end": 245
+        },
+        {
+          "name": "moe_align_block_size",
+          "start": 248,
+          "end": 311
+        }
+      ],
+      "hazard_lines": {
+        "exhaustive_search": [],
+        "get_device_capability": [],
+        "ByTarget": [],
+        "num_ctas": [],
+        "occupancy": [],
+        "check_bounds=False": [],
+        "allow_tma": [],
+        "torch.autograd": [],
+        "torch.sum": [],
+        ".item()": [],
+        "fill_": [
+          297
+        ]
+      }
+    },
+    {
+      "path": "src/tilegym/ops/cutile/matmul.py",
+      "sha256": "a0ee3486f08918084eb2bc7a994145365c19bf5440cfafd602882cbd8b5402ea",
+      "lines": 483,
+      "url": "https://github.com/NVIDIA/TileGym/blob/bb1a7e720594880be017e8fdf8f7e4f740656beb/src/tilegym/ops/cutile/matmul.py",
+      "definitions": [
+        {
+          "name": "_swizzle_2d",
+          "start": 24,
+          "end": 35
+        },
+        {
+          "name": "_compute_bid",
+          "start": 38,
+          "end": 44
+        },
+        {
+          "name": "_matmul_autotune_configs",
+          "start": 47,
+          "end": 71
+        },
+        {
+          "name": "_static_persistent_matmul_autotune_configs",
+          "start": 74,
+          "end": 169
+        },
+        {
+          "name": "_matmul_kernel",
+          "start": 172,
+          "end": 243
+        },
+        {
+          "name": "_static_persistent_matmul_kernel",
+          "start": 246,
+          "end": 352
+        },
+        {
+          "name": "_cutile_autotune_matmul",
+          "start": 355,
+          "end": 381
+        },
+        {
+          "name": "_cutile_autotune_static_persistent_matmul",
+          "start": 384,
+          "end": 446
+        },
+        {
+          "name": "matmul",
+          "start": 449,
+          "end": 483
+        }
+      ],
+      "hazard_lines": {
+        "exhaustive_search": [
+          10,
+          361,
+          389
+        ],
+        "get_device_capability": [
+          51,
+          78
+        ],
+        "ByTarget": [],
+        "num_ctas": [
+          55,
+          56,
+          58,
+          64,
+          68,
+          69,
+          70,
+          71,
+          86,
+          89,
+          92,
+          95,
+          98,
+          101,
+          104,
+          109,
+          112,
+          115,
+          118,
+          123,
+          126,
+          129,
+          132,
+          135,
+          140,
+          143,
+          148,
+          151,
+          154,
+          157,
+          163,
+          168,
+          367,
+          372,
+          393,
+          413,
+          418,
+          424
+        ],
+        "occupancy": [
+          55,
+          56,
+          64,
+          68,
+          69,
+          70,
+          71,
+          86,
+          89,
+          92,
+          95,
+          98,
+          101,
+          104,
+          109,
+          112,
+          115,
+          118,
+          123,
+          126,
+          129,
+          132,
+          135,
+          140,
+          143,
+          148,
+          151,
+          154,
+          157,
+          163,
+          168,
+          367,
+          372,
+          393,
+          413,
+          418,
+          425
+        ],
+        "check_bounds=False": [],
+        "allow_tma": [],
+        "torch.autograd": [],
+        "torch.sum": [],
+        ".item()": [],
+        "fill_": []
+      }
+    },
+    {
+      "path": "src/tilegym/ops/cutile/recurrent_gated_delta_rule.py",
+      "sha256": "6952cd0a2e665687a4e5c174ef8bcb083c93693af0202bf84673f02d2b4c6435",
+      "lines": 663,
+      "url": "https://github.com/NVIDIA/TileGym/blob/bb1a7e720594880be017e8fdf8f7e4f740656beb/src/tilegym/ops/cutile/recurrent_gated_delta_rule.py",
+      "definitions": [
+        {
+          "name": "_recurrent_gated_delta_rule_fwd_kernel",
+          "start": 23,
+          "end": 121
+        },
+        {
+          "name": "_recurrent_gated_delta_rule_fwd_kernel_persistent",
+          "start": 124,
+          "end": 230
+        },
+        {
+          "name": "_recurrent_gated_delta_rule_fwd_kernel_decode_vstream",
+          "start": 233,
+          "end": 341
+        },
+        {
+          "name": "_autotune_configs",
+          "start": 344,
+          "end": 361
+        },
+        {
+          "name": "_persistent_autotune_configs",
+          "start": 364,
+          "end": 372
+        },
+        {
+          "name": "_decode_vstream_autotune_configs",
+          "start": 375,
+          "end": 392
+        },
+        {
+          "name": "_KernelCandidate",
+          "start": 395,
+          "end": 399
+        },
+        {
+          "name": "_grid",
+          "start": 402,
+          "end": 408
+        },
+        {
+          "name": "_autotune",
+          "start": 411,
+          "end": 503
+        },
+        {
+          "name": "_RecurrentGatedDeltaRuleCuTile",
+          "start": 506,
+          "end": 637
+        },
+        {
+          "name": "recurrent_gated_delta_rule",
+          "start": 640,
+          "end": 663
+        }
+      ],
+      "hazard_lines": {
+        "exhaustive_search": [
+          489
+        ],
+        "get_device_capability": [],
+        "ByTarget": [],
+        "num_ctas": [],
+        "occupancy": [
+          23,
+          124,
+          233,
+          353,
+          358,
+          369,
+          383,
+          389,
+          458,
+          502
+        ],
+        "check_bounds=False": [
+          98,
+          99,
+          207,
+          208,
+          290,
+          291
+        ],
+        "allow_tma": [
+          59,
+          71,
+          80,
+          94,
+          112,
+          120,
+          168,
+          180,
+          189,
+          203,
+          221,
+          229,
+          273,
+          280,
+          305,
+          315,
+          332,
+          340
+        ],
+        "torch.autograd": [
+          506
+        ],
+        "torch.sum": [],
+        ".item()": [],
+        "fill_": []
+      }
+    },
+    {
+      "path": "src/tilegym/ops/cutile/chunk_gated_delta_rule.py",
+      "sha256": "94732c1d120b6f63140c69697a402f92f19d83e5e8956ed17aa46a574d7a074b",
+      "lines": 497,
+      "url": "https://github.com/NVIDIA/TileGym/blob/bb1a7e720594880be017e8fdf8f7e4f740656beb/src/tilegym/ops/cutile/chunk_gated_delta_rule.py",
+      "definitions": [
+        {
+          "name": "_ct_mm",
+          "start": 16,
+          "end": 24
+        },
+        {
+          "name": "_ct_solve_tril_serial",
+          "start": 27,
+          "end": 41
+        },
+        {
+          "name": "_ct_solve_tril_neumann_guarded",
+          "start": 44,
+          "end": 68
+        },
+        {
+          "name": "_intra_chunk_prepare_kernel",
+          "start": 71,
+          "end": 216
+        },
+        {
+          "name": "_chunk_inter_recurrence_kernel",
+          "start": 219,
+          "end": 348
+        },
+        {
+          "name": "_ChunkGatedDeltaRuleCuTile",
+          "start": 351,
+          "end": 470
+        },
+        {
+          "name": "chunk_gated_delta_rule",
+          "start": 473,
+          "end": 497
+        }
+      ],
+      "hazard_lines": {
+        "exhaustive_search": [],
+        "get_device_capability": [],
+        "ByTarget": [],
+        "num_ctas": [],
+        "occupancy": [
+          71,
+          384
+        ],
+        "check_bounds=False": [],
+        "allow_tma": [],
+        "torch.autograd": [
+          351
+        ],
+        "torch.sum": [],
+        ".item()": [],
+        "fill_": []
+      }
+    },
+    {
+      "path": "src/tilegym/ops/cutile/mamba2.py",
+      "sha256": "f10ad0fb4a14f7cf9d1e47502e94fe8a471f82ca7a9d3ea36113e28ae9a589c0",
+      "lines": 1987,
+      "url": "https://github.com/NVIDIA/TileGym/blob/bb1a7e720594880be017e8fdf8f7e4f740656beb/src/tilegym/ops/cutile/mamba2.py",
+      "definitions": [
+        {
+          "name": "_co_tile",
+          "start": 23,
+          "end": 91
+        },
+        {
+          "name": "_co_swap_tile",
+          "start": 94,
+          "end": 166
+        },
+        {
+          "name": "_compute_out_tiles",
+          "start": 169,
+          "end": 294
+        },
+        {
+          "name": "_compute_dd_dcb_dx_tile",
+          "start": 297,
+          "end": 437
+        },
+        {
+          "name": "_compute_da_db_dc_ddt_tile",
+          "start": 440,
+          "end": 637
+        },
+        {
+          "name": "_chunk_cumsum_autotune_configs",
+          "start": 640,
+          "end": 644
+        },
+        {
+          "name": "_fwd_pass_state_autotune_configs",
+          "start": 647,
+          "end": 671
+        },
+        {
+          "name": "_compute_out_configs",
+          "start": 674,
+          "end": 690
+        },
+        {
+          "name": "_compute_out_swap_configs",
+          "start": 693,
+          "end": 710
+        },
+        {
+          "name": "_bwd_pass_state_base_configs",
+          "start": 713,
+          "end": 731
+        },
+        {
+          "name": "_bwd_pass_state_autotune_configs",
+          "start": 734,
+          "end": 743
+        },
+        {
+          "name": "_compute_dd_dcb_dx_autotune_configs",
+          "start": 756,
+          "end": 775
+        },
+        {
+          "name": "_compute_da_db_dc_ddt_autotune_configs",
+          "start": 778,
+          "end": 796
+        },
+        {
+          "name": "chunk_cumsum_kernel",
+          "start": 799,
+          "end": 820
+        },
+        {
+          "name": "fwd_pass_state_kernel",
+          "start": 823,
+          "end": 979
+        },
+        {
+          "name": "compute_out_kernel",
+          "start": 982,
+          "end": 1018
+        },
+        {
+          "name": "compute_out_swap_kernel",
+          "start": 1021,
+          "end": 1058
+        },
+        {
+          "name": "bwd_pass_state_kernel",
+          "start": 1066,
+          "end": 1165
+        },
+        {
+          "name": "compute_dd_dcb_dx_kernel",
+          "start": 1168,
+          "end": 1266
+        },
+        {
+          "name": "compute_da_db_dc_ddt_kernel",
+          "start": 1269,
+          "end": 1380
+        },
+        {
+          "name": "_validate_chunk_size",
+          "start": 1392,
+          "end": 1394
+        },
+        {
+          "name": "_tuning_key",
+          "start": 1397,
+          "end": 1401
+        },
+        {
+          "name": "narrow_dtype",
+          "start": 1404,
+          "end": 1407
+        },
+        {
+          "name": "_num_sms",
+          "start": 1410,
+          "end": 1411
+        },
+        {
+          "name": "_chunk_cumsum",
+          "start": 1414,
+          "end": 1447
+        },
+        {
+          "name": "_fwd_pass_state",
+          "start": 1450,
+          "end": 1508
+        },
+        {
+          "name": "_compute_out",
+          "start": 1511,
+          "end": 1569
+        },
+        {
+          "name": "_fwd_pass_state_dual",
+          "start": 1572,
+          "end": 1640
+        },
+        {
+          "name": "_bwd_pass_state",
+          "start": 1643,
+          "end": 1719
+        },
+        {
+          "name": "_compute_dd_dcb_dx",
+          "start": 1722,
+          "end": 1792
+        },
+        {
+          "name": "_compute_da_db_dc_ddt",
+          "start": 1795,
+          "end": 1914
+        },
+        {
+          "name": "mamba2_chunk_forward",
+          "start": 1917,
+          "end": 1934
+        },
+        {
+          "name": "mamba2_chunk_backward",
+          "start": 1937,
+          "end": 1987
+        }
+      ],
+      "hazard_lines": {
+        "exhaustive_search": [
+          12,
+          1442,
+          1503,
+          1564,
+          1632,
+          1706,
+          1784,
+          1904
+        ],
+        "get_device_capability": [],
+        "ByTarget": [],
+        "num_ctas": [
+          667,
+          717,
+          727,
+          1490,
+          1619,
+          1695
+        ],
+        "occupancy": [
+          642,
+          644,
+          666,
+          681,
+          687,
+          700,
+          706,
+          716,
+          726,
+          769,
+          792,
+          1431,
+          1490,
+          1545,
+          1553,
+          1619,
+          1695,
+          1767,
+          1773,
+          1869,
+          1875
+        ],
+        "check_bounds=False": [],
+        "allow_tma": [],
+        "torch.autograd": [],
+        "torch.sum": [],
+        ".item()": [],
+        "fill_": []
+      }
+    },
+    {
+      "path": "src/tilegym/ops/cutile/fp8_quantization_matmul.py",
+      "sha256": "94597eb8dae385b79140bbbce46a076f3793b2bf6d16d1d9b1443438f58cac00",
+      "lines": 428,
+      "url": "https://github.com/NVIDIA/TileGym/blob/bb1a7e720594880be017e8fdf8f7e4f740656beb/src/tilegym/ops/cutile/fp8_quantization_matmul.py",
+      "definitions": [
+        {
+          "name": "_gemm_calculate_pid_ct",
+          "start": 25,
+          "end": 36
+        },
+        {
+          "name": "_w8a8_autotune_configs",
+          "start": 40,
+          "end": 60
+        },
+        {
+          "name": "_w8a8_early_config_prune",
+          "start": 63,
+          "end": 66
+        },
+        {
+          "name": "_w8a8_filter_use_tma",
+          "start": 69,
+          "end": 73
+        },
+        {
+          "name": "_w8a8_block_fp8_matmul_kernel",
+          "start": 76,
+          "end": 221
+        },
+        {
+          "name": "_cutile_autotune_w8a8",
+          "start": 225,
+          "end": 305
+        },
+        {
+          "name": "w8a8_block_fp8_matmul",
+          "start": 308,
+          "end": 428
+        }
+      ],
+      "hazard_lines": {
+        "exhaustive_search": [
+          10,
+          241,
+          291
+        ],
+        "get_device_capability": [],
+        "ByTarget": [],
+        "num_ctas": [
+          56,
+          287,
+          302,
+          367
+        ],
+        "occupancy": [
+          44,
+          48,
+          57,
+          287,
+          302,
+          368,
+          369,
+          370,
+          410
+        ],
+        "check_bounds=False": [],
+        "allow_tma": [
+          154,
+          164,
+          217
+        ],
+        "torch.autograd": [],
+        "torch.sum": [],
+        ".item()": [],
+        "fill_": []
+      }
+    }
+  ],
+  "excluded_directories": [
+    "skills",
+    "wiki",
+    ".agents",
+    ".claude"
+  ],
+  "installed": false,
+  "executed": false
+}

@@ -1,0 +1,13 @@
+{
+  "task_count": 35,
+  "cases_sha256": "b00890e4555a494954ece8fd7af57d8de0e411aa773e9f696c2fec69a452b6c0",
+  "default_backends_sha256": "0bdccd9f5a4f75c58b411f98acebfe14f4dfa5f5a9f98e5ac4fda82b43bb282c",
+  "catalog_file_sha256": "c0d9b0cc14ee073665aa72ca0426ca8008f12e1a5c5714f5b9a914293839c0e3",
+  "protected_upstream_match": true,
+  "implementation_changed": false,
+  "tests_run": false,
+  "test_reason": "survey and contract proposal only; no executable changes",
+  "gpu_launched": false,
+  "gpu_metrics": null,
+  "gpu_reason": "No TileGym port implemented or executed"
+}

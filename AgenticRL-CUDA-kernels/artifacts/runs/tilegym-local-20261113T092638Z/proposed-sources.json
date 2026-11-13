@@ -1,0 +1,17 @@
+{
+  "tilegym": {
+    "suite": "NVIDIA TileGym",
+    "url": "https://github.com/NVIDIA/TileGym",
+    "tag": "v1.5.1",
+    "commit": "bb1a7e720594880be017e8fdf8f7e4f740656beb",
+    "license": "MIT (LICENSE Section A; kernel sources only)",
+    "license_url": "https://github.com/NVIDIA/TileGym/blob/bb1a7e720594880be017e8fdf8f7e4f740656beb/LICENSE"
+  },
+  "liger": {
+    "suite": "Liger-Kernel (origin of TileGym Liger suite contracts)",
+    "url": "https://github.com/linkedin/Liger-Kernel",
+    "license": "BSD-2-Clause",
+    "license_url": "https://github.com/linkedin/Liger-Kernel/blob/42dc23c41dcaf1f95d858837aed5301fd4faa27a/LICENSE",
+    "note": "Origin-license snapshot only; no claim TileGym ports derive from this exact Liger revision."
+  }
+}
