@@ -2677,3 +2677,73 @@ the larger planning budget remains the relevant GPU capacity estimate.
 Each prepared request points to its own fresh public source freeze and
 manifest SHA-256. Claude launches acceptance, reports, then launches
 stratified only after review/approval. No Modal/W&B write or commit was made.
+
+## cuTile task candidates: local source and protocol checks, 2026-11-13
+
+Evidence: `artifacts/runs/cutile-local-20261113T014034Z/`. Nine existing tasks
+have opt-in task-local sources (10 device entry points). No cuTile kernel
+compiled or ran here. There is no CPU interpreter, and cuda-tile was not
+installed. The pinned 1.8.0 wheel's Python sources were inspected outside the
+repository for export spellings, gather/scatter tails, scalar tiles and MMA
+operand/accumulator support; the URL and digest are retained. This is API
+inspection, not compiler evidence.
+
+Source checks cover lazy exports, constructor signatures, AST parsing/backend
+and authored-name discovery, launch argument arity, fresh output targets,
+current-stream/device guards and absence of host Torch compute/synchronization.
+Symbol tests use explicitly synthetic `_Kt1_SYNTHETIC` names; they do not record
+observed device symbols. Protocol tests use mocked subprocess timings to check
+honest/hack/wrong gates and the flagship cuBLAS requirement, not device timing.
+The case/default-backend fingerprints and protected-file hashes are unchanged.
+Generated task READMEs retain their historical measured sections verbatim.
+
+Tier 1: 3 source tests, then 3 wiring tests, OK. Tier 2: 6 source tests, OK.
+The first Tier 1 run exposed a test guard treating AdamW scalar hyperparameters
+as tensors; the guard was corrected. The Tier 3 run had 20 passes and one
+constructor-signature failure: ModelNew inherited nn.Module's constructor while
+the reference declares `__init__(self)`. An explicit constructor fixed it;
+the final all-task layout check passed. Initial logs remain in the bundle.
+All final changes are covered by both full suites below.
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover
+PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 .venv/bin/python -m unittest discover
+```
+
+System interpreter, raw summary:
+
+```text
+Ran 339 tests in 565.597s
+
+OK (skipped=78)
+```
+
+Installed runtime, raw summary:
+
+```text
+Ran 344 tests in 1444.943s
+
+OK (skipped=29)
+```
+
+Skips cover missing Torch/backend packages, GPUs and opt-in integrations.
+Existing SQLite ResourceWarnings and expected negative-test stderr are retained
+in full logs. No failed/reaped GPU job was restarted. No Modal launch, tracking
+write, dependency installation or commit occurred.
+
+Only explicit stretch selection was enabled in suite wiring. The flagship
+honest bf16 4096-cubed cuTile row additionally follows the existing Triton
+performance gate: paired cuBLAS timing is mandatory and throughput must reach
+60% of that ceiling. Authored provenance stays 1.0 for this task (0.9 elsewhere),
+with zero library time. Tests show a missing ceiling cannot yield acceptance;
+performance failure does not redefine the environment reward.
+
+Prepared detached H200 requests use `--backends cutile --fixtures all
+--timeout-s 1200`. Tier smoke row counts are 15/6/6; a separate flagship
+acceptance request has 3 rows. Estimated walls are 14.1/6.5/10.7/10.4 minutes,
+respectively, based on 1.5 times archived Triton per-row smoke wall plus 60 s
+ordinary or 180 s matrix honest compile allowance and 120 s startup. Flagship
+acceptance adds 180 s honest / 30 s each control. Exact inputs and proxy cases
+are in `run-plan.json`. These allowances are not cuTile measurements or promises.
+Claude reviews, launches one request, reports actual symbols/results, and stops
+before any next request. Full catalog correctness remains open after smoke.

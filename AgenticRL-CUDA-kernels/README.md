@@ -203,23 +203,23 @@ All 71 suite rows passed in run `task-stage5-gpu-acceptance-20261110T002043Z`; d
 
 | Stage | Task | Reference solution | H200 result (honest scores, hack fails provenance, wrong fails verification) |
 |---|---|---|---|
-| 0 | `gemm_div_sum_scale` | Triton, CUDA | pass (smoke) |
-| 1 | `row_softmax` | Triton, CUDA | pass (smoke) |
+| 0 | `gemm_div_sum_scale` | Triton, CUDA, cuTile§ | pass (smoke) |
+| 1 | `row_softmax` | Triton, CUDA, cuTile§ | pass (smoke) |
 | 1 | `masked_mean`\* | Triton, CUDA | pass (smoke) |
 | 1 | `prefix_sum`\* | Triton, CUDA | pass (smoke; n = 10⁷ int32, exact) |
-| 2 | `rmsnorm` | Triton, CUDA | pass (smoke) |
+| 2 | `rmsnorm` | Triton, CUDA, cuTile§ | pass (smoke) |
 | 2 | `layernorm_residual_gelu` | Triton, CUDA | pass (smoke; 512 × 8192 bf16) |
-| 2 | `log_softmax_gather` | Triton, CUDA | pass (smoke) |
-| 2 | `fused_adamw` | Triton, CUDA | pass (smoke) |
-| 2 | `gemm_tensor_core` | Triton, CUDA, CuTe DSL | all three backends pass smoke and acceptance (4096³ bf16). Triton reaches 85.4% of cuBLAS (gate ≥ 60%, Triton only); CuTe DSL is correct but slow, at 2.6% of cuBLAS |
-| 3 | `grpo_group_norm` | Triton, CUDA | pass (smoke; 512 × 16 groups) |
-| 3 | `cispo_clip_weight` | Triton, CUDA | pass (smoke) |
+| 2 | `log_softmax_gather` | Triton, CUDA, cuTile§ | pass (smoke) |
+| 2 | `fused_adamw` | Triton, CUDA, cuTile§ | pass (smoke) |
+| 2 | `gemm_tensor_core` | Triton, CUDA, CuTe DSL, cuTile§ | all three backends pass smoke and acceptance (4096³ bf16). Triton reaches 85.4% of cuBLAS (gate ≥ 60%, Triton only); CuTe DSL is correct but slow, at 2.6% of cuBLAS |
+| 3 | `grpo_group_norm` | Triton, CUDA, cuTile§ | pass (smoke; 512 × 16 groups) |
+| 3 | `cispo_clip_weight` | Triton, CUDA, cuTile§ | pass (smoke) |
 | 3 | `packed_varlen_reduction` | Triton, CUDA | pass (smoke; 512 × 8192 sum) |
 | 4 | `decode_attention` | Triton, CUDA | pass (smoke; 8192-token context) |
 | 4 | `flash_attention_fwd` | Triton, CUDA | pass (smoke, 1024-token and acceptance cases) |
 | 4 | `grouped_gemm` | Triton | pass (smoke; 8 groups × 1024²) |
 | 4 | `moe_dense_gemm` | Triton, CUDA | pass (smoke; 64 tokens, 8 experts, shared expert) |
-| 4 | `residual_rmsnorm` | Triton, CUDA | pass (smoke; 4 × 2048 × 8192 bf16) |
+| 4 | `residual_rmsnorm` | Triton, CUDA, cuTile§ | pass (smoke; 4 × 2048 × 8192 bf16) |
 | 4 | `topk_sampling` | Triton, CUDA | pass (smoke; 32 × 128256 vocabulary, k = 32) |
 | 4 | `fp8_gemm`\*† | none by design | — |
 | 4 | `int8_gemm`\*† | none by design | — |
@@ -242,6 +242,8 @@ All 71 suite rows passed in run `task-stage5-gpu-acceptance-20261110T002043Z`; d
 \* Evaluation-only: adapted from GPU MODE reference kernels, whose license does not clear training use (`--purpose train` is refused).
 † Contract only by design: the INT8/FP8 workloads are specified (inputs, reference, checks), but Stage 4 deliberately enables no backend for them; their `ModelNew` raises `unavailable`.
 ‡ Evaluation-only adaptations of documented EAGLE-4 behavior. This project includes or is derived from Eagle 4 technology developed by Eagle AI Corp. It is not an official Eagle AI Corp project. The Eagle 4 Source-Available License is not OSI-approved; its [LICENSE](legal/eagle4/LICENSE), [NOTICE](legal/eagle4/NOTICE), [Trademark Policy](legal/eagle4/TRADEMARKS.md), acceptance conditions and exact repository-defined contracts are recorded in [EAGLE4_STAGE5.md](EAGLE4_STAGE5.md). All nine tasks refuse training use. Expanded grids and source presence are not GPU acceptance. Use `--fixtures all` to include wrong-ancestor controls and GDN chain replay.
+
+§ cuTile candidate, opt-in only (`--backends cutile`; declared as a stretch backend, so default suite rows are unchanged). Written and checked at source level, but **not yet compiled or run on a GPU**: cuTile has no CPU interpreter and `cuda-tile` is not in the local `.venv`, so the H200 result in that row comes from the other backends. The flagship 4096³ bf16 `gemm_tensor_core` cuTile row faces the same 100% authored-provenance and 60%-of-cuBLAS gates as Triton. See [Opt-in cuTile task candidates](#opt-in-cutile-task-candidates).
 
 Runs: `task-stage1-20261109T004826Z` (stages 0–1, 24/24), `task-stage23-20261109T013032Z` (stages 2–3, 51/54; the 3 failures are the CUDA tensor-core GEMM build, since fixed), `task-stage4-smoke-20261109T020100Z` (stage 4, 33 passed, 3 unavailable for grouped GEMM CUDA), the larger-case batch `…-20261109T021131Z` (all pass except the CuTe DSL GEMM retest), `task-cute-fix-{smoke,acceptance}-20261109T030234Z` (CuTe DSL GEMM after its fix: 3/3 each), `task-stage5-gpu-smoke-20261109T190928Z` (stage 5 smoke, 71/71), `task-stage5-gpu-acceptance-20261109T222837Z` (stage 5 largest cases, 52/71 before the int32 and profiler-record fixes), and the rerun `task-stage5-gpu-acceptance-20261110T002043Z` (stage 5 largest cases after all fixes, 71/71). Stage 5 evidence is under `artifacts/runs/`. Each run used a frozen source; [VALIDATION.md](VALIDATION.md) lists which files changed afterwards. Under the CPU interpreter, bf16 `tl.dot` kernels fail and `topk_sampling` is too slow, so those tasks rely on the GPU results. "Pass" covers the listed cases on one H200, and kernel attribution is name-based.
 
@@ -850,3 +852,40 @@ Earlier summaries, including these two runs, still read `partial` for that
 reason.
 [Case IDs, resource assumptions and the prepared requests](artifacts/runs/stage6-gpu-lock-local-20261111T170616Z/README.md)
 are kept with the planning evidence.
+
+## Opt-in cuTile task candidates
+
+Nine existing tasks now have task-local cuTile source candidates, selected only
+with `--backends cutile`. They remain `stretch_backends`; default backends,
+cases, dtypes and suite row counts are unchanged.
+
+| Tier | Tasks | Fixed launch choices |
+|---|---|---|
+| 1 | rmsnorm, row_softmax, cispo_clip_weight, fused_adamw, grpo_group_norm | One power-of-two tile per reduction row/group; 1024-element tiles for elementwise work |
+| 2 | log_softmax_gather, residual_rmsnorm | Online log-sum-exp with 1024-wide vocabulary tiles; full power-of-two residual RMS row |
+| 3 | gemm_div_sum_scale, gemm_tensor_core | MMA 32x64x32 plus row reduction; MMA 64x128x64 (16-row tile for skinny M) plus bias |
+
+Each task's generated README records its design. Wrappers allocate outputs,
+read metadata and launch on the current stream; inputs are read-only. The
+residual sum rounds to bf16 before RMS accumulation. GEMM uses fp32 accumulation;
+fp32 input operands are not cast to TF32. Tile choices are source decisions,
+not measured performance recommendations.
+
+The flagship bf16 4096-cubed `gemm_tensor_core` cuTile row must satisfy the same
+100% authored-provenance and 60%-of-cuBLAS performance gates as Triton. Its
+512-cubed smoke row cannot establish flagship acceptance. No thresholds,
+reward rules, tolerances or attribution patterns were relaxed.
+
+Local checks are source/protocol checks only. These nine candidates have **not
+compiled or executed on a GPU**; their timing, speedup, provenance and observed
+device symbols are not measured. cuTile has no CPU interpreter. The existing
+AXPBY GPU results above do not validate these candidates. The optional package
+and pinned Modal image are unchanged.
+
+[Prepared requests and local evidence](artifacts/runs/cutile-local-20261113T014034Z/README.md)
+cover tier smoke runs (15, 6 and 6 rows; estimated 14.1, 6.5 and 10.7 minutes)
+and a separate flagship acceptance run (3 rows; estimated 10.4 minutes).
+Estimates use archived Triton wall times with explicit compile/startup allowances,
+not cuTile measurements. Claude reviews and launches each detached H200 request
+separately after approval. No Modal run was launched here. Backend promotion
+and the LoRA/attention stretch work require later GPU evidence and user approval.

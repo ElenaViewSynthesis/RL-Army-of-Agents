@@ -407,3 +407,20 @@
   time and wider-case honest bounds still require hardware evidence. Request
   1200 s per case rather than extrapolating the smoke's demonstrated 600 s cap.
   fp16-intermediate remains diagnostic. No Modal run or live W&B write was made.
+
+- **Nine cuTile task candidates: source checked, GPU unverified.** rmsnorm,
+  row_softmax, cispo_clip_weight, fused_adamw, grpo_group_norm,
+  log_softmax_gather, residual_rmsnorm, gemm_div_sum_scale and gemm_tensor_core
+  are opt-in stretch backends. No local cuTile compiler/runtime or CPU
+  interpreter is available; neither suite establishes their compilation,
+  numerical correctness, device symbols, provenance or speed. Full 8192-wide
+  row tiles may exert register pressure. Online 1024-wide vocabulary tiles
+  require up to 126 loop iterations. Native fp32 MMA support was inspected in
+  the pinned wheel, but lowering and error behavior remain GPU checks.
+  The flagship GEMM's unchanged 100% authored and 60%-of-cuBLAS gates can reject
+  this conservative candidate; stop and report measurements if it fails.
+  Smoke tests alone do not validate all catalog shapes/dtypes or flagship
+  acceptance. Prepared per-tier H200 smoke and flagship acceptance requests
+  are in `artifacts/runs/cutile-local-20261113T014034Z/`; none was launched.
+  No backend promotion, LoRA shrink or flash-attention stretch work begins
+  without the required GPU passes and user approval.
