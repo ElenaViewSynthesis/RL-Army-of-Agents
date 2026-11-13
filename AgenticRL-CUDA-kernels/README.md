@@ -18,6 +18,11 @@ This project extends the environment released with [CUDA-Agent](https://github.c
 
 New to the terminology (CUDA-graph replay, provenance, BGMV/SGMV, the relative-error bound, GRPO vs DAPO vs CISPO and more)? See the [glossary](GLOSSARY.md).
 
+**Interactive reports** (Claude artifacts, built from the committed H200 evidence):
+
+- [Stage 5 kernel timings](https://claude.ai/artifact/Efm4o8YvrYm29LMbtM9sy2): per-task and per-backend kernel times against eager PyTorch and `torch.compile` for the nine EAGLE-4 tasks at their largest cases (run `task-stage5-gpu-acceptance-20261110T002043Z`).
+- [Stage 6 Multi-LoRA Report](https://claude.ai/artifact/RmbhAQDXMQBgdopF1dBzMp): the six multi-LoRA tasks, token patterns and ranks, a coverage matrix with a detail view for every suite row, Nsight timelines of CUDA-graph capture and replay, performance, and H200 time across all Stage 6 runs.
+
 > [!IMPORTANT]
 > **First H200 measurements now exist.** Modal runs `20261106T142830Z` and
 > `20261106T185236Z` executed the shipped fixtures. The first found a CUDA C++
