@@ -102,6 +102,34 @@ DETAILS = {
         "Operands are E4M3FN tensors, with explicit fp32 row scales for A and column scales "
         "for B. Reference output is `(A.float()@B.float())*scale_a[:,None]*scale_b[None,:]`. "
         "Scales are inputs, not inferred from output. No tolerance relaxation is approved."),
+    "relu_squared": (
+        "Stage 7, adapted from NVIDIA TileGym v1.5.1 `suites/liger/cutile/relu_squared.py` "
+        "(a cuTile port of the Liger-Kernel operator). Arithmetic is fp32; the output is cast "
+        "once to the input dtype and is a new tensor. H=14,336 is not a multiple of 1,024, so "
+        "the largest cases exercise the tail. Acceptance is the last (largest) case."),
+    "silu_and_mul": (
+        "Stage 7, adapted from NVIDIA TileGym v1.5.1 `ops/cutile/silu_and_mul.py`. The input is "
+        "`(B,2H)`; **SiLU applies to the first half** and multiplies the second half, matching "
+        "the gate/up order of `moe_dense_gemm`. All arithmetic is fp32 with one final cast; "
+        "TileGym's bf16 arithmetic would fail the 1e-2 tolerance on some elements. Output "
+        "`(B,H)` is a new tensor. Acceptance is the last (largest) case."),
+    "geglu_tanh": (
+        "Stage 7, adapted from NVIDIA TileGym v1.5.1 `ops/cutile/activation/geglu.py` and "
+        "`gelu.py`. The input is `(B,2H)`; **the first half is the multiplier and GELU applies "
+        "to the second half**, the opposite split from `silu_and_mul`. GELU is the **tanh "
+        "approximation** `0.5*b*(1+tanh(sqrt(2/pi)*(b+0.044715*b^3)))`; TileGym's `approximate="
+        "\"none\"` path uses the same tanh formula, and cuTile 1.8.0 has no `erf`. Tanh and exact "
+        "erf GELU differ by at most 4.7e-4, inside the tolerance, so this task is **not** "
+        "evidence about the exact-erf `layernorm_residual_gelu` contract. Arithmetic is fp32 "
+        "with one final cast. Acceptance is the last (largest) case."),
+    "rotary_embedding": (
+        "Stage 7, adapted from NVIDIA TileGym v1.5.1 `ops/cutile/rope.py`. Half-split (Llama) "
+        "layout: `x1=x[...,:D/2]`, `x2=x[...,D/2:]`, outputs `x1*cos-x2*sin` and "
+        "`x2*cos+x1*sin`. `q` is `(B,32,S,D)` and `k` is `(B,8,S,D)` (GQA); `cos`/`sin` are fp32 "
+        "`(S,D/2)` Llama tables with base 10,000. **Outputs are new tensors**: TileGym rotates "
+        "Q and K in place, which this contract forbids. The verifier compares outputs only and "
+        "does not detect in-place mutation; that rule is enforced by source tests. Arithmetic "
+        "is fp32 with one final cast. Acceptance is the last (largest) case."),
     "int8_gemm": (
         "**Contract only: no authored GPU fixture or timing baseline is shipped yet.** "
         "Operands are signed int8; products accumulate in int32 without overflow for "
@@ -119,6 +147,10 @@ CUTILE_DETAILS = {
     "row_softmax": "One block per row, power-of-two tile up to 8192; negative-infinity gather padding for max, fp32 exp/sum, input-dtype output. Out-of-range stores are skipped.",
     "cispo_clip_weight": "1024-element flattened tiles; bounds-checked gathers/scatters, fp32 exp and minimum/maximum, boolean where and sequence-advantage gather. This implements only the existing forward contract.",
     "fused_adamw": "1024-element flattened tiles; one launch writes all three fp32 outputs. Bias corrections are scalar hyperparameter arithmetic; every input remains read-only.",
+    "relu_squared": "Two-dimensional grid (row, 1024-wide chunk) with bounds-checked gathers and scatters; fp32 max and square, input-dtype output. No tuning, capability branch or launch hint.",
+    "silu_and_mul": "Two-dimensional grid (row, 1024-wide chunk); the gate is gathered from the first half and the up projection from the second, fp32 sigmoid via exp, input-dtype output. No tuning, capability branch or launch hint.",
+    "geglu_tanh": "Two-dimensional grid (row, 1024-wide chunk); the multiplier from the first half, tanh-GELU of the second half computed as 1-2/(exp(2z)+1) in fp32 (exp is H200-validated; ct.tanh is not), input-dtype output.",
+    "rotary_embedding": "One launch per tensor over 16-row tiles of the flattened (B*H*S, D) view, loading both halves with ct.load and the matching 16-row slice of the (S, D/2) tables; fp32 rotation, stores into a fresh output. S is a multiple of 16, so a tile never straddles a sequence boundary.",
     "grpo_group_norm": "One block per group with the next power-of-two width (1/4/8/16 in the catalog); masked centered tails, population variance and sqrt(variance)+eps.",
 }
 
