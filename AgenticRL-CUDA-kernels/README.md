@@ -18,10 +18,22 @@ This project extends the environment released with [CUDA-Agent](https://github.c
 
 New to the terminology (CUDA-graph replay, provenance, BGMV/SGMV, the relative-error bound, GRPO vs DAPO vs CISPO and more)? See the [glossary](GLOSSARY.md).
 
-**Interactive reports** (Claude artifacts, built from the committed H200 evidence):
+**Interactive reports** (Claude artifacts, built from the committed H200 evidence). To view them you must be signed in to [claude.ai](https://claude.ai); a signed-out visitor sees a sign-in page instead.
 
 - [Stage 5 kernel timings](https://claude.ai/artifact/Efm4o8YvrYm29LMbtM9sy2): per-task and per-backend kernel times against eager PyTorch and `torch.compile` for the nine EAGLE-4 tasks at their largest cases (run `task-stage5-gpu-acceptance-20261110T002043Z`).
 - [Stage 6 Multi-LoRA Report](https://claude.ai/artifact/RmbhAQDXMQBgdopF1dBzMp): the six multi-LoRA tasks, token patterns and ranks, a coverage matrix with a detail view for every suite row, Nsight timelines of CUDA-graph capture and replay, performance, and H200 time across all Stage 6 runs.
+
+Two charts from the Stage 6 report, as static images:
+
+![Coverage matrix of the Stage 6 stratified run: one cell per task, case, backend and fixture; 312 passed, 0 failed, 24 planned not-applicable](assets/stage6/fig_stage6_coverage_stratified.svg)
+
+**Coverage matrix · Stratified** (`stage6-stratified-20261112T094226Z`): every row of the stratified H200 run, one cell per task × case × backend × fixture. Honest cells show the reward tier earned (3 = faster than eager and `torch.compile`, 2 = faster than eager, 1 = correct); control cells show whether the hack, wrong, wrong-padding or wrong-skip control was caught. Hatched cells are planned not-applicable controls (no skipped tokens or no rank padding to test), not failures; `lora_segment_metadata` has no padding or skip controls.
+
+![Per-slot ranks for every Stage 6 case in the evidence, with rank padding to a multiple of 16 hatched](assets/stage6/fig_stage6_slot_ranks.svg)
+
+**Per-slot ranks for every case in the evidence**: one row per Stage 6 case, one bar per adapter slot, on a log₂ rank axis. With mixed ranks, slot *i* gets rank `min(rank, (8, 16, 32, 64, 128, 256)[i mod 6])`. Hatched extensions are the padding to a multiple of 16, which is filled with NaN; the `wrong_padding` control reads it, so cases without padding have nothing for that control to catch.
+
+Both are regenerated from the committed suite rows with `python3 -m scripts.make_stage6_figures --out assets/stage6`.
 
 > [!IMPORTANT]
 > **First H200 measurements now exist.** Modal runs `20261106T142830Z` and
@@ -177,7 +189,7 @@ Candidate top-k and the two 32k-context attention kernels are correct but untune
 **Figure 2.** Time per call at each Stage 5 task's largest case, as reward-profiler device time on a log scale from microseconds to seconds.
 Filled circles are eager PyTorch, hollow circles `torch.compile`, squares the CUDA solution and triangles the Triton solution.
 The gap between a solution and the two baselines shows the headroom: `torch.compile` beats every reference solution on the 32k attention tasks and top-k.
-All 71 suite rows passed in run `task-stage5-gpu-acceptance-20261110T002043Z`; data, LaTeX table and captions are in [`assets/stage5/`](assets/stage5/). An interactive dashboard of the same timings (per task and backend, against eager and `torch.compile`) is published as a Claude artifact, [Stage 5 kernel timings](https://claude.ai/artifact/Efm4o8YvrYm29LMbtM9sy2) (private; access is granted from the page's Share menu). It reads the CSV in `assets/stage5/` as a fixed dataset.
+All 71 suite rows passed in run `task-stage5-gpu-acceptance-20261110T002043Z`; data, LaTeX table and captions are in [`assets/stage5/`](assets/stage5/). An interactive dashboard of the same timings (per task and backend, against eager and `torch.compile`) is published as a Claude artifact, [Stage 5 kernel timings](https://claude.ai/artifact/Efm4o8YvrYm29LMbtM9sy2) (viewing requires being signed in to claude.ai). It reads the CSV in `assets/stage5/` as a fixed dataset.
 
 | Stage | Focus | H200 status |
 |---|---|---|
@@ -244,7 +256,7 @@ Stage 6 results above are from the H200 fp16 smoke rerun `stage6-smoke-rerun-202
 
 **Stage 6 stratified:** `stage6-stratified-20261112T094226Z` (commit `813f659`, manifest `318be689…`) ran six stable cases per task (36 cases, fp16 and bf16, ranks 8 to 256, 1 and 3 slices, mixed ranks, and none/mixed/single/distinct token patterns) on CUDA and Triton with every fixture, `--cuda-graphs`, the relative-bound gate and the per-GPU lock, on one NVIDIA H200 on Modal. 312 rows passed, 0 failed, and 24 were not applicable as planned (14 wrong-skip controls on cases with no skipped tokens, 10 wrong-padding controls on cases with no rank padding); the summary reads `partial` only because it counts those rows as unavailable. All 72 honest kernels verified with authored provenance 1.0 and captured and replayed correctly as CUDA graphs; all 72 hacks failed provenance; all 72 wrong, 50 wrong-padding and 46 wrong-skip controls failed verification. Honest rewards: Triton 32 `faster_than_both`, 3 `faster_than_eager`, 1 `correct`; CUDA 23, 6 and 7. [Evidence](artifacts/runs/stage6-stratified-20261112T094226Z/).
 
-**Stage 6 technical report:** an interactive report built from the five runs' evidence (task and token-pattern diagrams, the per-row coverage matrix with a detail view for every row, CUDA-graph capture and replay snapshots, performance and H200 time) is published as a Claude artifact at <https://claude.ai/artifact/RmbhAQDXMQBgdopF1dBzMp> (private; access is granted from the page's Share menu). Every figure on it names the run ID and evidence field it was drawn from.
+**Stage 6 technical report:** an interactive report built from the five runs' evidence (task and token-pattern diagrams, the per-row coverage matrix with a detail view for every row, CUDA-graph capture and replay snapshots, performance and H200 time) is published as a Claude artifact at <https://claude.ai/artifact/RmbhAQDXMQBgdopF1dBzMp> (viewing requires being signed in to claude.ai). Every figure on it names the run ID and evidence field it was drawn from.
 
 **H200 time per Stage 6 run** (every Stage 6 run uses one NVIDIA H200 on Modal; suite wall time, excluding container start-up and queueing): first smoke 1,435 s (~24 min), smoke rerun 1,343 s (~22 min), aborted acceptance 104 s, acceptance 3,032 s (~51 min; planned at 2.4 h) and stratified 9,247 s (~2.6 h; planned at 3.9 h; it also waited 53 min in Modal's H200 queue before starting), so about 4.2 GPU-hours for the suite runs. The Nsight graph-trace run `graph-trace-20261112T220601Z` added 427 s (~7 min, after ~17 min in the queue), backfilled from the Modal volume's file times in [`wall-time-backfill.json`](artifacts/runs/graph-trace-20261112T220601Z/wall-time-backfill.json) because the trace runner did not record it then (it now writes `execution.wall_s`); Stage 6 GPU work totals about 4.3 GPU-hours.
 
