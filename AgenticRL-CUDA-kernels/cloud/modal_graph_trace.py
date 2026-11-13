@@ -10,6 +10,7 @@ import json
 import os
 import re
 import subprocess
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 from uuid import uuid4
@@ -40,11 +41,21 @@ def trace(run_id: str, tasks: str, backends: str, case_set: str, replays: int) -
         proc = subprocess.run(probe, cwd=REMOTE, env=env, capture_output=True, text=True, timeout=300)
         (output / f"{name}.stdout.log").write_text(proc.stdout)
         (output / f"{name}.stderr.log").write_text(proc.stderr)
-    proc = subprocess.run(command, cwd=REMOTE, env=env, capture_output=True, text=True, timeout=7000)
-    (output / "trace.stdout.log").write_text(proc.stdout)
-    (output / "trace.stderr.log").write_text(proc.stderr)
-    summary = {"run_id": run_id, "command": command, "returncode": proc.returncode,
-               "tail": proc.stdout.strip().splitlines()[-1:] if proc.stdout.strip() else []}
+    started = time.monotonic()
+    try:
+        proc = subprocess.run(command, cwd=REMOTE, env=env, capture_output=True, text=True, timeout=7000)
+        stdout, stderr, returncode, timed_out = proc.stdout, proc.stderr, proc.returncode, False
+    except subprocess.TimeoutExpired as exc:
+        stdout, stderr, returncode, timed_out = exc.stdout or "", exc.stderr or "", None, True
+        stdout = stdout.decode(errors="replace") if isinstance(stdout, bytes) else stdout
+        stderr = stderr.decode(errors="replace") if isinstance(stderr, bytes) else stderr
+    (output / "trace.stdout.log").write_text(stdout)
+    (output / "trace.stderr.log").write_text(stderr)
+    # Same shape as the task-suite summary, so GPU-time totals read execution.wall_s.
+    summary = {"run_id": run_id, "command": command, "returncode": returncode,
+               "execution": {"command": " ".join(command), "returncode": returncode,
+                             "timed_out": timed_out, "wall_s": time.monotonic() - started},
+               "tail": stdout.strip().splitlines()[-1:] if stdout.strip() else []}
     (output / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")
     volume.commit()
     return summary
