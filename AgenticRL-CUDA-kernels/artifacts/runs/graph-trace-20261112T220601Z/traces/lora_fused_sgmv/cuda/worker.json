@@ -1,0 +1,75 @@
+{
+  "schema": "graph-trace-worker-v1",
+  "task": "lora_fused_sgmv",
+  "case": "tokens4096_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+  "replays": 5,
+  "eager_forwards": 2,
+  "seed": 0,
+  "impls": {
+    "generated": {
+      "graph_capturable": true,
+      "graph_replay_ok": true,
+      "graph_error": null,
+      "host_us": {
+        "forward (no graph)": [
+          118214.91500001002,
+          118150.04499999304
+        ],
+        "warm-up (side stream x3)": [
+          354709.1770000179
+        ],
+        "capture": [
+          48895.41800002917
+        ],
+        "replay 1": [
+          118847.77699998494
+        ],
+        "replay 2": [
+          118711.9069999767
+        ],
+        "replay 3": [
+          118736.96899999687
+        ],
+        "replay 4": [
+          118739.49800002492
+        ],
+        "replay 5": [
+          118731.17599998295
+        ]
+      }
+    },
+    "eager": {
+      "graph_capturable": true,
+      "graph_replay_ok": true,
+      "graph_error": null,
+      "host_us": {
+        "forward (no graph)": [
+          127972.5180000355,
+          127951.96799999075
+        ],
+        "warm-up (side stream x3)": [
+          384764.6500000224
+        ],
+        "capture": [
+          43619.53900001936
+        ],
+        "replay 1": [
+          129092.76799996405
+        ],
+        "replay 2": [
+          127971.95299998521
+        ],
+        "replay 3": [
+          127988.43100000567
+        ],
+        "replay 4": [
+          127821.47799998711
+        ],
+        "replay 5": [
+          128133.42800001237
+        ]
+      }
+    }
+  },
+  "device_name": "NVIDIA H200"
+}

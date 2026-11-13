@@ -1,0 +1,13 @@
+{"task": "lora_shrink_bgmv", "backend": "cuda", "status": "traced", "reason": null}
+{"task": "lora_shrink_bgmv", "backend": "triton", "status": "traced", "reason": null}
+{"task": "lora_expand_bgmv", "backend": "cuda", "status": "traced", "reason": null}
+{"task": "lora_expand_bgmv", "backend": "triton", "status": "traced", "reason": null}
+{"task": "lora_segment_metadata", "backend": "cuda", "status": "traced", "reason": null}
+{"task": "lora_segment_metadata", "backend": "triton", "status": "traced", "reason": null}
+{"task": "lora_shrink_sgmv", "backend": "cuda", "status": "traced", "reason": null}
+{"task": "lora_shrink_sgmv", "backend": "triton", "status": "traced", "reason": null}
+{"task": "lora_expand_sgmv", "backend": "cuda", "status": "traced", "reason": null}
+{"task": "lora_expand_sgmv", "backend": "triton", "status": "traced", "reason": null}
+{"task": "lora_fused_sgmv", "backend": "cuda", "status": "traced", "reason": null}
+{"task": "lora_fused_sgmv", "backend": "triton", "status": "traced", "reason": null}
+{"traced": 12, "total": 12}

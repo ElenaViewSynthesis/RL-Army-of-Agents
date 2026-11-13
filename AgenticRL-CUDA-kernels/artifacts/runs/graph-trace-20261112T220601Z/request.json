@@ -1,0 +1,8 @@
+{
+  "run_id": "graph-trace-20261112T220601Z",
+  "tasks": "stage6",
+  "backends": "cuda,triton",
+  "case_set": "acceptance",
+  "replays": 5,
+  "gpu_requested": "H200"
+}

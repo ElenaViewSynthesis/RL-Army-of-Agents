@@ -1,0 +1,446 @@
+{
+  "schema": "graph-trace-timeline-v1",
+  "title": "lora_fused_sgmv \u00b7 cuda \u00b7 tokens4096_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+  "svg": {
+    "generated": "timeline-generated.svg",
+    "eager": "timeline-eager.svg"
+  },
+  "phases": {
+    "generated": [
+      {
+        "phase": "forward (no graph)",
+        "host_us": 118205.658,
+        "api_calls": 8,
+        "api_by_category": {
+          "copy": 1,
+          "other": 3,
+          "launch": 3,
+          "sync": 1
+        },
+        "graph_launches": 0,
+        "kernels": 3,
+        "kernels_as_graph_nodes": 0,
+        "copies": 1,
+        "copies_as_graph_nodes": 0,
+        "gpu_span_us": 118115.251,
+        "gpu_busy_us": 118102.739,
+        "distinct_kernels": [
+          "lora_cuda_copy",
+          "lora_cuda_expand",
+          "lora_cuda_shrink"
+        ]
+      },
+      {
+        "phase": "forward (no graph)",
+        "host_us": 118137.916,
+        "api_calls": 8,
+        "api_by_category": {
+          "copy": 1,
+          "other": 3,
+          "launch": 3,
+          "sync": 1
+        },
+        "graph_launches": 0,
+        "kernels": 3,
+        "kernels_as_graph_nodes": 0,
+        "copies": 1,
+        "copies_as_graph_nodes": 0,
+        "gpu_span_us": 118095.186,
+        "gpu_busy_us": 118087.858,
+        "distinct_kernels": [
+          "lora_cuda_copy",
+          "lora_cuda_expand",
+          "lora_cuda_shrink"
+        ]
+      },
+      {
+        "phase": "warm-up (side stream x3)",
+        "host_us": 354692.339,
+        "api_calls": 38,
+        "api_by_category": {
+          "other": 15,
+          "capture": 6,
+          "sync": 5,
+          "copy": 3,
+          "launch": 9
+        },
+        "graph_launches": 0,
+        "kernels": 9,
+        "kernels_as_graph_nodes": 0,
+        "copies": 3,
+        "copies_as_graph_nodes": 0,
+        "gpu_span_us": 354307.256,
+        "gpu_busy_us": 354253.848,
+        "distinct_kernels": [
+          "lora_cuda_copy",
+          "lora_cuda_expand",
+          "lora_cuda_shrink"
+        ]
+      },
+      {
+        "phase": "capture",
+        "host_us": 48894.013,
+        "api_calls": 30,
+        "api_by_category": {
+          "sync": 2,
+          "other": 10,
+          "capture": 14,
+          "copy": 1,
+          "launch": 3
+        },
+        "graph_launches": 0,
+        "kernels": 0,
+        "kernels_as_graph_nodes": 0,
+        "copies": 0,
+        "copies_as_graph_nodes": 0,
+        "gpu_span_us": null,
+        "gpu_busy_us": null,
+        "distinct_kernels": []
+      },
+      {
+        "phase": "replay 1",
+        "host_us": 118843.154,
+        "api_calls": 15,
+        "api_by_category": {
+          "copy": 13,
+          "graph_launch": 1,
+          "sync": 1
+        },
+        "graph_launches": 1,
+        "kernels": 3,
+        "kernels_as_graph_nodes": 3,
+        "copies": 14,
+        "copies_as_graph_nodes": 1,
+        "gpu_span_us": 118745.682,
+        "gpu_busy_us": 118727.25,
+        "distinct_kernels": [
+          "lora_cuda_copy",
+          "lora_cuda_expand",
+          "lora_cuda_shrink"
+        ]
+      },
+      {
+        "phase": "replay 2",
+        "host_us": 118696.29,
+        "api_calls": 15,
+        "api_by_category": {
+          "copy": 13,
+          "graph_launch": 1,
+          "sync": 1
+        },
+        "graph_launches": 1,
+        "kernels": 3,
+        "kernels_as_graph_nodes": 3,
+        "copies": 14,
+        "copies_as_graph_nodes": 1,
+        "gpu_span_us": 118657.458,
+        "gpu_busy_us": 118639.442,
+        "distinct_kernels": [
+          "lora_cuda_copy",
+          "lora_cuda_expand",
+          "lora_cuda_shrink"
+        ]
+      },
+      {
+        "phase": "replay 3",
+        "host_us": 118723.965,
+        "api_calls": 15,
+        "api_by_category": {
+          "copy": 13,
+          "graph_launch": 1,
+          "sync": 1
+        },
+        "graph_launches": 1,
+        "kernels": 3,
+        "kernels_as_graph_nodes": 3,
+        "copies": 14,
+        "copies_as_graph_nodes": 1,
+        "gpu_span_us": 118690.642,
+        "gpu_busy_us": 118672.658,
+        "distinct_kernels": [
+          "lora_cuda_copy",
+          "lora_cuda_expand",
+          "lora_cuda_shrink"
+        ]
+      },
+      {
+        "phase": "replay 4",
+        "host_us": 118729.262,
+        "api_calls": 15,
+        "api_by_category": {
+          "copy": 13,
+          "graph_launch": 1,
+          "sync": 1
+        },
+        "graph_launches": 1,
+        "kernels": 3,
+        "kernels_as_graph_nodes": 3,
+        "copies": 14,
+        "copies_as_graph_nodes": 1,
+        "gpu_span_us": 118697.713,
+        "gpu_busy_us": 118678.769,
+        "distinct_kernels": [
+          "lora_cuda_copy",
+          "lora_cuda_expand",
+          "lora_cuda_shrink"
+        ]
+      },
+      {
+        "phase": "replay 5",
+        "host_us": 118724.978,
+        "api_calls": 15,
+        "api_by_category": {
+          "copy": 13,
+          "graph_launch": 1,
+          "sync": 1
+        },
+        "graph_launches": 1,
+        "kernels": 3,
+        "kernels_as_graph_nodes": 3,
+        "copies": 14,
+        "copies_as_graph_nodes": 1,
+        "gpu_span_us": 118696.786,
+        "gpu_busy_us": 118678.482,
+        "distinct_kernels": [
+          "lora_cuda_copy",
+          "lora_cuda_expand",
+          "lora_cuda_shrink"
+        ]
+      }
+    ],
+    "eager": [
+      {
+        "phase": "forward (no graph)",
+        "host_us": 127974.21,
+        "api_calls": 1576,
+        "api_by_category": {
+          "other": 771,
+          "launch": 803,
+          "copy": 1,
+          "sync": 1
+        },
+        "graph_launches": 0,
+        "kernels": 803,
+        "kernels_as_graph_nodes": 0,
+        "copies": 1,
+        "copies_as_graph_nodes": 0,
+        "gpu_span_us": 127873.292,
+        "gpu_busy_us": 126436.105,
+        "distinct_kernels": [
+          "elementwise_kernel",
+          "elementwise_kernel_with_index",
+          "index_elementwise_kernel",
+          "sm80_xmma_gemm_f32f32_f32f32_f32_tn_n_tilesize128x128x8_stage3_warpsize2x2x1_ffma_aligna4_alignc4_execute_kernel__5x_cublas",
+          "sm80_xmma_gemm_f32f32_f32f32_f32_tn_n_tilesize64x64x8_stage3_warpsize1x4x1_ffma_aligna4_alignc4_execute_kernel__5x_cublas",
+          "unrolled_elementwise_kernel",
+          "vectorized_elementwise_kernel"
+        ]
+      },
+      {
+        "phase": "forward (no graph)",
+        "host_us": 127926.453,
+        "api_calls": 1576,
+        "api_by_category": {
+          "other": 771,
+          "launch": 803,
+          "copy": 1,
+          "sync": 1
+        },
+        "graph_launches": 0,
+        "kernels": 803,
+        "kernels_as_graph_nodes": 0,
+        "copies": 1,
+        "copies_as_graph_nodes": 0,
+        "gpu_span_us": 127854.028,
+        "gpu_busy_us": 126413.0,
+        "distinct_kernels": [
+          "elementwise_kernel",
+          "elementwise_kernel_with_index",
+          "index_elementwise_kernel",
+          "sm80_xmma_gemm_f32f32_f32f32_f32_tn_n_tilesize128x128x8_stage3_warpsize2x2x1_ffma_aligna4_alignc4_execute_kernel__5x_cublas",
+          "sm80_xmma_gemm_f32f32_f32f32_f32_tn_n_tilesize64x64x8_stage3_warpsize1x4x1_ffma_aligna4_alignc4_execute_kernel__5x_cublas",
+          "unrolled_elementwise_kernel",
+          "vectorized_elementwise_kernel"
+        ]
+      },
+      {
+        "phase": "warm-up (side stream x3)",
+        "host_us": 384737.829,
+        "api_calls": 4762,
+        "api_by_category": {
+          "other": 2329,
+          "capture": 16,
+          "sync": 5,
+          "launch": 2409,
+          "copy": 3
+        },
+        "graph_launches": 0,
+        "kernels": 2409,
+        "kernels_as_graph_nodes": 0,
+        "copies": 3,
+        "copies_as_graph_nodes": 0,
+        "gpu_span_us": 384228.902,
+        "gpu_busy_us": 379288.19,
+        "distinct_kernels": [
+          "elementwise_kernel",
+          "elementwise_kernel_with_index",
+          "index_elementwise_kernel",
+          "sm80_xmma_gemm_f32f32_f32f32_f32_tn_n_tilesize128x128x8_stage3_warpsize2x2x1_ffma_aligna4_alignc4_execute_kernel__5x_cublas",
+          "sm80_xmma_gemm_f32f32_f32f32_f32_tn_n_tilesize64x64x8_stage3_warpsize1x4x1_ffma_aligna4_alignc4_execute_kernel__5x_cublas",
+          "unrolled_elementwise_kernel",
+          "vectorized_elementwise_kernel"
+        ]
+      },
+      {
+        "phase": "capture",
+        "host_us": 43617.751,
+        "api_calls": 3175,
+        "api_by_category": {
+          "sync": 2,
+          "other": 815,
+          "capture": 1554,
+          "launch": 803,
+          "copy": 1
+        },
+        "graph_launches": 0,
+        "kernels": 0,
+        "kernels_as_graph_nodes": 0,
+        "copies": 0,
+        "copies_as_graph_nodes": 0,
+        "gpu_span_us": null,
+        "gpu_busy_us": null,
+        "distinct_kernels": []
+      },
+      {
+        "phase": "replay 1",
+        "host_us": 129082.978,
+        "api_calls": 15,
+        "api_by_category": {
+          "copy": 13,
+          "graph_launch": 1,
+          "sync": 1
+        },
+        "graph_launches": 1,
+        "kernels": 803,
+        "kernels_as_graph_nodes": 803,
+        "copies": 14,
+        "copies_as_graph_nodes": 1,
+        "gpu_span_us": 128896.496,
+        "gpu_busy_us": 126938.637,
+        "distinct_kernels": [
+          "elementwise_kernel",
+          "elementwise_kernel_with_index",
+          "index_elementwise_kernel",
+          "sm80_xmma_gemm_f32f32_f32f32_f32_tn_n_tilesize128x128x8_stage3_warpsize2x2x1_ffma_aligna4_alignc4_execute_kernel__5x_cublas",
+          "sm80_xmma_gemm_f32f32_f32f32_f32_tn_n_tilesize64x64x8_stage3_warpsize1x4x1_ffma_aligna4_alignc4_execute_kernel__5x_cublas",
+          "unrolled_elementwise_kernel",
+          "vectorized_elementwise_kernel"
+        ]
+      },
+      {
+        "phase": "replay 2",
+        "host_us": 127948.088,
+        "api_calls": 15,
+        "api_by_category": {
+          "copy": 13,
+          "graph_launch": 1,
+          "sync": 1
+        },
+        "graph_launches": 1,
+        "kernels": 803,
+        "kernels_as_graph_nodes": 803,
+        "copies": 14,
+        "copies_as_graph_nodes": 1,
+        "gpu_span_us": 127842.287,
+        "gpu_busy_us": 126981.228,
+        "distinct_kernels": [
+          "elementwise_kernel",
+          "elementwise_kernel_with_index",
+          "index_elementwise_kernel",
+          "sm80_xmma_gemm_f32f32_f32f32_f32_tn_n_tilesize128x128x8_stage3_warpsize2x2x1_ffma_aligna4_alignc4_execute_kernel__5x_cublas",
+          "sm80_xmma_gemm_f32f32_f32f32_f32_tn_n_tilesize64x64x8_stage3_warpsize1x4x1_ffma_aligna4_alignc4_execute_kernel__5x_cublas",
+          "unrolled_elementwise_kernel",
+          "vectorized_elementwise_kernel"
+        ]
+      },
+      {
+        "phase": "replay 3",
+        "host_us": 127965.968,
+        "api_calls": 15,
+        "api_by_category": {
+          "copy": 13,
+          "graph_launch": 1,
+          "sync": 1
+        },
+        "graph_launches": 1,
+        "kernels": 803,
+        "kernels_as_graph_nodes": 803,
+        "copies": 14,
+        "copies_as_graph_nodes": 1,
+        "gpu_span_us": 127872.879,
+        "gpu_busy_us": 127053.324,
+        "distinct_kernels": [
+          "elementwise_kernel",
+          "elementwise_kernel_with_index",
+          "index_elementwise_kernel",
+          "sm80_xmma_gemm_f32f32_f32f32_f32_tn_n_tilesize128x128x8_stage3_warpsize2x2x1_ffma_aligna4_alignc4_execute_kernel__5x_cublas",
+          "sm80_xmma_gemm_f32f32_f32f32_f32_tn_n_tilesize64x64x8_stage3_warpsize1x4x1_ffma_aligna4_alignc4_execute_kernel__5x_cublas",
+          "unrolled_elementwise_kernel",
+          "vectorized_elementwise_kernel"
+        ]
+      },
+      {
+        "phase": "replay 4",
+        "host_us": 127770.403,
+        "api_calls": 15,
+        "api_by_category": {
+          "copy": 13,
+          "graph_launch": 1,
+          "sync": 1
+        },
+        "graph_launches": 1,
+        "kernels": 803,
+        "kernels_as_graph_nodes": 803,
+        "copies": 14,
+        "copies_as_graph_nodes": 1,
+        "gpu_span_us": 127671.951,
+        "gpu_busy_us": 126912.012,
+        "distinct_kernels": [
+          "elementwise_kernel",
+          "elementwise_kernel_with_index",
+          "index_elementwise_kernel",
+          "sm80_xmma_gemm_f32f32_f32f32_f32_tn_n_tilesize128x128x8_stage3_warpsize2x2x1_ffma_aligna4_alignc4_execute_kernel__5x_cublas",
+          "sm80_xmma_gemm_f32f32_f32f32_f32_tn_n_tilesize64x64x8_stage3_warpsize1x4x1_ffma_aligna4_alignc4_execute_kernel__5x_cublas",
+          "unrolled_elementwise_kernel",
+          "vectorized_elementwise_kernel"
+        ]
+      },
+      {
+        "phase": "replay 5",
+        "host_us": 128095.54,
+        "api_calls": 15,
+        "api_by_category": {
+          "copy": 13,
+          "graph_launch": 1,
+          "sync": 1
+        },
+        "graph_launches": 1,
+        "kernels": 803,
+        "kernels_as_graph_nodes": 803,
+        "copies": 14,
+        "copies_as_graph_nodes": 1,
+        "gpu_span_us": 127912.079,
+        "gpu_busy_us": 126975.694,
+        "distinct_kernels": [
+          "elementwise_kernel",
+          "elementwise_kernel_with_index",
+          "index_elementwise_kernel",
+          "sm80_xmma_gemm_f32f32_f32f32_f32_tn_n_tilesize128x128x8_stage3_warpsize2x2x1_ffma_aligna4_alignc4_execute_kernel__5x_cublas",
+          "sm80_xmma_gemm_f32f32_f32f32_f32_tn_n_tilesize64x64x8_stage3_warpsize1x4x1_ffma_aligna4_alignc4_execute_kernel__5x_cublas",
+          "unrolled_elementwise_kernel",
+          "vectorized_elementwise_kernel"
+        ]
+      }
+    ]
+  }
+}

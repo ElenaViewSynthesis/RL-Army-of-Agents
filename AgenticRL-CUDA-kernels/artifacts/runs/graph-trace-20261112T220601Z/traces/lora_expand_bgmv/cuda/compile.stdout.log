@@ -1,0 +1,3 @@
+Compiling 3 files: binding.cpp, kernels/lora.cu, kernels/lora_binding.cpp
+Compile success: cuda_extension.so
+[TIME] Compilation took 35.14s

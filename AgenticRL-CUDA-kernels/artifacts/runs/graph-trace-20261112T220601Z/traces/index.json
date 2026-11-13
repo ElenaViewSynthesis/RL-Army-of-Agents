@@ -1,0 +1,1288 @@
+{
+  "schema": "graph-trace-run-v1",
+  "case_set": "acceptance",
+  "replays": 5,
+  "nsys_version": "NVIDIA Nsight Systems version 2026.2.1.0",
+  "sources_sha256": {
+    "utils/graph_trace_worker.py": "22275858d19a16a263a45a1a8e0418d4c9dadb9e9c8830a108e044b7e939ea70",
+    "scripts/graph_trace.py": "6c38a8d8aa716c03a0fff8557dcddb0e57f5d5962a95c05bc04b8a2a4ac392e5",
+    "scripts/render_nsys_timeline.py": "b8f4f9065562dec2d9309525426ef53d2a8b64e1a4b64a8739941f91ba8f52f8",
+    "utils/benchmark.py": "7e08b565906802edd981c1ac980194f86fe992de10969badaee23980c609585d",
+    "utils/verification.py": "88db4066e31c40e9cebd2f162dd66d9c1571696ea80e5eedeaef73a65e019a99",
+    "utils/lora_verification.py": "278bb2d664f3bb6cd5c6b92955f574a7cac42f9682ac8ac05c94b68fe0dd9509"
+  },
+  "traces": [
+    {
+      "task": "lora_shrink_bgmv",
+      "case": "tokens64_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+      "backend": "cuda",
+      "status": "traced",
+      "candidate_sha256": "c7f17201e74a8530451452bcf73587518bd2c610e1d39bd06f8e7f2847eba8c7",
+      "nsys_command": [
+        "/usr/local/bin/nsys",
+        "profile",
+        "--trace=cuda,nvtx",
+        "--cuda-graph-trace=node",
+        "--sample=none",
+        "--cpuctxsw=none",
+        "--export=sqlite",
+        "--force-overwrite=true",
+        "--output",
+        "/artifacts/graph-trace-20261112T220601Z/traces/lora_shrink_bgmv/cuda/trace",
+        "python",
+        "-c",
+        "<bootstrap utils.graph_trace_worker>"
+      ],
+      "nsys_returncode": 0,
+      "worker": {
+        "schema": "graph-trace-worker-v1",
+        "task": "lora_shrink_bgmv",
+        "case": "tokens64_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+        "replays": 5,
+        "eager_forwards": 2,
+        "seed": 0,
+        "impls": {
+          "generated": {
+            "graph_capturable": true,
+            "graph_replay_ok": true,
+            "graph_error": null,
+            "host_us": {
+              "forward (no graph)": [
+                491.29900000366433,
+                323.33499999737114
+              ],
+              "warm-up (side stream x3)": [
+                2124.2870000008907
+              ],
+              "capture": [
+                3539.699999997481
+              ],
+              "replay 1": [
+                582.4000000060892
+              ],
+              "replay 2": [
+                501.8919999955074
+              ],
+              "replay 3": [
+                501.27699999791275
+              ],
+              "replay 4": [
+                498.3449999969025
+              ],
+              "replay 5": [
+                501.7090000052349
+              ]
+            }
+          },
+          "eager": {
+            "graph_capturable": true,
+            "graph_replay_ok": true,
+            "graph_error": null,
+            "host_us": {
+              "forward (no graph)": [
+                8770.346999995127,
+                8710.433000004514
+              ],
+              "warm-up (side stream x3)": [
+                28128.036999994776
+              ],
+              "capture": [
+                7917.448999997134
+              ],
+              "replay 1": [
+                9149.670999995862
+              ],
+              "replay 2": [
+                8738.090000001364
+              ],
+              "replay 3": [
+                8665.51100000379
+              ],
+              "replay 4": [
+                8656.940999998142
+              ],
+              "replay 5": [
+                8688.750000004575
+              ]
+            }
+          }
+        },
+        "device_name": "NVIDIA H200"
+      },
+      "svg": {
+        "generated": "timeline-generated.svg",
+        "eager": "timeline-eager.svg"
+      },
+      "phase_counts": {
+        "generated": 9,
+        "eager": 9
+      }
+    },
+    {
+      "task": "lora_shrink_bgmv",
+      "case": "tokens64_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+      "backend": "triton",
+      "status": "traced",
+      "candidate_sha256": "976f0ea782361062c0c9d7d481c3ca1b5f8b3a1f502ea9500ff8c3ce6f44989c",
+      "nsys_command": [
+        "/usr/local/bin/nsys",
+        "profile",
+        "--trace=cuda,nvtx",
+        "--cuda-graph-trace=node",
+        "--sample=none",
+        "--cpuctxsw=none",
+        "--export=sqlite",
+        "--force-overwrite=true",
+        "--output",
+        "/artifacts/graph-trace-20261112T220601Z/traces/lora_shrink_bgmv/triton/trace",
+        "python",
+        "-c",
+        "<bootstrap utils.graph_trace_worker>"
+      ],
+      "nsys_returncode": 0,
+      "worker": {
+        "schema": "graph-trace-worker-v1",
+        "task": "lora_shrink_bgmv",
+        "case": "tokens64_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+        "replays": 5,
+        "eager_forwards": 2,
+        "seed": 0,
+        "impls": {
+          "generated": {
+            "graph_capturable": true,
+            "graph_replay_ok": true,
+            "graph_error": null,
+            "host_us": {
+              "forward (no graph)": [
+                581.224000001157,
+                467.8269999942586
+              ],
+              "warm-up (side stream x3)": [
+                1777.458999995929
+              ],
+              "capture": [
+                1321.395999994479
+              ],
+              "replay 1": [
+                702.1369999904437
+              ],
+              "replay 2": [
+                616.0060000013345
+              ],
+              "replay 3": [
+                618.2740000042486
+              ],
+              "replay 4": [
+                617.7630000081535
+              ],
+              "replay 5": [
+                622.5190000037628
+              ]
+            }
+          },
+          "eager": {
+            "graph_capturable": true,
+            "graph_replay_ok": true,
+            "graph_error": null,
+            "host_us": {
+              "forward (no graph)": [
+                8782.713000002219,
+                8718.212999994535
+              ],
+              "warm-up (side stream x3)": [
+                27022.512000002054
+              ],
+              "capture": [
+                7934.503000001314
+              ],
+              "replay 1": [
+                9169.896999992488
+              ],
+              "replay 2": [
+                8720.647000004079
+              ],
+              "replay 3": [
+                8667.23999999408
+              ],
+              "replay 4": [
+                8662.91900000249
+              ],
+              "replay 5": [
+                8677.290999997922
+              ]
+            }
+          }
+        },
+        "device_name": "NVIDIA H200"
+      },
+      "svg": {
+        "generated": "timeline-generated.svg",
+        "eager": "timeline-eager.svg"
+      },
+      "phase_counts": {
+        "generated": 9,
+        "eager": 9
+      }
+    },
+    {
+      "task": "lora_expand_bgmv",
+      "case": "tokens64_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+      "backend": "cuda",
+      "status": "traced",
+      "candidate_sha256": "5e33d403533371306666ac448ef2077e7b8615e38ac426055b7fdd9000fb178c",
+      "nsys_command": [
+        "/usr/local/bin/nsys",
+        "profile",
+        "--trace=cuda,nvtx",
+        "--cuda-graph-trace=node",
+        "--sample=none",
+        "--cpuctxsw=none",
+        "--export=sqlite",
+        "--force-overwrite=true",
+        "--output",
+        "/artifacts/graph-trace-20261112T220601Z/traces/lora_expand_bgmv/cuda/trace",
+        "python",
+        "-c",
+        "<bootstrap utils.graph_trace_worker>"
+      ],
+      "nsys_returncode": 0,
+      "worker": {
+        "schema": "graph-trace-worker-v1",
+        "task": "lora_expand_bgmv",
+        "case": "tokens64_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+        "replays": 5,
+        "eager_forwards": 2,
+        "seed": 0,
+        "impls": {
+          "generated": {
+            "graph_capturable": true,
+            "graph_replay_ok": true,
+            "graph_error": null,
+            "host_us": {
+              "forward (no graph)": [
+                825.3480000064428,
+                768.0890000045792
+              ],
+              "warm-up (side stream x3)": [
+                5419.005999996784
+              ],
+              "capture": [
+                2305.8599999927765
+              ],
+              "replay 1": [
+                1363.9419999975644
+              ],
+              "replay 2": [
+                982.6619999984132
+              ],
+              "replay 3": [
+                1014.6649999995816
+              ],
+              "replay 4": [
+                963.9769999978398
+              ],
+              "replay 5": [
+                948.9480000013373
+              ]
+            }
+          },
+          "eager": {
+            "graph_capturable": true,
+            "graph_replay_ok": true,
+            "graph_error": null,
+            "host_us": {
+              "forward (no graph)": [
+                11528.334000004746,
+                10588.574000010452
+              ],
+              "warm-up (side stream x3)": [
+                34276.476999991704
+              ],
+              "capture": [
+                25493.775999990474
+              ],
+              "replay 1": [
+                6434.402999985878
+              ],
+              "replay 2": [
+                4639.495000020588
+              ],
+              "replay 3": [
+                4333.7319999920965
+              ],
+              "replay 4": [
+                4338.883999992049
+              ],
+              "replay 5": [
+                4353.436000002375
+              ]
+            }
+          }
+        },
+        "device_name": "NVIDIA H200"
+      },
+      "svg": {
+        "generated": "timeline-generated.svg",
+        "eager": "timeline-eager.svg"
+      },
+      "phase_counts": {
+        "generated": 9,
+        "eager": 9
+      }
+    },
+    {
+      "task": "lora_expand_bgmv",
+      "case": "tokens64_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+      "backend": "triton",
+      "status": "traced",
+      "candidate_sha256": "0f5a1c6fdc229ec3ccfa560069e4f17062d3f49b9116f7e2cac407483751e002",
+      "nsys_command": [
+        "/usr/local/bin/nsys",
+        "profile",
+        "--trace=cuda,nvtx",
+        "--cuda-graph-trace=node",
+        "--sample=none",
+        "--cpuctxsw=none",
+        "--export=sqlite",
+        "--force-overwrite=true",
+        "--output",
+        "/artifacts/graph-trace-20261112T220601Z/traces/lora_expand_bgmv/triton/trace",
+        "python",
+        "-c",
+        "<bootstrap utils.graph_trace_worker>"
+      ],
+      "nsys_returncode": 0,
+      "worker": {
+        "schema": "graph-trace-worker-v1",
+        "task": "lora_expand_bgmv",
+        "case": "tokens64_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+        "replays": 5,
+        "eager_forwards": 2,
+        "seed": 0,
+        "impls": {
+          "generated": {
+            "graph_capturable": true,
+            "graph_replay_ok": true,
+            "graph_error": null,
+            "host_us": {
+              "forward (no graph)": [
+                501.9029999857594,
+                340.9500000088883
+              ],
+              "warm-up (side stream x3)": [
+                1275.207000020373
+              ],
+              "capture": [
+                1193.2820000026823
+              ],
+              "replay 1": [
+                535.2869999910581
+              ],
+              "replay 2": [
+                478.7340000120821
+              ],
+              "replay 3": [
+                473.6269999909837
+              ],
+              "replay 4": [
+                474.1650000141817
+              ],
+              "replay 5": [
+                468.2810000247173
+              ]
+            }
+          },
+          "eager": {
+            "graph_capturable": true,
+            "graph_replay_ok": true,
+            "graph_error": null,
+            "host_us": {
+              "forward (no graph)": [
+                9425.483999990547,
+                9749.158999994734
+              ],
+              "warm-up (side stream x3)": [
+                36230.81499998193
+              ],
+              "capture": [
+                21241.810000020676
+              ],
+              "replay 1": [
+                5545.5389999963245
+              ],
+              "replay 2": [
+                4418.043999976362
+              ],
+              "replay 3": [
+                4321.141000019679
+              ],
+              "replay 4": [
+                4288.826000021118
+              ],
+              "replay 5": [
+                4285.382000006166
+              ]
+            }
+          }
+        },
+        "device_name": "NVIDIA H200"
+      },
+      "svg": {
+        "generated": "timeline-generated.svg",
+        "eager": "timeline-eager.svg"
+      },
+      "phase_counts": {
+        "generated": 9,
+        "eager": 9
+      }
+    },
+    {
+      "task": "lora_segment_metadata",
+      "case": "tokens4096_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+      "backend": "cuda",
+      "status": "traced",
+      "candidate_sha256": "ae7ca4e9833495a89492bb0b31f12eb78d0ff7b979ecc29a1357f41f65e99233",
+      "nsys_command": [
+        "/usr/local/bin/nsys",
+        "profile",
+        "--trace=cuda,nvtx",
+        "--cuda-graph-trace=node",
+        "--sample=none",
+        "--cpuctxsw=none",
+        "--export=sqlite",
+        "--force-overwrite=true",
+        "--output",
+        "/artifacts/graph-trace-20261112T220601Z/traces/lora_segment_metadata/cuda/trace",
+        "python",
+        "-c",
+        "<bootstrap utils.graph_trace_worker>"
+      ],
+      "nsys_returncode": 0,
+      "worker": {
+        "schema": "graph-trace-worker-v1",
+        "task": "lora_segment_metadata",
+        "case": "tokens4096_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+        "replays": 5,
+        "eager_forwards": 2,
+        "seed": 0,
+        "impls": {
+          "generated": {
+            "graph_capturable": true,
+            "graph_replay_ok": true,
+            "graph_error": null,
+            "host_us": {
+              "forward (no graph)": [
+                1088.1949999941298,
+                1028.7519999963024
+              ],
+              "warm-up (side stream x3)": [
+                3398.5140000254432
+              ],
+              "capture": [
+                3251.067000007879
+              ],
+              "replay 1": [
+                1092.4590000058743
+              ],
+              "replay 2": [
+                1040.598999992426
+              ],
+              "replay 3": [
+                1035.733999998456
+              ],
+              "replay 4": [
+                1034.3809999824316
+              ],
+              "replay 5": [
+                1034.136000015451
+              ]
+            }
+          },
+          "eager": {
+            "graph_capturable": true,
+            "graph_replay_ok": true,
+            "graph_error": null,
+            "host_us": {
+              "forward (no graph)": [
+                702.9379999892171,
+                668.7789999944016
+              ],
+              "warm-up (side stream x3)": [
+                2561.1960000162526
+              ],
+              "capture": [
+                2106.9759999932103
+              ],
+              "replay 1": [
+                295.7869999988816
+              ],
+              "replay 2": [
+                203.933999983974
+              ],
+              "replay 3": [
+                189.07700001591365
+              ],
+              "replay 4": [
+                187.97699999595352
+              ],
+              "replay 5": [
+                204.41500001311397
+              ]
+            }
+          }
+        },
+        "device_name": "NVIDIA H200"
+      },
+      "svg": {
+        "generated": "timeline-generated.svg",
+        "eager": "timeline-eager.svg"
+      },
+      "phase_counts": {
+        "generated": 9,
+        "eager": 9
+      }
+    },
+    {
+      "task": "lora_segment_metadata",
+      "case": "tokens4096_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+      "backend": "triton",
+      "status": "traced",
+      "candidate_sha256": "48e87d918e0f4c7a008acc47a04f2487b520835213906b306307fa6e64a6d035",
+      "nsys_command": [
+        "/usr/local/bin/nsys",
+        "profile",
+        "--trace=cuda,nvtx",
+        "--cuda-graph-trace=node",
+        "--sample=none",
+        "--cpuctxsw=none",
+        "--export=sqlite",
+        "--force-overwrite=true",
+        "--output",
+        "/artifacts/graph-trace-20261112T220601Z/traces/lora_segment_metadata/triton/trace",
+        "python",
+        "-c",
+        "<bootstrap utils.graph_trace_worker>"
+      ],
+      "nsys_returncode": 0,
+      "worker": {
+        "schema": "graph-trace-worker-v1",
+        "task": "lora_segment_metadata",
+        "case": "tokens4096_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+        "replays": 5,
+        "eager_forwards": 2,
+        "seed": 0,
+        "impls": {
+          "generated": {
+            "graph_capturable": true,
+            "graph_replay_ok": true,
+            "graph_error": null,
+            "host_us": {
+              "forward (no graph)": [
+                298.3219999919129,
+                115.72200000387056
+              ],
+              "warm-up (side stream x3)": [
+                1174.793000018326
+              ],
+              "capture": [
+                1157.3339999984
+              ],
+              "replay 1": [
+                117.92099999752281
+              ],
+              "replay 2": [
+                47.810000012304954
+              ],
+              "replay 3": [
+                42.291999989174656
+              ],
+              "replay 4": [
+                40.30499999885251
+              ],
+              "replay 5": [
+                39.490000006026094
+              ]
+            }
+          },
+          "eager": {
+            "graph_capturable": true,
+            "graph_replay_ok": true,
+            "graph_error": null,
+            "host_us": {
+              "forward (no graph)": [
+                735.2190000062819,
+                666.8209999816099
+              ],
+              "warm-up (side stream x3)": [
+                2506.632000006448
+              ],
+              "capture": [
+                2088.715000013508
+              ],
+              "replay 1": [
+                306.7609999902743
+              ],
+              "replay 2": [
+                208.88299999910487
+              ],
+              "replay 3": [
+                192.2939999872142
+              ],
+              "replay 4": [
+                188.13699998077027
+              ],
+              "replay 5": [
+                187.6500000150827
+              ]
+            }
+          }
+        },
+        "device_name": "NVIDIA H200"
+      },
+      "svg": {
+        "generated": "timeline-generated.svg",
+        "eager": "timeline-eager.svg"
+      },
+      "phase_counts": {
+        "generated": 9,
+        "eager": 9
+      }
+    },
+    {
+      "task": "lora_shrink_sgmv",
+      "case": "tokens4096_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+      "backend": "cuda",
+      "status": "traced",
+      "candidate_sha256": "fbc37c376311bde8013046e72edeb0c20ed61f1c7b61b48dfb404dd3852aea05",
+      "nsys_command": [
+        "/usr/local/bin/nsys",
+        "profile",
+        "--trace=cuda,nvtx",
+        "--cuda-graph-trace=node",
+        "--sample=none",
+        "--cpuctxsw=none",
+        "--export=sqlite",
+        "--force-overwrite=true",
+        "--output",
+        "/artifacts/graph-trace-20261112T220601Z/traces/lora_shrink_sgmv/cuda/trace",
+        "python",
+        "-c",
+        "<bootstrap utils.graph_trace_worker>"
+      ],
+      "nsys_returncode": 0,
+      "worker": {
+        "schema": "graph-trace-worker-v1",
+        "task": "lora_shrink_sgmv",
+        "case": "tokens4096_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+        "replays": 5,
+        "eager_forwards": 2,
+        "seed": 0,
+        "impls": {
+          "generated": {
+            "graph_capturable": true,
+            "graph_replay_ok": true,
+            "graph_error": null,
+            "host_us": {
+              "forward (no graph)": [
+                62548.646999999844,
+                62487.12400000045
+              ],
+              "warm-up (side stream x3)": [
+                188207.47699999175
+              ],
+              "capture": [
+                3954.8359999912464
+              ],
+              "replay 1": [
+                62776.44400000782
+              ],
+              "replay 2": [
+                62728.833000022634
+              ],
+              "replay 3": [
+                62722.70200000207
+              ],
+              "replay 4": [
+                62723.86099999494
+              ],
+              "replay 5": [
+                62708.689999993796
+              ]
+            }
+          },
+          "eager": {
+            "graph_capturable": true,
+            "graph_replay_ok": true,
+            "graph_error": null,
+            "host_us": {
+              "forward (no graph)": [
+                41896.13500000178,
+                42182.650000000875
+              ],
+              "warm-up (side stream x3)": [
+                129090.98200000812
+              ],
+              "capture": [
+                18375.638000009076
+              ],
+              "replay 1": [
+                42674.871999992094
+              ],
+              "replay 2": [
+                42012.354999997115
+              ],
+              "replay 3": [
+                41922.11899999165
+              ],
+              "replay 4": [
+                42253.74800000736
+              ],
+              "replay 5": [
+                42138.14000002003
+              ]
+            }
+          }
+        },
+        "device_name": "NVIDIA H200"
+      },
+      "svg": {
+        "generated": "timeline-generated.svg",
+        "eager": "timeline-eager.svg"
+      },
+      "phase_counts": {
+        "generated": 9,
+        "eager": 9
+      }
+    },
+    {
+      "task": "lora_shrink_sgmv",
+      "case": "tokens4096_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+      "backend": "triton",
+      "status": "traced",
+      "candidate_sha256": "8c12427d52e9e2d51dbc695791caabd211f6978738fe9237a15fa49ea86069bb",
+      "nsys_command": [
+        "/usr/local/bin/nsys",
+        "profile",
+        "--trace=cuda,nvtx",
+        "--cuda-graph-trace=node",
+        "--sample=none",
+        "--cpuctxsw=none",
+        "--export=sqlite",
+        "--force-overwrite=true",
+        "--output",
+        "/artifacts/graph-trace-20261112T220601Z/traces/lora_shrink_sgmv/triton/trace",
+        "python",
+        "-c",
+        "<bootstrap utils.graph_trace_worker>"
+      ],
+      "nsys_returncode": 0,
+      "worker": {
+        "schema": "graph-trace-worker-v1",
+        "task": "lora_shrink_sgmv",
+        "case": "tokens4096_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+        "replays": 5,
+        "eager_forwards": 2,
+        "seed": 0,
+        "impls": {
+          "generated": {
+            "graph_capturable": true,
+            "graph_replay_ok": true,
+            "graph_error": null,
+            "host_us": {
+              "forward (no graph)": [
+                21093.69400000105,
+                20887.09800000288
+              ],
+              "warm-up (side stream x3)": [
+                62960.5230000152
+              ],
+              "capture": [
+                23042.838999970172
+              ],
+              "replay 1": [
+                21096.50300002386
+              ],
+              "replay 2": [
+                21071.656000003713
+              ],
+              "replay 3": [
+                21091.991000048438
+              ],
+              "replay 4": [
+                21142.660999998952
+              ],
+              "replay 5": [
+                21133.057999975335
+              ]
+            }
+          },
+          "eager": {
+            "graph_capturable": true,
+            "graph_replay_ok": true,
+            "graph_error": null,
+            "host_us": {
+              "forward (no graph)": [
+                41880.961999993364,
+                41868.35500001962
+              ],
+              "warm-up (side stream x3)": [
+                126759.01000000068
+              ],
+              "capture": [
+                16197.169000008671
+              ],
+              "replay 1": [
+                42289.890999995805
+              ],
+              "replay 2": [
+                41829.984000003155
+              ],
+              "replay 3": [
+                41824.00000001962
+              ],
+              "replay 4": [
+                42504.357000041186
+              ],
+              "replay 5": [
+                41861.19299998836
+              ]
+            }
+          }
+        },
+        "device_name": "NVIDIA H200"
+      },
+      "svg": {
+        "generated": "timeline-generated.svg",
+        "eager": "timeline-eager.svg"
+      },
+      "phase_counts": {
+        "generated": 9,
+        "eager": 9
+      }
+    },
+    {
+      "task": "lora_expand_sgmv",
+      "case": "tokens4096_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+      "backend": "cuda",
+      "status": "traced",
+      "candidate_sha256": "584175b98f9da817206b893cced67c0153a01ae58c49cfb22e24aabe00c35b7d",
+      "nsys_command": [
+        "/usr/local/bin/nsys",
+        "profile",
+        "--trace=cuda,nvtx",
+        "--cuda-graph-trace=node",
+        "--sample=none",
+        "--cpuctxsw=none",
+        "--export=sqlite",
+        "--force-overwrite=true",
+        "--output",
+        "/artifacts/graph-trace-20261112T220601Z/traces/lora_expand_sgmv/cuda/trace",
+        "python",
+        "-c",
+        "<bootstrap utils.graph_trace_worker>"
+      ],
+      "nsys_returncode": 0,
+      "worker": {
+        "schema": "graph-trace-worker-v1",
+        "task": "lora_expand_sgmv",
+        "case": "tokens4096_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+        "replays": 5,
+        "eager_forwards": 2,
+        "seed": 0,
+        "impls": {
+          "generated": {
+            "graph_capturable": true,
+            "graph_replay_ok": true,
+            "graph_error": null,
+            "host_us": {
+              "forward (no graph)": [
+                55791.51599999932,
+                55741.3459999907
+              ],
+              "warm-up (side stream x3)": [
+                167727.3820000096
+              ],
+              "capture": [
+                1936.2300000125288
+              ],
+              "replay 1": [
+                56123.28399996614
+              ],
+              "replay 2": [
+                56090.859999983426
+              ],
+              "replay 3": [
+                56071.78899998644
+              ],
+              "replay 4": [
+                56128.04300000107
+              ],
+              "replay 5": [
+                56120.76900001739
+              ]
+            }
+          },
+          "eager": {
+            "graph_capturable": true,
+            "graph_replay_ok": true,
+            "graph_error": null,
+            "host_us": {
+              "forward (no graph)": [
+                86369.77300000127,
+                86080.78999998269
+              ],
+              "warm-up (side stream x3)": [
+                259970.22199999265
+              ],
+              "capture": [
+                37885.97300001584
+              ],
+              "replay 1": [
+                87114.91399998295
+              ],
+              "replay 2": [
+                86056.14800001148
+              ],
+              "replay 3": [
+                85959.39499997484
+              ],
+              "replay 4": [
+                85949.39500000009
+              ],
+              "replay 5": [
+                85972.43700000945
+              ]
+            }
+          }
+        },
+        "device_name": "NVIDIA H200"
+      },
+      "svg": {
+        "generated": "timeline-generated.svg",
+        "eager": "timeline-eager.svg"
+      },
+      "phase_counts": {
+        "generated": 9,
+        "eager": 9
+      }
+    },
+    {
+      "task": "lora_expand_sgmv",
+      "case": "tokens4096_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+      "backend": "triton",
+      "status": "traced",
+      "candidate_sha256": "bf218650d0afddb65031ceeb328a7614625fc6ec58feb6c058614249d6f41d9d",
+      "nsys_command": [
+        "/usr/local/bin/nsys",
+        "profile",
+        "--trace=cuda,nvtx",
+        "--cuda-graph-trace=node",
+        "--sample=none",
+        "--cpuctxsw=none",
+        "--export=sqlite",
+        "--force-overwrite=true",
+        "--output",
+        "/artifacts/graph-trace-20261112T220601Z/traces/lora_expand_sgmv/triton/trace",
+        "python",
+        "-c",
+        "<bootstrap utils.graph_trace_worker>"
+      ],
+      "nsys_returncode": 0,
+      "worker": {
+        "schema": "graph-trace-worker-v1",
+        "task": "lora_expand_sgmv",
+        "case": "tokens4096_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+        "replays": 5,
+        "eager_forwards": 2,
+        "seed": 0,
+        "impls": {
+          "generated": {
+            "graph_capturable": true,
+            "graph_replay_ok": true,
+            "graph_error": null,
+            "host_us": {
+              "forward (no graph)": [
+                28128.80800001949,
+                28037.36300000992
+              ],
+              "warm-up (side stream x3)": [
+                84446.30999997571
+              ],
+              "capture": [
+                1763.3819999787193
+              ],
+              "replay 1": [
+                28402.776999996604
+              ],
+              "replay 2": [
+                28358.94599996891
+              ],
+              "replay 3": [
+                28361.97699997456
+              ],
+              "replay 4": [
+                28368.96000002298
+              ],
+              "replay 5": [
+                28356.59999999507
+              ]
+            }
+          },
+          "eager": {
+            "graph_capturable": true,
+            "graph_replay_ok": true,
+            "graph_error": null,
+            "host_us": {
+              "forward (no graph)": [
+                85928.73399999234,
+                86012.3019999719
+              ],
+              "warm-up (side stream x3)": [
+                259662.08699998105
+              ],
+              "capture": [
+                60640.10300002564
+              ],
+              "replay 1": [
+                87007.65499997942
+              ],
+              "replay 2": [
+                86024.30499996671
+              ],
+              "replay 3": [
+                85896.23900002152
+              ],
+              "replay 4": [
+                85910.36500001792
+              ],
+              "replay 5": [
+                85949.47299997103
+              ]
+            }
+          }
+        },
+        "device_name": "NVIDIA H200"
+      },
+      "svg": {
+        "generated": "timeline-generated.svg",
+        "eager": "timeline-eager.svg"
+      },
+      "phase_counts": {
+        "generated": 9,
+        "eager": 9
+      }
+    },
+    {
+      "task": "lora_fused_sgmv",
+      "case": "tokens4096_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+      "backend": "cuda",
+      "status": "traced",
+      "candidate_sha256": "b09e8afa9f4219452d8b1bfd243c84d9a550bae8bf3e36dc31a97d2aaa7c6842",
+      "nsys_command": [
+        "/usr/local/bin/nsys",
+        "profile",
+        "--trace=cuda,nvtx",
+        "--cuda-graph-trace=node",
+        "--sample=none",
+        "--cpuctxsw=none",
+        "--export=sqlite",
+        "--force-overwrite=true",
+        "--output",
+        "/artifacts/graph-trace-20261112T220601Z/traces/lora_fused_sgmv/cuda/trace",
+        "python",
+        "-c",
+        "<bootstrap utils.graph_trace_worker>"
+      ],
+      "nsys_returncode": 0,
+      "worker": {
+        "schema": "graph-trace-worker-v1",
+        "task": "lora_fused_sgmv",
+        "case": "tokens4096_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+        "replays": 5,
+        "eager_forwards": 2,
+        "seed": 0,
+        "impls": {
+          "generated": {
+            "graph_capturable": true,
+            "graph_replay_ok": true,
+            "graph_error": null,
+            "host_us": {
+              "forward (no graph)": [
+                118214.91500001002,
+                118150.04499999304
+              ],
+              "warm-up (side stream x3)": [
+                354709.1770000179
+              ],
+              "capture": [
+                48895.41800002917
+              ],
+              "replay 1": [
+                118847.77699998494
+              ],
+              "replay 2": [
+                118711.9069999767
+              ],
+              "replay 3": [
+                118736.96899999687
+              ],
+              "replay 4": [
+                118739.49800002492
+              ],
+              "replay 5": [
+                118731.17599998295
+              ]
+            }
+          },
+          "eager": {
+            "graph_capturable": true,
+            "graph_replay_ok": true,
+            "graph_error": null,
+            "host_us": {
+              "forward (no graph)": [
+                127972.5180000355,
+                127951.96799999075
+              ],
+              "warm-up (side stream x3)": [
+                384764.6500000224
+              ],
+              "capture": [
+                43619.53900001936
+              ],
+              "replay 1": [
+                129092.76799996405
+              ],
+              "replay 2": [
+                127971.95299998521
+              ],
+              "replay 3": [
+                127988.43100000567
+              ],
+              "replay 4": [
+                127821.47799998711
+              ],
+              "replay 5": [
+                128133.42800001237
+              ]
+            }
+          }
+        },
+        "device_name": "NVIDIA H200"
+      },
+      "svg": {
+        "generated": "timeline-generated.svg",
+        "eager": "timeline-eager.svg"
+      },
+      "phase_counts": {
+        "generated": 9,
+        "eager": 9
+      }
+    },
+    {
+      "task": "lora_fused_sgmv",
+      "case": "tokens4096_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+      "backend": "triton",
+      "status": "traced",
+      "candidate_sha256": "5f5dcb7c42fc812d63f8685928aa6d6cb6f29bc7a27f468016ae908c92796523",
+      "nsys_command": [
+        "/usr/local/bin/nsys",
+        "profile",
+        "--trace=cuda,nvtx",
+        "--cuda-graph-trace=node",
+        "--sample=none",
+        "--cpuctxsw=none",
+        "--export=sqlite",
+        "--force-overwrite=true",
+        "--output",
+        "/artifacts/graph-trace-20261112T220601Z/traces/lora_fused_sgmv/triton/trace",
+        "python",
+        "-c",
+        "<bootstrap utils.graph_trace_worker>"
+      ],
+      "nsys_returncode": 0,
+      "worker": {
+        "schema": "graph-trace-worker-v1",
+        "task": "lora_fused_sgmv",
+        "case": "tokens4096_hidden14336_out14336_rank256_slots16_slices3_patternmixed_mixedtrue_bfloat16",
+        "replays": 5,
+        "eager_forwards": 2,
+        "seed": 0,
+        "impls": {
+          "generated": {
+            "graph_capturable": true,
+            "graph_replay_ok": true,
+            "graph_error": null,
+            "host_us": {
+              "forward (no graph)": [
+                48989.415999983525,
+                48860.032000050065
+              ],
+              "warm-up (side stream x3)": [
+                147475.8340000335
+              ],
+              "capture": [
+                2287.5079999948866
+              ],
+              "replay 1": [
+                49435.797000001
+              ],
+              "replay 2": [
+                49392.46200001435
+              ],
+              "replay 3": [
+                49395.70599998433
+              ],
+              "replay 4": [
+                49396.565999984436
+              ],
+              "replay 5": [
+                49463.00399996062
+              ]
+            }
+          },
+          "eager": {
+            "graph_capturable": true,
+            "graph_replay_ok": true,
+            "graph_error": null,
+            "host_us": {
+              "forward (no graph)": [
+                128093.69299998252,
+                127959.3389999718
+              ],
+              "warm-up (side stream x3)": [
+                420665.34999997885
+              ],
+              "capture": [
+                70014.86600000817
+              ],
+              "replay 1": [
+                128830.10400003058
+              ],
+              "replay 2": [
+                127791.91399999945
+              ],
+              "replay 3": [
+                128056.34699998336
+              ],
+              "replay 4": [
+                127666.89699998323
+              ],
+              "replay 5": [
+                127521.50400001483
+              ]
+            }
+          }
+        },
+        "device_name": "NVIDIA H200"
+      },
+      "svg": {
+        "generated": "timeline-generated.svg",
+        "eager": "timeline-eager.svg"
+      },
+      "phase_counts": {
+        "generated": 9,
+        "eager": 9
+      }
+    }
+  ]
+}

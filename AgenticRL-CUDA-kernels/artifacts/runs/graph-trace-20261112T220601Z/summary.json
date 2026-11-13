@@ -1,0 +1,22 @@
+{
+  "run_id": "graph-trace-20261112T220601Z",
+  "command": [
+    "python",
+    "-m",
+    "scripts.graph_trace",
+    "--tasks",
+    "stage6",
+    "--backends",
+    "cuda,triton",
+    "--case-set",
+    "acceptance",
+    "--replays",
+    "5",
+    "--output-dir",
+    "/artifacts/graph-trace-20261112T220601Z/traces"
+  ],
+  "returncode": 0,
+  "tail": [
+    "{\"traced\": 12, \"total\": 12}"
+  ]
+}

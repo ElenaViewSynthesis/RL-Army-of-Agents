@@ -1,0 +1,14 @@
+Note that running a local entrypoint in detached mode only keeps the last triggered Modal function alive after the parent process has been killed or disconnected.
+✓ Initialized. View run at 
+https://modal.com/apps/elenamylocuda/main/ap-l4iUelMkK3eDBh01UYV8oh
+✓ Created objects.
+├── ✓ Uploaded 
+│   /tmp/graph-trace-20261112T220601Z-source/cloud/modal_graph_trace.py
+├── ✓ Uploaded /tmp/graph-trace-20261112T220601Z-source/artifacts/upstream.json
+├── ✓ Uploaded /tmp/graph-trace-20261112T220601Z-source
+└── ✓ Created Function trace.
+{"run_id": "graph-trace-20261112T220601Z", "function_call_id": "fc-01M78WRFM51FH6CQNZ3KKF9ZKP", "volume": "agenticrl-cuda-artifacts", "remote": "/artifacts/graph-trace-20261112T220601Z"}
+{"function_call_id": "fc-01M78WRFM51FH6CQNZ3KKF9ZKP"}
+{"run_id": "graph-trace-20261112T220601Z", "command": ["python", "-m", "scripts.graph_trace", "--tasks", "stage6", "--backends", "cuda,triton", "--case-set", "acceptance", "--replays", "5", "--output-dir", "/artifacts/graph-trace-20261112T220601Z/traces"], "returncode": 0, "tail": ["{\"traced\": 12, \"total\": 12}"]}
+✓ App completed. View run at 
+https://modal.com/apps/elenamylocuda/main/ap-l4iUelMkK3eDBh01UYV8oh
