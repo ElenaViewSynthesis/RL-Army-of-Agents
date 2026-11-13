@@ -1,0 +1,18 @@
+{
+  "run_id": "cutile-tier1-20261113T014034Z",
+  "execution": {
+    "command": "python -m scripts.validate --suite rmsnorm,row_softmax,cispo_clip_weight,fused_adamw,grpo_group_norm --device cuda --purpose eval --case-set smoke --fixtures all --timeout-s 1200 --suite-out /artifacts/cutile-tier1-20261113T014034Z/suite --backends cutile --benchmark --cold-start",
+    "returncode": 0,
+    "timed_out": false,
+    "wall_s": 283.206939963
+  },
+  "counts": {
+    "passed": 15,
+    "failed": 0,
+    "unavailable": 0
+  },
+  "not_applicable": 0,
+  "status": "pass",
+  "source_mismatches": [],
+  "scope": "selected workload cases only; no stock AXPBY acceptance or timing-cause claim"
+}

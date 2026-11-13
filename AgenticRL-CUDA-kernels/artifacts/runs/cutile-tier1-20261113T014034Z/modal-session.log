@@ -1,0 +1,21 @@
+Note that running a local entrypoint in detached mode only keeps the last triggered Modal function alive after the parent process has been killed or disconnected.
+✓ Initialized. View run at 
+https://modal.com/apps/elenamylocuda/main/ap-x0V0MjRYNVMOf05gHX7NcV
+✓ Created objects.
+├── ✓ Uploaded /tmp/cutile-tier1-20261113T014034Z-source/cloud/modal_tasks.py
+├── ✓ Uploaded /tmp/cutile-tier1-20261113T014034Z-source/artifacts/upstream.json
+├── ✓ Uploaded /tmp/cutile-tier1-20261113T014034Z-source
+└── ✓ Created Function evaluate.
+{"run_id": "cutile-tier1-20261113T014034Z", "function_call_id": "fc-01M79E4A0PB8D88PERGNPEE02C", "volume": "agenticrl-cuda-artifacts", "remote": "/artifacts/cutile-tier1-20261113T014034Z"}
+{"function_call_id": "fc-01M79E4A0PB8D88PERGNPEE02C"}
+{"completed": 3, "last_task": "rmsnorm", "last_status": "passed"}
+{"completed": 4, "last_task": "row_softmax", "last_status": "passed"}
+{"completed": 6, "last_task": "row_softmax", "last_status": "passed"}
+{"completed": 7, "last_task": "cispo_clip_weight", "last_status": "passed"}
+{"completed": 9, "last_task": "cispo_clip_weight", "last_status": "passed"}
+{"completed": 10, "last_task": "fused_adamw", "last_status": "passed"}
+{"completed": 12, "last_task": "fused_adamw", "last_status": "passed"}
+{"completed": 15, "last_task": "grpo_group_norm", "last_status": "passed"}
+{"run_id": "cutile-tier1-20261113T014034Z", "execution": {"command": "python -m scripts.validate --suite rmsnorm,row_softmax,cispo_clip_weight,fused_adamw,grpo_group_norm --device cuda --purpose eval --case-set smoke --fixtures all --timeout-s 1200 --suite-out /artifacts/cutile-tier1-20261113T014034Z/suite --backends cutile --benchmark --cold-start", "returncode": 0, "timed_out": false, "wall_s": 283.206939963}, "counts": {"passed": 15, "failed": 0, "unavailable": 0}, "not_applicable": 0, "status": "pass", "source_mismatches": [], "scope": "selected workload cases only; no stock AXPBY acceptance or timing-cause claim"}
+✓ App completed. View run at 
+https://modal.com/apps/elenamylocuda/main/ap-x0V0MjRYNVMOf05gHX7NcV
