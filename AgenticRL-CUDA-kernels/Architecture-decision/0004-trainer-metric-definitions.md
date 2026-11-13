@@ -1,6 +1,6 @@
 # ADR 0004 — Trainer metric definitions
 
-- **Status:** decided (2026-11-12); emission blocked on trainer instrumentation.
+- **Status:** decided (2026-11-12); amended 2026-11-13 (`gpu_busy` leaves the eval denominators); emission blocked on trainer instrumentation.
 - **Scope:** the eight trainer-owned reservations in [ADR 0002](0002-wandb-tracking-contract.md#trainer-owned-reservations-and-definitions).
 - **Version:** `trainer-metrics-v1`. No trainer, optimizer, logging adapter,
   environment result key, reward rule or preset is implemented or changed here.
@@ -251,15 +251,19 @@ cell has at least one attempt, the cohort is incomplete and all three eval
 aggregates are null. Missing outcomes are not silently invented failures.
 
 Let `J` be the number of declared tasks, `K_j` the number of case/backend cells
-of task `j`, and `n_jk` the attempted episodes in cell `(j,k)`. Each episode has
-fixed weight `w_i=1/(J K_j n_jk)`, so weights sum to 1: uniform tasks, uniform
-cells within a task, uniform attempts within a cell. More catalog cases,
+of task `j`, and `n_jk` the attempted episodes in cell `(j,k)` whose terminal
+reason is not `gpu_busy`. Each such episode has fixed weight
+`w_i=1/(J K_j n_jk)`, so weights sum to 1: uniform tasks, uniform cells within
+a task, uniform attempts within a cell. A `gpu_busy` episode has weight 0 and
+is outside every eval denominator. If every attempt in a declared cell is
+`gpu_busy` (`n_jk=0`), the cohort is incomplete and all three aggregates are
+null until a new manifest revision re-runs that cell. More catalog cases,
 `cfg.group_size` or resampling do not increase a task's weight. Use these same
 weights for all checkpoints; changed assignments require a different cohort ID.
 
 | Denominator policy | Decision |
 |---|---|
-| All attempted episodes, failures count against rates | **Choose** for both rates: preserves end-to-end reliability and avoids survivor selection |
+| All attempted episodes except `gpu_busy`, failures count against rates | **Choose** for both rates: preserves end-to-end reliability and avoids survivor selection. `gpu_busy` is GPU-lock contention between rollouts, not a policy outcome; it is already excluded from training advantages (`utils/grpo.py`) and is reported as its own fraction |
 | Measured-only rates, accompanied by existing `reward/frac_*` | Reject as the primary rates: CPU/unavailable/timeout rows disappear. Existing fractions cover provenance/max-turns, not the full taxonomy; training-batch fractions are not eval-cohort fractions |
 | Per-reason breakdown | Require alongside the aggregates in the trainer eval artifact; complements rather than replaces a fixed denominator |
 
@@ -282,7 +286,7 @@ Do not evaluate a timing comparison on failed/unmeasured rows.
 | Metric | Formula | Null rule |
 |---|---|---|
 | `eval/pass_rate` | `sum_i w_i P_i` | Empty/incomplete manifest or unknown weights/protocol |
-| `eval/faster_rate_vs_compile` | `sum_i w_i F_i` | Same completeness rule; failed/unmeasured episodes contribute 0, not a smaller denominator |
+| `eval/faster_rate_vs_compile` | `sum_i w_i F_i` | Same completeness rule; failed/unmeasured episodes contribute 0, not a smaller denominator (only `gpu_busy` has weight 0) |
 | `eval/geomean_speedup_vs_compile` | For `A={i:P_i=1}`, `c=sum_{i in A}w_i`; `exp(sum_{i in A} w_i (log t_compile_i-log t_gen_i)/c)` | Same completeness rule, or `c=0`; non-representable/non-finite final value is null with a data-quality flag |
 
 The faster-rate boundary is strict and uses the recorded effective margin
@@ -302,10 +306,13 @@ zero makes it null with a data-quality flag, not a clamped speedup.
 | `compile`, `verification`, `correctness`, `provenance`, `max_turns` | Pass/faster 0. Provenance failure may have positive timings, but they cannot claim authored performance; exclude from geomean |
 | `unmeasured`, including CPU/interpreter or provenance None | Pass/faster 0 as measurement-unavailable, not correctness failure; geomean excluded |
 | `timeout` | Pass/faster 0 as budget failure, separately counted; no imputed completion time/ratio |
-| `workdir`, `backend`, `profiling`, `timing`, `diagnostic_profile`, `gpu_busy`, unknown reasons | Pass/faster 0, preserve exact reason and data-quality details; geomean excluded even if stale/partial timings exist. `profiling`, `timing`, `diagnostic_profile` and `gpu_busy` are measurement failures after verification passed; report them as such, not as correctness failures |
+| `workdir`, `backend`, `profiling`, `timing`, `diagnostic_profile`, unknown reasons | Pass/faster 0, preserve exact reason and data-quality details; geomean excluded even if stale/partial timings exist. `profiling`, `timing` and `diagnostic_profile` are measurement failures after verification passed; report them as such, not as correctness failures |
+| `gpu_busy` | Excluded: weight 0, in no rate denominator and not in the geomean. Report its raw and weighted fraction of attempted episodes in the per-reason breakdown |
 
-`gpu_busy` stays excluded from **training advantages** only; it still counts
-against attempted eval availability. An all-unmeasured completed cohort has
+`gpu_busy` is excluded from **training advantages** and from **eval
+denominators** alike, so GPU contention can neither lower a pass rate nor
+inflate one; its frequency stays visible in the per-reason breakdown, with the
+attempted-episode count it was drawn from. An all-unmeasured completed cohort has
 both rates 0 and geomean null. It is not evidence of zero numerical correctness.
 
 The geomean is explicitly conditional on accepted measurements, unlike the

@@ -11,7 +11,7 @@ Reference: [ms-swift CISPO documentation (v4.3)](https://swift.readthedocs.io/en
 ADR number 0004 is available. The current code also has `gpu_busy` and profiler-specific failure reasons, so the definitions need to cover those alongside the listed failures.
 
 - Entropy and IS clipping stay token-denominated across presets.
-- Eval rates use all-attempted denominators.
+- Eval rates use all-attempted denominators, except `gpu_busy` rollouts, which are left out of every eval denominator and reported as their own fraction (decided 2026-11-13).
 - Geomean speedup is conditional on accepted measurements, with its coverage reported.
 - Token masks, policy log-probabilities and gradient data are explicit dependencies.
 

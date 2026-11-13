@@ -606,8 +606,8 @@ saves the sampler output (enabled in the Modal test runner).
 | `trainer:train/is_ratio_clip_fraction` | metric | train | float | fraction of policy tokens | zero policy tokens, missing/invalid log-probabilities or clip bounds | trainer-owned diagnostic | trainer |
 | `trainer:train/trajectory_length_tokens` | metric | train | float | tokens/episode | empty collection or any unknown token ledger | trainer-owned diagnostic | trainer |
 | `trainer:train/trajectory_length_turns` | metric | train | float | agent turns/episode | empty collection or unknown/inconsistent turn count | trainer-owned diagnostic | trainer |
-| `trainer:eval/pass_rate` | metric | eval | float | weighted fraction of attempted episodes | empty/incomplete cohort or unknown weights/protocol | trainer-owned diagnostic | trainer |
-| `trainer:eval/faster_rate_vs_compile` | metric | eval | float | weighted fraction of attempted episodes | empty/incomplete cohort or unknown weights/protocol | trainer-owned diagnostic | trainer |
+| `trainer:eval/pass_rate` | metric | eval | float | weighted fraction of attempted episodes excluding gpu_busy | empty/incomplete cohort (including a cell with only gpu_busy attempts) or unknown weights/protocol | trainer-owned diagnostic | trainer |
+| `trainer:eval/faster_rate_vs_compile` | metric | eval | float | weighted fraction of attempted episodes excluding gpu_busy | empty/incomplete cohort (including a cell with only gpu_busy attempts) or unknown weights/protocol | trainer-owned diagnostic | trainer |
 | `trainer:eval/geomean_speedup_vs_compile` | metric | eval | float | ratio | empty/incomplete cohort, zero accepted weight, or invalid/underflowed aggregate | trainer-owned diagnostic | trainer |
 | `trainer:train/collapse_step` | summary | train | int | iteration (zero-based) | detector unavailable or no confirmed collapse | trainer-owned diagnostic | trainer |
 | `metric:adv/frac_dropped` | metric | adv | float | 1 | no batch | diagnostic | environment |
