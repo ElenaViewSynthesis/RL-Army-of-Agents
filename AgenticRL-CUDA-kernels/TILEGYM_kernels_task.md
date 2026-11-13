@@ -99,9 +99,12 @@ Expected difficulty: low. Main risks are the conventions (naming, no tuning, pro
 ### Tier 2: RL losses over a large vocabulary (new tasks; the differentiator)
 
 These connect directly to the RL objective, like the existing `log_softmax_gather` and
-`cispo_clip_weight`. All run a log-sum-exp over a 128,256-wide vocabulary (bf16 logits), which tier 2 of
-the first cuTile round is now testing on the H200 (`cutile-tier2-20261113T014034Z`); wait for its result
-before finalising the vocabulary tiling.
+`cispo_clip_weight`. All run a log-sum-exp over a 128,256-wide vocabulary (bf16 logits). **That path is
+not yet tested on the H200:** tier 2 of the first cuTile round (`cutile-tier2-20261113T014034Z`, 6/6
+passed) ran only the `log_softmax_gather` smoke case, `b32_v1024`, so its 1024-wide online log-sum-exp
+loop ran once. The 8,192 and 128,256-wide cases exist only in `--case-set all` (the `acceptance` set is
+also `b32_v1024`). Do not finalise the vocabulary tiling until a cuTile `log_softmax_gather` run over the
+full grid has passed.
 
 | New task | TileGym source | Why | Port notes |
 |---|---|---|---|
