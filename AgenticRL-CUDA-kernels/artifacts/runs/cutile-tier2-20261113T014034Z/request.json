@@ -1,0 +1,15 @@
+{
+  "run_id": "cutile-tier2-20261113T014034Z",
+  "tasks": [
+    "log_softmax_gather",
+    "residual_rmsnorm"
+  ],
+  "case_set": "smoke",
+  "backends": "cutile",
+  "fixtures": "all",
+  "timeout_s": 1200,
+  "benchmark": true,
+  "cold_start": true,
+  "cuda_graphs": false,
+  "gpu_requested": "H200"
+}
