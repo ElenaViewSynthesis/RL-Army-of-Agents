@@ -1,0 +1,206 @@
+{
+ "schema": "tilegym-reference-checks-v1",
+ "scope": "CPU emulation of the proposed reference math on synthetic random inputs (seed 0); not GPU evidence and not a test of any kernel",
+ "torch": "2.14.1+cpu",
+ "device": "cpu",
+ "tolerance": {
+  "atol": 0.01,
+  "rtol": 0.01
+ },
+ "gpu_metrics": null,
+ "gpu_reason": "no kernel exists yet",
+ "checks": {
+  "gelu_tanh_vs_erf_max_abs": 0.00047323552068174145,
+  "gelu_tilegym_none_vs_tanh_max_abs_f64": 1.7763568394002505e-15,
+  "gelu_tilegym_none_vs_erf_max_abs": 0.0004732355206820138,
+  "geglu_bf16_native_vs_fp32_ref_frac_outside_tol": 2.384185791015625e-07,
+  "geglu_bf16_native_vs_fp32_ref_max_abs": 0.0625,
+  "rope_bf16_native_vs_fp32_ref_frac_outside_tol": 1.33514404296875e-05,
+  "rope_bf16_native_vs_fp32_ref_max_abs": 0.03125,
+  "rope_input_unchanged_by_ref": true,
+  "grpo_token_loss": {
+   "grpo": {
+    "loss": 1.2383743524551392,
+    "finite": true
+   },
+   "dapo": {
+    "loss": 0.9564059972763062,
+    "finite": true
+   },
+   "cispo": {
+    "loss": -1.29266357421875,
+    "finite": true
+   },
+   "cispo_cap4_vs_cap5": {
+    "per_token_frac_outside_tol": 0.0751953125,
+    "per_token_verifies": false,
+    "scalar_rel_diff": 0.08966401219367981,
+    "scalar_verifies": false
+   },
+   "cispo_cap6_vs_cap5": {
+    "per_token_frac_outside_tol": 0.05859375,
+    "per_token_verifies": false,
+    "scalar_rel_diff": 0.06890974193811417,
+    "scalar_verifies": false
+   },
+   "grpo_seq_vs_token_agg": {
+    "scalar_rel_diff": 0.21262909471988678,
+    "scalar_verifies": false
+   },
+   "grpo_kl0p001_vs_no_kl": {
+    "per_token_frac_outside_tol": 0.0,
+    "scalar_rel_diff": 3.167043541907333e-05,
+    "per_token_verifies": true,
+    "scalar_verifies": true
+   },
+   "ratio_frac_gt5": 0.169921875,
+   "ratio_frac_in_4_5": 0.0498046875
+  },
+  "generalized_jsd": {
+   "beta0.5": {
+    "mean": 0.4972621202468872,
+    "swapped_mean": 0.4972621202468872,
+    "swapped_row_verifies": true,
+    "swapped_scalar_verifies": true
+   },
+   "beta0.1": {
+    "mean": 0.2204621285200119,
+    "swapped_mean": 0.2208644449710846,
+    "swapped_row_verifies": true,
+    "swapped_scalar_verifies": true
+   },
+   "bf16_inputs_vs_fp32_inputs_mean": [
+    0.4973036050796509,
+    0.4972621202468872
+   ],
+   "jsd_upper_bound_ln2": 0.6931471805599453
+  },
+  "token_kl_div": {
+   "mean": 3.91267728805542,
+   "swapped_mean": 3.949284315109253,
+   "swapped_row_verifies": false,
+   "matches_F_kl_div_batchmean": true
+  },
+  "fused_cross_entropy": {
+   "matches_F_cross_entropy": true,
+   "mean": 11.030207633972168,
+   "mean_if_ignored_rows_counted": 9.608345031738281,
+   "wrong_denominator_verifies": false
+  },
+  "moe_align_block": {
+   "docstring_example_sorted_prefix": [
+    3,
+    6,
+    9,
+    12,
+    0,
+    4,
+    10,
+    12,
+    1,
+    7,
+    11,
+    12,
+    2,
+    5,
+    8,
+    12
+   ],
+   "expert_ids": [
+    0,
+    1,
+    2,
+    3,
+    -1,
+    -1
+   ],
+   "num_tokens_post_pad": [
+    16
+   ],
+   "matches_docstring": true
+  },
+  "silu_and_mul": {
+   "max_abs_out": 14.25,
+   "one_ulp_up_verifies": true
+  },
+  "relu_squared": {
+   "max_abs_out": 25.375
+  }
+ },
+ "argument_order_and_kl_checks": {
+  "student1_teacher4": {
+   "jsd_beta0.5": {
+    "mean": 0.6267974376678467,
+    "swapped_mean": 0.6267974376678467,
+    "swapped_rows_frac_outside_tol": 0.0,
+    "scalar_outside_tol": 0.0
+   },
+   "jsd_beta0.1": {
+    "mean": 0.2869712710380554,
+    "swapped_mean": 0.2895314693450928,
+    "swapped_rows_frac_outside_tol": 0.0,
+    "scalar_outside_tol": 0.0
+   },
+   "jsd_beta0.9": {
+    "mean": 0.2895314693450928,
+    "swapped_mean": 0.2869712710380554,
+    "swapped_rows_frac_outside_tol": 0.0,
+    "scalar_outside_tol": 0.0
+   },
+   "kl": {
+    "mean": 6.39399528503418,
+    "swapped_mean": 8.065790176391602,
+    "swapped_rows_frac_outside_tol": 1.0
+   },
+   "jsd_bf16_input_mean_vs_fp32": [
+    0.2870248854160309,
+    0.2869712710380554
+   ]
+  },
+  "student2_teacher3": {
+   "jsd_beta0.5": {
+    "mean": 0.5972594022750854,
+    "swapped_mean": 0.5972594022750854,
+    "swapped_rows_frac_outside_tol": 0.0,
+    "scalar_outside_tol": 0.0
+   },
+   "jsd_beta0.1": {
+    "mean": 0.2720811367034912,
+    "swapped_mean": 0.2730950117111206,
+    "swapped_rows_frac_outside_tol": 0.0,
+    "scalar_outside_tol": 0.0
+   },
+   "jsd_beta0.9": {
+    "mean": 0.2730950117111206,
+    "swapped_mean": 0.2720811367034912,
+    "swapped_rows_frac_outside_tol": 0.0,
+    "scalar_outside_tol": 0.0
+   },
+   "kl": {
+    "mean": 6.089064121246338,
+    "swapped_mean": 6.489660739898682,
+    "swapped_rows_frac_outside_tol": 0.9375
+   },
+   "jsd_bf16_input_mean_vs_fp32": [
+    0.2721126079559326,
+    0.2720811367034912
+   ]
+  },
+  "grpo_kl_coef0.001_refwidth0.5": {
+   "per_token_frac_outside_tol_if_kl_dropped": 0.0,
+   "mean_kl": 0.04314076155424118
+  },
+  "grpo_kl_coef0.04_refwidth0.5": {
+   "per_token_frac_outside_tol_if_kl_dropped": 0.0,
+   "mean_kl": 0.04314076155424118
+  },
+  "grpo_kl_coef0.001_refwidth2.0": {
+   "per_token_frac_outside_tol_if_kl_dropped": 0.0,
+   "mean_kl": 0.8439738154411316
+  },
+  "grpo_kl_coef0.04_refwidth2.0": {
+   "per_token_frac_outside_tol_if_kl_dropped": 0.5283203125,
+   "mean_kl": 0.8439738154411316
+  }
+ }
+}

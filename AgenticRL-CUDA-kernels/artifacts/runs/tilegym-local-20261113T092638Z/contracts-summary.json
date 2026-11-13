@@ -1,0 +1,1779 @@
+{
+ "schema": "tilegym-contract-proposal-v1",
+ "status": "proposal only; nothing implemented, no catalog change, no GPU run",
+ "pin": {
+  "tag": "v1.5.1",
+  "commit": "bb1a7e720594880be017e8fdf8f7e4f740656beb",
+  "archive_sha256": "17e769753731efe126829672fdc51a1a6506ac3d13a3879e51c278586cb720b6"
+ },
+ "size_note": "logical bytes are formulas over the proposed shapes, not measured memory",
+ "new_tasks": {
+  "silu_and_mul": {
+   "tier": 1,
+   "status": "new",
+   "proposed_stage": 7,
+   "reference": "(silu(x[:, :H].float()) * x[:, H:].float()).to(x.dtype); SiLU half is the FIRST half",
+   "inputs": {
+    "x": "[B, 2H] case dtype, contiguous, read-only"
+   },
+   "outputs": {
+    "out": "[B, H] case dtype, fresh tensor"
+   },
+   "verifier": "utils.task_verification (float: utils.verification atol=rtol=1e-2)",
+   "tolerance_change_needed": false,
+   "workload": {
+    "flops": null,
+    "logical_io_bytes": "3*B*H*itemsize"
+   },
+   "sources": [
+    {
+     "key": "tilegym",
+     "path": "src/tilegym/ops/cutile/silu_and_mul.py",
+     "kernel_lines": "29-61"
+    }
+   ],
+   "trainable": true,
+   "hazards_resolved": {
+    "exhaustive_search": "lines 11, 159 removed",
+    "get_device_capability": "line 140 (branch 145-148) removed",
+    "num_ctas": "lines 131, 142-148 removed; num_ctas=1",
+    "occupancy": "lines 23, 131 removed; no hint",
+    "backward_autograd": "lines 70-113, 183-252 removed",
+    "out_parameter": "lines 290-294 removed (fresh output only)"
+   },
+   "fixed_tiles_sm90": {
+    "BLOCK": 1024,
+    "grid": "(B,1,1)",
+    "why": "1024-wide row chunks passed on the H200 in the first cuTile round; TileGym's one-tile-per-row (next_pow2(H), up to 16384) is untested on sm_90"
+   },
+   "grid": {
+    "count": 12,
+    "smoke": "b64_h1024_float32",
+    "proposed_acceptance": "b4096_h14336_bfloat16",
+    "largest_logical_io_bytes": 704643072,
+    "last_case_has_most_bytes": false,
+    "last_case_has_largest_shape": true,
+    "cases": [
+     {
+      "id": "b64_h1024_float32",
+      "dtype": "float32",
+      "parameters": {
+       "b": 64,
+       "h": 1024
+      },
+      "logical_input_bytes": 524288,
+      "logical_output_bytes": 262144
+     },
+     {
+      "id": "b64_h4096_float32",
+      "dtype": "float32",
+      "parameters": {
+       "b": 64,
+       "h": 4096
+      },
+      "logical_input_bytes": 2097152,
+      "logical_output_bytes": 1048576
+     },
+     {
+      "id": "b64_h14336_float32",
+      "dtype": "float32",
+      "parameters": {
+       "b": 64,
+       "h": 14336
+      },
+      "logical_input_bytes": 7340032,
+      "logical_output_bytes": 3670016
+     },
+     {
+      "id": "b4096_h1024_float32",
+      "dtype": "float32",
+      "parameters": {
+       "b": 4096,
+       "h": 1024
+      },
+      "logical_input_bytes": 33554432,
+      "logical_output_bytes": 16777216
+     },
+     {
+      "id": "b4096_h4096_float32",
+      "dtype": "float32",
+      "parameters": {
+       "b": 4096,
+       "h": 4096
+      },
+      "logical_input_bytes": 134217728,
+      "logical_output_bytes": 67108864
+     },
+     {
+      "id": "b4096_h14336_float32",
+      "dtype": "float32",
+      "parameters": {
+       "b": 4096,
+       "h": 14336
+      },
+      "logical_input_bytes": 469762048,
+      "logical_output_bytes": 234881024
+     },
+     {
+      "id": "b64_h1024_bfloat16",
+      "dtype": "bfloat16",
+      "parameters": {
+       "b": 64,
+       "h": 1024
+      },
+      "logical_input_bytes": 262144,
+      "logical_output_bytes": 131072
+     },
+     {
+      "id": "b64_h4096_bfloat16",
+      "dtype": "bfloat16",
+      "parameters": {
+       "b": 64,
+       "h": 4096
+      },
+      "logical_input_bytes": 1048576,
+      "logical_output_bytes": 524288
+     },
+     {
+      "id": "b64_h14336_bfloat16",
+      "dtype": "bfloat16",
+      "parameters": {
+       "b": 64,
+       "h": 14336
+      },
+      "logical_input_bytes": 3670016,
+      "logical_output_bytes": 1835008
+     },
+     {
+      "id": "b4096_h1024_bfloat16",
+      "dtype": "bfloat16",
+      "parameters": {
+       "b": 4096,
+       "h": 1024
+      },
+      "logical_input_bytes": 16777216,
+      "logical_output_bytes": 8388608
+     },
+     {
+      "id": "b4096_h4096_bfloat16",
+      "dtype": "bfloat16",
+      "parameters": {
+       "b": 4096,
+       "h": 4096
+      },
+      "logical_input_bytes": 67108864,
+      "logical_output_bytes": 33554432
+     },
+     {
+      "id": "b4096_h14336_bfloat16",
+      "dtype": "bfloat16",
+      "parameters": {
+       "b": 4096,
+       "h": 14336
+      },
+      "logical_input_bytes": 234881024,
+      "logical_output_bytes": 117440512
+     }
+    ]
+   }
+  },
+  "geglu_tanh": {
+   "tier": 1,
+   "status": "new",
+   "proposed_stage": 7,
+   "reference": "(x[:, :H].float() * gelu_tanh(x[:, H:].float())).to(x.dtype); GELU half is the SECOND half; gelu_tanh(b)=0.5*b*(1+tanh(sqrt(2/pi)*(b+0.044715*b**3)))",
+   "inputs": {
+    "x": "[B, 2H] case dtype, contiguous, read-only"
+   },
+   "outputs": {
+    "out": "[B, H] case dtype, fresh tensor"
+   },
+   "verifier": "utils.task_verification (float: atol=rtol=1e-2)",
+   "tolerance_change_needed": false,
+   "workload": {
+    "flops": null,
+    "logical_io_bytes": "3*B*H*itemsize"
+   },
+   "sources": [
+    {
+     "key": "tilegym",
+     "path": "src/tilegym/ops/cutile/activation/geglu.py",
+     "kernel_lines": "69-115"
+    },
+    {
+     "key": "tilegym",
+     "path": "src/tilegym/ops/cutile/activation/gelu.py",
+     "kernel_lines": "74-82"
+    }
+   ],
+   "trainable": true,
+   "hazards_resolved": {
+    "approximate_none": "geglu.py:180 accepts 'none', but gelu.py:36-55 computes it with the same tanh formula; task is tanh-only by contract",
+    "input_dtype_arithmetic": "geglu.py:105-112 computes in the input dtype; port casts to fp32 (bf16 arithmetic left 1 of 4.19M elements outside tolerance in a CPU emulation)",
+    "backward_autograd": "lines 23-66, 118-174, 177-270 removed",
+    "dim_argument": "split is on the last dim only"
+   },
+   "fixed_tiles_sm90": {
+    "BLOCK": 1024,
+    "grid": "(B,1,1)",
+    "why": "same row-chunk layout as silu_and_mul; TileGym's flat 256-element blocks (geglu.py:207) give B*H/256 blocks"
+   },
+   "grid": {
+    "count": 12,
+    "smoke": "b64_h1024_float32",
+    "proposed_acceptance": "b4096_h16384_bfloat16",
+    "largest_logical_io_bytes": 805306368,
+    "last_case_has_most_bytes": false,
+    "last_case_has_largest_shape": true,
+    "cases": [
+     {
+      "id": "b64_h1024_float32",
+      "dtype": "float32",
+      "parameters": {
+       "b": 64,
+       "h": 1024
+      },
+      "logical_input_bytes": 524288,
+      "logical_output_bytes": 262144
+     },
+     {
+      "id": "b64_h4096_float32",
+      "dtype": "float32",
+      "parameters": {
+       "b": 64,
+       "h": 4096
+      },
+      "logical_input_bytes": 2097152,
+      "logical_output_bytes": 1048576
+     },
+     {
+      "id": "b64_h16384_float32",
+      "dtype": "float32",
+      "parameters": {
+       "b": 64,
+       "h": 16384
+      },
+      "logical_input_bytes": 8388608,
+      "logical_output_bytes": 4194304
+     },
+     {
+      "id": "b4096_h1024_float32",
+      "dtype": "float32",
+      "parameters": {
+       "b": 4096,
+       "h": 1024
+      },
+      "logical_input_bytes": 33554432,
+      "logical_output_bytes": 16777216
+     },
+     {
+      "id": "b4096_h4096_float32",
+      "dtype": "float32",
+      "parameters": {
+       "b": 4096,
+       "h": 4096
+      },
+      "logical_input_bytes": 134217728,
+      "logical_output_bytes": 67108864
+     },
+     {
+      "id": "b4096_h16384_float32",
+      "dtype": "float32",
+      "parameters": {
+       "b": 4096,
+       "h": 16384
+      },
+      "logical_input_bytes": 536870912,
+      "logical_output_bytes": 268435456
+     },
+     {
+      "id": "b64_h1024_bfloat16",
+      "dtype": "bfloat16",
+      "parameters": {
+       "b": 64,
+       "h": 1024
+      },
+      "logical_input_bytes": 262144,
+      "logical_output_bytes": 131072
+     },
+     {
+      "id": "b64_h4096_bfloat16",
+      "dtype": "bfloat16",
+      "parameters": {
+       "b": 64,
+       "h": 4096
+      },
+      "logical_input_bytes": 1048576,
+      "logical_output_bytes": 524288
+     },
+     {
+      "id": "b64_h16384_bfloat16",
+      "dtype": "bfloat16",
+      "parameters": {
+       "b": 64,
+       "h": 16384
+      },
+      "logical_input_bytes": 4194304,
+      "logical_output_bytes": 2097152
+     },
+     {
+      "id": "b4096_h1024_bfloat16",
+      "dtype": "bfloat16",
+      "parameters": {
+       "b": 4096,
+       "h": 1024
+      },
+      "logical_input_bytes": 16777216,
+      "logical_output_bytes": 8388608
+     },
+     {
+      "id": "b4096_h4096_bfloat16",
+      "dtype": "bfloat16",
+      "parameters": {
+       "b": 4096,
+       "h": 4096
+      },
+      "logical_input_bytes": 67108864,
+      "logical_output_bytes": 33554432
+     },
+     {
+      "id": "b4096_h16384_bfloat16",
+      "dtype": "bfloat16",
+      "parameters": {
+       "b": 4096,
+       "h": 16384
+      },
+      "logical_input_bytes": 268435456,
+      "logical_output_bytes": 134217728
+     }
+    ]
+   }
+  },
+  "rotary_embedding": {
+   "tier": 1,
+   "status": "new",
+   "proposed_stage": 7,
+   "reference": "x1,x2 = halves of the last dim; out = cat(x1*cos - x2*sin, x2*cos + x1*sin) in fp32, cast to input dtype; applied to q and k; returns NEW tensors",
+   "inputs": {
+    "q": "[B, 32, S, D] case dtype",
+    "k": "[B, 8, S, D] case dtype",
+    "cos": "[S, D/2] fp32",
+    "sin": "[S, D/2] fp32",
+    "all": "contiguous, read-only"
+   },
+   "outputs": {
+    "q_rot": "[B, 32, S, D] case dtype, fresh",
+    "k_rot": "[B, 8, S, D] case dtype, fresh"
+   },
+   "verifier": "utils.task_verification (float: atol=rtol=1e-2); output comparison does not detect in-place mutation",
+   "tolerance_change_needed": false,
+   "workload": {
+    "flops": "3*(HQ+HKV)*B*S*D (2 mul + 1 add per output element)",
+    "logical_io_bytes": "2*(HQ+HKV)*B*S*D*itemsize + 2*S*(D/2)*4"
+   },
+   "sources": [
+    {
+     "key": "tilegym",
+     "path": "src/tilegym/ops/cutile/rope.py",
+     "kernel_lines": "23-121"
+    }
+   ],
+   "trainable": true,
+   "hazards_resolved": {
+    "in_place": "rope.py:83-92, 112-121 store into q and k; port stores into fresh outputs",
+    "exhaustive_search": "lines 9, 235 removed (201-246)",
+    "occupancy": "lines 19, 205, 233, 244 removed; no hint",
+    "input_dtype_arithmetic": "rope.py:81-82, 110-111 compute in the input dtype; port casts to fp32 (bf16 arithmetic left 1.3e-5 of elements outside tolerance in a CPU emulation)",
+    "backward_autograd": "lines 249-284 removed",
+    "partial_rope_and_model_wrappers": "lines 287-341 removed (full RoPE, half-split layout only)"
+   },
+   "fixed_tiles_sm90": {
+    "TILE_QH": 32,
+    "TILE_KH": 8,
+    "TILE_RD": "D/2 (32 or 64)",
+    "grid": "(B*S,1,1)",
+    "why": "TileGym's shape-derived tiles (rope.py:155-157); all are powers of two in this grid, so no padded tile is stored"
+   },
+   "grid": {
+    "count": 12,
+    "smoke": "b1_hq32_hkv8_s512_d64_float32",
+    "proposed_acceptance": "b8_hq32_hkv8_s8192_d128_bfloat16",
+    "largest_logical_io_bytes": 2688548864,
+    "last_case_has_most_bytes": false,
+    "last_case_has_largest_shape": true,
+    "cases": [
+     {
+      "id": "b1_hq32_hkv8_s512_d64_float32",
+      "dtype": "float32",
+      "parameters": {
+       "b": 1,
+       "hq": 32,
+       "hkv": 8,
+       "s": 512,
+       "d": 64
+      },
+      "logical_input_bytes": 5373952,
+      "logical_output_bytes": 5242880
+     },
+     {
+      "id": "b1_hq32_hkv8_s512_d128_float32",
+      "dtype": "float32",
+      "parameters": {
+       "b": 1,
+       "hq": 32,
+       "hkv": 8,
+       "s": 512,
+       "d": 128
+      },
+      "logical_input_bytes": 10747904,
+      "logical_output_bytes": 10485760
+     },
+     {
+      "id": "b4_hq32_hkv8_s2048_d64_float32",
+      "dtype": "float32",
+      "parameters": {
+       "b": 4,
+       "hq": 32,
+       "hkv": 8,
+       "s": 2048,
+       "d": 64
+      },
+      "logical_input_bytes": 84410368,
+      "logical_output_bytes": 83886080
+     },
+     {
+      "id": "b4_hq32_hkv8_s2048_d128_float32",
+      "dtype": "float32",
+      "parameters": {
+       "b": 4,
+       "hq": 32,
+       "hkv": 8,
+       "s": 2048,
+       "d": 128
+      },
+      "logical_input_bytes": 168820736,
+      "logical_output_bytes": 167772160
+     },
+     {
+      "id": "b8_hq32_hkv8_s8192_d64_float32",
+      "dtype": "float32",
+      "parameters": {
+       "b": 8,
+       "hq": 32,
+       "hkv": 8,
+       "s": 8192,
+       "d": 64
+      },
+      "logical_input_bytes": 673185792,
+      "logical_output_bytes": 671088640
+     },
+     {
+      "id": "b8_hq32_hkv8_s8192_d128_float32",
+      "dtype": "float32",
+      "parameters": {
+       "b": 8,
+       "hq": 32,
+       "hkv": 8,
+       "s": 8192,
+       "d": 128
+      },
+      "logical_input_bytes": 1346371584,
+      "logical_output_bytes": 1342177280
+     },
+     {
+      "id": "b1_hq32_hkv8_s512_d64_bfloat16",
+      "dtype": "bfloat16",
+      "parameters": {
+       "b": 1,
+       "hq": 32,
+       "hkv": 8,
+       "s": 512,
+       "d": 64
+      },
+      "logical_input_bytes": 2752512,
+      "logical_output_bytes": 2621440
+     },
+     {
+      "id": "b1_hq32_hkv8_s512_d128_bfloat16",
+      "dtype": "bfloat16",
+      "parameters": {
+       "b": 1,
+       "hq": 32,
+       "hkv": 8,
+       "s": 512,
+       "d": 128
+      },
+      "logical_input_bytes": 5505024,
+      "logical_output_bytes": 5242880
+     },
+     {
+      "id": "b4_hq32_hkv8_s2048_d64_bfloat16",
+      "dtype": "bfloat16",
+      "parameters": {
+       "b": 4,
+       "hq": 32,
+       "hkv": 8,
+       "s": 2048,
+       "d": 64
+      },
+      "logical_input_bytes": 42467328,
+      "logical_output_bytes": 41943040
+     },
+     {
+      "id": "b4_hq32_hkv8_s2048_d128_bfloat16",
+      "dtype": "bfloat16",
+      "parameters": {
+       "b": 4,
+       "hq": 32,
+       "hkv": 8,
+       "s": 2048,
+       "d": 128
+      },
+      "logical_input_bytes": 84934656,
+      "logical_output_bytes": 83886080
+     },
+     {
+      "id": "b8_hq32_hkv8_s8192_d64_bfloat16",
+      "dtype": "bfloat16",
+      "parameters": {
+       "b": 8,
+       "hq": 32,
+       "hkv": 8,
+       "s": 8192,
+       "d": 64
+      },
+      "logical_input_bytes": 337641472,
+      "logical_output_bytes": 335544320
+     },
+     {
+      "id": "b8_hq32_hkv8_s8192_d128_bfloat16",
+      "dtype": "bfloat16",
+      "parameters": {
+       "b": 8,
+       "hq": 32,
+       "hkv": 8,
+       "s": 8192,
+       "d": 128
+      },
+      "logical_input_bytes": 675282944,
+      "logical_output_bytes": 671088640
+     }
+    ]
+   }
+  },
+  "relu_squared": {
+   "tier": 1,
+   "status": "new",
+   "proposed_stage": 7,
+   "reference": "x.float().clamp(min=0).square().to(x.dtype)",
+   "inputs": {
+    "x": "[B, H] case dtype, contiguous, read-only"
+   },
+   "outputs": {
+    "out": "[B, H] case dtype, fresh tensor"
+   },
+   "verifier": "utils.task_verification (float: atol=rtol=1e-2)",
+   "tolerance_change_needed": false,
+   "workload": {
+    "flops": null,
+    "logical_io_bytes": "2*B*H*itemsize"
+   },
+   "sources": [
+    {
+     "key": "tilegym",
+     "path": "src/tilegym/suites/liger/cutile/relu_squared.py",
+     "kernel_lines": "55-72"
+    },
+    {
+     "key": "liger"
+    }
+   ],
+   "trainable": true,
+   "hazards_resolved": {
+    "two_paths": "aligned check_bounds=False kernel (35-52) dropped; one bounds-checked kernel (55-72)",
+    "block_size_heuristic": "lines 122-134 replaced by a fixed BLOCK",
+    "backward_autograd": "lines 75-119, 137-179 removed"
+   },
+   "fixed_tiles_sm90": {
+    "BLOCK": 1024,
+    "grid": "(B,1,1)",
+    "why": "validated row-chunk width; TileGym caps at 4096 (line 32)"
+   },
+   "grid": {
+    "count": 12,
+    "smoke": "b64_h1024_float32",
+    "proposed_acceptance": "b4096_h14336_bfloat16",
+    "largest_logical_io_bytes": 469762048,
+    "last_case_has_most_bytes": false,
+    "last_case_has_largest_shape": true,
+    "cases": [
+     {
+      "id": "b64_h1024_float32",
+      "dtype": "float32",
+      "parameters": {
+       "b": 64,
+       "h": 1024
+      },
+      "logical_input_bytes": 262144,
+      "logical_output_bytes": 262144
+     },
+     {
+      "id": "b64_h4096_float32",
+      "dtype": "float32",
+      "parameters": {
+       "b": 64,
+       "h": 4096
+      },
+      "logical_input_bytes": 1048576,
+      "logical_output_bytes": 1048576
+     },
+     {
+      "id": "b64_h14336_float32",
+      "dtype": "float32",
+      "parameters": {
+       "b": 64,
+       "h": 14336
+      },
+      "logical_input_bytes": 3670016,
+      "logical_output_bytes": 3670016
+     },
+     {
+      "id": "b4096_h1024_float32",
+      "dtype": "float32",
+      "parameters": {
+       "b": 4096,
+       "h": 1024
+      },
+      "logical_input_bytes": 16777216,
+      "logical_output_bytes": 16777216
+     },
+     {
+      "id": "b4096_h4096_float32",
+      "dtype": "float32",
+      "parameters": {
+       "b": 4096,
+       "h": 4096
+      },
+      "logical_input_bytes": 67108864,
+      "logical_output_bytes": 67108864
+     },
+     {
+      "id": "b4096_h14336_float32",
+      "dtype": "float32",
+      "parameters": {
+       "b": 4096,
+       "h": 14336
+      },
+      "logical_input_bytes": 234881024,
+      "logical_output_bytes": 234881024
+     },
+     {
+      "id": "b64_h1024_bfloat16",
+      "dtype": "bfloat16",
+      "parameters": {
+       "b": 64,
+       "h": 1024
+      },
+      "logical_input_bytes": 131072,
+      "logical_output_bytes": 131072
+     },
+     {
+      "id": "b64_h4096_bfloat16",
+      "dtype": "bfloat16",
+      "parameters": {
+       "b": 64,
+       "h": 4096
+      },
+      "logical_input_bytes": 524288,
+      "logical_output_bytes": 524288
+     },
+     {
+      "id": "b64_h14336_bfloat16",
+      "dtype": "bfloat16",
+      "parameters": {
+       "b": 64,
+       "h": 14336
+      },
+      "logical_input_bytes": 1835008,
+      "logical_output_bytes": 1835008
+     },
+     {
+      "id": "b4096_h1024_bfloat16",
+      "dtype": "bfloat16",
+      "parameters": {
+       "b": 4096,
+       "h": 1024
+      },
+      "logical_input_bytes": 8388608,
+      "logical_output_bytes": 8388608
+     },
+     {
+      "id": "b4096_h4096_bfloat16",
+      "dtype": "bfloat16",
+      "parameters": {
+       "b": 4096,
+       "h": 4096
+      },
+      "logical_input_bytes": 33554432,
+      "logical_output_bytes": 33554432
+     },
+     {
+      "id": "b4096_h14336_bfloat16",
+      "dtype": "bfloat16",
+      "parameters": {
+       "b": 4096,
+       "h": 14336
+      },
+      "logical_input_bytes": 117440512,
+      "logical_output_bytes": 117440512
+     }
+    ]
+   }
+  },
+  "token_kl_div": {
+   "tier": 2,
+   "status": "new",
+   "proposed_stage": 7,
+   "reference": "t=log_target.float(); y=log_pred.float(); row=(t.exp()*(t-y)).sum(-1); return (row, row.mean())  # KL(target || pred), batchmean",
+   "inputs": {
+    "log_pred": "[N, V] log-probabilities, case dtype",
+    "log_target": "[N, V] log-probabilities, case dtype",
+    "all": "contiguous, read-only"
+   },
+   "outputs": {
+    "row_kl": "[N] fp32",
+    "kl_batchmean": "[] fp32 = row_kl.sum()/N"
+   },
+   "verifier": "utils.task_verification (float: atol=rtol=1e-2)",
+   "tolerance_change_needed": false,
+   "workload": {
+    "flops": null,
+    "logical_io_bytes": "2*N*V*itemsize + 4*N + 4"
+   },
+   "sources": [
+    {
+     "key": "tilegym",
+     "path": "src/tilegym/suites/liger/cutile/kl_div.py",
+     "kernel_lines": "97-149"
+    },
+    {
+     "key": "liger"
+    }
+   ],
+   "trainable": true,
+   "hazards_resolved": {
+    "host_reduction": "kl_div.py:240-245 (row_sums.sum()) moved into a second authored kernel",
+    "two_paths": "check_bounds=False fast path (119-131) dropped; one bounds-checked path",
+    "per_element_output": "lines 47-94 removed",
+    "backward_autograd": "lines 152-194, 248-309 removed",
+    "zero_init": "torch.zeros at 224 replaced by torch.empty (kernel writes every row)"
+   },
+   "fixed_tiles_sm90": {
+    "BLOCK": 1024,
+    "grid": "(N,1,1) then (1,1,1)",
+    "why": "1024-wide vocabulary tiles passed on the H200 at V=128,256 (cutile-lsg-fullgrid-20261113T104702Z); TileGym uses 4096 (line 32), untested on sm_90"
+   },
+   "grid": {
+    "count": 12,
+    "smoke": "n32_v1024_bfloat16",
+    "proposed_acceptance": "n4096_v128256_float32",
+    "largest_logical_io_bytes": 4202708996,
+    "last_case_has_most_bytes": true,
+    "last_case_has_largest_shape": true,
+    "cases": [
+     {
+      "id": "n32_v1024_bfloat16",
+      "dtype": "bfloat16",
+      "parameters": {
+       "n": 32,
+       "v": 1024
+      },
+      "logical_input_bytes": 131072,
+      "logical_output_bytes": 132
+     },
+     {
+      "id": "n32_v8192_bfloat16",
+      "dtype": "bfloat16",
+      "parameters": {
+       "n": 32,
+       "v": 8192
+      },
+      "logical_input_bytes": 1048576,
+      "logical_output_bytes": 132
+     },
+     {
+      "id": "n32_v128256_bfloat16",
+      "dtype": "bfloat16",
+      "parameters": {
+       "n": 32,
+       "v": 128256
+      },
+      "logical_input_bytes": 16416768,
+      "logical_output_bytes": 132
+     },
+     {
+      "id": "n4096_v1024_bfloat16",
+      "dtype": "bfloat16",
+      "parameters": {
+       "n": 4096,
+       "v": 1024
+      },
+      "logical_input_bytes": 16777216,
+      "logical_output_bytes": 16388
+     },
+     {
+      "id": "n4096_v8192_bfloat16",
+      "dtype": "bfloat16",
+      "parameters": {
+       "n": 4096,
+       "v": 8192
+      },
+      "logical_input_bytes": 134217728,
+      "logical_output_bytes": 16388
+     },
+     {
+      "id": "n4096_v128256_bfloat16",
+      "dtype": "bfloat16",
+      "parameters": {
+       "n": 4096,
+       "v": 128256
+      },
+      "logical_input_bytes": 2101346304,
+      "logical_output_bytes": 16388
+     },
+     {
+      "id": "n32_v1024_float32",
+      "dtype": "float32",
+      "parameters": {
+       "n": 32,
+       "v": 1024
+      },
+      "logical_input_bytes": 262144,
+      "logical_output_bytes": 132
+     },
+     {
+      "id": "n32_v8192_float32",
+      "dtype": "float32",
+      "parameters": {
+       "n": 32,
+       "v": 8192
+      },
+      "logical_input_bytes": 2097152,
+      "logical_output_bytes": 132
+     },
+     {
+      "id": "n32_v128256_float32",
+      "dtype": "float32",
+      "parameters": {
+       "n": 32,
+       "v": 128256
+      },
+      "logical_input_bytes": 32833536,
+      "logical_output_bytes": 132
+     },
+     {
+      "id": "n4096_v1024_float32",
+      "dtype": "float32",
+      "parameters": {
+       "n": 4096,
+       "v": 1024
+      },
+      "logical_input_bytes": 33554432,
+      "logical_output_bytes": 16388
+     },
+     {
+      "id": "n4096_v8192_float32",
+      "dtype": "float32",
+      "parameters": {
+       "n": 4096,
+       "v": 8192
+      },
+      "logical_input_bytes": 268435456,
+      "logical_output_bytes": 16388
+     },
+     {
+      "id": "n4096_v128256_float32",
+      "dtype": "float32",
+      "parameters": {
+       "n": 4096,
+       "v": 128256
+      },
+      "logical_input_bytes": 4202692608,
+      "logical_output_bytes": 16388
+     }
+    ]
+   }
+  },
+  "generalized_jsd": {
+   "tier": 2,
+   "status": "new",
+   "proposed_stage": 7,
+   "reference": "lq=log_q.float() (student); lp=log_p.float() (teacher); q,p=exp; m=beta*p+(1-beta)*q; row=sum(beta*p*(lp-log m)+(1-beta)*q*(lq-log m)) with 0*log0=0; return (row, row.mean())",
+   "inputs": {
+    "log_q": "[N, V] student log-probabilities, case dtype",
+    "log_p": "[N, V] teacher log-probabilities, case dtype",
+    "all": "contiguous, read-only"
+   },
+   "outputs": {
+    "row_jsd": "[N] fp32",
+    "jsd_mean": "[] fp32 = row_jsd.sum()/N"
+   },
+   "verifier": "utils.task_verification (float: atol=rtol=1e-2); a student/teacher swap is NOT detectable at this tolerance (measured <=0.9% difference)",
+   "tolerance_change_needed": false,
+   "workload": {
+    "flops": null,
+    "logical_io_bytes": "2*N*V*itemsize + 4*N + 4"
+   },
+   "sources": [
+    {
+     "key": "tilegym",
+     "path": "src/tilegym/suites/liger/cutile/jsd.py",
+     "kernel_lines": "34-119 (general branch 101-113)"
+    },
+    {
+     "key": "liger"
+    }
+   ],
+   "trainable": true,
+   "hazards_resolved": {
+    "ByTarget": "jsd.py:34 occupancy=ByTarget(sm_100=4) removed (it sets nothing on sm_90)",
+    "beta_special_cases": "lines 88-99 (beta==0 -> KL(P||Q), beta==1 -> KL(Q||P)) not ported; v1 beta in {0.5, 0.1}",
+    "host_reduction": "torch.sum at 161 and .item() at 131 removed; row sum and mean in authored kernels",
+    "per_element_buffer": "the [N,V] fp32 loss buffer (127) and dx gradient (128) removed",
+    "padding_nan": "padded lanes use -inf (78-79) and give 0*(-inf)=NaN in the row sum; port masks out-of-range lanes",
+    "labels": "ignore_index path (63-71) removed",
+    "backward_autograd": "lines 164-206 removed"
+   },
+   "fixed_tiles_sm90": {
+    "BLOCK": 1024,
+    "grid": "(N,1,1) then (1,1,1)",
+    "why": "validated vocabulary tile; TileGym uses 4096 (line 18)"
+   },
+   "grid": {
+    "count": 24,
+    "smoke": "n32_v1024_beta0p5_bfloat16",
+    "proposed_acceptance": "n4096_v128256_beta0p1_float32",
+    "largest_logical_io_bytes": 4202708996,
+    "last_case_has_most_bytes": true,
+    "last_case_has_largest_shape": true,
+    "cases": [
+     {
+      "id": "n32_v1024_beta0p5_bfloat16",
+      "dtype": "bfloat16",
+      "parameters": {
+       "n": 32,
+       "v": 1024,
+       "beta": 0.5
+      },
+      "logical_input_bytes": 131072,
+      "logical_output_bytes": 132
+     },
+     {
+      "id": "n32_v1024_beta0p1_bfloat16",
+      "dtype": "bfloat16",
+      "parameters": {
+       "n": 32,
+       "v": 1024,
+       "beta": 0.1
+      },
+      "logical_input_bytes": 131072,
+      "logical_output_bytes": 132
+     },
+     {
+      "id": "n32_v8192_beta0p5_bfloat16",
+      "dtype": "bfloat16",
+      "parameters": {
+       "n": 32,
+       "v": 8192,
+       "beta": 0.5
+      },
+      "logical_input_bytes": 1048576,
+      "logical_output_bytes": 132
+     },
+     {
+      "id": "n32_v8192_beta0p1_bfloat16",
+      "dtype": "bfloat16",
+      "parameters": {
+       "n": 32,
+       "v": 8192,
+       "beta": 0.1
+      },
+      "logical_input_bytes": 1048576,
+      "logical_output_bytes": 132
+     },
+     {
+      "id": "n32_v128256_beta0p5_bfloat16",
+      "dtype": "bfloat16",
+      "parameters": {
+       "n": 32,
+       "v": 128256,
+       "beta": 0.5
+      },
+      "logical_input_bytes": 16416768,
+      "logical_output_bytes": 132
+     },
+     {
+      "id": "n32_v128256_beta0p1_bfloat16",
+      "dtype": "bfloat16",
+      "parameters": {
+       "n": 32,
+       "v": 128256,
+       "beta": 0.1
+      },
+      "logical_input_bytes": 16416768,
+      "logical_output_bytes": 132
+     },
+     {
+      "id": "n4096_v1024_beta0p5_bfloat16",
+      "dtype": "bfloat16",
+      "parameters": {
+       "n": 4096,
+       "v": 1024,
+       "beta": 0.5
+      },
+      "logical_input_bytes": 16777216,
+      "logical_output_bytes": 16388
+     },
+     {
+      "id": "n4096_v1024_beta0p1_bfloat16",
+      "dtype": "bfloat16",
+      "parameters": {
+       "n": 4096,
+       "v": 1024,
+       "beta": 0.1
+      },
+      "logical_input_bytes": 16777216,
+      "logical_output_bytes": 16388
+     },
+     {
+      "id": "n4096_v8192_beta0p5_bfloat16",
+      "dtype": "bfloat16",
+      "parameters": {
+       "n": 4096,
+       "v": 8192,
+       "beta": 0.5
+      },
+      "logical_input_bytes": 134217728,
+      "logical_output_bytes": 16388
+     },
+     {
+      "id": "n4096_v8192_beta0p1_bfloat16",
+      "dtype": "bfloat16",
+      "parameters": {
+       "n": 4096,
+       "v": 8192,
+       "beta": 0.1
+      },
+      "logical_input_bytes": 134217728,
+      "logical_output_bytes": 16388
+     },
+     {
+      "id": "n4096_v128256_beta0p5_bfloat16",
+      "dtype": "bfloat16",
+      "parameters": {
+       "n": 4096,
+       "v": 128256,
+       "beta": 0.5
+      },
+      "logical_input_bytes": 2101346304,
+      "logical_output_bytes": 16388
+     },
+     {
+      "id": "n4096_v128256_beta0p1_bfloat16",
+      "dtype": "bfloat16",
+      "parameters": {
+       "n": 4096,
+       "v": 128256,
+       "beta": 0.1
+      },
+      "logical_input_bytes": 2101346304,
+      "logical_output_bytes": 16388
+     },
+     {
+      "id": "n32_v1024_beta0p5_float32",
+      "dtype": "float32",
+      "parameters": {
+       "n": 32,
+       "v": 1024,
+       "beta": 0.5
+      },
+      "logical_input_bytes": 262144,
+      "logical_output_bytes": 132
+     },
+     {
+      "id": "n32_v1024_beta0p1_float32",
+      "dtype": "float32",
+      "parameters": {
+       "n": 32,
+       "v": 1024,
+       "beta": 0.1
+      },
+      "logical_input_bytes": 262144,
+      "logical_output_bytes": 132
+     },
+     {
+      "id": "n32_v8192_beta0p5_float32",
+      "dtype": "float32",
+      "parameters": {
+       "n": 32,
+       "v": 8192,
+       "beta": 0.5
+      },
+      "logical_input_bytes": 2097152,
+      "logical_output_bytes": 132
+     },
+     {
+      "id": "n32_v8192_beta0p1_float32",
+      "dtype": "float32",
+      "parameters": {
+       "n": 32,
+       "v": 8192,
+       "beta": 0.1
+      },
+      "logical_input_bytes": 2097152,
+      "logical_output_bytes": 132
+     },
+     {
+      "id": "n32_v128256_beta0p5_float32",
+      "dtype": "float32",
+      "parameters": {
+       "n": 32,
+       "v": 128256,
+       "beta": 0.5
+      },
+      "logical_input_bytes": 32833536,
+      "logical_output_bytes": 132
+     },
+     {
+      "id": "n32_v128256_beta0p1_float32",
+      "dtype": "float32",
+      "parameters": {
+       "n": 32,
+       "v": 128256,
+       "beta": 0.1
+      },
+      "logical_input_bytes": 32833536,
+      "logical_output_bytes": 132
+     },
+     {
+      "id": "n4096_v1024_beta0p5_float32",
+      "dtype": "float32",
+      "parameters": {
+       "n": 4096,
+       "v": 1024,
+       "beta": 0.5
+      },
+      "logical_input_bytes": 33554432,
+      "logical_output_bytes": 16388
+     },
+     {
+      "id": "n4096_v1024_beta0p1_float32",
+      "dtype": "float32",
+      "parameters": {
+       "n": 4096,
+       "v": 1024,
+       "beta": 0.1
+      },
+      "logical_input_bytes": 33554432,
+      "logical_output_bytes": 16388
+     },
+     {
+      "id": "n4096_v8192_beta0p5_float32",
+      "dtype": "float32",
+      "parameters": {
+       "n": 4096,
+       "v": 8192,
+       "beta": 0.5
+      },
+      "logical_input_bytes": 268435456,
+      "logical_output_bytes": 16388
+     },
+     {
+      "id": "n4096_v8192_beta0p1_float32",
+      "dtype": "float32",
+      "parameters": {
+       "n": 4096,
+       "v": 8192,
+       "beta": 0.1
+      },
+      "logical_input_bytes": 268435456,
+      "logical_output_bytes": 16388
+     },
+     {
+      "id": "n4096_v128256_beta0p5_float32",
+      "dtype": "float32",
+      "parameters": {
+       "n": 4096,
+       "v": 128256,
+       "beta": 0.5
+      },
+      "logical_input_bytes": 4202692608,
+      "logical_output_bytes": 16388
+     },
+     {
+      "id": "n4096_v128256_beta0p1_float32",
+      "dtype": "float32",
+      "parameters": {
+       "n": 4096,
+       "v": 128256,
+       "beta": 0.1
+      },
+      "logical_input_bytes": 4202692608,
+      "logical_output_bytes": 16388
+     }
+    ]
+   }
+  },
+  "fused_cross_entropy": {
+   "tier": 2,
+   "status": "new",
+   "proposed_stage": 7,
+   "reference": "valid=targets!=-100; row=where(valid, -log_softmax(logits.float())[targets], 0); return (row, row.sum()/max(valid.sum(),1))",
+   "inputs": {
+    "logits": "[N, V] case dtype",
+    "targets": "[N] int64 in [0,V) or -100",
+    "all": "contiguous, read-only"
+   },
+   "outputs": {
+    "row_loss": "[N] fp32, 0 on ignored rows",
+    "mean_loss": "[] fp32"
+   },
+   "options_fixed_in_v1": {
+    "ignore_index": -100,
+    "label_smoothing": 0.0,
+    "class_weights": null,
+    "softcap": null,
+    "z_loss": 0.0,
+    "reduction": "mean over non-ignored rows"
+   },
+   "verifier": "utils.task_verification (float: atol=rtol=1e-2)",
+   "tolerance_change_needed": false,
+   "workload": {
+    "flops": null,
+    "logical_io_bytes": "N*V*itemsize + 8*N + 4*N + 4"
+   },
+   "sources": [
+    {
+     "key": "tilegym",
+     "path": "src/tilegym/suites/liger/cutile/cross_entropy.py",
+     "kernel_lines": "104-354 (kept: 157-161, 185-188, 195-216, 259-270, 320, 343)"
+    },
+    {
+     "key": "liger"
+    }
+   ],
+   "trainable": true,
+   "hazards_resolved": {
+    "exhaustive_search": "lines 13, 36-95 removed",
+    "get_device_capability": "line 99 (98-101) removed; fixed BLOCK",
+    "occupancy": "lines 29-32, 90, 94 removed; no hint",
+    "in_place_gradient": "lines 272-317 write gradients into the logits; removed",
+    "host_reductions": ".sum().item() at 410, bounds asserts 411-414, torch.gather 427, .item() 431, torch.sum 486-488 removed; valid count and mean in an authored kernel",
+    "options": "weights, softcap, label smoothing, z-loss, accuracy/argmax removed",
+    "backward_autograd": "lines 357-506 removed"
+   },
+   "fixed_tiles_sm90": {
+    "BLOCK": 1024,
+    "grid": "(N,1,1) then (1,1,1)",
+    "why": "validated vocabulary tile; TileGym picks 4096 for capability <= 10 (line 100)"
+   },
+   "grid": {
+    "count": 12,
+    "smoke": "n32_v1024_float32",
+    "proposed_acceptance": "n4096_v128256_bfloat16",
+    "largest_logical_io_bytes": 2101395460,
+    "last_case_has_most_bytes": false,
+    "last_case_has_largest_shape": true,
+    "cases": [
+     {
+      "id": "n32_v1024_float32",
+      "dtype": "float32",
+      "parameters": {
+       "n": 32,
+       "v": 1024
+      },
+      "logical_input_bytes": 131328,
+      "logical_output_bytes": 132
+     },
+     {
+      "id": "n32_v8192_float32",
+      "dtype": "float32",
+      "parameters": {
+       "n": 32,
+       "v": 8192
+      },
+      "logical_input_bytes": 1048832,
+      "logical_output_bytes": 132
+     },
+     {
+      "id": "n32_v128256_float32",
+      "dtype": "float32",
+      "parameters": {
+       "n": 32,
+       "v": 128256
+      },
+      "logical_input_bytes": 16417024,
+      "logical_output_bytes": 132
+     },
+     {
+      "id": "n4096_v1024_float32",
+      "dtype": "float32",
+      "parameters": {
+       "n": 4096,
+       "v": 1024
+      },
+      "logical_input_bytes": 16809984,
+      "logical_output_bytes": 16388
+     },
+     {
+      "id": "n4096_v8192_float32",
+      "dtype": "float32",
+      "parameters": {
+       "n": 4096,
+       "v": 8192
+      },
+      "logical_input_bytes": 134250496,
+      "logical_output_bytes": 16388
+     },
+     {
+      "id": "n4096_v128256_float32",
+      "dtype": "float32",
+      "parameters": {
+       "n": 4096,
+       "v": 128256
+      },
+      "logical_input_bytes": 2101379072,
+      "logical_output_bytes": 16388
+     },
+     {
+      "id": "n32_v1024_bfloat16",
+      "dtype": "bfloat16",
+      "parameters": {
+       "n": 32,
+       "v": 1024
+      },
+      "logical_input_bytes": 65792,
+      "logical_output_bytes": 132
+     },
+     {
+      "id": "n32_v8192_bfloat16",
+      "dtype": "bfloat16",
+      "parameters": {
+       "n": 32,
+       "v": 8192
+      },
+      "logical_input_bytes": 524544,
+      "logical_output_bytes": 132
+     },
+     {
+      "id": "n32_v128256_bfloat16",
+      "dtype": "bfloat16",
+      "parameters": {
+       "n": 32,
+       "v": 128256
+      },
+      "logical_input_bytes": 8208640,
+      "logical_output_bytes": 132
+     },
+     {
+      "id": "n4096_v1024_bfloat16",
+      "dtype": "bfloat16",
+      "parameters": {
+       "n": 4096,
+       "v": 1024
+      },
+      "logical_input_bytes": 8421376,
+      "logical_output_bytes": 16388
+     },
+     {
+      "id": "n4096_v8192_bfloat16",
+      "dtype": "bfloat16",
+      "parameters": {
+       "n": 4096,
+       "v": 8192
+      },
+      "logical_input_bytes": 67141632,
+      "logical_output_bytes": 16388
+     },
+     {
+      "id": "n4096_v128256_bfloat16",
+      "dtype": "bfloat16",
+      "parameters": {
+       "n": 4096,
+       "v": 128256
+      },
+      "logical_input_bytes": 1050705920,
+      "logical_output_bytes": 16388
+     }
+    ]
+   }
+  },
+  "grpo_token_loss": {
+   "tier": 2,
+   "status": "new",
+   "proposed_stage": 7,
+   "reference": "logp=log_softmax(logits.float())[ids]; r=exp(logp-old_logp); c=clamp(r, 1-clip_low, 1+clip_high); grpo/dapo: tok=-min(r*A, c*A); cispo: tok=-c*A*logp; tok+=kl_coef*(exp(ref-logp)-(ref-logp)-1) when kl_coef>0; tok=0 where mask is False; seq: mean_b(sum_t tok/max(sum_t mask,1)); token: sum tok/max(sum mask,1); return (tok, loss)",
+   "presets": {
+    "grpo": {
+     "clip": [
+      0.8,
+      1.2
+     ],
+     "kl_coef": 0.001,
+     "loss_agg": "seq"
+    },
+    "dapo": {
+     "clip": [
+      0.8,
+      1.28
+     ],
+     "kl_coef": 0.0,
+     "loss_agg": "token"
+    },
+    "cispo": {
+     "clip": [
+      0.0,
+      5.0
+     ],
+     "kl_coef": 0.0,
+     "loss_agg": "token"
+    }
+   },
+   "inputs": {
+    "logits": "[B, L, V] bf16",
+    "token_ids": "[B, L] int64",
+    "old_logp": "[B, L] fp32 (behaviour policy)",
+    "ref_logp": "[B, L] fp32 (KL reference; read only when kl_coef>0)",
+    "advantages": "[B] fp32, group-normalised as utils.grpo.group_advantages (groups of 8)",
+    "mask": "[B, L] bool",
+    "all": "contiguous, read-only"
+   },
+   "outputs": {
+    "per_token_loss": "[B, L] fp32, 0 where mask is False",
+    "loss": "[] fp32"
+   },
+   "verifier": "utils.task_verification (float: atol=rtol=1e-2); the KL term at kl_coef=0.001 is below this tolerance (measured)",
+   "tolerance_change_needed": false,
+   "workload": {
+    "flops": null,
+    "logical_io_bytes": "2*B*L*V + 17*B*L + 4*B + 4*B*L + 4"
+   },
+   "sources": [
+    {
+     "key": "tilegym",
+     "path": "src/tilegym/suites/liger/cutile/grpo_loss.py",
+     "kernel_lines": "55-206 (kept: 93-141, 144-146, 155-160, 194-196, 200, 204)"
+    },
+    {
+     "key": "liger"
+    },
+    {
+     "key": "local"
+    }
+   ],
+   "trainable": true,
+   "hazards_resolved": {
+    "cispo_cap": "grpo_loss.py:159 caps at eps_high directly; contract cap is 1+cfg.clip_high (=5) and lower bound 1-cfg.clip_low (=0), both passed as explicit bounds",
+    "exhaustive_search": "lines 31, 353-381 removed",
+    "ByTarget": "lines 30, 349-350, 366, 374, 379, 772-773 removed",
+    "occupancy": "all hints removed (TileGym fallback occupancy=1 at 360)",
+    "temperature": "fixed at 1; lines 105, 117, 132 scaling removed",
+    "host_reductions": "_compute_dapo_normalizer 776-795 (incl. torch.distributed.all_reduce), _reduce_loss 798-811, mask math 1107-1116 removed; reduction in an authored kernel",
+    "host_casts": "completion_mask.to(torch.int32) at 422 removed; kernel reads the bool mask",
+    "zero_init": "masked blocks return without writing (99-100) and rely on torch.zeros (410); port writes 0 explicitly",
+    "variants": "SAPO 162-176, VESPO 177-180, vLLM ratio 182-191, delta 150-154, bias-corrected KL 197-199, lse/is_clipped/kl outputs 201, 205-206, sequence-level path 573-769 and 814-968 removed",
+    "backward_autograd": "lines 209-345, 482-565, 971-1225 removed"
+   },
+   "fixed_tiles_sm90": {
+    "BLOCK": 1024,
+    "grid": "(B,L,1) then (1,1,1)",
+    "why": "validated vocabulary tile; TileGym uses min(8192, V) (line 406)"
+   },
+   "grid": {
+    "count": 12,
+    "smoke": "algogrpo_b8_l16_v1024_bfloat16",
+    "proposed_acceptance": "algocispo_b64_l64_v128256_bfloat16",
+    "largest_logical_io_bytes": 1050759428,
+    "last_case_has_most_bytes": true,
+    "last_case_has_largest_shape": true,
+    "cases": [
+     {
+      "id": "algogrpo_b8_l16_v1024_bfloat16",
+      "dtype": "bfloat16",
+      "parameters": {
+       "algo": "grpo",
+       "b": 8,
+       "l": 16,
+       "v": 1024
+      },
+      "logical_input_bytes": 264352,
+      "logical_output_bytes": 516
+     },
+     {
+      "id": "algogrpo_b8_l64_v8192_bfloat16",
+      "dtype": "bfloat16",
+      "parameters": {
+       "algo": "grpo",
+       "b": 8,
+       "l": 64,
+       "v": 8192
+      },
+      "logical_input_bytes": 8397344,
+      "logical_output_bytes": 2052
+     },
+     {
+      "id": "algogrpo_b16_l64_v128256_bfloat16",
+      "dtype": "bfloat16",
+      "parameters": {
+       "algo": "grpo",
+       "b": 16,
+       "l": 64,
+       "v": 128256
+      },
+      "logical_input_bytes": 262685760,
+      "logical_output_bytes": 4100
+     },
+     {
+      "id": "algogrpo_b64_l64_v128256_bfloat16",
+      "dtype": "bfloat16",
+      "parameters": {
+       "algo": "grpo",
+       "b": 64,
+       "l": 64,
+       "v": 128256
+      },
+      "logical_input_bytes": 1050743040,
+      "logical_output_bytes": 16388
+     },
+     {
+      "id": "algodapo_b8_l16_v1024_bfloat16",
+      "dtype": "bfloat16",
+      "parameters": {
+       "algo": "dapo",
+       "b": 8,
+       "l": 16,
+       "v": 1024
+      },
+      "logical_input_bytes": 264352,
+      "logical_output_bytes": 516
+     },
+     {
+      "id": "algodapo_b8_l64_v8192_bfloat16",
+      "dtype": "bfloat16",
+      "parameters": {
+       "algo": "dapo",
+       "b": 8,
+       "l": 64,
+       "v": 8192
+      },
+      "logical_input_bytes": 8397344,
+      "logical_output_bytes": 2052
+     },
+     {
+      "id": "algodapo_b16_l64_v128256_bfloat16",
+      "dtype": "bfloat16",
+      "parameters": {
+       "algo": "dapo",
+       "b": 16,
+       "l": 64,
+       "v": 128256
+      },
+      "logical_input_bytes": 262685760,
+      "logical_output_bytes": 4100
+     },
+     {
+      "id": "algodapo_b64_l64_v128256_bfloat16",
+      "dtype": "bfloat16",
+      "parameters": {
+       "algo": "dapo",
+       "b": 64,
+       "l": 64,
+       "v": 128256
+      },
+      "logical_input_bytes": 1050743040,
+      "logical_output_bytes": 16388
+     },
+     {
+      "id": "algocispo_b8_l16_v1024_bfloat16",
+      "dtype": "bfloat16",
+      "parameters": {
+       "algo": "cispo",
+       "b": 8,
+       "l": 16,
+       "v": 1024
+      },
+      "logical_input_bytes": 264352,
+      "logical_output_bytes": 516
+     },
+     {
+      "id": "algocispo_b8_l64_v8192_bfloat16",
+      "dtype": "bfloat16",
+      "parameters": {
+       "algo": "cispo",
+       "b": 8,
+       "l": 64,
+       "v": 8192
+      },
+      "logical_input_bytes": 8397344,
+      "logical_output_bytes": 2052
+     },
+     {
+      "id": "algocispo_b16_l64_v128256_bfloat16",
+      "dtype": "bfloat16",
+      "parameters": {
+       "algo": "cispo",
+       "b": 16,
+       "l": 64,
+       "v": 128256
+      },
+      "logical_input_bytes": 262685760,
+      "logical_output_bytes": 4100
+     },
+     {
+      "id": "algocispo_b64_l64_v128256_bfloat16",
+      "dtype": "bfloat16",
+      "parameters": {
+       "algo": "cispo",
+       "b": 64,
+       "l": 64,
+       "v": 128256
+      },
+      "logical_input_bytes": 1050743040,
+      "logical_output_bytes": 16388
+     }
+    ]
+   }
+  },
+  "moe_align_block": {
+   "tier": 3,
+   "status": "new",
+   "proposed_stage": 7,
+   "reference": "flat=topk_ids.reshape(-1); stable sort of token slots by expert; each expert's run padded to a multiple of block with the value T*top_k; expert_ids[j]=expert of block j, -1 for unused blocks; num_tokens_post_pad=sum of padded counts",
+   "inputs": {
+    "topk_ids": "[T, top_k] int32, values in [0,E), no repeats within a row, contiguous, read-only"
+   },
+   "outputs": {
+    "sorted_token_ids": "[T*top_k + E*(block-1)] int32",
+    "expert_ids": "[ceil((T*top_k + E*(block-1))/block)] int32",
+    "num_tokens_post_pad": "[1] int32"
+   },
+   "verifier": "utils.task_verification exact integer equality (rtol=0, atol=0)",
+   "tolerance_change_needed": false,
+   "workload": {
+    "flops": null,
+    "logical_io_bytes": "4*T*top_k + 4*len(sorted_token_ids) + 4*len(expert_ids) + 4"
+   },
+   "sources": [
+    {
+     "key": "tilegym",
+     "path": "src/tilegym/ops/cutile/moe_align_block.py",
+     "kernel_lines": "13-42, 45-57, 60-92, 95-146"
+    },
+    {
+     "key": "vllm"
+    }
+   ],
+   "trainable": true,
+   "hazards_resolved": {
+    "host_fill": "sorted_ids.fill_ at line 297 and torch.zeros at 186, 192 moved into authored kernels",
+    "uninitialised_output": "expert_ids is torch.empty (299) and only used blocks are stamped (116-123); contract defines unused entries as -1",
+    "tuning_arch": "none in the source (survey and reading agree)",
+    "extra_outputs": "cumsum and max_expert_cnt (line 311) are not task outputs"
+   },
+   "fixed_tiles_sm90": {
+    "TOKENS_PER_PROGRAM": 128,
+    "SUB_CHUNK": "min(next_pow2(tokens_per_program), 256)",
+    "why": "TileGym constants (lines 156, 163); the E=128 match matrix is 128x128 int32 per block"
+   },
+   "grid": {
+    "count": 4,
+    "smoke": "t64_e8_top_k2_block16_int32",
+    "proposed_acceptance": "t65536_e128_top_k8_block64_int32",
+    "largest_logical_io_bytes": 4259836,
+    "last_case_has_most_bytes": true,
+    "last_case_has_largest_shape": true,
+    "cases": [
+     {
+      "id": "t64_e8_top_k2_block16_int32",
+      "dtype": "int32",
+      "parameters": {
+       "t": 64,
+       "e": 8,
+       "top_k": 2,
+       "block": 16
+      },
+      "logical_input_bytes": 512,
+      "logical_output_bytes": 1060
+     },
+     {
+      "id": "t64_e128_top_k8_block64_int32",
+      "dtype": "int32",
+      "parameters": {
+       "t": 64,
+       "e": 128,
+       "top_k": 8,
+       "block": 64
+      },
+      "logical_input_bytes": 2048,
+      "logical_output_bytes": 34844
+     },
+     {
+      "id": "t4096_e64_top_k8_block64_int32",
+      "dtype": "int32",
+      "parameters": {
+       "t": 4096,
+       "e": 64,
+       "top_k": 8,
+       "block": 64
+      },
+      "logical_input_bytes": 131072,
+      "logical_output_bytes": 149504
+     },
+     {
+      "id": "t65536_e128_top_k8_block64_int32",
+      "dtype": "int32",
+      "parameters": {
+       "t": 65536,
+       "e": 128,
+       "top_k": 8,
+       "block": 64
+      },
+      "logical_input_bytes": 2097152,
+      "logical_output_bytes": 2162684
+     }
+    ]
+   }
+  }
+ },
+ "existing_tasks": {
+  "grouped_gemm": {
+   "tier": 3,
+   "status": "existing",
+   "tilegym": "src/tilegym/ops/cutile/group_gemm.py",
+   "kernel_lines": "38-119",
+   "contract_change_needed": false,
+   "catalog_change_needed": "stretch_backends=('cutile',)",
+   "feasible": true,
+   "open": "partial-tile ct.store at M_i=8/32/64 with TILE_M=128 and list arguments are untested on the pinned sm_90 stack"
+  },
+  "moe_dense_gemm": {
+   "tier": 3,
+   "status": "existing",
+   "tilegym": "src/tilegym/ops/cutile/linear_gluact_linear.py (95-179); moe.py is the routed (sparse) GEMM and does not match",
+   "contract_change_needed": false,
+   "catalog_change_needed": "stretch_backends=('cutile',)",
+   "feasible": true,
+   "open": "weights are [E,H,I] not [N1,K]; alpha mask and fp32 SwiGLU must replace the bf16 casts at lines 158-159; FC2 must be a new kernel with an fp32 output"
+  },
+  "gemm_tensor_core_second_solution": {
+   "tier": 3,
+   "status": "existing, optional",
+   "tilegym": "src/tilegym/ops/cutile/matmul.py",
+   "kernel_lines": "246-352",
+   "contract_change_needed": false,
+   "catalog_change_needed": null,
+   "feasible": true,
+   "open": "only justified if the unlaunched flagship request fails the 60%-of-cuBLAS gate"
+  }
+ }
+}
