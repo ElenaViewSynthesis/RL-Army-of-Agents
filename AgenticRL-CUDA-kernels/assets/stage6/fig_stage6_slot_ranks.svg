@@ -1,0 +1,209 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 552" width="860" height="552" font-family="system-ui, -apple-system, Segoe UI, sans-serif" font-size="11">
+<rect width="860" height="552" fill="#fcfcfb"/>
+<defs><pattern id="pad" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="2" height="6" fill="#898781"/></pattern></defs>
+<text x="12" y="20" font-size="14" font-weight="600" fill="#0b0b0b">Per-slot ranks for every case in the evidence</text>
+<text x="12" y="36" fill="#52514e">Bar = rank per slot (log₂ axis); hatched = padding to a multiple of 16 (NaN-poisoned).</text>
+<text x="12" y="51" fill="#52514e">No hatched part means no padding, so the wrong_padding control has nothing to catch (not applicable).</text>
+<line x1="377.1" x2="377.1" y1="68" y2="492" stroke="#e1e0d9"/><text x="377.1" y="64" text-anchor="middle" fill="#898781">8</text>
+<line x1="454.3" x2="454.3" y1="68" y2="492" stroke="#e1e0d9"/><text x="454.3" y="64" text-anchor="middle" fill="#898781">16</text>
+<line x1="531.4" x2="531.4" y1="68" y2="492" stroke="#e1e0d9"/><text x="531.4" y="64" text-anchor="middle" fill="#898781">32</text>
+<line x1="608.6" x2="608.6" y1="68" y2="492" stroke="#e1e0d9"/><text x="608.6" y="64" text-anchor="middle" fill="#898781">64</text>
+<line x1="685.7" x2="685.7" y1="68" y2="492" stroke="#e1e0d9"/><text x="685.7" y="64" text-anchor="middle" fill="#898781">128</text>
+<line x1="762.9" x2="762.9" y1="68" y2="492" stroke="#e1e0d9"/><text x="762.9" y="64" text-anchor="middle" fill="#898781">256</text>
+<text x="12" y="90" fill="#52514e">t1 h2048 r8 s1×1 single fp16</text>
+<rect x="300" y="76.00" width="77.14" height="21.20" fill="#3987e5"><title>slot 0: rank 8, padded to 16</title></rect>
+<rect x="377.14" y="76.00" width="77.14" height="21.20" fill="url(#pad)"/>
+<text x="12" y="120" fill="#52514e">t3 h2048 r8 s4×1 mixed bf16</text>
+<rect x="300" y="106.00" width="77.14" height="4.70" fill="#86b6ef"><title>slot 0: rank 8, padded to 16</title></rect>
+<rect x="377.14" y="106.00" width="77.14" height="4.70" fill="url(#pad)"/>
+<rect x="300" y="111.50" width="77.14" height="4.70" fill="#5397e8"><title>slot 1: rank 8, padded to 16</title></rect>
+<rect x="377.14" y="111.50" width="77.14" height="4.70" fill="url(#pad)"/>
+<rect x="300" y="117.00" width="77.14" height="4.70" fill="#2e74ca"><title>slot 2: rank 8, padded to 16</title></rect>
+<rect x="377.14" y="117.00" width="77.14" height="4.70" fill="url(#pad)"/>
+<rect x="300" y="122.50" width="77.14" height="4.70" fill="#184f95"><title>slot 3: rank 8, padded to 16</title></rect>
+<rect x="377.14" y="122.50" width="77.14" height="4.70" fill="url(#pad)"/>
+<text x="12" y="150" fill="#52514e">t3 h8192 r64 s4×2 distinct fp16</text>
+<rect x="300" y="136.00" width="308.57" height="4.70" fill="#86b6ef"><title>slot 0: rank 64, no padding</title></rect>
+<rect x="300" y="141.50" width="308.57" height="4.70" fill="#5397e8"><title>slot 1: rank 64, no padding</title></rect>
+<rect x="300" y="147.00" width="308.57" height="4.70" fill="#2e74ca"><title>slot 2: rank 64, no padding</title></rect>
+<rect x="300" y="152.50" width="308.57" height="4.70" fill="#184f95"><title>slot 3: rank 64, no padding</title></rect>
+<text x="12" y="180" fill="#52514e">t512 h2048 r8 s1×1 single fp16</text>
+<rect x="300" y="166.00" width="77.14" height="21.20" fill="#3987e5"><title>slot 0: rank 8, padded to 16</title></rect>
+<rect x="377.14" y="166.00" width="77.14" height="21.20" fill="url(#pad)"/>
+<text x="12" y="210" fill="#52514e">t512 h2048 r8 s4×1 mixed bf16</text>
+<rect x="300" y="196.00" width="77.14" height="4.70" fill="#86b6ef"><title>slot 0: rank 8, padded to 16</title></rect>
+<rect x="377.14" y="196.00" width="77.14" height="4.70" fill="url(#pad)"/>
+<rect x="300" y="201.50" width="77.14" height="4.70" fill="#5397e8"><title>slot 1: rank 8, padded to 16</title></rect>
+<rect x="377.14" y="201.50" width="77.14" height="4.70" fill="url(#pad)"/>
+<rect x="300" y="207.00" width="77.14" height="4.70" fill="#2e74ca"><title>slot 2: rank 8, padded to 16</title></rect>
+<rect x="377.14" y="207.00" width="77.14" height="4.70" fill="url(#pad)"/>
+<rect x="300" y="212.50" width="77.14" height="4.70" fill="#184f95"><title>slot 3: rank 8, padded to 16</title></rect>
+<rect x="377.14" y="212.50" width="77.14" height="4.70" fill="url(#pad)"/>
+<text x="12" y="240" fill="#52514e">t64 h2048 r128 s16×1 none mixed bf16</text>
+<rect x="300" y="226.00" width="77.14" height="1.20" fill="#86b6ef"><title>slot 0: rank 8, padded to 16</title></rect>
+<rect x="377.14" y="226.00" width="77.14" height="1.20" fill="url(#pad)"/>
+<rect x="300" y="227.50" width="154.29" height="1.20" fill="#7cb0ee"><title>slot 1: rank 16, no padding</title></rect>
+<rect x="300" y="229.00" width="231.43" height="1.20" fill="#71a9ec"><title>slot 2: rank 32, no padding</title></rect>
+<rect x="300" y="230.50" width="308.57" height="1.20" fill="#67a3eb"><title>slot 3: rank 64, no padding</title></rect>
+<rect x="300" y="232.00" width="385.71" height="1.20" fill="#5d9dea"><title>slot 4: rank 128, no padding</title></rect>
+<rect x="300" y="233.50" width="385.71" height="1.20" fill="#5397e8"><title>slot 5: rank 128, no padding</title></rect>
+<rect x="300" y="235.00" width="77.14" height="1.20" fill="#4890e7"><title>slot 6: rank 8, padded to 16</title></rect>
+<rect x="377.14" y="235.00" width="77.14" height="1.20" fill="url(#pad)"/>
+<rect x="300" y="236.50" width="154.29" height="1.20" fill="#3e8ae6"><title>slot 7: rank 16, no padding</title></rect>
+<rect x="300" y="238.00" width="231.43" height="1.20" fill="#3783e0"><title>slot 8: rank 32, no padding</title></rect>
+<rect x="300" y="239.50" width="308.57" height="1.20" fill="#327cd5"><title>slot 9: rank 64, no padding</title></rect>
+<rect x="300" y="241.00" width="385.71" height="1.20" fill="#2e74ca"><title>slot 10: rank 128, no padding</title></rect>
+<rect x="300" y="242.50" width="385.71" height="1.20" fill="#2a6dc0"><title>slot 11: rank 128, no padding</title></rect>
+<rect x="300" y="244.00" width="77.14" height="1.20" fill="#2565b5"><title>slot 12: rank 8, padded to 16</title></rect>
+<rect x="377.14" y="244.00" width="77.14" height="1.20" fill="url(#pad)"/>
+<rect x="300" y="245.50" width="154.29" height="1.20" fill="#215eaa"><title>slot 13: rank 16, no padding</title></rect>
+<rect x="300" y="247.00" width="231.43" height="1.20" fill="#1c56a0"><title>slot 14: rank 32, no padding</title></rect>
+<rect x="300" y="248.50" width="308.57" height="1.20" fill="#184f95"><title>slot 15: rank 64, no padding</title></rect>
+<text x="12" y="270" fill="#52514e">t512 h2048 r128 s16×1 none mixed bf16</text>
+<rect x="300" y="256.00" width="77.14" height="1.20" fill="#86b6ef"><title>slot 0: rank 8, padded to 16</title></rect>
+<rect x="377.14" y="256.00" width="77.14" height="1.20" fill="url(#pad)"/>
+<rect x="300" y="257.50" width="154.29" height="1.20" fill="#7cb0ee"><title>slot 1: rank 16, no padding</title></rect>
+<rect x="300" y="259.00" width="231.43" height="1.20" fill="#71a9ec"><title>slot 2: rank 32, no padding</title></rect>
+<rect x="300" y="260.50" width="308.57" height="1.20" fill="#67a3eb"><title>slot 3: rank 64, no padding</title></rect>
+<rect x="300" y="262.00" width="385.71" height="1.20" fill="#5d9dea"><title>slot 4: rank 128, no padding</title></rect>
+<rect x="300" y="263.50" width="385.71" height="1.20" fill="#5397e8"><title>slot 5: rank 128, no padding</title></rect>
+<rect x="300" y="265.00" width="77.14" height="1.20" fill="#4890e7"><title>slot 6: rank 8, padded to 16</title></rect>
+<rect x="377.14" y="265.00" width="77.14" height="1.20" fill="url(#pad)"/>
+<rect x="300" y="266.50" width="154.29" height="1.20" fill="#3e8ae6"><title>slot 7: rank 16, no padding</title></rect>
+<rect x="300" y="268.00" width="231.43" height="1.20" fill="#3783e0"><title>slot 8: rank 32, no padding</title></rect>
+<rect x="300" y="269.50" width="308.57" height="1.20" fill="#327cd5"><title>slot 9: rank 64, no padding</title></rect>
+<rect x="300" y="271.00" width="385.71" height="1.20" fill="#2e74ca"><title>slot 10: rank 128, no padding</title></rect>
+<rect x="300" y="272.50" width="385.71" height="1.20" fill="#2a6dc0"><title>slot 11: rank 128, no padding</title></rect>
+<rect x="300" y="274.00" width="77.14" height="1.20" fill="#2565b5"><title>slot 12: rank 8, padded to 16</title></rect>
+<rect x="377.14" y="274.00" width="77.14" height="1.20" fill="url(#pad)"/>
+<rect x="300" y="275.50" width="154.29" height="1.20" fill="#215eaa"><title>slot 13: rank 16, no padding</title></rect>
+<rect x="300" y="277.00" width="231.43" height="1.20" fill="#1c56a0"><title>slot 14: rank 32, no padding</title></rect>
+<rect x="300" y="278.50" width="308.57" height="1.20" fill="#184f95"><title>slot 15: rank 64, no padding</title></rect>
+<text x="12" y="300" fill="#52514e">t64 h14336 r256 s16×3 mixed mixed bf16</text>
+<rect x="300" y="286.00" width="77.14" height="1.20" fill="#86b6ef"><title>slot 0: rank 8, padded to 16</title></rect>
+<rect x="377.14" y="286.00" width="77.14" height="1.20" fill="url(#pad)"/>
+<rect x="300" y="287.50" width="154.29" height="1.20" fill="#7cb0ee"><title>slot 1: rank 16, no padding</title></rect>
+<rect x="300" y="289.00" width="231.43" height="1.20" fill="#71a9ec"><title>slot 2: rank 32, no padding</title></rect>
+<rect x="300" y="290.50" width="308.57" height="1.20" fill="#67a3eb"><title>slot 3: rank 64, no padding</title></rect>
+<rect x="300" y="292.00" width="385.71" height="1.20" fill="#5d9dea"><title>slot 4: rank 128, no padding</title></rect>
+<rect x="300" y="293.50" width="462.86" height="1.20" fill="#5397e8"><title>slot 5: rank 256, no padding</title></rect>
+<rect x="300" y="295.00" width="77.14" height="1.20" fill="#4890e7"><title>slot 6: rank 8, padded to 16</title></rect>
+<rect x="377.14" y="295.00" width="77.14" height="1.20" fill="url(#pad)"/>
+<rect x="300" y="296.50" width="154.29" height="1.20" fill="#3e8ae6"><title>slot 7: rank 16, no padding</title></rect>
+<rect x="300" y="298.00" width="231.43" height="1.20" fill="#3783e0"><title>slot 8: rank 32, no padding</title></rect>
+<rect x="300" y="299.50" width="308.57" height="1.20" fill="#327cd5"><title>slot 9: rank 64, no padding</title></rect>
+<rect x="300" y="301.00" width="385.71" height="1.20" fill="#2e74ca"><title>slot 10: rank 128, no padding</title></rect>
+<rect x="300" y="302.50" width="462.86" height="1.20" fill="#2a6dc0"><title>slot 11: rank 256, no padding</title></rect>
+<rect x="300" y="304.00" width="77.14" height="1.20" fill="#2565b5"><title>slot 12: rank 8, padded to 16</title></rect>
+<rect x="377.14" y="304.00" width="77.14" height="1.20" fill="url(#pad)"/>
+<rect x="300" y="305.50" width="154.29" height="1.20" fill="#215eaa"><title>slot 13: rank 16, no padding</title></rect>
+<rect x="300" y="307.00" width="231.43" height="1.20" fill="#1c56a0"><title>slot 14: rank 32, no padding</title></rect>
+<rect x="300" y="308.50" width="308.57" height="1.20" fill="#184f95"><title>slot 15: rank 64, no padding</title></rect>
+<text x="12" y="330" fill="#52514e">t256 h4096 r256 s16×3 mixed mixed bf16</text>
+<rect x="300" y="316.00" width="77.14" height="1.20" fill="#86b6ef"><title>slot 0: rank 8, padded to 16</title></rect>
+<rect x="377.14" y="316.00" width="77.14" height="1.20" fill="url(#pad)"/>
+<rect x="300" y="317.50" width="154.29" height="1.20" fill="#7cb0ee"><title>slot 1: rank 16, no padding</title></rect>
+<rect x="300" y="319.00" width="231.43" height="1.20" fill="#71a9ec"><title>slot 2: rank 32, no padding</title></rect>
+<rect x="300" y="320.50" width="308.57" height="1.20" fill="#67a3eb"><title>slot 3: rank 64, no padding</title></rect>
+<rect x="300" y="322.00" width="385.71" height="1.20" fill="#5d9dea"><title>slot 4: rank 128, no padding</title></rect>
+<rect x="300" y="323.50" width="462.86" height="1.20" fill="#5397e8"><title>slot 5: rank 256, no padding</title></rect>
+<rect x="300" y="325.00" width="77.14" height="1.20" fill="#4890e7"><title>slot 6: rank 8, padded to 16</title></rect>
+<rect x="377.14" y="325.00" width="77.14" height="1.20" fill="url(#pad)"/>
+<rect x="300" y="326.50" width="154.29" height="1.20" fill="#3e8ae6"><title>slot 7: rank 16, no padding</title></rect>
+<rect x="300" y="328.00" width="231.43" height="1.20" fill="#3783e0"><title>slot 8: rank 32, no padding</title></rect>
+<rect x="300" y="329.50" width="308.57" height="1.20" fill="#327cd5"><title>slot 9: rank 64, no padding</title></rect>
+<rect x="300" y="331.00" width="385.71" height="1.20" fill="#2e74ca"><title>slot 10: rank 128, no padding</title></rect>
+<rect x="300" y="332.50" width="462.86" height="1.20" fill="#2a6dc0"><title>slot 11: rank 256, no padding</title></rect>
+<rect x="300" y="334.00" width="77.14" height="1.20" fill="#2565b5"><title>slot 12: rank 8, padded to 16</title></rect>
+<rect x="377.14" y="334.00" width="77.14" height="1.20" fill="url(#pad)"/>
+<rect x="300" y="335.50" width="154.29" height="1.20" fill="#215eaa"><title>slot 13: rank 16, no padding</title></rect>
+<rect x="300" y="337.00" width="231.43" height="1.20" fill="#1c56a0"><title>slot 14: rank 32, no padding</title></rect>
+<rect x="300" y="338.50" width="308.57" height="1.20" fill="#184f95"><title>slot 15: rank 64, no padding</title></rect>
+<text x="12" y="360" fill="#52514e">t256 h4096 r256 s16×3 mixed mixed fp16</text>
+<rect x="300" y="346.00" width="77.14" height="1.20" fill="#86b6ef"><title>slot 0: rank 8, padded to 16</title></rect>
+<rect x="377.14" y="346.00" width="77.14" height="1.20" fill="url(#pad)"/>
+<rect x="300" y="347.50" width="154.29" height="1.20" fill="#7cb0ee"><title>slot 1: rank 16, no padding</title></rect>
+<rect x="300" y="349.00" width="231.43" height="1.20" fill="#71a9ec"><title>slot 2: rank 32, no padding</title></rect>
+<rect x="300" y="350.50" width="308.57" height="1.20" fill="#67a3eb"><title>slot 3: rank 64, no padding</title></rect>
+<rect x="300" y="352.00" width="385.71" height="1.20" fill="#5d9dea"><title>slot 4: rank 128, no padding</title></rect>
+<rect x="300" y="353.50" width="462.86" height="1.20" fill="#5397e8"><title>slot 5: rank 256, no padding</title></rect>
+<rect x="300" y="355.00" width="77.14" height="1.20" fill="#4890e7"><title>slot 6: rank 8, padded to 16</title></rect>
+<rect x="377.14" y="355.00" width="77.14" height="1.20" fill="url(#pad)"/>
+<rect x="300" y="356.50" width="154.29" height="1.20" fill="#3e8ae6"><title>slot 7: rank 16, no padding</title></rect>
+<rect x="300" y="358.00" width="231.43" height="1.20" fill="#3783e0"><title>slot 8: rank 32, no padding</title></rect>
+<rect x="300" y="359.50" width="308.57" height="1.20" fill="#327cd5"><title>slot 9: rank 64, no padding</title></rect>
+<rect x="300" y="361.00" width="385.71" height="1.20" fill="#2e74ca"><title>slot 10: rank 128, no padding</title></rect>
+<rect x="300" y="362.50" width="462.86" height="1.20" fill="#2a6dc0"><title>slot 11: rank 256, no padding</title></rect>
+<rect x="300" y="364.00" width="77.14" height="1.20" fill="#2565b5"><title>slot 12: rank 8, padded to 16</title></rect>
+<rect x="377.14" y="364.00" width="77.14" height="1.20" fill="url(#pad)"/>
+<rect x="300" y="365.50" width="154.29" height="1.20" fill="#215eaa"><title>slot 13: rank 16, no padding</title></rect>
+<rect x="300" y="367.00" width="231.43" height="1.20" fill="#1c56a0"><title>slot 14: rank 32, no padding</title></rect>
+<rect x="300" y="368.50" width="308.57" height="1.20" fill="#184f95"><title>slot 15: rank 64, no padding</title></rect>
+<text x="12" y="390" fill="#52514e">t512 h8192 r64 s4×2 distinct fp16</text>
+<rect x="300" y="376.00" width="308.57" height="4.70" fill="#86b6ef"><title>slot 0: rank 64, no padding</title></rect>
+<rect x="300" y="381.50" width="308.57" height="4.70" fill="#5397e8"><title>slot 1: rank 64, no padding</title></rect>
+<rect x="300" y="387.00" width="308.57" height="4.70" fill="#2e74ca"><title>slot 2: rank 64, no padding</title></rect>
+<rect x="300" y="392.50" width="308.57" height="4.70" fill="#184f95"><title>slot 3: rank 64, no padding</title></rect>
+<text x="12" y="420" fill="#52514e">t512 h4096 r256 s16×3 mixed mixed bf16</text>
+<rect x="300" y="406.00" width="77.14" height="1.20" fill="#86b6ef"><title>slot 0: rank 8, padded to 16</title></rect>
+<rect x="377.14" y="406.00" width="77.14" height="1.20" fill="url(#pad)"/>
+<rect x="300" y="407.50" width="154.29" height="1.20" fill="#7cb0ee"><title>slot 1: rank 16, no padding</title></rect>
+<rect x="300" y="409.00" width="231.43" height="1.20" fill="#71a9ec"><title>slot 2: rank 32, no padding</title></rect>
+<rect x="300" y="410.50" width="308.57" height="1.20" fill="#67a3eb"><title>slot 3: rank 64, no padding</title></rect>
+<rect x="300" y="412.00" width="385.71" height="1.20" fill="#5d9dea"><title>slot 4: rank 128, no padding</title></rect>
+<rect x="300" y="413.50" width="462.86" height="1.20" fill="#5397e8"><title>slot 5: rank 256, no padding</title></rect>
+<rect x="300" y="415.00" width="77.14" height="1.20" fill="#4890e7"><title>slot 6: rank 8, padded to 16</title></rect>
+<rect x="377.14" y="415.00" width="77.14" height="1.20" fill="url(#pad)"/>
+<rect x="300" y="416.50" width="154.29" height="1.20" fill="#3e8ae6"><title>slot 7: rank 16, no padding</title></rect>
+<rect x="300" y="418.00" width="231.43" height="1.20" fill="#3783e0"><title>slot 8: rank 32, no padding</title></rect>
+<rect x="300" y="419.50" width="308.57" height="1.20" fill="#327cd5"><title>slot 9: rank 64, no padding</title></rect>
+<rect x="300" y="421.00" width="385.71" height="1.20" fill="#2e74ca"><title>slot 10: rank 128, no padding</title></rect>
+<rect x="300" y="422.50" width="462.86" height="1.20" fill="#2a6dc0"><title>slot 11: rank 256, no padding</title></rect>
+<rect x="300" y="424.00" width="77.14" height="1.20" fill="#2565b5"><title>slot 12: rank 8, padded to 16</title></rect>
+<rect x="377.14" y="424.00" width="77.14" height="1.20" fill="url(#pad)"/>
+<rect x="300" y="425.50" width="154.29" height="1.20" fill="#215eaa"><title>slot 13: rank 16, no padding</title></rect>
+<rect x="300" y="427.00" width="231.43" height="1.20" fill="#1c56a0"><title>slot 14: rank 32, no padding</title></rect>
+<rect x="300" y="428.50" width="308.57" height="1.20" fill="#184f95"><title>slot 15: rank 64, no padding</title></rect>
+<text x="12" y="450" fill="#52514e">t512 h4096 r256 s16×3 mixed mixed fp16</text>
+<rect x="300" y="436.00" width="77.14" height="1.20" fill="#86b6ef"><title>slot 0: rank 8, padded to 16</title></rect>
+<rect x="377.14" y="436.00" width="77.14" height="1.20" fill="url(#pad)"/>
+<rect x="300" y="437.50" width="154.29" height="1.20" fill="#7cb0ee"><title>slot 1: rank 16, no padding</title></rect>
+<rect x="300" y="439.00" width="231.43" height="1.20" fill="#71a9ec"><title>slot 2: rank 32, no padding</title></rect>
+<rect x="300" y="440.50" width="308.57" height="1.20" fill="#67a3eb"><title>slot 3: rank 64, no padding</title></rect>
+<rect x="300" y="442.00" width="385.71" height="1.20" fill="#5d9dea"><title>slot 4: rank 128, no padding</title></rect>
+<rect x="300" y="443.50" width="462.86" height="1.20" fill="#5397e8"><title>slot 5: rank 256, no padding</title></rect>
+<rect x="300" y="445.00" width="77.14" height="1.20" fill="#4890e7"><title>slot 6: rank 8, padded to 16</title></rect>
+<rect x="377.14" y="445.00" width="77.14" height="1.20" fill="url(#pad)"/>
+<rect x="300" y="446.50" width="154.29" height="1.20" fill="#3e8ae6"><title>slot 7: rank 16, no padding</title></rect>
+<rect x="300" y="448.00" width="231.43" height="1.20" fill="#3783e0"><title>slot 8: rank 32, no padding</title></rect>
+<rect x="300" y="449.50" width="308.57" height="1.20" fill="#327cd5"><title>slot 9: rank 64, no padding</title></rect>
+<rect x="300" y="451.00" width="385.71" height="1.20" fill="#2e74ca"><title>slot 10: rank 128, no padding</title></rect>
+<rect x="300" y="452.50" width="462.86" height="1.20" fill="#2a6dc0"><title>slot 11: rank 256, no padding</title></rect>
+<rect x="300" y="454.00" width="77.14" height="1.20" fill="#2565b5"><title>slot 12: rank 8, padded to 16</title></rect>
+<rect x="377.14" y="454.00" width="77.14" height="1.20" fill="url(#pad)"/>
+<rect x="300" y="455.50" width="154.29" height="1.20" fill="#215eaa"><title>slot 13: rank 16, no padding</title></rect>
+<rect x="300" y="457.00" width="231.43" height="1.20" fill="#1c56a0"><title>slot 14: rank 32, no padding</title></rect>
+<rect x="300" y="458.50" width="308.57" height="1.20" fill="#184f95"><title>slot 15: rank 64, no padding</title></rect>
+<text x="12" y="480" fill="#52514e">t4096 h14336 r256 s16×3 mixed mixed bf16</text>
+<rect x="300" y="466.00" width="77.14" height="1.20" fill="#86b6ef"><title>slot 0: rank 8, padded to 16</title></rect>
+<rect x="377.14" y="466.00" width="77.14" height="1.20" fill="url(#pad)"/>
+<rect x="300" y="467.50" width="154.29" height="1.20" fill="#7cb0ee"><title>slot 1: rank 16, no padding</title></rect>
+<rect x="300" y="469.00" width="231.43" height="1.20" fill="#71a9ec"><title>slot 2: rank 32, no padding</title></rect>
+<rect x="300" y="470.50" width="308.57" height="1.20" fill="#67a3eb"><title>slot 3: rank 64, no padding</title></rect>
+<rect x="300" y="472.00" width="385.71" height="1.20" fill="#5d9dea"><title>slot 4: rank 128, no padding</title></rect>
+<rect x="300" y="473.50" width="462.86" height="1.20" fill="#5397e8"><title>slot 5: rank 256, no padding</title></rect>
+<rect x="300" y="475.00" width="77.14" height="1.20" fill="#4890e7"><title>slot 6: rank 8, padded to 16</title></rect>
+<rect x="377.14" y="475.00" width="77.14" height="1.20" fill="url(#pad)"/>
+<rect x="300" y="476.50" width="154.29" height="1.20" fill="#3e8ae6"><title>slot 7: rank 16, no padding</title></rect>
+<rect x="300" y="478.00" width="231.43" height="1.20" fill="#3783e0"><title>slot 8: rank 32, no padding</title></rect>
+<rect x="300" y="479.50" width="308.57" height="1.20" fill="#327cd5"><title>slot 9: rank 64, no padding</title></rect>
+<rect x="300" y="481.00" width="385.71" height="1.20" fill="#2e74ca"><title>slot 10: rank 128, no padding</title></rect>
+<rect x="300" y="482.50" width="462.86" height="1.20" fill="#2a6dc0"><title>slot 11: rank 256, no padding</title></rect>
+<rect x="300" y="484.00" width="77.14" height="1.20" fill="#2565b5"><title>slot 12: rank 8, padded to 16</title></rect>
+<rect x="377.14" y="484.00" width="77.14" height="1.20" fill="url(#pad)"/>
+<rect x="300" y="485.50" width="154.29" height="1.20" fill="#215eaa"><title>slot 13: rank 16, no padding</title></rect>
+<rect x="300" y="487.00" width="231.43" height="1.20" fill="#1c56a0"><title>slot 14: rank 32, no padding</title></rect>
+<rect x="300" y="488.50" width="308.57" height="1.20" fill="#184f95"><title>slot 15: rank 64, no padding</title></rect>
+<rect x="12" y="509" width="10" height="10" fill="#86b6ef"/><text x="26" y="518" fill="#52514e">slot 0</text><rect x="80" y="509" width="10" height="10" fill="#3987e5"/><text x="94" y="518" fill="#52514e">middle slots</text><rect x="180" y="509" width="10" height="10" fill="#184f95"/><text x="194" y="518" fill="#52514e">last slot</text><rect x="270" y="509" width="10" height="10" fill="url(#pad)"/><text x="284" y="518" fill="#52514e">rank padding</text>
+<text x="12" y="540" fill="#898781">Cases from the 4 completed Stage 6 runs (smoke, smoke rerun, acceptance, stratified); ranks via utils.lora_contracts.slot_ranks.</text>
+</svg>
