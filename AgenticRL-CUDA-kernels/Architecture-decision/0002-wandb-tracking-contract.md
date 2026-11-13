@@ -746,3 +746,34 @@ are dropped). Counts are logged once at iteration 0.
 | `suite_wandb:suite/wall_s` | summary | suite | float | s | execution record missing | deadline diagnostic | task suite |
 | `suite_wandb:suite_rows` | table | suite | wandb.Table | rows | never | evaluation record | task suite |
 
+
+### Live task-suite progress (`tracking/suite_live.py`, amendment 2026-11-13)
+
+Approved by the user on 2026-11-13 ("option A with progress metrics"). A local
+watcher polls the Modal volume's `/<run_id>/suite/progress.jsonl` (the runner
+commits the volume every 30 s) and logs each finished row into the same W&B run
+as the suite run, `h200-<suite run_id>`, so progress is visible while the GPU
+job runs. This is the one place a suite run has metric history: the `live/*`
+keys below, stepped by `live/row` (the 1-based count of finished rows, in file
+order), each with `summary="none"`. The `suite/*` summary, the `suite_rows`
+table and the evidence artifact are still written once, at the end, by
+`tracking/suite_log.py` (the watcher's `--finalize`). Nothing changes in the GPU
+job, the Modal image, the frozen source, reward or timing semantics; W&B
+credentials stay on the local machine. Per-row values are copied from the row
+unchanged; non-finite or missing values are omitted, never logged as zero.
+Strings (task, case, backend, fixture, reasons) stay in the final table.
+
+| Source:key | Category | Namespace | Type | Unit | Null/absence condition | Role | Owner |
+|---|---|---|---|---|---|---|---|
+| `suite_live:live/row` | metric | live | int | rows finished | never | step metric | task suite |
+| `suite_live:live/completed` | metric | live | int | rows finished | never | progress | task suite |
+| `suite_live:live/passed` | metric | live | int | rows, cumulative | never | progress | task suite |
+| `suite_live:live/failed` | metric | live | int | rows, cumulative | never | progress | task suite |
+| `suite_live:live/unavailable` | metric | live | int | rows, cumulative | never | progress | task suite |
+| `suite_live:live/row_status_passed` | metric | live | int | 0/1 | never | progress | task suite |
+| `suite_live:live/row_reward_value` | metric | live | float | reward | row has no finite reward | diagnostic copy of `reward/value` | task suite |
+| `suite_live:live/row_t_gen_us` | metric | live | float | us | timing not measured | diagnostic copy of `env/t_gen_us` | task suite |
+| `suite_live:live/row_t_eager_us` | metric | live | float | us | timing not measured | diagnostic copy of `env/t_eager_us` | task suite |
+| `suite_live:live/row_t_compile_us` | metric | live | float | us | timing not measured | diagnostic copy of `env/t_compile_us` | task suite |
+| `suite_live:live/row_provenance_agent` | metric | live | float | share | profile not measured | diagnostic copy of `env/provenance_agent` | task suite |
+| `suite_live:live/row_wall_s` | metric | live | float | s | not recorded | diagnostic | task suite |

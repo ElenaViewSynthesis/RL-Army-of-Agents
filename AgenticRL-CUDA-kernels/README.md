@@ -698,6 +698,13 @@ never commit credentials. No service is contacted by dry-run or tracking tests.
 .venv/bin/python -m tracking.wandb_log rollout <workdir> --backend triton --turns-used 1
 ```
 
+**Task-suite runs on Modal.** `tracking/suite_log.py` logs a downloaded evidence folder as one W&B run (`h200-<run_id>`): config, the `suite_rows` table, summary counts and the evidence artifact, then reads it back. To watch a run while it is on the GPU, start `tracking/suite_live.py` locally after the launch: it polls the run's `suite/progress.jsonl` on the Modal volume (committed every 30 s) and logs each finished row to the same W&B run as `live/*` progress metrics stepped by `live/row` (counts so far, and the row's reward, timings and authored share). With `--finalize` it then downloads the run, copies the evidence subset to `artifacts/runs/<run_id>/` and logs it with `suite_log`. Nothing in the GPU job changes and credentials stay local; the metrics are diagnostics ([ADR 0002](Architecture-decision/0002-wandb-tracking-contract.md#live-task-suite-progress-trackingsuite_livepy-amendment-2026-11-13)).
+
+```bash
+.venv/bin/python -m tracking.suite_log artifacts/runs/<run-id> [--dry-run]
+.venv/bin/python -m tracking.suite_live <run-id> --modal .venv/bin/modal --interval-s 60 --finalize \n    --client-log /tmp/<run-id>.modal.log [--dry-run]
+```
+
 The manifest is `tracking/h200_runs.json`; explicitly running backfill without
 `--dry-run` uploads the selected runs. For sweeps, see
 [WANDB_parallel_sweep_agents.md](WANDB_parallel_sweep_agents.md).

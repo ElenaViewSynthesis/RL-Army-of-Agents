@@ -27,6 +27,7 @@ cd <frozen dir> && PYTHONPATH=$PWD MODAL_GPU=H200 <repo>/.venv/bin/modal run --d
   --tasks stage6 --case-set acceptance --backends cuda,triton --fixtures all --cuda-graphs --timeout-s 1200 --run-id <id>
 .venv/bin/modal volume get agenticrl-cuda-artifacts /<run-id>/ <local dir>   # outputs land in this volume
 .venv/bin/python -m tracking.suite_log artifacts/runs/<run-id> [--dry-run]    # log a suite run to W&B + read back
+.venv/bin/python -m tracking.suite_live <run-id> --modal .venv/bin/modal --finalize   # live W&B progress during a Modal run, then collect + log
 ```
 
 ## Architecture
