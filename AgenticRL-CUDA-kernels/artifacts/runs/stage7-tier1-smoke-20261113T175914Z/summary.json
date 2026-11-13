@@ -1,0 +1,18 @@
+{
+  "run_id": "stage7-tier1-smoke-20261113T175914Z",
+  "execution": {
+    "command": "python -m scripts.validate --suite relu_squared,silu_and_mul,geglu_tanh,rotary_embedding --device cuda --purpose eval --case-set smoke --fixtures all --timeout-s 1200 --suite-out /artifacts/stage7-tier1-smoke-20261113T175914Z/suite --backends triton,cuda,cutile --benchmark --cold-start",
+    "returncode": 1,
+    "timed_out": false,
+    "wall_s": 832.995879306
+  },
+  "counts": {
+    "passed": 35,
+    "failed": 1,
+    "unavailable": 0
+  },
+  "not_applicable": 0,
+  "status": "fail",
+  "source_mismatches": [],
+  "scope": "selected workload cases only; no stock AXPBY acceptance or timing-cause claim"
+}

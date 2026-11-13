@@ -1,0 +1,38 @@
+Note that running a local entrypoint in detached mode only keeps the last triggered Modal function alive after the parent process has been killed or disconnected.
+✓ Initialized. View run at 
+https://modal.com/apps/elenamylocuda/main/ap-akYQENTT8RSL0Keu1LS6js
+✓ Created objects.
+├── ✓ Uploaded /tmp/stage7-tier1-20261113T175914Z/cloud/modal_tasks.py
+├── ✓ Uploaded /tmp/stage7-tier1-20261113T175914Z/artifacts/upstream.json
+├── ✓ Uploaded /tmp/stage7-tier1-20261113T175914Z
+└── ✓ Created Function evaluate.
+{"run_id": "stage7-tier1-smoke-20261113T175914Z", "function_call_id": "fc-01M7B23PJNRDV2T2Z01YDPWYNQ", "volume": "agenticrl-cuda-artifacts", "remote": "/artifacts/stage7-tier1-smoke-20261113T175914Z"}
+{"function_call_id": "fc-01M7B23PJNRDV2T2Z01YDPWYNQ"}
+{"completed": 3, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 3, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 4, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 6, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 7, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 9, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 12, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 12, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 13, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 15, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 16, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 18, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 19, "last_task": "geglu_tanh", "last_status": "passed"}
+{"completed": 21, "last_task": "geglu_tanh", "last_status": "passed"}
+{"completed": 22, "last_task": "geglu_tanh", "last_status": "passed"}
+{"completed": 24, "last_task": "geglu_tanh", "last_status": "passed"}
+{"completed": 25, "last_task": "geglu_tanh", "last_status": "passed"}
+{"completed": 27, "last_task": "geglu_tanh", "last_status": "passed"}
+{"completed": 28, "last_task": "rotary_embedding", "last_status": "passed"}
+{"completed": 30, "last_task": "rotary_embedding", "last_status": "passed"}
+{"completed": 31, "last_task": "rotary_embedding", "last_status": "passed"}
+{"completed": 32, "last_task": "rotary_embedding", "last_status": "passed"}
+{"completed": 33, "last_task": "rotary_embedding", "last_status": "passed"}
+{"completed": 35, "last_task": "rotary_embedding", "last_status": "passed"}
+{"run_id": "stage7-tier1-smoke-20261113T175914Z", "execution": {"command": "python -m scripts.validate --suite relu_squared,silu_and_mul,geglu_tanh,rotary_embedding --device cuda --purpose eval --case-set smoke --fixtures all --timeout-s 1200 --suite-out /artifacts/stage7-tier1-smoke-20261113T175914Z/suite --backends triton,cuda,cutile --benchmark --cold-start", "returncode": 1, "timed_out": false, "wall_s": 832.995879306}, "counts": {"passed": 35, "failed": 1, "unavailable": 0}, "not_applicable": 0, "status": "fail", "source_mismatches": [], "scope": "selected workload cases only; no stock AXPBY acceptance or timing-cause claim"}
+[modal-client] 2026-11-13T18:32:42+0000 Timed out waiting for final app logs.
+✓ App completed. View run at 
+https://modal.com/apps/elenamylocuda/main/ap-akYQENTT8RSL0Keu1LS6js

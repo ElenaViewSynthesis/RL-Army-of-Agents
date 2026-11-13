@@ -1,0 +1,479 @@
+{
+  "tasks": [
+    "relu_squared",
+    "silu_and_mul",
+    "geglu_tanh",
+    "rotary_embedding"
+  ],
+  "case_set": "smoke",
+  "case_ids": {
+    "relu_squared": [
+      "b64_h1024_float32"
+    ],
+    "silu_and_mul": [
+      "b64_h1024_float32"
+    ],
+    "geglu_tanh": [
+      "b64_h1024_float32"
+    ],
+    "rotary_embedding": [
+      "b1_hq32_hkv8_s512_d64_float32"
+    ]
+  },
+  "backends": [
+    "triton",
+    "cuda",
+    "cutile"
+  ],
+  "fixtures": [
+    "honest",
+    "hack",
+    "wrong"
+  ],
+  "expected_rows": 36,
+  "expected_counts": {
+    "passed": 36,
+    "failed": 0,
+    "unavailable": 0
+  },
+  "estimated_wall_s": 1278.6,
+  "basis": [
+    {
+      "task": "relu_squared",
+      "backend": "triton",
+      "variant": "honest",
+      "archived_rmsnorm_wall_s": 25.0,
+      "proxy": true,
+      "source": "artifacts/task-stage23-20261109T013032Z",
+      "projected_wall_s": 37.5
+    },
+    {
+      "task": "relu_squared",
+      "backend": "triton",
+      "variant": "hack",
+      "archived_rmsnorm_wall_s": 15.2,
+      "proxy": true,
+      "source": "artifacts/task-stage23-20261109T013032Z",
+      "projected_wall_s": 22.8
+    },
+    {
+      "task": "relu_squared",
+      "backend": "triton",
+      "variant": "wrong",
+      "archived_rmsnorm_wall_s": 5.1,
+      "proxy": true,
+      "source": "artifacts/task-stage23-20261109T013032Z",
+      "projected_wall_s": 7.65
+    },
+    {
+      "task": "relu_squared",
+      "backend": "cuda",
+      "variant": "honest",
+      "archived_rmsnorm_wall_s": 38.8,
+      "proxy": true,
+      "source": "artifacts/task-stage23-20261109T013032Z",
+      "projected_wall_s": 58.2
+    },
+    {
+      "task": "relu_squared",
+      "backend": "cuda",
+      "variant": "hack",
+      "archived_rmsnorm_wall_s": 29.4,
+      "proxy": true,
+      "source": "artifacts/task-stage23-20261109T013032Z",
+      "projected_wall_s": 44.1
+    },
+    {
+      "task": "relu_squared",
+      "backend": "cuda",
+      "variant": "wrong",
+      "archived_rmsnorm_wall_s": 17.4,
+      "proxy": true,
+      "source": "artifacts/task-stage23-20261109T013032Z",
+      "projected_wall_s": 26.1
+    },
+    {
+      "task": "relu_squared",
+      "backend": "cutile",
+      "variant": "honest",
+      "archived_rmsnorm_wall_s": 37.7,
+      "proxy": true,
+      "source": "artifacts/runs/cutile-tier1-20261113T014034Z",
+      "projected_wall_s": 56.55
+    },
+    {
+      "task": "relu_squared",
+      "backend": "cutile",
+      "variant": "hack",
+      "archived_rmsnorm_wall_s": 18.1,
+      "proxy": true,
+      "source": "artifacts/runs/cutile-tier1-20261113T014034Z",
+      "projected_wall_s": 27.15
+    },
+    {
+      "task": "relu_squared",
+      "backend": "cutile",
+      "variant": "wrong",
+      "archived_rmsnorm_wall_s": 6.4,
+      "proxy": true,
+      "source": "artifacts/runs/cutile-tier1-20261113T014034Z",
+      "projected_wall_s": 9.6
+    },
+    {
+      "task": "silu_and_mul",
+      "backend": "triton",
+      "variant": "honest",
+      "archived_rmsnorm_wall_s": 25.0,
+      "proxy": true,
+      "source": "artifacts/task-stage23-20261109T013032Z",
+      "projected_wall_s": 37.5
+    },
+    {
+      "task": "silu_and_mul",
+      "backend": "triton",
+      "variant": "hack",
+      "archived_rmsnorm_wall_s": 15.2,
+      "proxy": true,
+      "source": "artifacts/task-stage23-20261109T013032Z",
+      "projected_wall_s": 22.8
+    },
+    {
+      "task": "silu_and_mul",
+      "backend": "triton",
+      "variant": "wrong",
+      "archived_rmsnorm_wall_s": 5.1,
+      "proxy": true,
+      "source": "artifacts/task-stage23-20261109T013032Z",
+      "projected_wall_s": 7.65
+    },
+    {
+      "task": "silu_and_mul",
+      "backend": "cuda",
+      "variant": "honest",
+      "archived_rmsnorm_wall_s": 38.8,
+      "proxy": true,
+      "source": "artifacts/task-stage23-20261109T013032Z",
+      "projected_wall_s": 58.2
+    },
+    {
+      "task": "silu_and_mul",
+      "backend": "cuda",
+      "variant": "hack",
+      "archived_rmsnorm_wall_s": 29.4,
+      "proxy": true,
+      "source": "artifacts/task-stage23-20261109T013032Z",
+      "projected_wall_s": 44.1
+    },
+    {
+      "task": "silu_and_mul",
+      "backend": "cuda",
+      "variant": "wrong",
+      "archived_rmsnorm_wall_s": 17.4,
+      "proxy": true,
+      "source": "artifacts/task-stage23-20261109T013032Z",
+      "projected_wall_s": 26.1
+    },
+    {
+      "task": "silu_and_mul",
+      "backend": "cutile",
+      "variant": "honest",
+      "archived_rmsnorm_wall_s": 37.7,
+      "proxy": true,
+      "source": "artifacts/runs/cutile-tier1-20261113T014034Z",
+      "projected_wall_s": 56.55
+    },
+    {
+      "task": "silu_and_mul",
+      "backend": "cutile",
+      "variant": "hack",
+      "archived_rmsnorm_wall_s": 18.1,
+      "proxy": true,
+      "source": "artifacts/runs/cutile-tier1-20261113T014034Z",
+      "projected_wall_s": 27.15
+    },
+    {
+      "task": "silu_and_mul",
+      "backend": "cutile",
+      "variant": "wrong",
+      "archived_rmsnorm_wall_s": 6.4,
+      "proxy": true,
+      "source": "artifacts/runs/cutile-tier1-20261113T014034Z",
+      "projected_wall_s": 9.6
+    },
+    {
+      "task": "geglu_tanh",
+      "backend": "triton",
+      "variant": "honest",
+      "archived_rmsnorm_wall_s": 25.0,
+      "proxy": true,
+      "source": "artifacts/task-stage23-20261109T013032Z",
+      "projected_wall_s": 37.5
+    },
+    {
+      "task": "geglu_tanh",
+      "backend": "triton",
+      "variant": "hack",
+      "archived_rmsnorm_wall_s": 15.2,
+      "proxy": true,
+      "source": "artifacts/task-stage23-20261109T013032Z",
+      "projected_wall_s": 22.8
+    },
+    {
+      "task": "geglu_tanh",
+      "backend": "triton",
+      "variant": "wrong",
+      "archived_rmsnorm_wall_s": 5.1,
+      "proxy": true,
+      "source": "artifacts/task-stage23-20261109T013032Z",
+      "projected_wall_s": 7.65
+    },
+    {
+      "task": "geglu_tanh",
+      "backend": "cuda",
+      "variant": "honest",
+      "archived_rmsnorm_wall_s": 38.8,
+      "proxy": true,
+      "source": "artifacts/task-stage23-20261109T013032Z",
+      "projected_wall_s": 58.2
+    },
+    {
+      "task": "geglu_tanh",
+      "backend": "cuda",
+      "variant": "hack",
+      "archived_rmsnorm_wall_s": 29.4,
+      "proxy": true,
+      "source": "artifacts/task-stage23-20261109T013032Z",
+      "projected_wall_s": 44.1
+    },
+    {
+      "task": "geglu_tanh",
+      "backend": "cuda",
+      "variant": "wrong",
+      "archived_rmsnorm_wall_s": 17.4,
+      "proxy": true,
+      "source": "artifacts/task-stage23-20261109T013032Z",
+      "projected_wall_s": 26.1
+    },
+    {
+      "task": "geglu_tanh",
+      "backend": "cutile",
+      "variant": "honest",
+      "archived_rmsnorm_wall_s": 37.7,
+      "proxy": true,
+      "source": "artifacts/runs/cutile-tier1-20261113T014034Z",
+      "projected_wall_s": 56.55
+    },
+    {
+      "task": "geglu_tanh",
+      "backend": "cutile",
+      "variant": "hack",
+      "archived_rmsnorm_wall_s": 18.1,
+      "proxy": true,
+      "source": "artifacts/runs/cutile-tier1-20261113T014034Z",
+      "projected_wall_s": 27.15
+    },
+    {
+      "task": "geglu_tanh",
+      "backend": "cutile",
+      "variant": "wrong",
+      "archived_rmsnorm_wall_s": 6.4,
+      "proxy": true,
+      "source": "artifacts/runs/cutile-tier1-20261113T014034Z",
+      "projected_wall_s": 9.6
+    },
+    {
+      "task": "rotary_embedding",
+      "backend": "triton",
+      "variant": "honest",
+      "archived_rmsnorm_wall_s": 25.0,
+      "proxy": true,
+      "source": "artifacts/task-stage23-20261109T013032Z",
+      "projected_wall_s": 37.5
+    },
+    {
+      "task": "rotary_embedding",
+      "backend": "triton",
+      "variant": "hack",
+      "archived_rmsnorm_wall_s": 15.2,
+      "proxy": true,
+      "source": "artifacts/task-stage23-20261109T013032Z",
+      "projected_wall_s": 22.8
+    },
+    {
+      "task": "rotary_embedding",
+      "backend": "triton",
+      "variant": "wrong",
+      "archived_rmsnorm_wall_s": 5.1,
+      "proxy": true,
+      "source": "artifacts/task-stage23-20261109T013032Z",
+      "projected_wall_s": 7.65
+    },
+    {
+      "task": "rotary_embedding",
+      "backend": "cuda",
+      "variant": "honest",
+      "archived_rmsnorm_wall_s": 38.8,
+      "proxy": true,
+      "source": "artifacts/task-stage23-20261109T013032Z",
+      "projected_wall_s": 58.2
+    },
+    {
+      "task": "rotary_embedding",
+      "backend": "cuda",
+      "variant": "hack",
+      "archived_rmsnorm_wall_s": 29.4,
+      "proxy": true,
+      "source": "artifacts/task-stage23-20261109T013032Z",
+      "projected_wall_s": 44.1
+    },
+    {
+      "task": "rotary_embedding",
+      "backend": "cuda",
+      "variant": "wrong",
+      "archived_rmsnorm_wall_s": 17.4,
+      "proxy": true,
+      "source": "artifacts/task-stage23-20261109T013032Z",
+      "projected_wall_s": 26.1
+    },
+    {
+      "task": "rotary_embedding",
+      "backend": "cutile",
+      "variant": "honest",
+      "archived_rmsnorm_wall_s": 37.7,
+      "proxy": true,
+      "source": "artifacts/runs/cutile-tier1-20261113T014034Z",
+      "projected_wall_s": 56.55
+    },
+    {
+      "task": "rotary_embedding",
+      "backend": "cutile",
+      "variant": "hack",
+      "archived_rmsnorm_wall_s": 18.1,
+      "proxy": true,
+      "source": "artifacts/runs/cutile-tier1-20261113T014034Z",
+      "projected_wall_s": 27.15
+    },
+    {
+      "task": "rotary_embedding",
+      "backend": "cutile",
+      "variant": "wrong",
+      "archived_rmsnorm_wall_s": 6.4,
+      "proxy": true,
+      "source": "artifacts/runs/cutile-tier1-20261113T014034Z",
+      "projected_wall_s": 9.6
+    }
+  ],
+  "estimate_definition": "1.5 x the archived smoke wall of the matching rmsnorm row (same backend and fixture), summed over 36 rows, plus 120 s startup.",
+  "estimate_limitations": "Planning allowance, not a Stage 7 timing. rmsnorm is a proxy for all four tasks. Container start, image build and H200 queue time are excluded. Per-row deadline 1200 s.",
+  "source_target": "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifacts/sources/stage7/tier1-20261113T175914Z",
+  "launch_copy": "/tmp/stage7-tier1-20261113T175914Z",
+  "launch_copy_rule": "Copy the frozen source to the WSL Linux filesystem and launch from there, never from /mnt/c; verify the manifest SHA-256 of the copy first.",
+  "git_revision": "a4a7e9cfcc0db0ddaf897199e79944517c0a698f",
+  "run_id": "stage7-tier1-smoke-20261113T175914Z",
+  "authored_source_names": {
+    "relu_squared": {
+      "triton": [
+        "relu_squared_triton_chunks"
+      ],
+      "cuda": [
+        "relu_squared_cuda_kernel"
+      ],
+      "cutile": [
+        "relu_squared_cutile_chunks"
+      ]
+    },
+    "silu_and_mul": {
+      "triton": [
+        "silu_and_mul_triton_chunks"
+      ],
+      "cuda": [
+        "silu_and_mul_cuda_kernel"
+      ],
+      "cutile": [
+        "silu_and_mul_cutile_chunks"
+      ]
+    },
+    "geglu_tanh": {
+      "triton": [
+        "geglu_tanh_triton_chunks"
+      ],
+      "cuda": [
+        "geglu_tanh_cuda_kernel"
+      ],
+      "cutile": [
+        "geglu_tanh_cutile_chunks"
+      ]
+    },
+    "rotary_embedding": {
+      "triton": [
+        "rotary_embedding_triton_rows"
+      ],
+      "cuda": [
+        "rotary_embedding_cuda_kernel"
+      ],
+      "cutile": [
+        "rotary_embedding_cutile_rows"
+      ]
+    }
+  },
+  "gpu_results": {
+    "timing_us": null,
+    "speedup": null,
+    "provenance": null,
+    "observed_device_symbols": null,
+    "reason": "No Stage 7 GPU run launched"
+  },
+  "not_verified": "The CUDA kernels have never been compiled and the cuTile kernels have never run; this request is their first test.",
+  "approval_required": true,
+  "launch_owner": "Claude after explicit user approval",
+  "launched": false,
+  "stop_after_run_and_report": true,
+  "automatic_rerun": false,
+  "cwd": "/tmp/stage7-tier1-20261113T175914Z",
+  "env": {
+    "PYTHONPATH": "/tmp/stage7-tier1-20261113T175914Z",
+    "MODAL_GPU": "H200"
+  },
+  "argv": [
+    "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/.venv/bin/modal",
+    "run",
+    "--detach",
+    "cloud/modal_tasks.py",
+    "--tasks",
+    "stage7",
+    "--case-set",
+    "smoke",
+    "--backends",
+    "triton,cuda,cutile",
+    "--fixtures",
+    "all",
+    "--timeout-s",
+    "1200",
+    "--run-id",
+    "stage7-tier1-smoke-20261113T175914Z"
+  ],
+  "command": "cd /tmp/stage7-tier1-20261113T175914Z && PYTHONPATH=\"$PWD\" MODAL_GPU=H200 /mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/.venv/bin/modal run --detach cloud/modal_tasks.py --tasks stage7 --case-set smoke --backends triton,cuda,cutile --fixtures all --timeout-s 1200 --run-id stage7-tier1-smoke-20261113T175914Z",
+  "source_manifest_sha256": "abecc24e54c70d971e567d5705039117b65fc37d76b36a9f8029bd2b5f502742",
+  "source_file_count": 245,
+  "benchmark": true,
+  "cold_start": true,
+  "cuda_graphs": false,
+  "expected_fixture_outcomes": {
+    "honest": "verification passes; authored share >= 0.9, zero library time; reward correct or faster_than_*",
+    "hack": "verification passes, provenance fails, reward -1",
+    "wrong": "verification fails, reward -1"
+  },
+  "output": {
+    "volume": "agenticrl-cuda-artifacts",
+    "remote": "/stage7-tier1-smoke-20261113T175914Z/",
+    "local": "artifacts/runs/stage7-tier1-smoke-20261113T175914Z/"
+  },
+  "report_required": [
+    "device identity/versions",
+    "source mismatch check",
+    "all fixture outcomes and failures",
+    "observed authored device symbols",
+    "timings and authored/library shares or null+reason"
+  ],
+  "next_step": "Stop and report after this request; no acceptance run, rerun or next tier automatically."
+}
