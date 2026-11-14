@@ -77,3 +77,104 @@ Four conventions found while surveying NVIDIA TileGym v1.5.1 for cuTile ports. C
 | **CISPO cap** (`suites/liger/cutile/grpo_loss.py:146` vs `159`) | GRPO clips at `1 + eps_high`, but the CISPO branch caps at `eps_high` **directly**, with no lower bound. | The CISPO preset stores `clip_high = 4.0` meaning a cap of **5** (`1 + clip_high`, ADR 0001, ms-swift `epsilon_high = 5.0`). `grpo_token_loss` takes explicit `low = 1 - clip_low`, `high = 1 + clip_high` for every algorithm; negative controls `_wrong_cap4` and `_wrong_cap6` catch both naive ports (they change 6-8 % of tokens and 7-9 % of the scalar, measured on CPU). | An off-by-one in the IS-weight cap changes the gradient scale of every high-ratio token; it is exactly the convention mismatch ADR 0001 recorded. |
 
 Two further decisions from the same review: the loss tasks return `(per_row, scalar)` so errors cannot hide in a mean and the reduction runs in an authored kernel (Q3); and the GRPO KL term at the preset `kl_coef = 0.001` is below the tolerance, so one non-preset case with `kl_coef = 0.04` makes it testable (Q4; the value is DeepSeekMath's beta to our recollection and must be checked before it enters the catalog).
+
+## RL losses planned for TileGym Tier 2
+
+Four planned tasks from Tier 2 of [`TILEGYM_kernels_task.md`](TILEGYM_kernels_task.md), each computing a loss used in RL or distillation training of a language model. Their operator definitions come from [Liger-Kernel](https://github.com/linkedin/Liger-Kernel) through TileGym's cuTile ports. The contracts were approved on 2026-11-13; **none is implemented yet**. Each task returns a per-row (or per-token) vector and the reduced scalar, both computed in authored kernels, so an error cannot hide inside a mean. All arithmetic is fp32.
+
+Notation: a batch of $N$ rows (tokens), a vocabulary of $V$ entries ($V$ up to 128,256), logits $z_{n,v}$, and log-probabilities $\ell_{n,v} = z_{n,v} - \log\sum_{u} e^{z_{n,u}}$. Every log-sum-exp is computed online over 1,024-wide vocabulary tiles: with running maximum $m$ and running sum $d$, each tile $T$ updates
+
+$$
+m' = \max\bigl(m, \max_{v\in T} z_v\bigr), \qquad
+d' = d\,e^{m - m'} + \sum_{v\in T} e^{z_v - m'}, \qquad
+\log\sum_v e^{z_v} = m + \log d .
+$$
+
+### `token_kl_div`: KL divergence between two token distributions
+
+Inputs are log-probabilities: the prediction $y_{n,v}$ and the target $t_{n,v}$. The direction is **KL(target ‖ prediction)**, the convention of `F.kl_div(pred, target, log_target=True)`, and the reduction is batchmean:
+
+$$
+\mathrm{KL}_n = \sum_{v=1}^{V} e^{t_{n,v}}\,\bigl(t_{n,v} - y_{n,v}\bigr),
+\qquad
+\mathcal{L}_{\mathrm{KL}} = \frac{1}{N}\sum_{n=1}^{N} \mathrm{KL}_n .
+$$
+
+Outputs: $\mathrm{KL}_n$ per row and $\mathcal{L}_{\mathrm{KL}}$. Swapping the direction fails verification (checked on CPU).
+
+### `generalized_jsd`: generalized Jensen–Shannon divergence
+
+Inputs are log-probabilities of a **student** $Q$ ($\log q_{n,v}$) and a **teacher** $P$ ($\log p_{n,v}$), with a compile-time weight $\beta \in \{0.5, 0.1\}$ and the mixture $m_{n,v} = \beta p_{n,v} + (1-\beta) q_{n,v}$:
+
+$$
+\mathrm{JSD}_{\beta,n}
+= \beta\,\mathrm{KL}(P_n \,\|\, M_n) + (1-\beta)\,\mathrm{KL}(Q_n \,\|\, M_n)
+= \sum_{v=1}^{V}\Bigl[\beta\,p_{n,v}\bigl(\log p_{n,v}-\log m_{n,v}\bigr) + (1-\beta)\,q_{n,v}\bigl(\log q_{n,v}-\log m_{n,v}\bigr)\Bigr],
+$$
+
+with $0 \cdot \log 0 = 0$, and $\mathcal{L}_{\mathrm{JSD}} = \frac{1}{N}\sum_n \mathrm{JSD}_{\beta,n}$. TileGym special-cases $\beta = 0$ as KL(P‖Q) and $\beta = 1$ as KL(Q‖P); those are not limits of this formula (at $\beta = 0$ it gives 0) and are not ported. Known limit: swapping student and teacher changes the result by at most 0.9% at $\beta = 0.1$ (measured on CPU), inside the fixed 1e-2 tolerance, so the gate cannot enforce the argument order.
+
+### `fused_cross_entropy`: cross-entropy with ignored positions
+
+Inputs are logits $z_{n,v}$ and target token IDs $y_n \in [0, V)$, or $-100$ for a position to ignore. Label smoothing, class weights, soft-capping and z-loss are off:
+
+$$
+\mathrm{CE}_n =
+\begin{cases}
+\log\displaystyle\sum_{v=1}^{V} e^{z_{n,v}} - z_{n,y_n} & \text{if } y_n \ne -100,\[4pt]
+0 & \text{if } y_n = -100,
+\end{cases}
+\qquad
+\mathcal{L}_{\mathrm{CE}} = \frac{\sum_n \mathrm{CE}_n}{\max\bigl(\lvert\{n : y_n \ne -100\}\rvert,\ 1\bigr)} .
+$$
+
+This equals `F.cross_entropy(logits, targets, ignore_index=-100)`. Dividing by $N$ instead of the number of kept positions fails verification.
+
+### `grpo_token_loss`: per-token GRPO, DAPO and CISPO policy loss
+
+For sequence $b$ and token position $t$, with the policy's token log-probability $\log\pi_{b,t} = \ell_{b,t,\,o_{b,t}}$ (the log-softmax gathered at the sampled token $o_{b,t}$), the behaviour policy's log-probability $\log\pi^{\mathrm{old}}_{b,t}$, the reference model's $\log\pi^{\mathrm{ref}}_{b,t}$ and a validity mask $\mu_{b,t} \in \{0, 1\}$:
+
+$$
+r_{b,t} = \exp\bigl(\log\pi_{b,t} - \log\pi^{\mathrm{old}}_{b,t}\bigr),
+\qquad
+c_{b,t} = \operatorname{clip}\bigl(r_{b,t},\ 1-\varepsilon_{\mathrm{low}},\ 1+\varepsilon_{\mathrm{high}}\bigr),
+$$
+
+with $\varepsilon_{\mathrm{low}}$ = `clip_low` and $\varepsilon_{\mathrm{high}}$ = `clip_high`. The advantage $A_b$ is shared by all tokens of sequence $b$ and is the group-normalised reward of `utils.grpo.group_advantages`, over groups of $G = 8$ rollouts:
+
+$$
+A_b = \frac{R_b - \operatorname{mean}_{g}(R_g)}{\operatorname{pstd}_{g}(R_g) + 10^{-6}} .
+$$
+
+Per-token loss, by algorithm:
+
+$$
+\lambda_{b,t} =
+\begin{cases}
+-\min\bigl(r_{b,t} A_b,\ c_{b,t} A_b\bigr) & \text{GRPO, DAPO (clipped surrogate)},\[4pt]
+-\operatorname{sg}\bigl(c_{b,t}\bigr)\, A_b \,\log\pi_{b,t} & \text{CISPO},
+\end{cases}
+$$
+
+where $\operatorname{sg}$ is stop-gradient; this is a forward-only task, so its value is just $c_{b,t}$. When `kl_coef` $= \beta_{\mathrm{KL}} > 0$, the k3 estimator of the KL to the reference model is added:
+
+$$
+\lambda_{b,t} \mathrel{+}= \beta_{\mathrm{KL}}\Bigl(e^{\,\delta_{b,t}} - \delta_{b,t} - 1\Bigr),
+\qquad \delta_{b,t} = \log\pi^{\mathrm{ref}}_{b,t} - \log\pi_{b,t} .
+$$
+
+Masked tokens contribute exactly 0 ($\lambda_{b,t} \leftarrow \mu_{b,t}\lambda_{b,t}$). The scalar follows the preset's `loss_agg`:
+
+$$
+\mathcal{L}_{\mathrm{seq}} = \frac{1}{B}\sum_{b=1}^{B} \frac{\sum_t \mu_{b,t}\lambda_{b,t}}{\max\bigl(\sum_t \mu_{b,t},\ 1\bigr)},
+\qquad
+\mathcal{L}_{\mathrm{token}} = \frac{\sum_{b,t} \mu_{b,t}\lambda_{b,t}}{\max\bigl(\sum_{b,t} \mu_{b,t},\ 1\bigr)} .
+$$
+
+| Preset (`utils/config.py`) | Clip interval $[1-\varepsilon_{\mathrm{low}},\ 1+\varepsilon_{\mathrm{high}}]$ | Token loss | `kl_coef` | `loss_agg` |
+|---|---|---|---|---|
+| GRPO | $[0.8,\ 1.2]$ | clipped surrogate | 0.001 | `seq` |
+| DAPO | $[0.8,\ 1.28]$ | clipped surrogate | 0 | `token` |
+| CISPO | $[0,\ 5]$ | $-\operatorname{sg}(c)\,A\log\pi$ | 0 | `token` |
+
+The CISPO cap is $1 + \varepsilon_{\mathrm{high}} = 5$, not $\varepsilon_{\mathrm{high}}$ itself, which is the convention TileGym gets wrong for this repo (see "TileGym porting conventions" above). Known limit: at the GRPO preset's $\beta_{\mathrm{KL}} = 0.001$ the KL term changes no token beyond the 1e-2 tolerance, so one extra, non-preset case with $\beta_{\mathrm{KL}} = 0.04$ makes it testable (decision Q4).

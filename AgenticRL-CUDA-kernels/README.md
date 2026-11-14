@@ -34,6 +34,7 @@ Task contracts, shape grids and kernel techniques here come from public benchmar
 | [TritonBench](https://github.com/meta-pytorch/tritonbench) | Meta's Triton operator benchmark with PyTorch integration | Backend parity and GEMM; source of `gemm_tensor_core`, `rmsnorm`, `grouped_gemm` |
 | [FlashInfer-Bench](https://github.com/flashinfer-ai/flashinfer-bench) ([arXiv:2601.00227](https://arxiv.org/abs/2601.00227), MLSys 2026) | Kernel definitions and workloads from real LLM serving traces, with runtime isolation against performance reward hacking and kernel substitution into SGLang and vLLM | Realistic serving shapes; source of `residual_rmsnorm`, `topk_sampling`, `decode_attention` |
 | [NVIDIA TileGym](https://github.com/NVIDIA/TileGym) | NVIDIA's tile-programming kernels (cuTile, CUDA Tile C++, Triton on Tile IR), including cuTile ports of Liger-Kernel training losses | Reference for cuTile kernels and source of the Stage 7 tasks (`relu_squared`, `silu_and_mul`, `geglu_tanh`, `rotary_embedding`); the porting brief is [`TILEGYM_kernels_task.md`](TILEGYM_kernels_task.md), pinned to v1.5.1 |
+| [Liger-Kernel](https://github.com/linkedin/Liger-Kernel) ([arXiv:2410.10989](https://arxiv.org/abs/2410.10989)) | LinkedIn's Triton kernels for LLM training: fused RMSNorm, RoPE, SwiGLU, (fused linear) cross-entropy, and post-training losses including KL divergence, JSD and GRPO with its DAPO and CISPO variants; BSD-2-Clause | Origin of the operator contracts behind TileGym's `suites/liger` cuTile ports; cited by `relu_squared` (catalog source `liger`) and by the four planned RL-loss tasks, whose formulas are in [RL.md](RL.md#rl-losses-planned-for-tilegym-tier-2). Reference only: no Liger code is installed or called |
 | [ThunderKittens](https://github.com/HazyResearch/ThunderKittens) ([arXiv:2410.20399](https://arxiv.org/abs/2410.20399)) | HazyResearch's header-only CUDA C++ library of tile primitives for fast kernels on Hopper and Blackwell, including a FlashAttention-3-style attention kernel; MIT; work in progress | Not used yet: candidate H100/H200 (sm_90) tasks are collected in [`THUNDERKITTENS_kernels_task.md`](THUNDERKITTENS_kernels_task.md), pending a survey and the user's approval |
 | [Official Triton tutorials](https://triton-lang.org/main/getting-started/tutorials/index.html) | Executable reference implementations: fused softmax, matmul, LayerNorm, fused attention, grouped and persistent GEMM | Starting points for honest Triton fixtures, rewritten to this repo's rules; cited by nine tasks |
 | [NVIDIA CUTLASS](https://github.com/NVIDIA/cutlass) profiler | Profiler for CUDA GEMM implementations and configurations | Methodology reference for strong GEMM baselines. The GEMM ceiling measured here today is cuBLAS through PyTorch (`utils/task_ceiling.py`, the 60%-of-cuBLAS gate); the CUTLASS profiler is not yet run |
@@ -238,6 +239,27 @@ All 71 suite rows passed in run `task-stage5-gpu-acceptance-20261110T002043Z`; d
 > - **Modal has no Rubin GPU, and Rubin needs CUDA 13.4.** Rubin kernels target `sm_107`, which needs CUDA 13.4 or newer, above this repo's 13.3 pin; Modal's GPU list had no Rubin GPU on 2026-11-13.
 > 
 > Reasons and sources are in [`THUNDERKITTENS_kernels_task.md`](THUNDERKITTENS_kernels_task.md#excluded-with-reasons).
+
+#### The two divergences in the planned RL losses
+
+Two of the four planned TileGym Tier 2 tasks are divergences between token distributions over the vocabulary $v = 1,\dots,V$. Both take log-probabilities and reduce to a per-row value and its mean over rows. The full definitions, with cross-entropy and the GRPO/DAPO/CISPO token loss, are in [RL.md](RL.md#rl-losses-planned-for-tilegym-tier-2). Neither task is implemented yet.
+
+- **`token_kl_div`**: KL(target ‖ prediction), for target log-probabilities $t_{n,v}$ and predicted $y_{n,v}$, averaged over rows (batchmean):
+
+$$\mathrm{KL}_n = \sum_{v=1}^{V} e^{t_{n,v}}\,\bigl(t_{n,v} - y_{n,v}\bigr), \qquad \mathcal{L}_{\mathrm{KL}} = \frac{1}{N}\sum_{n=1}^{N}\mathrm{KL}_n .$$
+
+- **`generalized_jsd`**: the generalized Jensen–Shannon divergence between a student $Q$ and a teacher $P$, with mixture $M = \beta P + (1-\beta) Q$:
+
+$$\mathrm{JSD}_\beta(P, Q) = \beta\,\mathrm{KL}(P \,\|\, M) + (1-\beta)\,\mathrm{KL}(Q \,\|\, M), \qquad \mathrm{KL}(A \,\|\, B) = \sum_{v} a_v \log\frac{a_v}{b_v} .$$
+
+  **JSD: β = 0 and β = 1 are special-cased to the two KL directions and are not limits of the general formula.** TileGym returns $\mathrm{KL}(P\,\|\,Q)$ at $\beta = 0$ and $\mathrm{KL}(Q\,\|\,P)$ at $\beta = 1$, but the formula above gives $M = Q$ and $\mathrm{JSD}_0 = \mathrm{KL}(Q\,\|\,Q) = 0$ at $\beta = 0$, and $M = P$ and $\mathrm{JSD}_1 = 0$ at $\beta = 1$. v1 uses $\beta$ of 0.5 and 0.1 only.
+
+**Findings beyond the handoff** (from the contract review; CPU checks on synthetic inputs, not GPU evidence):
+
+- **GEGLU and RoPE compute in bf16 upstream.** A CPU emulation left elements outside the 1e-2 tolerance (GEGLU: 1 of 4,194,304; RoPE: $1.3 \times 10^{-5}$ of elements), so the ports must add fp32 casts. The Stage 7 `geglu_tanh` and `rotary_embedding` kernels do.
+- **The GRPO KL term is unverifiable at `kl_coef` = 0.001.** The per-token term is $\beta_{\mathrm{KL}}\,(e^{\delta} - \delta - 1)$ with $\delta = \log\pi_{\mathrm{ref}} - \log\pi$; dropping it stays inside the tolerance (it moves the scalar loss by about $3 \times 10^{-5}$ relative). One extra case with $\beta_{\mathrm{KL}} = 0.04$ makes it testable.
+- **A student/teacher swap in JSD is unverifiable.** At $\beta = 0.5$, $\mathrm{JSD}_\beta(P, Q) = \mathrm{JSD}_\beta(Q, P)$ exactly; at $\beta = 0.1$ the swap changes the result by at most 0.9%, inside the 1e-2 tolerance. Swapping the KL direction, by contrast, fails verification.
+
 
 | Stage | Task | Reference solution | H200 result (honest scores, hack fails provenance, wrong fails verification) |
 |---|---|---|---|
@@ -833,6 +855,10 @@ Full evidence, raw command output and what each test establishes are in [VALIDAT
 - [TRITON_guide.md](TRITON_guide.md): Triton installation, autotuning, cache and kernel-IR knobs, with this repo's CPU-interpreter and per-task-cache mapping
 - [Triton_provenance_GRPO_task.md](Triton_provenance_GRPO_task.md): the task brief this implementation follows
 - [THUNDERKITTENS_kernels_task.md](THUNDERKITTENS_kernels_task.md): proposed tasks from ThunderKittens' sm_90 kernels (attention, GEMM, rotary, linear attention and state-space kernels); not implemented
+- [Liger-Kernel](https://github.com/linkedin/Liger-Kernel) (LinkedIn; [arXiv:2410.10989](https://arxiv.org/abs/2410.10989); BSD-2-Clause): GPU kernels for training large language models, written in Triton.
+  - **What it does:** it replaces common pieces of a transformer's training step with fused, memory-efficient kernels. Examples: RMSNorm, LayerNorm, rotary embedding (RoPE), SwiGLU and GeGLU, cross-entropy (including a fused linear plus cross-entropy that never materializes the full logits), KL divergence, Jensen–Shannon divergence and RL losses such as GRPO.
+  - **How it's used:** as drop-in replacements.
+  - **In this repo:** a reference only. It is the origin of the operator contracts behind TileGym's `suites/liger` cuTile ports, cited by `relu_squared` and the four planned RL-loss tasks (formulas in [RL.md](RL.md#rl-losses-planned-for-tilegym-tier-2)). No Liger code is installed or called.
 - [CUDA_on_Modal.md](CUDA_on_Modal.md) · [GPU-acceler.md](GPU-acceler.md): the CUDA stack on Modal and GPU-accelerated libraries
 - [WANDB_parallel_sweep_agents.md](WANDB_parallel_sweep_agents.md): running parallel `wandb agent` sweeps on a multi-GPU host — `scripts/sweep.sh`, one agent per `CUDA_VISIBLE_DEVICES` with its own task workdir, sweep config in `sweeps/rollout_sweep.yaml`
 - CISPO sources: [MiniMax-M1 (arXiv:2506.13585)](https://arxiv.org/html/2506.13585v1) — defines the clipped, stop-gradient IS weight `clip(r, 1-ε_low, 1+ε_high)`, sets ε_low "to a large value" (no lower bound) and tunes only ε_high without publishing its value · [ms-swift CISPO docs](https://swift.readthedocs.io/en/v4.4/Instruction/GRPO/AdvancedResearch/CISPO.html) — `--loss_type cispo --epsilon_high 5.0`, i.e. `min(r, 5.0)`, citing ScaleRL for the value (also [v4.3](https://swift.readthedocs.io/en/v4.3/Instruction/GRPO/AdvancedResearch/CISPO.html), the version ADR 0004 cites) · [ScaleRL (arXiv:2510.13786)](https://arxiv.org/html/2510.13786) — adopts CISPO with the lower clip fixed at 0 and reports it "largely insensitive" to the upper clip (§A.17.2). In this repo's `1 + clip_high` convention the cap 5.0 is `clip_high=4.0`; override with `--clip-high`.
