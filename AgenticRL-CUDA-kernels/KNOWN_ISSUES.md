@@ -424,3 +424,16 @@
   are in `artifacts/runs/cutile-local-20261113T014034Z/`; none was launched.
   No backend promotion, LoRA shrink or flash-attention stretch work begins
   without the required GPU passes and user approval.
+
+- **Nsight profiles beyond the defaults are unverified on the H200.** Only the
+  default `trace` profile and the `basic` ncu preset have GPU evidence (run
+  `20261108T200118Z`). The other nsys flags were checked against the online
+  v2026.6 guide, not the pinned 2026.2.1 binary; `roofline`/`launch` section
+  names and the `GPU_METRICS` table schema are unverified. `--clock-control none`
+  stays required on the H200. `--pytorch` needs a PyTorch build nsys can hook;
+  `gpu-metrics` may need counter permission on some hosts. The historical
+  empty-capture issue (`empty_profile:<session>`) is still unreproduced and is
+  not addressed by these profiles.
+- **ncu profiles one launch.** Every preset keeps `--launch-count 1`, so a task
+  whose forward launches several authored kernels gets a summary for the first
+  matching launch only.

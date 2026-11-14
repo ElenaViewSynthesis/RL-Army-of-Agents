@@ -1,0 +1,474 @@
+{
+  "schema": "nsight-prepared-requests-v1",
+  "sanitizer": {
+    "purpose": "First Compute Sanitizer memcheck of the Stage 5 and Stage 6 kernels (CUDA, Triton) and of the nine first-round cuTile candidates. Two launches because the two groups use different backends.",
+    "launches": [
+      {
+        "run_id": "nsight-sanitizer-stage5-6-<UTC>",
+        "tasks": [
+          "eagle_candidate_topk",
+          "eagle_tree_step",
+          "eagle_tree_row_attention",
+          "eagle_tree_verify_attention",
+          "eagle_gdn_tree_conv",
+          "eagle_mamba2_tree_conv",
+          "eagle_gdn_tree_recurrence",
+          "eagle_accept_tail",
+          "eagle_accept_tail_sampled",
+          "lora_shrink_bgmv",
+          "lora_expand_bgmv",
+          "lora_segment_metadata",
+          "lora_shrink_sgmv",
+          "lora_expand_sgmv",
+          "lora_fused_sgmv"
+        ],
+        "case_set": "smoke",
+        "backends": [
+          "cuda",
+          "triton"
+        ],
+        "fixtures": [
+          "honest"
+        ],
+        "rows_by_task": {
+          "eagle_candidate_topk": {
+            "cases": [
+              "b1_h4096_v32000_top_k8_bfloat16"
+            ],
+            "backends": [
+              "cuda",
+              "triton"
+            ]
+          },
+          "eagle_tree_step": {
+            "cases": [
+              "b1_n1_treechain_top_k4_float32"
+            ],
+            "backends": [
+              "cuda",
+              "triton"
+            ]
+          },
+          "eagle_tree_row_attention": {
+            "cases": [
+              "b1_n1_treechain_hkv8_ratio1_d64_s512_window512_bfloat16"
+            ],
+            "backends": [
+              "cuda",
+              "triton"
+            ]
+          },
+          "eagle_tree_verify_attention": {
+            "cases": [
+              "b1_n1_treechain_hkv8_ratio1_d64_s512_window512_bfloat16"
+            ],
+            "backends": [
+              "cuda",
+              "triton"
+            ]
+          },
+          "eagle_gdn_tree_conv": {
+            "cases": [
+              "b1_n1_treechain_c192_bfloat16"
+            ],
+            "backends": [
+              "cuda",
+              "triton"
+            ]
+          },
+          "eagle_mamba2_tree_conv": {
+            "cases": [
+              "b1_n1_treechain_c192_bfloat16"
+            ],
+            "backends": [
+              "cuda",
+              "triton"
+            ]
+          },
+          "eagle_gdn_tree_recurrence": {
+            "cases": [
+              "b1_n1_treechain_heads1_dk64_dv64_float32"
+            ],
+            "backends": [
+              "cuda",
+              "triton"
+            ]
+          },
+          "eagle_accept_tail": {
+            "cases": [
+              "b1_n1_treechain_int32"
+            ],
+            "backends": [
+              "cuda",
+              "triton"
+            ]
+          },
+          "eagle_accept_tail_sampled": {
+            "cases": [
+              "b1_n1_treechain_v32000_seed17_float32"
+            ],
+            "backends": [
+              "cuda",
+              "triton"
+            ]
+          },
+          "lora_shrink_bgmv": {
+            "cases": [
+              "tokens1_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16"
+            ],
+            "backends": [
+              "cuda",
+              "triton"
+            ]
+          },
+          "lora_expand_bgmv": {
+            "cases": [
+              "tokens1_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16"
+            ],
+            "backends": [
+              "cuda",
+              "triton"
+            ]
+          },
+          "lora_segment_metadata": {
+            "cases": [
+              "tokens1_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16"
+            ],
+            "backends": [
+              "cuda",
+              "triton"
+            ]
+          },
+          "lora_shrink_sgmv": {
+            "cases": [
+              "tokens512_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16"
+            ],
+            "backends": [
+              "cuda",
+              "triton"
+            ]
+          },
+          "lora_expand_sgmv": {
+            "cases": [
+              "tokens512_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16"
+            ],
+            "backends": [
+              "cuda",
+              "triton"
+            ]
+          },
+          "lora_fused_sgmv": {
+            "cases": [
+              "tokens512_hidden2048_out2048_rank8_slots1_slices1_patternsingle_mixedfalse_float16"
+            ],
+            "backends": [
+              "cuda",
+              "triton"
+            ]
+          }
+        },
+        "expected_rows": 30,
+        "expected_counts": {
+          "passed": 30,
+          "failed": 0,
+          "unavailable": 0
+        },
+        "estimated_wall_s": 6120,
+        "estimate_basis": "30 honest rows x 200 s (about 40 s normal evaluation plus a guessed 160 s for five forwards under memcheck) + 120 s startup",
+        "estimate_limitations": "A guess, not a measurement: no Stage 5, Stage 6 or cuTile kernel has run under these tools; queue and container start are excluded.",
+        "frozen_source": null,
+        "frozen_source_reason": "Freeze after the Nsight changes are committed (scripts.freeze_task_suite records the committed git revision); then fill source_manifest_sha256.",
+        "source_manifest_sha256": null,
+        "argv": [
+          "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/.venv/bin/modal",
+          "run",
+          "--detach",
+          "cloud/modal_tasks.py",
+          "--tasks",
+          "eagle_candidate_topk,eagle_tree_step,eagle_tree_row_attention,eagle_tree_verify_attention,eagle_gdn_tree_conv,eagle_mamba2_tree_conv,eagle_gdn_tree_recurrence,eagle_accept_tail,eagle_accept_tail_sampled,lora_shrink_bgmv,lora_expand_bgmv,lora_segment_metadata,lora_shrink_sgmv,lora_expand_sgmv,lora_fused_sgmv",
+          "--case-set",
+          "smoke",
+          "--backends",
+          "cuda,triton",
+          "--fixtures",
+          "honest",
+          "--timeout-s",
+          "1800",
+          "--sanitizer",
+          "memcheck",
+          "--run-id",
+          "nsight-sanitizer-stage5-6-<UTC>"
+        ],
+        "command": "cd <frozen source copy on the WSL filesystem> && PYTHONPATH=\"$PWD\" MODAL_GPU=H200 /mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/.venv/bin/modal run --detach cloud/modal_tasks.py --tasks eagle_candidate_topk,eagle_tree_step,eagle_tree_row_attention,eagle_tree_verify_attention,eagle_gdn_tree_conv,eagle_mamba2_tree_conv,eagle_gdn_tree_recurrence,eagle_accept_tail,eagle_accept_tail_sampled,lora_shrink_bgmv,lora_expand_bgmv,lora_segment_metadata,lora_shrink_sgmv,lora_expand_sgmv,lora_fused_sgmv --case-set smoke --backends cuda,triton --fixtures honest --timeout-s 1800 --sanitizer memcheck --run-id nsight-sanitizer-stage5-6-<UTC>",
+        "launched": false,
+        "approval_required": true,
+        "launch_owner": "Claude after explicit user approval",
+        "diagnostic_only": true,
+        "expected_fixture_outcomes": {
+          "honest": "row passes as in earlier runs; the diagnostic fields are added with status passed, or a recorded reason"
+        },
+        "report_required": [
+          "per-row diagnostic status and reason",
+          "sanitizer error counts or ncu fields",
+          "tool versions",
+          "source mismatch check"
+        ],
+        "next_step": "Stop and report; no rerun automatically."
+      },
+      {
+        "run_id": "nsight-sanitizer-cutile-<UTC>",
+        "tasks": [
+          "gemm_div_sum_scale",
+          "row_softmax",
+          "gemm_tensor_core",
+          "rmsnorm",
+          "log_softmax_gather",
+          "fused_adamw",
+          "grpo_group_norm",
+          "cispo_clip_weight",
+          "residual_rmsnorm"
+        ],
+        "case_set": "smoke",
+        "backends": [
+          "cutile"
+        ],
+        "fixtures": [
+          "honest"
+        ],
+        "rows_by_task": {
+          "gemm_div_sum_scale": {
+            "cases": [
+              "m256_n256_k256_float32"
+            ],
+            "backends": [
+              "cutile"
+            ]
+          },
+          "row_softmax": {
+            "cases": [
+              "b64_h128_float32"
+            ],
+            "backends": [
+              "cutile"
+            ]
+          },
+          "gemm_tensor_core": {
+            "cases": [
+              "m512_n512_k512_bfloat16"
+            ],
+            "backends": [
+              "cutile"
+            ]
+          },
+          "rmsnorm": {
+            "cases": [
+              "b64_h1024_bfloat16"
+            ],
+            "backends": [
+              "cutile"
+            ]
+          },
+          "log_softmax_gather": {
+            "cases": [
+              "b32_v1024_bfloat16"
+            ],
+            "backends": [
+              "cutile"
+            ]
+          },
+          "fused_adamw": {
+            "cases": [
+              "n4096_float32"
+            ],
+            "backends": [
+              "cutile"
+            ]
+          },
+          "grpo_group_norm": {
+            "cases": [
+              "b64_g1_float32"
+            ],
+            "backends": [
+              "cutile"
+            ]
+          },
+          "cispo_clip_weight": {
+            "cases": [
+              "b8_s128_float32"
+            ],
+            "backends": [
+              "cutile"
+            ]
+          },
+          "residual_rmsnorm": {
+            "cases": [
+              "b1_s128_h1024_bfloat16"
+            ],
+            "backends": [
+              "cutile"
+            ]
+          }
+        },
+        "expected_rows": 9,
+        "expected_counts": {
+          "passed": 9,
+          "failed": 0,
+          "unavailable": 0
+        },
+        "estimated_wall_s": 1920,
+        "estimate_basis": "9 honest rows x 200 s + 120 s startup",
+        "estimate_limitations": "A guess, not a measurement: no Stage 5, Stage 6 or cuTile kernel has run under these tools; queue and container start are excluded.",
+        "frozen_source": null,
+        "frozen_source_reason": "Freeze after the Nsight changes are committed (scripts.freeze_task_suite records the committed git revision); then fill source_manifest_sha256.",
+        "source_manifest_sha256": null,
+        "argv": [
+          "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/.venv/bin/modal",
+          "run",
+          "--detach",
+          "cloud/modal_tasks.py",
+          "--tasks",
+          "gemm_div_sum_scale,row_softmax,gemm_tensor_core,rmsnorm,log_softmax_gather,fused_adamw,grpo_group_norm,cispo_clip_weight,residual_rmsnorm",
+          "--case-set",
+          "smoke",
+          "--backends",
+          "cutile",
+          "--fixtures",
+          "honest",
+          "--timeout-s",
+          "1800",
+          "--sanitizer",
+          "memcheck",
+          "--run-id",
+          "nsight-sanitizer-cutile-<UTC>"
+        ],
+        "command": "cd <frozen source copy on the WSL filesystem> && PYTHONPATH=\"$PWD\" MODAL_GPU=H200 /mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/.venv/bin/modal run --detach cloud/modal_tasks.py --tasks gemm_div_sum_scale,row_softmax,gemm_tensor_core,rmsnorm,log_softmax_gather,fused_adamw,grpo_group_norm,cispo_clip_weight,residual_rmsnorm --case-set smoke --backends cutile --fixtures honest --timeout-s 1800 --sanitizer memcheck --run-id nsight-sanitizer-cutile-<UTC>",
+        "launched": false,
+        "approval_required": true,
+        "launch_owner": "Claude after explicit user approval",
+        "diagnostic_only": true,
+        "expected_fixture_outcomes": {
+          "honest": "row passes as in earlier runs; the diagnostic fields are added with status passed, or a recorded reason"
+        },
+        "report_required": [
+          "per-row diagnostic status and reason",
+          "sanitizer error counts or ncu fields",
+          "tool versions",
+          "source mismatch check"
+        ],
+        "next_step": "Stop and report; no rerun automatically."
+      }
+    ]
+  },
+  "ncu": {
+    "purpose": "First per-kernel Nsight Compute roofline summary for the Stage 7 honest kernels.",
+    "launches": [
+      {
+        "run_id": "nsight-ncu-stage7-<UTC>",
+        "tasks": [
+          "relu_squared",
+          "silu_and_mul",
+          "geglu_tanh",
+          "rotary_embedding"
+        ],
+        "case_set": "smoke",
+        "backends": [
+          "triton",
+          "cuda",
+          "cutile"
+        ],
+        "fixtures": [
+          "honest"
+        ],
+        "rows_by_task": {
+          "relu_squared": {
+            "cases": [
+              "b64_h1024_float32"
+            ],
+            "backends": [
+              "triton",
+              "cuda",
+              "cutile"
+            ]
+          },
+          "silu_and_mul": {
+            "cases": [
+              "b64_h1024_float32"
+            ],
+            "backends": [
+              "triton",
+              "cuda",
+              "cutile"
+            ]
+          },
+          "geglu_tanh": {
+            "cases": [
+              "b64_h1024_float32"
+            ],
+            "backends": [
+              "triton",
+              "cuda",
+              "cutile"
+            ]
+          },
+          "rotary_embedding": {
+            "cases": [
+              "b1_hq32_hkv8_s512_d64_float32"
+            ],
+            "backends": [
+              "triton",
+              "cuda",
+              "cutile"
+            ]
+          }
+        },
+        "expected_rows": 12,
+        "expected_counts": {
+          "passed": 12,
+          "failed": 0,
+          "unavailable": 0
+        },
+        "estimated_wall_s": 1200,
+        "estimate_basis": "12 honest rows x 90 s (about 40 s normal evaluation plus a guessed 50 s ncu replay of one launch) + 120 s startup",
+        "estimate_limitations": "A guess, not a measurement: no Stage 5, Stage 6 or cuTile kernel has run under these tools; queue and container start are excluded.",
+        "frozen_source": null,
+        "frozen_source_reason": "Freeze after the Nsight changes are committed (scripts.freeze_task_suite records the committed git revision); then fill source_manifest_sha256.",
+        "source_manifest_sha256": null,
+        "argv": [
+          "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/.venv/bin/modal",
+          "run",
+          "--detach",
+          "cloud/modal_tasks.py",
+          "--tasks",
+          "relu_squared,silu_and_mul,geglu_tanh,rotary_embedding",
+          "--case-set",
+          "smoke",
+          "--backends",
+          "triton,cuda,cutile",
+          "--fixtures",
+          "honest",
+          "--timeout-s",
+          "1800",
+          "--ncu",
+          "roofline",
+          "--run-id",
+          "nsight-ncu-stage7-<UTC>"
+        ],
+        "command": "cd <frozen source copy on the WSL filesystem> && PYTHONPATH=\"$PWD\" MODAL_GPU=H200 /mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/.venv/bin/modal run --detach cloud/modal_tasks.py --tasks relu_squared,silu_and_mul,geglu_tanh,rotary_embedding --case-set smoke --backends triton,cuda,cutile --fixtures honest --timeout-s 1800 --ncu roofline --run-id nsight-ncu-stage7-<UTC>",
+        "launched": false,
+        "approval_required": true,
+        "launch_owner": "Claude after explicit user approval",
+        "diagnostic_only": true,
+        "expected_fixture_outcomes": {
+          "honest": "row passes as in earlier runs; the diagnostic fields are added with status passed, or a recorded reason"
+        },
+        "report_required": [
+          "per-row diagnostic status and reason",
+          "sanitizer error counts or ncu fields",
+          "tool versions",
+          "source mismatch check"
+        ],
+        "next_step": "Stop and report; no rerun automatically."
+      }
+    ]
+  }
+}

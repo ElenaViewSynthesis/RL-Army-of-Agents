@@ -684,6 +684,71 @@ CuTe DSL API mismatch; `libdw1` enables Nsight import and `--clock-control none`
 avoids unavailable clock locking. This covers the shipped fixtures, not general
 memory safety. See [raw evidence and limits](VALIDATION.md#h200-sanitizer-and-nsight-fixes--20261108t200118z).
 
+### Nsight profiles
+
+Nsight Systems and Nsight Compute now run on any catalog task, not only AXPBY:
+pass a scaffolded task workdir (the suite writes one per row under its output
+directory), and the worker reads that row's trusted case through
+`CUDA_AGENT_TASK`/`CUDA_AGENT_TASK_CASE`. Everything here is diagnostic: no
+profile, preset, range or metric enters a reward.
+
+| nsys profile | Adds over `trace` | Use | Expected cost (not yet measured) |
+|---|---|---|---|
+| `trace` (default) | nothing; byte-identical to the command validated in run `20261108T200118Z` | one generated forward | baseline |
+| `stages` | `--trace=cuda,nvtx,cublas,cudnn,osrt`, capture widened to `agenticrl_rollout`; the worker also runs `torch.compile` once | where eager, compile, warm-up and the generated forward spend GPU time; which library kernels the baselines launch | one `torch.compile`, larger report |
+| `pytorch` | `--pytorch=functions-trace,autograd-shapes-nvtx` | module-level attribution of the eager baseline without editing model code | host overhead per op |
+| `backtrace` | `--cudabacktrace=all --python-backtrace=cuda` | which Python line launched each kernel | high; never on a timed row |
+| `gpu-metrics` | `--gpu-metrics-devices=<assigned GPU index>` (resolved from `CUDA_VISIBLE_DEVICES` as the GPU lock does; never a guessed 0) | SM and DRAM activity over time next to the kernels | a sampling stream; may need counter permission |
+| `graphs` | `--cuda-graph-trace=node` | per-node kernels inside `cudaGraphLaunch` | small |
+
+Profiles compose (`--profile stages,gpu-metrics`). The worker marks each phase
+with an NVTX range: `agenticrl_rollout` around the whole run, then
+`agenticrl_eager`, `agenticrl_compile` (`stages` only), `agenticrl_warmup` and
+`agenticrl_generated` (unchanged: exactly one forward). The review summarises
+each range: kernel count, GPU busy time, and authored, library, Torch and
+memory time by the same name rules as the reward's provenance. With
+`gpu-metrics` it adds the mean SM-active and DRAM-throughput percentages inside
+the generated range, read from the SQLite `GPU_METRICS` and
+`TARGET_INFO_GPU_METRICS` tables (null when absent).
+
+| ncu preset | Sections | Use |
+|---|---|---|
+| `basic` (default) | `--set basic`; byte-identical to the validated command | duration, SM and DRAM throughput, occupancy, launch shape |
+| `roofline` | `SpeedOfLight`, `MemoryWorkloadAnalysis`, `Occupancy` | where a kernel sits against compute and memory limits |
+| `launch` | `LaunchStats` | registers, shared memory, grid and block sizes |
+
+Every preset keeps `--launch-count 1 --clock-control none` and selects the
+task's authored kernels by name. The review writes, per profiled kernel,
+`duration_us`, `sm_throughput_pct`, `dram_throughput_pct`,
+`achieved_occupancy_pct`, `registers_per_thread`, `shared_mem_static_bytes`,
+`shared_mem_dynamic_bytes`, `grid_size` and `block_size`, read from
+`ncu --import capture.ncu-rep --csv --page raw`, plus an `ncu-summary.md` next to
+`report.json`. A value with the wrong unit is null; a missing required metric
+fails the review.
+
+```bash
+# one generated forward of a task under Nsight Systems (existing default profile)
+python -m utils.diagnose nsys --backend triton --workdir <task workdir> --out <dir>
+# whole rollout with library tracing and GPU metrics
+python -m utils.diagnose nsys --profile stages,gpu-metrics --backend cuda --workdir <task workdir> --out <dir>
+# Python backtraces for every kernel launch (slow; never on a timed row)
+python -m utils.diagnose nsys --profile backtrace --backend triton --workdir <task workdir> --out <dir>
+# Nsight Compute roofline sections for the task's authored kernels
+python -m utils.diagnose ncu --preset roofline --backend cuda --workdir <task workdir> --out <dir>
+# the suite, honest rows only, with ncu roofline and memcheck attached as diagnostics
+python -m scripts.validate --suite stage6 --device cuda --ncu roofline --sanitizer memcheck
+# the same on Modal, from a frozen source
+MODAL_GPU=H200 modal run --detach cloud/modal_tasks.py --tasks stage6 --case-set smoke \
+    --backends cuda,triton --fixtures honest --ncu roofline --sanitizer memcheck --run-id <id>
+```
+
+`--ncu` and `--sanitizer` run after a row's normal evaluation, in the same
+workdir, under the per-GPU lock, on honest rows only. They add `ncu/*` and
+`sanitizer/<check>/*` fields to the row and change nothing else; other rows,
+CPU runs and lock contention get `status: skipped` with a reason. The AXPBY
+matrix on Modal (`cloud/modal_runtime.py --diagnose-kernels`) still runs the
+default profile and preset.
+
 ## Experiment tracking (W&B + Weave, opt-in)
 
 The tracking contract is [ADR 0002](Architecture-decision/0002-wandb-tracking-contract.md).

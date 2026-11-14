@@ -1,0 +1,35 @@
+.....................ss..................................................ssssss...sss.sssssss......ssssssssss.............usage: python3 -m unittest [-h] --output OUTPUT [--replays REPLAYS]
+                           [--eager-forwards EAGER_FORWARDS] [--seed SEED]
+                           [--impls IMPLS]
+python3 -m unittest: error: --replays must be positive and --eager-forwards non-negative
+usage: python3 -m unittest [-h] --output OUTPUT [--replays REPLAYS]
+                           [--eager-forwards EAGER_FORWARDS] [--seed SEED]
+                           [--impls IMPLS]
+python3 -m unittest: error: --impls must be a nonempty subset of generated,eager
+usage: python3 -m unittest [-h] --output OUTPUT [--replays REPLAYS]
+                           [--eager-forwards EAGER_FORWARDS] [--seed SEED]
+                           [--impls IMPLS]
+python3 -m unittest: error: --replays must be positive and --eager-forwards non-negative
+.....ssssss.........ssssssss...{"function_call_id": "fc-synthetic"}
+....................................s.......................ssssssssssssssssssss{"backend": "triton", "measured": false, "reason": "CPU (no device events)"}
+.{"backend": "triton", "measured": false, "reason": "empty_profile:eager", "profile": {"timing_measured": false, "t_eager_us": null, "t_compile_us": null, "t_gen_us": null, "provenance": null, "provenance/agent": null, "provenance/library": null, "provenance/torch": null, "provenance/memory": null, "timing_reason": "empty_profile:eager", "profile/eager_events": 0}}
+.{"backend": "triton", "measured": true, "agent_kernel_names": ["axpby_kernel"], "profile": {"timing_measured": true, "t_eager_us": 100.0, "t_compile_us": 80.0, "t_gen_us": 50.0, "provenance": 0.9, "provenance/agent": 0.8, "provenance/library": 0.0, "provenance/torch": 0.1, "provenance/memory": 0.1, "kernel_us/axpby_kernel_0d1d2d": 5.0, "kernel_us/at::native::vectorized_elementwise_kernel": 1.0}, "t_gen_us": 50.0, "provenance": 0.9, "provenance/agent": 0.8, "provenance/library": 0.0, "provenance/torch": 0.1, "provenance/memory": 0.1, "kernels": {"axpby_kernel_0d1d2d": {"us": 5.0, "class": "agent"}, "at::native::vectorized_elementwise_kernel": {"us": 1.0, "class": "torch"}}, "unmatched_agent_names": []}
+.{"backend": "triton", "measured": true, "agent_kernel_names": ["axpby_kernel"], "profile": {"timing_measured": true, "t_eager_us": 100.0, "t_compile_us": 80.0, "t_gen_us": 50.0, "provenance": 0.9, "provenance/agent": 0.8, "provenance/library": 0.0, "provenance/torch": 0.1, "provenance/memory": 0.1, "kernel_us/prefix_axpby_kernel_suffix": 5.0}, "t_gen_us": 50.0, "provenance": 0.9, "provenance/agent": 0.8, "provenance/library": 0.0, "provenance/torch": 0.1, "provenance/memory": 0.1, "kernels": {"prefix_axpby_kernel_suffix": {"us": 5.0, "class": "torch"}}, "unmatched_agent_names": ["axpby_kernel"]}
+.{"backend": "cuda", "unavailable": "package not installed: fake"}
+.{"backend": "triton", "measured": true, "agent_kernel_names": ["axpby_kernel"], "profile": {"timing_measured": true, "t_eager_us": 100.0, "t_compile_us": 80.0, "t_gen_us": 50.0, "provenance": 0.9, "provenance/agent": 0.8, "provenance/library": 0.0, "provenance/torch": 0.1, "provenance/memory": 0.1, "kernel_us/mystery_kernel": 2.0}, "t_gen_us": 50.0, "provenance": 0.9, "provenance/agent": 0.8, "provenance/library": 0.0, "provenance/torch": 0.1, "provenance/memory": 0.1, "kernels": {"mystery_kernel": {"us": 2.0, "class": "torch"}}, "unmatched_agent_names": ["axpby_kernel"]}
+.s.............................................ssss....................................{"suite/task": "row_softmax", "suite/case": "b64_h128_float32", "suite/stage": 1, "suite/backend": "triton", "suite/fixture": "honest", "suite/purpose": "eval", "suite/eval_only": false, "suite/contract_only": false, "suite/status": "unavailable", "suite/reason": "CPU evaluation: GPU measurements and GPU candidate acceptance unavailable"}
+{"suite/task": "row_softmax", "suite/case": "b64_h128_float32", "suite/stage": 1, "suite/backend": "triton", "suite/fixture": "hack", "suite/purpose": "eval", "suite/eval_only": false, "suite/contract_only": false, "suite/status": "unavailable", "suite/reason": "CPU evaluation: GPU measurements and GPU candidate acceptance unavailable"}
+{"suite/task": "row_softmax", "suite/case": "b64_h128_float32", "suite/stage": 1, "suite/backend": "triton", "suite/fixture": "wrong", "suite/purpose": "eval", "suite/eval_only": false, "suite/contract_only": false, "suite/status": "unavailable", "suite/reason": "CPU evaluation: GPU measurements and GPU candidate acceptance unavailable"}
+{"suite/task": "row_softmax", "suite/case": "b64_h128_float32", "suite/stage": 1, "suite/backend": "cuda", "suite/fixture": "honest", "suite/purpose": "eval", "suite/eval_only": false, "suite/contract_only": false, "suite/status": "unavailable", "suite/reason": "CPU evaluation: GPU measurements and GPU candidate acceptance unavailable"}
+{"suite/task": "row_softmax", "suite/case": "b64_h128_float32", "suite/stage": 1, "suite/backend": "cuda", "suite/fixture": "hack", "suite/purpose": "eval", "suite/eval_only": false, "suite/contract_only": false, "suite/status": "unavailable", "suite/reason": "CPU evaluation: GPU measurements and GPU candidate acceptance unavailable"}
+{"suite/task": "row_softmax", "suite/case": "b64_h128_float32", "suite/stage": 1, "suite/backend": "cuda", "suite/fixture": "wrong", "suite/purpose": "eval", "suite/eval_only": false, "suite/contract_only": false, "suite/status": "unavailable", "suite/reason": "CPU evaluation: GPU measurements and GPU candidate acceptance unavailable"}
+.{"suite/status": "passed", "suite/reason": null}
+{"suite/status": "unavailable", "suite/reason": "control_not_applicable_no_skipped_tokens"}
+{"suite/status": "passed", "suite/reason": null}
+{"suite/status": "unavailable", "suite/reason": "control_not_applicable_no_skipped_tokens"}
+{"suite/status": "unavailable", "suite/reason": "cuda_unavailable"}
+..ssssssssssss..........................s.......................s
+----------------------------------------------------------------------
+Ran 390 tests in 450.363s
+
+OK (skipped=82)

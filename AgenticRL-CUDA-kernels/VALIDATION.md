@@ -2747,3 +2747,41 @@ acceptance adds 180 s honest / 30 s each control. Exact inputs and proxy cases
 are in `run-plan.json`. These allowances are not cuTile measurements or promises.
 Claude reviews, launches one request, reports actual symbols/results, and stops
 before any next request. Full catalog correctness remains open after smoke.
+
+## Nsight profiles, NVTX ranges and suite diagnostics (2026-11-14; CPU and fake-tool evidence only)
+
+Implements `NSIGHT_profiling_task.md` Parts 1–5 except per-task NVTX ranges in
+honest fixtures (Part 2, second bullet), which wait for a one-task overhead
+measurement on a GPU. No GPU, vendor tool or Modal job ran.
+
+- `utils/diagnose.py`: named nsys profiles (`trace`, `stages`, `pytorch`,
+  `backtrace`, `gpu-metrics`, `graphs`), ncu presets (`basic`, `roofline`,
+  `launch`), `--profile`/`--preset` options, the assigned-GPU lookup for
+  `gpu-metrics`, and `CUDA_AGENT_TASK`/`CUDA_AGENT_TASK_CASE` in the worker's
+  environment allowlist. The default `trace` profile and the `basic` preset are
+  pinned byte for byte to the commands of run `20261108T200118Z`.
+- `utils/diagnostic_worker.py`: NVTX ranges `agenticrl_rollout`,
+  `agenticrl_eager`, `agenticrl_compile` (only with `--with-compile`),
+  `agenticrl_warmup` and the unchanged `agenticrl_generated`.
+- `utils/diagnostic_review.py`: per-range summaries, GPU-metrics means and the
+  per-kernel ncu summary with `ncu-summary.md`.
+- `utils/task_suite.py`, `scripts/validate.py`, `cloud/modal_tasks.py`: the
+  `--ncu <preset>` and `--sanitizer <checks>` honest-row hooks.
+- ADR 0002: `result:ncu/*` and `result:sanitizer/*/*` rows.
+
+Flag verification: the nsys flags were checked against the online Nsight Systems
+User Guide (v2026.6), not against `nsys profile --help` of the pinned 2026.2.1;
+the ncu metric names and units were checked against the real H200 export in
+`tests/fixtures/diagnostics/ncu-cuda-clock-none` (ncu 2026.2.1, `--set basic`).
+The `roofline` and `launch` section names and the `GPU_METRICS` schema are
+unverified until a GPU run.
+
+Tests (`tests/test_nsight_profiles.py`, synthetic SQLite and CSV, fake tools):
+every profile's argv; the default `trace` and `basic` commands byte-identical;
+profile composition; device-index resolution; per-range summaries and GPU-metrics
+means on synthetic timelines; the real validated timeline still passing; the
+per-kernel ncu fields from the real H200 export; preset-dependent required
+metrics; NVTX names and nesting in the worker with `torch` faked; NVTX ranges
+not changing provenance shares; the suite hooks with `run_diagnostic` mocked,
+including skip reasons and an unchanged `reward/*`; one ADR classification per
+new row key; the Modal runner forwarding both options.
