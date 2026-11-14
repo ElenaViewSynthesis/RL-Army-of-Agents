@@ -1,0 +1,14 @@
+{
+  "run_id": "stage5-topk-shortlist-acceptance-20261114T190449Z",
+  "tasks": [
+    "eagle_candidate_topk"
+  ],
+  "case_set": "acceptance",
+  "backends": "triton",
+  "fixtures": "all",
+  "timeout_s": 1200,
+  "benchmark": true,
+  "cold_start": true,
+  "cuda_graphs": false,
+  "gpu_requested": "H200"
+}

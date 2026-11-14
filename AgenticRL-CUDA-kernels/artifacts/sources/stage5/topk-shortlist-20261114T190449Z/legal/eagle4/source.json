@@ -1,0 +1,39 @@
+{
+  "repository": "https://github.com/eagle-hq/EAGLE-4",
+  "revision": "14fb79a5a4562ebe671444d7841253b889301040",
+  "retrieved_utc": "2026-11-09T08:35:14.606667+00:00",
+  "files": {
+    "LICENSE": {
+      "url": "https://raw.githubusercontent.com/eagle-hq/EAGLE-4/14fb79a5a4562ebe671444d7841253b889301040/LICENSE",
+      "sha256": "9131cfacb1b7b67a34a0a5d5b57dbf6fe51acbd0ac4ad0ef387499fcaf32bb2f"
+    },
+    "NOTICE": {
+      "url": "https://raw.githubusercontent.com/eagle-hq/EAGLE-4/14fb79a5a4562ebe671444d7841253b889301040/NOTICE",
+      "sha256": "be0a1dd830eda77f548734d5fae7681fc51bd39c397f4831196f4e3e9d10db4f"
+    },
+    "TRADEMARKS.md": {
+      "url": "https://raw.githubusercontent.com/eagle-hq/EAGLE-4/14fb79a5a4562ebe671444d7841253b889301040/TRADEMARKS.md",
+      "sha256": "0a3a7a2eed8a1f9800d18b80fb41bfef4d84b7a8c9f08a3cd63da19c72e5ee29"
+    },
+    "THIRD_PARTY_NOTICES.md": {
+      "url": "https://raw.githubusercontent.com/eagle-hq/EAGLE-4/14fb79a5a4562ebe671444d7841253b889301040/THIRD_PARTY_NOTICES.md",
+      "sha256": "f8fa647bfda4d0f0ec39b4b66c5781905f9ca45440167c6fc5c7713e036593a7"
+    },
+    "docs/kernels.md": {
+      "url": "https://raw.githubusercontent.com/eagle-hq/EAGLE-4/14fb79a5a4562ebe671444d7841253b889301040/docs/kernels.md",
+      "sha256": "d1f9229ec90ca1bfe7b0023cdcf81aa7a1971dba6c37c4d15a16150f5261552c"
+    },
+    "LICENSES/Apache-2.0.txt": {
+      "url": "https://raw.githubusercontent.com/eagle-hq/EAGLE-4/14fb79a5a4562ebe671444d7841253b889301040/LICENSES/Apache-2.0.txt",
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+    },
+    "LICENSES/BSD-3-Clause-causal-conv1d.txt": {
+      "url": "https://raw.githubusercontent.com/eagle-hq/EAGLE-4/14fb79a5a4562ebe671444d7841253b889301040/LICENSES/BSD-3-Clause-causal-conv1d.txt",
+      "sha256": "8c9ccb96c065e706135b6cbad279b721da6156e51f3a5f27c6b3329af9416d73"
+    },
+    "LICENSES/MIT-flash-linear-attention.txt": {
+      "url": "https://raw.githubusercontent.com/eagle-hq/EAGLE-4/14fb79a5a4562ebe671444d7841253b889301040/LICENSES/MIT-flash-linear-attention.txt",
+      "sha256": "41a83c8187efc1e3ccc21909e806a9e52338e69448554d9754706c3d1cd610e7"
+    }
+  }
+}

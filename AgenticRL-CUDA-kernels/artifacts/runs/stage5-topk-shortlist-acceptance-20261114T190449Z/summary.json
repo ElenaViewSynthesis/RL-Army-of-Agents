@@ -1,0 +1,18 @@
+{
+  "run_id": "stage5-topk-shortlist-acceptance-20261114T190449Z",
+  "execution": {
+    "command": "python -m scripts.validate --suite eagle_candidate_topk --device cuda --purpose eval --case-set acceptance --fixtures all --timeout-s 1200 --suite-out /artifacts/stage5-topk-shortlist-acceptance-20261114T190449Z/suite --backends triton --benchmark --cold-start",
+    "returncode": 0,
+    "timed_out": false,
+    "wall_s": 118.23228293999999
+  },
+  "counts": {
+    "passed": 3,
+    "failed": 0,
+    "unavailable": 0
+  },
+  "not_applicable": 0,
+  "status": "pass",
+  "source_mismatches": [],
+  "scope": "selected workload cases only; no stock AXPBY acceptance or timing-cause claim"
+}
