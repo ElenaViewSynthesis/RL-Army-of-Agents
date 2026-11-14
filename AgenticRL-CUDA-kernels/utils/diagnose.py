@@ -56,6 +56,12 @@ NSYS_PROFILES = {
     # Per-node kernels inside cudaGraphLaunch. Cost: small.
     "graphs": "Per-node kernel records inside CUDA graph launches.",
 }
+# Post-capture nsys reports (NSIGHT_PROFILING.md sections 2-3). They read the
+# finished capture.sqlite, never touch the GPU, and never change a capture's
+# status: each runs as its own bounded stage recorded under report["nsys_reports"].
+NSYS_STATS_REPORTS = ("cuda_gpu_kern_sum", "cuda_api_sum", "nvtx_sum", "cuda_gpu_mem_time_sum")
+NSYS_ANALYZE_RULES = ("gpu_gaps", "gpu_time_util", "cuda_api_sync", "cuda_memcpy_sync")
+NSYS_REPORT_LIMIT_S = 120
 NCU_PRESETS = {
     "basic": ("--set", "basic"),
     "roofline": ("--section", "SpeedOfLight", "--section", "MemoryWorkloadAnalysis",
@@ -212,8 +218,25 @@ def tool_command(tool, binary, worker, out, check, kernel, *, profiles=("trace",
             "--export", str(out / "capture"), *worker]
 
 
+def nsys_report_commands(binary, out):
+    """(label, argv) for each post-capture report; CSV goes to the stage's stdout log."""
+    source = str(out / "capture.sqlite")
+    commands = [(f"stats_{name}", [binary, "stats", "--report", name, "--format", "csv", source])
+                for name in NSYS_STATS_REPORTS]
+    commands += [(f"analyze_{rule}", [binary, "analyze", "--rule", rule, "--format", "csv", source])
+                 for rule in NSYS_ANALYZE_RULES]
+    return commands
+
+
+def gpu_metrics_devices_help(binary):
+    """The device IDs nsys itself reports for --gpu-metrics-devices (the open
+    question in NSIGHT_PROFILING.md section 6): recorded, never interpreted."""
+    return [binary, "profile", "--gpu-metrics-devices=help"]
+
+
 def run_diagnostic(tool, workdir, out, *, backend="auto", check="memcheck", kernel=None,
-                   timeout_s=600, seed=0, negative_control=False, profile="trace", preset="basic"):
+                   timeout_s=600, seed=0, negative_control=False, profile="trace", preset="basic",
+                   nsys_reports=True):
     if tool not in TOOLS or check not in CHECKS or not math.isfinite(timeout_s) or timeout_s <= 0:
         raise ValueError("Known tool/check and positive timeout required")
     profiles = parse_profiles(profile)
@@ -264,11 +287,11 @@ def run_diagnostic(tool, workdir, out, *, backend="auto", check="memcheck", kern
         from utils.diagnostic_review import review_report
         return review_report(out / "report.json")["result"]
 
-    def execute(argv, label, limit=None):
+    def execute(argv, label, limit=None, into="stages"):
         stage = run_process(argv, workdir, env, min(deadline, time.monotonic() + limit)
                             if limit is not None else deadline, out, label)
         stage["label"] = label
-        report["stages"].append(stage)
+        report.setdefault(into, []).append(stage)
         return stage
 
     binary = shutil.which(TOOLS[tool])
@@ -316,6 +339,7 @@ def run_diagnostic(tool, workdir, out, *, backend="auto", check="memcheck", kern
         if metrics_device is None:
             return finish("unavailable", "gpu_metrics_device_unresolved")
         result["diag/nsys_gpu_metrics_device"] = metrics_device
+        execute(gpu_metrics_devices_help(binary), "gpu_metrics_devices_help", 60, into="nsys_reports")
     stage = execute(tool_command(tool, binary, worker, out, check, result["diag/kernel_selector"],
                                  profiles=profiles, preset=preset, metrics_device=metrics_device), "tool")
     report["worker"] = worker_record = load_record(out / "worker.json")
@@ -329,6 +353,9 @@ def run_diagnostic(tool, workdir, out, *, backend="auto", check="memcheck", kern
         if not all((out / name).is_file() and (out / name).stat().st_size > 0
                    for name in ("capture.nsys-rep", "capture.sqlite")):
             return finish("failed", "missing_trace")
+        if nsys_reports:
+            for label, argv in nsys_report_commands(binary, out):
+                execute(argv, label, NSYS_REPORT_LIMIT_S, into="nsys_reports")
     if tool == "ncu":
         if not (out / "capture.ncu-rep").is_file() or (out / "capture.ncu-rep").stat().st_size == 0:
             return finish("failed", "missing_counter_report")
@@ -357,6 +384,8 @@ def main():
                         help="nsys only: comma-separated profiles: " + ",".join(NSYS_PROFILES))
     parser.add_argument("--preset", choices=tuple(NCU_PRESETS), default="basic",
                         help="ncu only: basic (validated), roofline or launch")
+    parser.add_argument("--no-nsys-reports", action="store_true",
+                        help="nsys only: skip the post-capture nsys stats/analyze reports")
     args = parser.parse_args()
     if args.tool == "review":
         if args.report is None:
@@ -385,7 +414,7 @@ def main():
     result = run_diagnostic(args.tool, args.workdir, args.out, backend=args.backend, check=args.check,
                             kernel=args.kernel, timeout_s=args.timeout_s, seed=args.seed,
                             negative_control=args.negative_control, profile=args.profile,
-                            preset=args.preset)
+                            preset=args.preset, nsys_reports=not args.no_nsys_reports)
     print(json.dumps(result, allow_nan=False))
     return 1 if result["diag/status"] in ("failed", "timeout") else 0
 

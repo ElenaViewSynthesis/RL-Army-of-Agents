@@ -254,6 +254,85 @@ class NsysReviewTests(unittest.TestCase):
         self.assertIsNone(result["diag/nsys/generated/agent_ns"])  # report predates recorded authored names
 
 
+def add_report_stage(case, label, stdout, returncode=0, timed_out=False):
+    (case / f"{label}.stdout.log").write_text(stdout)
+    path = case / "report.json"
+    report = json.loads(path.read_text())
+    report.setdefault("nsys_reports", []).append(
+        {"label": label, "argv": ["/bin/nsys"], "returncode": returncode, "timed_out": timed_out})
+    path.write_text(json.dumps(report))
+
+
+# SYNTHETIC console output in the shape of `nsys stats --report cuda_gpu_kern_sum --format csv`.
+KERN_SUM_CSV = ("Processing [capture.sqlite] with [cuda_gpu_kern_sum.py]...\n"
+                '"Time (%)","Total Time (ns)","Instances","Avg (ns)","Med (ns)","Min (ns)","Max (ns)",'
+                '"StdDev (ns)","Name"\n'
+                f'61.5,80,2,40.0,40.0,40,40,0.0,"{AUTHORED}"\n'
+                f'38.5,50,1,50.0,50.0,50,50,0.0,"{TORCH}"\n')
+
+
+class NsysReportTests(unittest.TestCase):
+    RANGES = {"agenticrl_generated": (700, 800)}
+    KERNELS = [(705, 745, AUTHORED), (746, 786, AUTHORED), (787, 799, TORCH)]
+
+    def case(self, tmp, name="case"):
+        return write_nsys_case(Path(tmp) / name, ("trace",), ranges=self.RANGES, kernels=self.KERNELS)
+
+    def test_report_commands_are_pinned_and_read_the_sqlite_export(self):
+        commands = diagnose.nsys_report_commands("/bin/nsys", OUT)
+        self.assertEqual(commands[0], ("stats_cuda_gpu_kern_sum",
+                                       ["/bin/nsys", "stats", "--report", "cuda_gpu_kern_sum", "--format", "csv",
+                                        str(OUT / "capture.sqlite")]))
+        self.assertEqual([label for label, _ in commands],
+                         [f"stats_{n}" for n in diagnose.NSYS_STATS_REPORTS]
+                         + [f"analyze_{r}" for r in diagnose.NSYS_ANALYZE_RULES])
+        self.assertEqual(commands[-1][1][1:4], ["analyze", "--rule", "cuda_memcpy_sync"])
+        self.assertEqual(diagnose.gpu_metrics_devices_help("/bin/nsys"),
+                         ["/bin/nsys", "profile", "--gpu-metrics-devices=help"])
+
+    def test_sqlite_kernel_sum_and_a_matching_stats_report(self):
+        with scratch() as tmp:
+            case = self.case(tmp)
+            csv_text = KERN_SUM_CSV.replace("38.5,50,1,50.0,50.0,50,50", "38.5,12,1,12.0,12.0,12,12")
+            add_report_stage(case.parent, "stats_cuda_gpu_kern_sum", csv_text)
+            add_report_stage(case.parent, "analyze_gpu_gaps", "rule output\n")
+            review = review_report(case)
+        result = review["result"]
+        self.assertEqual(result["diag/status"], "passed")
+        self.assertEqual(review["observations"]["kernel_sum"][0],
+                         {"name": AUTHORED, "total_ns": 80, "instances": 2, "avg_ns": 40.0,
+                          "min_ns": 40, "max_ns": 40})
+        self.assertEqual(result["diag/nsys_kernel_sum_total_ns"], 92)
+        self.assertEqual(result["diag/nsys_stats_kernel_total_ns"], 92)
+        self.assertIs(result["diag/nsys_stats_matches_sqlite"], True)
+        self.assertIsNone(result["diag/nsys_stats_reason"])
+        self.assertIn("analyze_gpu_gaps.stdout.log", review["raw_sha256"])
+        self.assertEqual(review["observations"]["nsys_reports"]["analyze_gpu_gaps"]["returncode"], 0)
+
+    def test_stats_problems_are_recorded_without_failing_the_capture(self):
+        cases = (("differ", KERN_SUM_CSV, 0, False, "stats_differ_from_sqlite"),
+                 ("failed", "", 1, False, "stats_failed"),
+                 ("timeout", "", None, True, "stats_timeout"),
+                 ("unparsed", "no table here\n", 0, False, "stats_unparsed"))
+        with scratch() as tmp:
+            for name, text, code, timed_out, reason in cases:
+                case = self.case(tmp, name)
+                add_report_stage(case.parent, "stats_cuda_gpu_kern_sum", text, code, timed_out)
+                result = review_report(case)["result"]
+                self.assertEqual(result["diag/status"], "passed", name)
+                self.assertEqual(result["diag/nsys_stats_reason"], reason, name)
+            result = review_report(self.case(tmp, "none"))["result"]
+        self.assertEqual(result["diag/nsys_stats_reason"], "not_run")
+        self.assertIsNone(result["diag/nsys_stats_matches_sqlite"])
+
+    def test_gpu_metrics_device_listing_is_recorded_verbatim(self):
+        with scratch() as tmp:
+            case = self.case(tmp)
+            add_report_stage(case.parent, "gpu_metrics_devices_help", "SYNTHETIC device listing\n")
+            review = review_report(case)
+        self.assertEqual(review["observations"]["gpu_metrics_devices_help"], "SYNTHETIC device listing\n")
+
+
 class NvtxProvenanceTests(unittest.TestCase):
     def test_nvtx_ranges_do_not_change_provenance_shares(self):
         from utils.provenance import summarize_events

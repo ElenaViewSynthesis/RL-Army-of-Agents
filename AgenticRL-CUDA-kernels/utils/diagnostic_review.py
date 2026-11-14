@@ -196,6 +196,73 @@ def capture_worker_matches(captured):
             and isinstance(worker.get("warmup_iters"), int) and worker["warmup_iters"] > 0)
 
 
+def kernel_sum(kernels):
+    """Per-kernel totals over the whole capture: the SQLite equivalent of
+    `nsys stats --report cuda_gpu_kern_sum` (and of the NSIGHT_PROFILING.md
+    `nsys query` example), independent of the nsys version. kernels: (start, end, name)."""
+    durations = {}
+    for start, end, name in kernels:
+        durations.setdefault(name, []).append(end - start)
+    rows = [{"name": name, "total_ns": sum(values), "instances": len(values),
+             "avg_ns": sum(values) / len(values), "min_ns": min(values), "max_ns": max(values)}
+            for name, values in durations.items()]
+    return sorted(rows, key=lambda row: (-row["total_ns"], row["name"]))
+
+
+def parse_kern_sum_csv(text):
+    """{name: (total_ns, instances)} from `nsys stats --report cuda_gpu_kern_sum
+    --format csv` console output, or None when no table is recognised."""
+    lines = text.splitlines()
+    for index, line in enumerate(lines):
+        if "Total Time (ns)" in line and "Instances" in line and "Name" in line:
+            try:
+                rows = {row["Name"]: (int(float(row["Total Time (ns)"])), int(row["Instances"]))
+                        for row in csv.DictReader(lines[index:]) if row.get("Name")}
+            except (KeyError, TypeError, ValueError):
+                return None
+            return rows or None
+    return None
+
+
+def review_nsys_reports(captured, directory, review, sqlite_rows):
+    """Record the post-capture nsys reports and cross-check cuda_gpu_kern_sum
+    against the SQLite totals. Never changes the capture's status."""
+    stages = {stage.get("label"): stage for stage in captured.get("nsys_reports", [])
+              if isinstance(stage, dict)}
+    observed = {}
+    for label, stage in stages.items():
+        stdout = directory / f"{label}.stdout.log"
+        observed[label] = {"returncode": stage.get("returncode"), "timed_out": bool(stage.get("timed_out")),
+                           "stdout": stdout.name if stdout.is_file() else None}
+        if stdout.is_file():
+            review["raw_sha256"][stdout.name] = hashlib.sha256(stdout.read_bytes()).hexdigest()
+    review["observations"]["nsys_reports"] = observed
+    help_log = directory / "gpu_metrics_devices_help.stdout.log"
+    if "gpu_metrics_devices_help" in stages and help_log.is_file():
+        review["observations"]["gpu_metrics_devices_help"] = help_log.read_text(errors="replace")[:4000]
+    stats, total, matches = stages.get("stats_cuda_gpu_kern_sum"), None, None
+    if stats is None:
+        reason = "not_run"
+    elif stats.get("timed_out"):
+        reason = "stats_timeout"
+    elif stats.get("returncode") != 0:
+        reason = "stats_failed"
+    else:
+        path = directory / "stats_cuda_gpu_kern_sum.stdout.log"
+        parsed = parse_kern_sum_csv(path.read_text(errors="replace")) if path.is_file() else None
+        if parsed is None:
+            reason = "stats_unparsed"
+        else:
+            total = sum(value for value, _ in parsed.values())
+            matches = (total == sum(row["total_ns"] for row in sqlite_rows)
+                       and sum(count for _, count in parsed.values())
+                       == sum(row["instances"] for row in sqlite_rows))
+            reason = None if matches else "stats_differ_from_sqlite"
+    review["result"].update({"diag/nsys_stats_kernel_total_ns": total,
+                             "diag/nsys_stats_matches_sqlite": matches,
+                             "diag/nsys_stats_reason": reason})
+
+
 def union_duration(intervals):
     total, last_end = 0, None
     for start, end in sorted(intervals):
@@ -312,6 +379,10 @@ def review_nsys(captured, directory, review):
         review["result"].update({"diag/nsys/generated/sm_active_pct_mean": sm_mean,
                                  "diag/nsys/generated/dram_throughput_pct_mean": dram_mean,
                                  "diag/nsys/gpu_metrics_reason": reason})
+    totals = kernel_sum([(a, b, name) for a, b, _, name in all_kernels])
+    review["observations"]["kernel_sum"] = totals
+    review["result"]["diag/nsys_kernel_sum_total_ns"] = sum(row["total_ns"] for row in totals)
+    review_nsys_reports(captured, directory, review, totals)
     busy = union_duration([(a, b) for a, b, _, _ in kernels])
     span = max(b for _, b, _, _ in kernels) - min(a for a, _, _, _ in kernels)
     review["raw_sha256"]["capture.sqlite"] = hashlib.sha256(sqlite_path.read_bytes()).hexdigest()

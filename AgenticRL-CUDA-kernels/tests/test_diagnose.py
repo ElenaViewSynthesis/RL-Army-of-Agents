@@ -12,7 +12,7 @@ from tests.support import ROOT, scratch
 from utils import diagnose
 
 
-def staged(self, tool, records, *, gpu=None, worker=None, captures=(), kernel=None):
+def staged(self, tool, records, *, gpu=None, worker=None, captures=(), kernel=None, nsys_reports=True):
     from unittest.mock import patch
 
     def passthrough(path):
@@ -45,7 +45,7 @@ def staged(self, tool, records, *, gpu=None, worker=None, captures=(), kernel=No
              patch.object(diagnose.shutil, "which", return_value="/fake/tool"), \
              patch("utils.diagnostic_review.review_report", side_effect=passthrough):
             result = diagnose.run_diagnostic(tool, tmp, tmp / "out", backend="triton",
-                                             kernel=kernel)
+                                             kernel=kernel, nsys_reports=nsys_reports)
         report = json.loads((tmp / "out" / "report.json").read_text())
         report["analysis_json_exists"] = (tmp / "out" / "analysis.json").is_file()
         return result, report, calls
@@ -139,11 +139,27 @@ class RunDiagnosticTests(unittest.TestCase):
                               gpu=self.GPU, worker=self.WORKER)
         self.assertEqual((result["diag/status"], result["diag/reason"]),
                          ("failed", "missing_trace"))
-        result, report, _ = staged(self, "nsys", [(0, False), (0, False), (0, False)],
-                                   gpu=self.GPU, worker=self.WORKER,
-                                   captures=("capture.nsys-rep", "capture.sqlite"))
+        result, report, calls = staged(self, "nsys", [(0, False), (0, False), (0, False)],
+                                       gpu=self.GPU, worker=self.WORKER,
+                                       captures=("capture.nsys-rep", "capture.sqlite"),
+                                       nsys_reports=False)
         self.assertEqual(result["diag/status"], "captured")
         self.assertTrue(report["analysis_json_exists"])
+        self.assertEqual(calls, ["version", "gpu", "tool"])
+        self.assertNotIn("nsys_reports", report)
+
+    def test_nsys_post_capture_reports_never_change_the_capture_status(self):
+        labels = [label for label, _ in diagnose.nsys_report_commands("/fake/tool", Path("/o"))]
+        # One report times out and one fails: both stay out of report["stages"].
+        records = [(0, False)] * 3 + [(0, False), (0, True), (1, False)] + [(0, False)] * (len(labels) - 3)
+        result, report, calls = staged(self, "nsys", records, gpu=self.GPU, worker=self.WORKER,
+                                       captures=("capture.nsys-rep", "capture.sqlite"))
+        self.assertEqual((result["diag/status"], result["diag/reason"]),
+                         ("captured", "raw_evidence_requires_review"))
+        self.assertEqual(calls, ["version", "gpu", "tool", *labels])
+        self.assertEqual([stage["label"] for stage in report["stages"]], ["version", "gpu", "tool"])
+        self.assertEqual([stage["label"] for stage in report["nsys_reports"]], labels)
+        self.assertTrue(report["nsys_reports"][1]["timed_out"])
 
     def test_ncu_requires_report_then_metrics_export(self):
         result, _, calls = staged(self, "ncu", [(0, False), (0, False), (0, False)],
