@@ -15,7 +15,10 @@ python3 -m unittest tests.test_suite_log.SuiteLogTests.test_payload_drops_logs_a
 .venv/bin/python -m scripts.validate --device cpu --timeout-s 600  # CPU correctness report
 .venv/bin/python -m scripts.validate --suite stage6 --device cuda --case-set smoke --fixtures all --backends cuda,triton  # task suite (GPU)
 python -m utils.rollout_env <workdir> --algo grpo --turns-used 1   # one scored rollout
+python3 -m scripts.query_nsys kernels <out>/capture.sqlite --top 10   # query a saved nsys capture; also summary, nvtx, memcpy, tree --query ...
 ```
+
+`scripts/query_nsys.py` is Torch-free and standard-library only and needs neither nsys nor a GPU (it also runs on native Windows); `NSIGHT_PROFILING.md` section 4 lists every command and how to read the output.
 
 CI: `.github/workflows/agenticrl-cuda-kernels.yml` runs the Torch-free suite on Python 3.12 with pyyaml. There is no formatter or linter config.
 
@@ -28,6 +31,9 @@ cd <frozen dir> && PYTHONPATH=$PWD MODAL_GPU=H200 <repo>/.venv/bin/modal run --d
 .venv/bin/modal volume get agenticrl-cuda-artifacts /<run-id>/ <local dir>   # outputs land in this volume
 .venv/bin/python -m tracking.suite_log artifacts/runs/<run-id> [--dry-run]    # log a suite run to W&B + read back
 .venv/bin/python -m tracking.suite_live <run-id> --modal .venv/bin/modal --finalize   # live W&B progress during a Modal run, then collect + log
+scripts/profile_b200.sh plan <tasks> [backends] [case-set] [tools]     # free: which rows a B200 profile run would do
+scripts/profile_b200.sh launch <tasks> [backends] [case-set] [tools]   # PAID: nsys/ncu on honest fixtures on a Modal B200 (cloud/modal_profile.py)
+scripts/profile_b200.sh fetch|status|kernels|query <run-id> ...        # download a profile run and read its captures with query_nsys
 ```
 
 ## Architecture

@@ -138,6 +138,58 @@ nsys query <out>/capture.nsys-rep --sql \
 nsys survey <out>/capture.nsys-rep
 ```
 
+### Querying `capture.sqlite` without nsys: `scripts/query_nsys.py`
+
+`scripts/query_nsys.py` answers the common questions about one capture straight from its SQLite export.
+It is Torch-free and standard-library only and needs neither nsys nor a GPU, so it runs on any checkout
+(Windows included) against the `capture.sqlite` files the Modal runs already save. Each command prints
+one JSON object as its last stdout line; `--pretty` indents it. Times are nanoseconds from the trace.
+
+```bash
+S=<out>/capture.sqlite
+
+# What the capture holds: event counts per table and its time span
+python3 -m scripts.query_nsys summary $S
+
+# Per-kernel statistics (count, total, mean, std, min, max, median; grid, block, registers, shared memory)
+python3 -m scripts.query_nsys kernels $S --top 10 --sort total_ns      # or count, mean_ns, max_ns
+
+# NVTX range durations grouped by text (optionally one domain), plus the number of marks
+python3 -m scripts.query_nsys nvtx $S [--domain 0]
+
+# Copies and memsets grouped by direction, with bytes and bytes per second
+python3 -m scripts.query_nsys memcpy $S
+
+# Structure: what is at the top, what is slowest, how often something ran, what a range contains
+python3 -m scripts.query_nsys tree $S --query top_level
+python3 -m scripts.query_nsys tree $S --query most_time_consuming --root agenticrl_generated
+python3 -m scripts.query_nsys tree $S --query count_calls --event axpby_kernel [--root NAME] [--contains]
+python3 -m scripts.query_nsys tree $S --query subtree_summary --root agenticrl_generated --pretty
+
+# Narrow the tree: only some event types, one thread, or a depth limit
+python3 -m scripts.query_nsys tree $S --query most_time_consuming --types kernel,nvtx --max-depth 2
+```
+
+How to read the results:
+
+- **A missing table is not a zero.** An export without, say, `CUPTI_ACTIVITY_KIND_MEMCPY` gives `null`
+  counts in `summary` and `"reason": "table_absent"` in `memcpy`; a column the export lacks reads as `null`.
+- **The tree has two kinds of parent.** Host intervals (NVTX ranges and CUDA runtime API calls) nest by
+  time on their thread. GPU work (kernels, copies, synchronisations) hangs under the host call that
+  launched it, matched by correlation ID. Its time is GPU time, which runs after the call returns, so it
+  is not part of the call's duration. With `--types` that leaves out `trace`, GPU work hangs under the
+  innermost NVTX range that contains its launching call instead.
+  `tree.gpu_events_without_host_parent` counts GPU events whose launching call is not in the export.
+- **Names match exactly and case-sensitively** unless `--contains` is given. `--root` may match several
+  intervals (for example every range named `replay 1`); `scopes_matched` says how many, and the query
+  covers all of them.
+- **Kernel names are nsys short names**, with the demangled name alongside. The reward profiler and
+  `nsys stats` can format the same kernel differently, as noted in section 5.
+
+The script is diagnostic only and checks nothing: it does not replace the reviewer's cross-check against
+`cuda_gpu_kern_sum`. `tests/test_query_nsys.py` covers it against the recorded axpby fixture
+(`tests/fixtures/diagnostics/nsys-cuda-recovered/capture.sqlite`) and a synthetic export.
+
 ## 5. How this maps onto the harness
 
 | Need | Harness today | Raw CLI above |
@@ -151,6 +203,7 @@ nsys survey <out>/capture.nsys-rep
 | Expert-system rules | `analyze_<rule>` stages for `gpu_gaps`, `gpu_time_util`, `cuda_api_sync`, `cuda_memcpy_sync` | section 3 |
 | GPU-metric device IDs | `gpu_metrics_devices_help` stage (with `--profile gpu-metrics`), recorded verbatim | `--gpu-metrics-devices=help` |
 | Per-kernel counters | `utils.diagnose ncu --preset ...` | (Nsight Compute, not nsys) |
+| Ad-hoc questions about a saved capture, without nsys | `scripts/query_nsys.py` on `capture.sqlite` | section 4, `nsys query` and `nsys stats` |
 
 **Wired into the harness (not yet run on a GPU).** After a successful capture, `utils.diagnose nsys` runs
 each `nsys stats` report and `nsys analyze` rule above on `capture.sqlite` as its own bounded stage
@@ -163,6 +216,65 @@ in Python, so it works with any nsys version) and compares the total time and la
 compared, because the two can format them differently.
 
 `query` and `survey` stay manual: they look newer than the image's nsys 2026.2.1.
+
+### Profiling task solutions on a Modal B200: `scripts/profile_b200.sh`
+
+**Written and tested without a GPU; not yet run on a B200.** The planner, the wrapper's `plan`,
+`kernels` and `query` commands and the Modal app's import are checked locally
+(`tests/test_profile_tasks.py`); the capture path on Blackwell is unmeasured until the first run.
+
+Three pieces, each usable alone:
+
+| Piece | What it does |
+|---|---|
+| `scripts/profile_tasks.py` | On the GPU host: for every selected task, case and backend, scaffolds the honest fixture, runs `utils.diagnose nsys` and/or `ncu`, then saves the `scripts/query_nsys.py` reports (`query-summary.json`, `query-kernels.json`, `query-nvtx.json`, `query-memcpy.json`) beside each capture. GPU-agnostic. |
+| `cloud/modal_profile.py` | Runs that driver on Modal. `MODAL_GPU` defaults to `B200`; the image is CUDA 13.5 devel (ships nsys) and builds CUDA C++ extensions for `sm_100`. Detached spawn, progress lines every 30 s, partial captures committed to the volume as it goes. |
+| `scripts/profile_b200.sh` | The commands below. |
+
+```bash
+# Free: print exactly which rows would run (task, case, backend, tool) and which are skipped
+scripts/profile_b200.sh plan relu_squared,rmsnorm
+scripts/profile_b200.sh plan stage7 triton acceptance nsys,ncu
+
+# PAID (ask first): start a detached B200 run; prints the run ID and the function call ID
+scripts/profile_b200.sh launch relu_squared,rmsnorm triton smoke nsys
+NSYS_PROFILE=stages scripts/profile_b200.sh launch stage7 triton acceptance nsys,ncu
+
+# While it runs or afterwards
+scripts/profile_b200.sh status  <run-id>          # one line per finished row
+scripts/profile_b200.sh attach  fc-...            # re-attach if the local command died
+scripts/profile_b200.sh fetch   <run-id>          # download to artifacts/runs/<run-id>
+
+# Read the captures locally (no nsys, no GPU)
+scripts/profile_b200.sh kernels <run-id> 5        # top five kernels of every capture
+scripts/profile_b200.sh query   <run-id> nvtx
+scripts/profile_b200.sh query   <run-id> tree --query most_time_consuming
+```
+
+Arguments are `TASKS [BACKENDS] [CASE_SET] [TOOLS]`, defaulting to `triton smoke nsys`. `TASKS` takes
+task names or groups (`stage1`…`stage7`, `bootstrap`, `all`); `CASE_SET` takes `smoke`, `acceptance`,
+`stratified`, `all` or one case ID. Environment: `NSYS_PROFILE` (default `trace`; any `--profile` value
+from section 5), `NCU_PRESET` (default `basic`), `ROW_TIMEOUT_S` (default 900), `MODAL_GPU`, `RUN_ID`.
+
+What to expect and what is not known yet:
+
+- **Triton is the default backend.** The image builds CUDA C++ extensions for `sm_100`, but this repo's
+  CUDA fixtures are validated only on `sm_90`, so a `cuda` row on the B200 is an experiment.
+- **nsys differs from the H200 image.** The one B200 capture so far (`nsight-perf-20261114T095539Z`, in
+  the Nsight Perf SDK image built from the same CUDA 13.5 base) used nsys 2026.4.0, not 2026.2.1. The
+  run records `nsys --version` and `ncu --version`; a tool the image lacks gives a row with
+  `diag/status` `unavailable`, not a failed run.
+- **Skips are recorded.** A backend with no honest fixture for a task, or a contract-only task, appears
+  in `progress.jsonl` with `skip` set (`no_honest_fixture_for_backend`, `contract_only_task`).
+- **Diagnostic only.** Timings under a profiler are not reward timings and are not comparable with the
+  H200 suite numbers. Nothing here is frozen-source: the run uses the working tree as uploaded.
+- **Binary captures stay out of git.** `fetch` downloads `capture.nsys-rep` and `capture.sqlite`;
+  `.gitignore` drops them under `artifacts/runs/profile-*/`. Commit only JSON and logs, after the
+  usual scan.
+
+`MODAL_GPU=H200 MODAL_PROFILE_ARCH=9.0 scripts/profile_b200.sh launch ...` runs the same matrix on the
+H200 with this image, which is useful only for an nsys-version comparison; the validated H200 path
+remains `cloud/modal_runtime.py --diagnose-kernels`.
 
 ## 6. Caveats
 
