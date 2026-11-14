@@ -50,11 +50,13 @@ class ProfileCommandTests(unittest.TestCase):
         self.assertEqual(added(nsys(("stages",))),
                          ["--trace=cuda,nvtx,cublas,cudnn,osrt", "--nvtx-capture=agenticrl_rollout"])
         self.assertEqual(added(nsys(("pytorch",))), ["--pytorch=functions-trace,autograd-shapes-nvtx"])
-        self.assertEqual(added(nsys(("backtrace",))), ["--cudabacktrace=all", "--python-backtrace=cuda"])
+        # Backtraces need CPU sampling, so this profile alone turns it on.
+        self.assertEqual(added(nsys(("backtrace",))),
+                         ["--sample=process-tree", "--cudabacktrace=all", "--python-backtrace=cuda"])
         self.assertEqual(added(nsys(("gpu-metrics",), device="3")), ["--gpu-metrics-devices=3"])
         self.assertEqual(added(nsys(("graphs",))), ["--cuda-graph-trace=node"])
         for argv in (nsys(("stages",)), nsys(("backtrace",))):
-            self.assertIn("--sample=none", argv)
+            self.assertEqual(argv[3], "--sample=process-tree" if "--cudabacktrace=all" in argv else "--sample=none")
             self.assertIn("--cpuctxsw=none", argv)
             self.assertEqual(argv[-len(WORKER) - 3:-len(WORKER)], ["--export=sqlite", "--output", str(OUT / "capture")])
 

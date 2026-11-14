@@ -198,7 +198,10 @@ def tool_command(tool, binary, worker, out, check, kernel, *, profiles=("trace",
         if "graphs" in profiles:
             extra.append("--cuda-graph-trace=node")
         # profiles=("trace",) reproduces the 2026-11-08 command byte for byte.
-        return [binary, "profile", f"--trace={trace}", "--sample=none", "--cpuctxsw=none",
+        # --cudabacktrace and --python-backtrace need CPU sampling enabled (Nsight
+        # Systems CLI guide); every other profile keeps sampling off.
+        sample = "process-tree" if "backtrace" in profiles else "none"
+        return [binary, "profile", f"--trace={trace}", f"--sample={sample}", "--cpuctxsw=none",
                 "--discard-environment=true", "--capture-range=nvtx",
                 f"--nvtx-capture={nsys_capture_range(profiles)}", "--capture-range-end=stop",
                 *extra, "--export=sqlite", "--output", str(out / "capture"), *worker]
