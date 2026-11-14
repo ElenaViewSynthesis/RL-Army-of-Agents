@@ -132,6 +132,11 @@ Upstream verification blocks `torch.nn.functional.*`, but nothing stops `model_n
 
 This environment closes that gap by reading the `torch.profiler` CUDA events it already collects and attributing each kernel to its source. The test suite includes the `reward-hack-torchop` fixture (`reward-hack-torchop-<backend>` for backend-specific variants): it passes correctness and must fail provenance. Historical artifacts retain their recorded `hack` / `hack-<backend>` case labels.
 
+> **Side note, working paper title:** *Reward Hacking in RL for GPU Kernel Generation through Speedups Without Authorship.*
+> A speedup without authorship is the exploit this section guards against: a policy reports a speedup that PyTorch or a vendor
+> library produced, while writing no kernel of its own. The provenance gate is the defence, and the `hack` controls are
+> the evidence: in the 2026-11-14 H200 runs they scored provenance 0.0 while the honest solutions scored 1.0.
+
 ## Configuration: GRPO, DAPO and CISPO
 
 `RolloutConfig` (`utils/config.py`) is pure Python and never imports Torch. Every field is a `--kebab-case` flag, and presets are applied *before* overrides, so `--algo dapo --clip-high 0.3` changes one knob only. `utils.config.ALGOS` lists the presets.
