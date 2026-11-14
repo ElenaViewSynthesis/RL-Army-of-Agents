@@ -31,6 +31,11 @@ TODO.md
 artifacts/runs/graph-trace-*/**/*.nsys-rep
 artifacts/runs/graph-trace-*/**/*.sqlite
 artifacts/runs/graph-trace-*/**/*.svg
+# Task profile runs (cloud/modal_profile.py): binary captures stay in the Modal volume
+artifacts/runs/profile-*/**/*.nsys-rep
+artifacts/runs/profile-*/**/*.sqlite
+artifacts/runs/profile-*/**/*.qdstrm
+artifacts/runs/profile-*/**/*.ncu-rep
 
 # GPU run downloads: keep JSON/logs and the source manifest, not copies of
 # the scaffolded task sources or the uploaded source tree (both duplicate
