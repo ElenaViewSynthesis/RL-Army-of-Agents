@@ -262,6 +262,41 @@ walkthrough" tab steps through the kernels themselves: the five-kernel attention
 `eagle_attention_committed` (load a key/value block, scores on tensor cores, online softmax, weighted values, store), the
 ancestor mask, the merge, and the top-k shortlist pipeline.
 
+![Animated flow of one tree-attention forward: ancestor table and visible mask, the committed and tree attention kernels writing split slots, and the merge kernel producing the output](assets/stage5/fig_stage5_attention_pipeline.svg)
+
+**Figure 5.** Tree attention: five kernels, one forward. Two kernels build the ancestor mask (`eagle_ancestor_table`,
+`eagle_visible_table`), two compute partial attention results over tiles of query rows (`eagle_attention_committed` for the
+committed window, `eagle_attention_tree` for the draft-tree tokens), and `eagle_attention_merge` combines the split slots
+into the output. Each kernel box shows its launch grid at the largest verify-attention case
+(`b32_n64_treeragged_hkv8_ratio8_d128_s32768_window32768_bfloat16`); the grids are worked out from the catalog shapes with
+the kernel's fixed-tile rule, not measured. The moving dots show where data flows, not how much.
+
+**`eagle_attention_committed`** is the heavy kernel. One program takes a tile of 128 query rows of a GQA group and one
+split of 4,096 committed keys, and walks the split in 64 blocks of 64 keys. For each block it:
+
+1. loads the key and value block once, for all 128 rows;
+2. scores Q·Kᵀ on the tensor cores (bf16 inputs, fp32 accumulation);
+3. masks keys past the end of the split and updates each row's running maximum;
+4. forms the block's probabilities against the new maximum and extends the normaliser (online softmax);
+5. adds P·V to the output accumulator on the tensor cores.
+
+The queries, the maximum, the normaliser and the accumulator stay in registers for the whole loop. At the end the program
+stores its weighted sum, maximum and normaliser into its own split slot, which the merge kernel later rescales to a common
+maximum and combines.
+
+**`eagle_attention_tree`** handles the draft-tree tokens, which are not all visible to every query: a query at a node may
+attend to that node and its ancestors, never to siblings or descendants. The kernel scores all N tree keys at once on the
+tensor cores, then applies one row of the `visible` mask per query row:
+
+```python
+logits = tl.dot(q, tl.trans(key)) * (D**-.5)
+seen = tl.load(Visible + (batch*N + node[:, None])*N + keys[None, :], valid[:, None] & real[None, :], other=0) != 0
+logits = tl.where(seen, logits, -float('inf'))
+```
+
+The dashboard's "Kernel walkthrough" tab animates this mask on a sample 7-node tree made up for that figure, not a catalog
+case. The largest cases use 64-node ragged trees.
+
 **H200 run `stage5-tuned-triton-acceptance-20261114T181907Z`** (largest case of each task, Triton, all fixtures; frozen
 source `artifacts/sources/stage5/tuned-triton-20261114T181907Z/`, no source mismatches; evidence in
 `artifacts/runs/stage5-tuned-triton-acceptance-20261114T181907Z/`): 10 of 11 rows passed, 797 s. The top-k fix then passed
