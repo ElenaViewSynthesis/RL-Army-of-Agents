@@ -42,7 +42,7 @@ Task contracts, shape grids and kernel techniques here come from public benchmar
 
 **Interactive reports** (Claude artifacts, built from the committed H200 evidence). To view them you must be signed in to [claude.ai](https://claude.ai); a signed-out visitor sees a sign-in page instead.
 
-- [Stage 5 kernel timings](https://claude.ai/artifact/Efm4o8YvrYm29LMbtM9sy2): per-task and per-backend kernel times against eager PyTorch and `torch.compile` for the nine EAGLE-4 tasks at their largest cases (run `task-stage5-gpu-acceptance-20261110T002043Z`).
+- [Stage 5 kernel timings](https://claude.ai/artifact/Efm4o8YvrYm29LMbtM9sy2): per-task and per-backend kernel times against eager PyTorch and `torch.compile` for the nine EAGLE-4 tasks at their largest cases (run `task-stage5-gpu-acceptance-20261110T002043Z`). A second tab, also at [`#tilegym`](https://claude.ai/artifact/Efm4o8YvrYm29LMbtM9sy2#tilegym), explains three TileGym v1.5.1 sources and where each lands in the porting brief: `mamba2.py` (the chunked Mamba-2 scan), `moe_align_block.py` (token-to-expert sorting, with its docstring example as an interactive diagram) and `cross_entropy.py` (compared feature by feature with `log_softmax_gather`). That tab is source reading, not H200 evidence.
 - [Stage 6 Multi-LoRA Report](https://claude.ai/artifact/RmbhAQDXMQBgdopF1dBzMp): the six multi-LoRA tasks, token patterns and ranks, a coverage matrix with a detail view for every suite row, Nsight timelines of CUDA-graph capture and replay, performance, and H200 time across all Stage 6 runs. A second page, reached by the arrow at its end or at [`#stages-7-8`](https://claude.ai/artifact/RmbhAQDXMQBgdopF1dBzMp#stages-7-8), covers the Stage 7 runs.
 
 Two charts from the Stage 6 report, as static images:
