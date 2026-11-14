@@ -42,7 +42,7 @@ Task contracts, shape grids and kernel techniques here come from public benchmar
 
 **Interactive reports** (Claude artifacts, built from the committed H200 evidence). To view them you must be signed in to [claude.ai](https://claude.ai); a signed-out visitor sees a sign-in page instead.
 
-- [Stage 5 kernel timings](https://claude.ai/artifact/Efm4o8YvrYm29LMbtM9sy2): per-task and per-backend kernel times against eager PyTorch and `torch.compile` for the nine EAGLE-4 tasks at their largest cases (run `task-stage5-gpu-acceptance-20261110T002043Z`). A second tab, also at [`#tilegym`](https://claude.ai/artifact/Efm4o8YvrYm29LMbtM9sy2#tilegym), explains three TileGym v1.5.1 sources and where each lands in the porting brief: `mamba2.py` (the chunked Mamba-2 scan), `moe_align_block.py` (token-to-expert sorting, with its docstring example as an interactive diagram) and `cross_entropy.py` (compared feature by feature with `log_softmax_gather`). That tab is source reading, not H200 evidence.
+- [Stage 5 kernel timings](https://claude.ai/artifact/Efm4o8YvrYm29LMbtM9sy2): per-task and per-backend kernel times against eager PyTorch and `torch.compile` for the nine EAGLE-4 tasks at their largest cases (run `task-stage5-gpu-acceptance-20261110T002043Z`). A second tab, also at [`#tilegym`](https://claude.ai/artifact/Efm4o8YvrYm29LMbtM9sy2#tilegym), explains three TileGym v1.5.1 sources and where each lands in the porting brief: `mamba2.py` (the chunked Mamba-2 scan), `moe_align_block.py` (token-to-expert sorting, with its docstring example as an interactive diagram) and `cross_entropy.py` (compared feature by feature with `log_softmax_gather`). That tab is source reading, not H200 evidence. Two more tabs cover the tuned Stage 5 Triton kernels: [`#tuning`](https://claude.ai/artifact/Efm4o8YvrYm29LMbtM9sy2#tuning) (what a tuned kernel does, the animated data path through the GPU, and before/after H200 times) and [`#walkthrough`](https://claude.ai/artifact/Efm4o8YvrYm29LMbtM9sy2#walkthrough) (animated flow diagrams of the committed code: the tree-attention pipeline, one program of `eagle_attention_committed` step by step, the ancestor mask on a made-up 7-node tree, the top-k pipeline, and each kernel's launch grid at the largest cases). The launch grids and read counts on those tabs are worked out from the catalog shapes, not measured.
 - [Stage 6 Multi-LoRA Report](https://claude.ai/artifact/RmbhAQDXMQBgdopF1dBzMp): the six multi-LoRA tasks, token patterns and ranks, a coverage matrix with a detail view for every suite row, Nsight timelines of CUDA-graph capture and replay, performance, and H200 time across all Stage 6 runs. A second page, reached by the arrow at its end or at [`#stages-7-8`](https://claude.ai/artifact/RmbhAQDXMQBgdopF1dBzMp#stages-7-8), covers the Stage 7 runs.
 
 Two charts from the Stage 6 report, as static images:
@@ -257,7 +257,10 @@ frame with the totals.
 kernel's launch grid, not a measurement: it counts how many programs request the same data. The L2 cache can absorb some of
 the untuned repeats, so the real traffic saving is smaller than this ratio. Both figures are written by
 `python -m scripts.make_stage5_tuning_figures`, which takes the shapes from `utils/task_catalog.py`. The interactive version
-is the "Tuning GPU kernels" tab of the [Stage 5 dashboard](https://claude.ai/artifact/Efm4o8YvrYm29LMbtM9sy2).
+is the "Tuning GPU kernels" tab of the [Stage 5 dashboard](https://claude.ai/artifact/Efm4o8YvrYm29LMbtM9sy2). Its "Kernel
+walkthrough" tab steps through the kernels themselves: the five-kernel attention pipeline, the inner loop of
+`eagle_attention_committed` (load a key/value block, scores on tensor cores, online softmax, weighted values, store), the
+ancestor mask, the merge, and the top-k shortlist pipeline.
 
 **H200 run `stage5-tuned-triton-acceptance-20261114T181907Z`** (largest case of each task, Triton, all fixtures; frozen
 source `artifacts/sources/stage5/tuned-triton-20261114T181907Z/`, no source mismatches; evidence in
