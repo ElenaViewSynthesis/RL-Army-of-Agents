@@ -668,6 +668,41 @@ python -m scripts.review_diagnostics <diagnostics-dir>
 python -m scripts.recover_nsys --input-dir <runs> --output-dir <dir> --importer <QdstrmImporter> --recovery-run-id <id>
 ```
 
+**Prerequisite: Nsight Systems (`nsys`) and Nsight Compute (`ncu`) must already be installed and on
+`PATH`.** The Modal images provide them; on your own Ubuntu host (or WSL) install them from NVIDIA's
+apt repository first. A tool that is missing gives a row with `diag/status` `unavailable`.
+
+```bash
+# Once: add NVIDIA's apt repository (Ubuntu 24.04 shown; change ubuntu2404 for another release)
+wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/cuda-keyring_1.1-1_all.deb
+sudo dpkg -i cuda-keyring_1.1-1_all.deb && sudo apt-get update
+
+# List the versions on offer, then install one of each
+apt-cache search nsight-systems
+apt-cache search nsight-compute
+sudo apt-get install -y nsight-systems-<version> nsight-compute-<version>
+
+# Check
+nsys --version && ncu --version
+```
+
+Pick a version at least as new as the one that wrote the captures you want to read (the H200 image
+pins nsys 2026.2.1; `nsight-systems-2026.3.2` and `nsight-compute-2026.3.0` were installed this way on
+Ubuntu 24.04 under WSL). The Nsight Systems package put `nsys` on `PATH`; the Nsight Compute package did
+not, so add its folder, using the version you installed (the folder name under `/opt/nvidia/nsight-compute/`):
+
+```bash
+ls /opt/nvidia/nsight-compute/                      # shows the installed version, e.g. 2026.3.0
+echo 'export PATH=/opt/nvidia/nsight-compute/2026.3.0:$PATH' >> ~/.bashrc && source ~/.bashrc
+```
+
+Type the real version number: a pasted `<version>` placeholder makes bash read `<` as a redirection
+and fail with `version: No such file or directory`. If `nsys` is not found either, add
+`/opt/nvidia/nsight-systems/2026.3.2/bin` the same way. Capturing needs an NVIDIA GPU; without one the tools
+can still read existing reports (`nsys stats`, `nsys export`, `ncu --import`). To read a saved
+`capture.sqlite` with neither tool installed, use `scripts/query_nsys.py`
+([NSIGHT_PROFILING.md](NSIGHT_PROFILING.md), section 4).
+
 One sequential H200 batch on Modal:
 
 ```bash
