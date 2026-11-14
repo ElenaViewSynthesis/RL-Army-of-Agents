@@ -6,6 +6,91 @@ import re
 import sqlite3
 from pathlib import Path
 
+# Kept literal (not imported from utils.diagnose) so review stays Torch-free and cheap.
+NVTX_RANGES = ("agenticrl_rollout", "agenticrl_warmup", "agenticrl_eager",
+               "agenticrl_compile", "agenticrl_generated")
+CAPTURE_RANGES = ("agenticrl_generated", "agenticrl_rollout")
+# Nsight Compute raw-page metric -> (summary field, required unit or None).
+NCU_FIELDS = (
+    ("gpu__time_duration.sum", "duration_us", "us"),
+    ("sm__throughput.avg.pct_of_peak_sustained_elapsed", "sm_throughput_pct", "%"),
+    # Name confirmed in the H200 basic-set export (ncu 2026.2.1, tests/fixtures/diagnostics/ncu-cuda-clock-none).
+    ("gpu__dram_throughput.avg.pct_of_peak_sustained_elapsed", "dram_throughput_pct", "%"),
+    ("sm__warps_active.avg.pct_of_peak_sustained_active", "achieved_occupancy_pct", "%"),
+    ("launch__registers_per_thread", "registers_per_thread", None),
+    ("launch__shared_mem_per_block_static", "shared_mem_static_bytes", "byte/block"),
+    ("launch__shared_mem_per_block_dynamic", "shared_mem_dynamic_bytes", "byte/block"),
+    ("launch__grid_size", "grid_size", None),
+    ("launch__block_size", "block_size", None),
+)
+NCU_SUMMARY_FIELDS = tuple(dict.fromkeys(field for _, field, _ in NCU_FIELDS))
+# Metrics a preset must yield, or the capture is rejected (fail closed).
+NCU_REQUIRED = {
+    "basic": (("gpu__time_duration.sum", "us"), ("sm__throughput.avg.pct_of_peak_sustained_elapsed", "%")),
+    "roofline": (("gpu__time_duration.sum", "us"), ("sm__throughput.avg.pct_of_peak_sustained_elapsed", "%")),
+    "launch": (("launch__grid_size", None), ("launch__block_size", None)),
+}
+# nsys GPU-metrics names (TARGET_INFO_GPU_METRICS.metricName) read for the summary.
+SM_ACTIVE_PREFIX = "SM Active"
+DRAM_PREFIXES = ("DRAM Read Bandwidth", "DRAM Write Bandwidth")
+
+
+def range_label(name):
+    return name[len("agenticrl_"):] if name.startswith("agenticrl_") else name
+
+
+def range_summary(ranges, kernels, agent_names, backend):
+    """Per NVTX range: kernel count, union busy time and time by provenance class.
+
+    ranges: {name: (start_ns, end_ns)}; kernels: (start_ns, end_ns, name).
+    A kernel belongs to a range when it starts and ends inside it. Classes come
+    from utils.provenance.classify_kernel by name; with no recorded authored
+    names (older reports) the class times are None.
+    """
+    from utils.provenance import classify_kernel
+    summary = {}
+    for name, (start, end) in ranges.items():
+        inside = [(a, b, kernel) for a, b, kernel in kernels if a >= start and b <= end]
+        classes = None
+        if agent_names is not None and backend is not None:
+            classes = {key: 0 for key in ("agent", "library", "torch", "memory")}
+            for a, b, kernel in inside:
+                classes[classify_kernel(kernel, agent_names, backend)] += b - a
+        summary[name] = {"kernel_count": len(inside),
+                         "busy_ns": union_duration([(a, b) for a, b, _ in inside]),
+                         **{f"{key}_ns": (classes[key] if classes is not None else None)
+                            for key in ("agent", "library", "torch", "memory")}}
+    return summary
+
+
+def gpu_metrics_means(db, start, end):
+    """Mean SM-active and DRAM-throughput percentages inside [start, end].
+
+    Reads GPU_METRICS(timestamp, metricId, value) joined to
+    TARGET_INFO_GPU_METRICS(metricId, metricName). DRAM throughput is read plus
+    write bandwidth percentage at each sample. Returns (None, None, reason)
+    when the tables or metrics are absent.
+    """
+    tables = {row[0] for row in db.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+    if not {"GPU_METRICS", "TARGET_INFO_GPU_METRICS"} <= tables:
+        return None, None, "gpu_metrics_tables_absent"
+    names = dict(db.execute("SELECT DISTINCT metricId, metricName FROM TARGET_INFO_GPU_METRICS").fetchall())
+    rows = db.execute("SELECT timestamp, metricId, value FROM GPU_METRICS WHERE timestamp>=? AND timestamp<=?",
+                      (start, end)).fetchall()
+    sm, dram = [], {}
+    for timestamp, metric, value in rows:
+        label = str(names.get(metric, ""))
+        if not isinstance(value, (int, float)) or not math.isfinite(value):
+            continue
+        if label.startswith(SM_ACTIVE_PREFIX):
+            sm.append(float(value))
+        elif label.startswith(DRAM_PREFIXES):
+            dram[timestamp] = dram.get(timestamp, 0.0) + float(value)
+    sm_mean = sum(sm) / len(sm) if sm else None
+    dram_mean = sum(dram.values()) / len(dram) if dram else None
+    reason = None if sm_mean is not None and dram_mean is not None else "gpu_metrics_samples_absent_in_range"
+    return sm_mean, dram_mean, reason
+
 
 def worker_matches(captured, mode, completed=True):
     worker, probe = captured.get("worker"), captured.get("gpu_probe")
@@ -160,30 +245,47 @@ def review_nsys(captured, directory, review):
         set_status(review, "failed", captured["result"]["diag/reason"])
         return
     tool = next(stage for stage in captured["stages"] if stage["label"] == "tool")
+    capture_flag = next((arg for arg in tool["argv"] if arg.startswith("--nvtx-capture=")), "")
+    capture_range = capture_flag[len("--nvtx-capture="):]
     if (tool["returncode"] != 0 or not capture_worker_matches(captured)
             or "--capture-range=nvtx" not in tool["argv"]
-            or "--nvtx-capture=agenticrl_generated" not in tool["argv"]
+            or capture_range not in CAPTURE_RANGES
             or "--discard-environment=true" not in tool["argv"]):
         set_status(review, "failed", "timeline_capture_evidence_incomplete")
         return
+    gpu_metrics_requested = any(arg.startswith("--gpu-metrics-devices=") for arg in tool["argv"])
     try:
         with sqlite3.connect(sqlite_path.resolve().as_uri() + "?mode=ro", uri=True) as db:
-            ranges = db.execute(
-                "SELECT n.start,n.end FROM NVTX_EVENTS n LEFT JOIN StringIds s ON n.textId=s.id "
-                "WHERE COALESCE(n.text,s.value)='agenticrl_generated'").fetchall()
-            kernels = db.execute(
+            named = db.execute(
+                "SELECT COALESCE(n.text,s.value),n.start,n.end FROM NVTX_EVENTS n "
+                "LEFT JOIN StringIds s ON n.textId=s.id").fetchall()
+            all_kernels = db.execute(
                 "SELECT k.start,k.end,k.deviceId,s.value FROM CUPTI_ACTIVITY_KIND_KERNEL k "
                 "LEFT JOIN StringIds s ON k.demangledName=s.id ORDER BY k.start,k.end").fetchall()
-            if len(ranges) != 1 or not kernels:
+            found = {}
+            for name, a, b in named:
+                if name in NVTX_RANGES:
+                    found.setdefault(name, []).append((a, b))
+            if (len(found.get("agenticrl_generated", [])) != 1
+                    or len(found.get(capture_range, [])) != 1
+                    or any(len(spans) != 1 for spans in found.values()) or not all_kernels):
                 set_status(review, "failed", "empty_or_ambiguous_timeline")
                 return
-            start, end = ranges[0]
-            if (not isinstance(start, int) or not isinstance(end, int) or end <= start
+            ranges = {name: spans[0] for name, spans in found.items()}
+            outer_start, outer_end = ranges[capture_range]
+            start, end = ranges["agenticrl_generated"]
+            if (any(not isinstance(a, int) or not isinstance(b, int) or b <= a
+                    for a, b in ranges.values())
+                    or not outer_start <= start < end <= outer_end
                     or any(not isinstance(a, int) or not isinstance(b, int) or b <= a
-                           or a < start or b > end or device != captured["worker"]["gpu_index"]
+                           or a < outer_start or b > outer_end or device != captured["worker"]["gpu_index"]
                            or not isinstance(name, str)
-                           for a, b, device, name in kernels)):
+                           for a, b, device, name in all_kernels)):
                 set_status(review, "failed", "invalid_or_out_of_range_kernel_events")
+                return
+            kernels = [kernel for kernel in all_kernels if kernel[0] >= start and kernel[1] <= end]
+            if not kernels:
+                set_status(review, "failed", "empty_or_ambiguous_timeline")
                 return
             api = db.execute(
                 "SELECT s.value,r.start,r.end,r.returnValue FROM CUPTI_ACTIVITY_KIND_RUNTIME r "
@@ -191,10 +293,25 @@ def review_nsys(captured, directory, review):
                 (start, end)).fetchall()
             memcpy_present = db.execute(
                 "SELECT 1 FROM sqlite_master WHERE type='table' AND name='CUPTI_ACTIVITY_KIND_MEMCPY'").fetchone()
+            metrics = gpu_metrics_means(db, start, end) if gpu_metrics_requested else None
     except sqlite3.Error as exc:
         review["observations"]["sqlite_error_type"] = type(exc).__name__
         set_status(review, "failed", "unsupported_timeline_schema")
         return
+    agent_names = captured.get("agent_kernel_names")
+    per_range = range_summary(ranges, [(a, b, name) for a, b, _, name in all_kernels],
+                              agent_names, captured["result"].get("diag/backend"))
+    review["observations"]["nvtx_ranges"] = {name: {"start_ns": a, "end_ns": b}
+                                             for name, (a, b) in ranges.items()}
+    review["observations"]["range_summary"] = per_range
+    for name, values in per_range.items():
+        for key, value in values.items():
+            review["result"][f"diag/nsys/{range_label(name)}/{key}"] = value
+    if metrics is not None:
+        sm_mean, dram_mean, reason = metrics
+        review["result"].update({"diag/nsys/generated/sm_active_pct_mean": sm_mean,
+                                 "diag/nsys/generated/dram_throughput_pct_mean": dram_mean,
+                                 "diag/nsys/gpu_metrics_reason": reason})
     busy = union_duration([(a, b) for a, b, _, _ in kernels])
     span = max(b for _, b, _, _ in kernels) - min(a for a, _, _, _ in kernels)
     review["raw_sha256"]["capture.sqlite"] = hashlib.sha256(sqlite_path.read_bytes()).hexdigest()
@@ -232,6 +349,8 @@ def review_ncu(captured, directory, review):
     tool, metrics = stages.get("tool", {}), stages.get("metrics", {})
     argv = tool.get("argv", [])
     selector = review["result"].get("diag/kernel_selector")
+    # Reports from before presets existed ran --set basic.
+    preset = review["result"].get("diag/ncu_preset") or "basic"
     if (tool.get("returncode") != 0 or metrics.get("returncode") != 0
             or argument(argv, "--clock-control") != "none"
             or argument(argv, "--launch-count") != "1"
@@ -265,21 +384,73 @@ def review_ncu(captured, directory, review):
         return
     fields = {name: {"value": value if value else None, "unit": unit if unit else None}
               for name, value, unit in zip(header[split:], values[split:], units[split:])}
-    required = (("gpu__time_duration.sum", "us"), ("sm__throughput.avg.pct_of_peak_sustained_elapsed", "%"))
-    for name, unit in required:
+    if preset not in NCU_REQUIRED:
+        set_status(review, "failed", "unknown_ncu_preset")
+        return
+    for name, unit in NCU_REQUIRED[preset]:
         metric = fields.get(name, {})
-        try:
-            value = float(metric.get("value"))
-        except (TypeError, ValueError):
-            value = float("nan")
-        if (metric.get("unit") != unit or not math.isfinite(value) or value < 0
+        value = number(metric.get("value"))
+        if (value is None or value < 0 or (unit is not None and metric.get("unit") != unit)
                 or name == "gpu__time_duration.sum" and value <= 0):
             set_status(review, "failed", "required_counter_metric_unavailable")
             return
+    label = kernel_label(metadata["Kernel Name"], captured.get("agent_kernel_names"))
+    summary = ncu_summary(fields)
     review["observations"]["profiles"] = [{"metadata": metadata, "metrics": fields}]
+    review["observations"]["ncu_summary"] = {label: summary}
     review["result"].update({"diag/kernel_count": 1, "diag/ncu_metric_fields": len(fields),
-                             "diag/selector_matched": True})
+                             "diag/selector_matched": True, "diag/ncu_kernel": label,
+                             **{f"diag/ncu/{label}/{key}": value for key, value in summary.items()}})
+    write_ncu_markdown(directory / "ncu-summary.md", label, metadata, summary, preset)
+    review["result"]["diag/ncu_summary_md"] = str(directory / "ncu-summary.md")
     set_status(review, "passed", "selected_kernel_counters_captured")
+
+
+def number(value):
+    try:
+        result = float(str(value).replace(",", "")) if value not in (None, "") else None
+    except (TypeError, ValueError):
+        return None
+    return result if result is not None and math.isfinite(result) else None
+
+
+def kernel_label(name, agent_names):
+    """The authored function name found in the profiled kernel's name, else its base name."""
+    for agent in sorted(agent_names or (), key=len, reverse=True):
+        if agent and re.search(r"(?<![A-Za-z0-9_])" + re.escape(agent) + r"(?![A-Za-z0-9])", name):
+            return agent
+    base = re.split(r"[(<]", name, maxsplit=1)[0].strip().split("::")[-1].split()[-1:] or ["kernel"]
+    return re.sub(r"[^A-Za-z0-9_]", "_", base[0]) or "kernel"
+
+
+def ncu_summary(fields):
+    """One kernel's summary values from the raw page; unparseable or wrong-unit values are null."""
+    summary = {key: None for key in NCU_SUMMARY_FIELDS}
+    for metric, key, unit in NCU_FIELDS:
+        entry = fields.get(metric)
+        if entry is None or summary[key] is not None:
+            continue
+        if unit is not None and entry.get("unit") != unit:
+            continue
+        value = number(entry.get("value"))
+        if value is None or value < 0:
+            continue
+        summary[key] = int(value) if key in ("registers_per_thread", "grid_size", "block_size",
+                                             "shared_mem_static_bytes", "shared_mem_dynamic_bytes") \
+            and value.is_integer() else value
+    return summary
+
+
+def write_ncu_markdown(path, label, metadata, summary, preset):
+    rows = "\n".join(f"| `{key}` | {'null' if value is None else value} |" for key, value in summary.items())
+    path.write_text(
+        f"# Nsight Compute summary: `{label}`\n\n"
+        f"Preset `{preset}`; one launch (`--launch-count 1`), clocks not locked "
+        f"(`--clock-control none`). Diagnostic only; never a reward input.\n\n"
+        f"Kernel: `{metadata['Kernel Name']}` (device {metadata['Device']}, CC {metadata['CC']}).\n\n"
+        f"| Field | Value |\n|---|---|\n{rows}\n\n"
+        "Source: `ncu --import capture.ncu-rep --csv --page raw` (metrics.stdout.log). "
+        "Null means the metric was absent from this preset or not parseable.\n")
 
 
 def review_report(path):

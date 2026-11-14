@@ -674,6 +674,16 @@ forward in a benchmark process, not flushed hardware caches.
 | `result:task/minimum_cublas_fraction` | table | task | float | ratio | no required performance gate | fixture acceptance/config | task suite |
 | `result:task/cublas_fraction` | table | task | float | ratio | ceiling not measured | diagnostic | task suite |
 | `result:task/performance_accepted` | table | task | bool | 1 | ceiling not measured/not required | fixture acceptance | task suite |
+| `result:ncu/status` | table | ncu | str | diagnostic status | `--ncu` not requested | diagnostic; never a reward input | task suite |
+| `result:ncu/reason` | table | ncu | str | reason | `--ncu` not requested | diagnostic | task suite |
+| `result:ncu/preset` | table | ncu | str | ncu preset | `--ncu` not requested | diagnostic config | task suite |
+| `result:ncu/report_json` | table | ncu | str | path | skipped row or no report | diagnostic | task suite |
+| `result:ncu/kernel` | table | ncu | str | authored kernel name | skipped row or capture not reviewed | diagnostic | task suite |
+| `result:ncu/*/*` | table | ncu | float | per field: us, %, count, bytes | metric absent from preset, unparseable or wrong unit | diagnostic; never a reward input | task suite |
+| `result:sanitizer/*/status` | table | sanitizer | str | diagnostic status | `--sanitizer` not requested | diagnostic; never a reward input | task suite |
+| `result:sanitizer/*/reason` | table | sanitizer | str | reason | `--sanitizer` not requested | diagnostic | task suite |
+| `result:sanitizer/*/errors` | table | sanitizer | int | errors | skipped row or no recognised summary | diagnostic | task suite |
+| `result:sanitizer/*/report_json` | table | sanitizer | str | path | skipped row or no report | diagnostic | task suite |
 | `result:suite/task` | table | suite | str | task id | never for suite rows | identity | task suite |
 | `result:suite/case` | table | suite | str | case id | never for suite rows | identity | task suite |
 | `result:suite/stage` | table | suite | int | curriculum stage | never for suite rows | identity | task suite |

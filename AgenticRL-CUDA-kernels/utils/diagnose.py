@@ -18,12 +18,61 @@ from utils.rollout_env import bootstrap_script
 TOOLS = {"sanitizer": "compute-sanitizer", "nsys": "nsys", "ncu": "ncu"}
 CHECKS = ("memcheck", "racecheck", "synccheck", "initcheck")
 RANGE = "agenticrl_generated"
+# NVTX ranges pushed by utils.diagnostic_worker (Part 2 of NSIGHT_profiling_task.md).
+# RANGE keeps its name and content: exactly one generated forward.
+ROLLOUT_RANGE = "agenticrl_rollout"
+WARMUP_RANGE = "agenticrl_warmup"
+EAGER_RANGE = "agenticrl_eager"
+COMPILE_RANGE = "agenticrl_compile"
+NVTX_RANGES = (ROLLOUT_RANGE, WARMUP_RANGE, EAGER_RANGE, COMPILE_RANGE, RANGE)
 ENVIRONMENT = (
     "PATH", "HOME", "LD_LIBRARY_PATH", "LIBRARY_PATH", "CPATH", "CPLUS_INCLUDE_PATH",
     "CUDA_HOME", "CUDA_PATH", "CUDA_VISIBLE_DEVICES", "CUDA_DEVICE_ORDER",
     "NVIDIA_VISIBLE_DEVICES", "NVIDIA_DRIVER_CAPABILITIES", "TORCH_CUDA_ARCH_LIST",
     "MAX_JOBS", "TMPDIR", "TMP", "TEMP", "LANG", "LC_ALL", "LC_CTYPE", "TZ",
+    # A task workdir's model.py reads its trusted case from these; absent for AXPBY.
+    "CUDA_AGENT_TASK", "CUDA_AGENT_TASK_CASE",
 )
+
+# Named Nsight Systems profiles; tool_command composes them in a fixed order.
+# Costs are expectations to confirm on the H200, not measurements.
+NSYS_PROFILES = {
+    # Today's validated capture (20261108T200118Z) of exactly one generated
+    # forward. Cost: the baseline.
+    "trace": "One generated forward under CUDA and NVTX tracing.",
+    # The whole diagnostic run (warm-up, eager, torch.compile, generated) plus
+    # cuBLAS, cuDNN and OS-runtime tracing. Cost: one torch.compile, a longer
+    # capture window and per-call library records; larger reports.
+    "stages": "Whole diagnostic run with cuBLAS, cuDNN and OS-runtime tracing.",
+    # nsys's own NVTX injection around PyTorch functions and autograd ops.
+    # Cost: host overhead per op; needs a PyTorch build nsys can hook.
+    "pytorch": "PyTorch function and autograd-shape NVTX ranges injected by nsys.",
+    # Host stacks for every CUDA call and the Python line that launched it.
+    # Cost: high (stack unwinding per call); never on a timed row.
+    "backtrace": "CUDA and Python backtraces for every kernel launch; high overhead.",
+    # Hardware metric sampling of the assigned device only. Cost: a sampling
+    # stream; may need counter permission on some hosts.
+    "gpu-metrics": "SM, Tensor Core and DRAM activity over time for the assigned GPU.",
+    # Per-node kernels inside cudaGraphLaunch. Cost: small.
+    "graphs": "Per-node kernel records inside CUDA graph launches.",
+}
+NCU_PRESETS = {
+    "basic": ("--set", "basic"),
+    "roofline": ("--section", "SpeedOfLight", "--section", "MemoryWorkloadAnalysis",
+                 "--section", "Occupancy"),
+    "launch": ("--section", "LaunchStats"),
+}
+
+
+def parse_profiles(value):
+    names = tuple(dict.fromkeys(part.strip() for part in str(value).split(",") if part.strip()))
+    if not names or set(names) - set(NSYS_PROFILES):
+        raise ValueError(f"Unknown or empty nsys profile list: {value!r}")
+    return names
+
+
+def nsys_capture_range(profiles):
+    return ROLLOUT_RANGE if "stages" in profiles else RANGE
 
 
 def diagnostic_environment(workdir, tool):
@@ -104,24 +153,71 @@ def kernel_selector(workdir, backend, kernel):
     return kernel
 
 
-def tool_command(tool, binary, worker, out, check, kernel):
+def gpu_metrics_device(env, run=subprocess.run):
+    """nsys GPU index of the assigned device, resolved as utils.gpu_lock does.
+
+    The logical ordinal in CUDA_AGENT_DEVICE is mapped through
+    CUDA_VISIBLE_DEVICES; a UUID token is resolved to its nvidia-smi index.
+    Returns None when the device cannot be resolved; never a guessed 0.
+    """
+    from utils.gpu_lock import selected_device_token
+    token = selected_device_token(env)
+    if token is None:
+        return None
+    if token.isdigit():
+        return token
+    binary = shutil.which("nvidia-smi", path=env.get("PATH"))
+    if binary is None:
+        return None
+    try:
+        query = run([binary, "--query-gpu=index", "--format=csv,noheader", "-i", token],
+                    env=env, capture_output=True, text=True, timeout=5, check=True)
+    except (OSError, subprocess.SubprocessError):
+        return None
+    rows = [row.strip() for row in query.stdout.splitlines() if row.strip()]
+    return rows[0] if len(rows) == 1 and rows[0].isdigit() else None
+
+
+def tool_command(tool, binary, worker, out, check, kernel, *, profiles=("trace",), preset="basic",
+                 metrics_device=None):
     if tool == "sanitizer":
         return [binary, "--tool", check, "--error-exitcode", "86", "--target-processes",
                 "application-only", "--log-file", str(out / "sanitizer.log"), *worker]
     if tool == "nsys":
-        return [binary, "profile", "--trace=cuda,nvtx", "--sample=none", "--cpuctxsw=none",
+        profiles = parse_profiles(",".join(profiles))
+        trace = "cuda,nvtx,cublas,cudnn,osrt" if "stages" in profiles else "cuda,nvtx"
+        extra = []
+        if "pytorch" in profiles:
+            extra.append("--pytorch=functions-trace,autograd-shapes-nvtx")
+        if "backtrace" in profiles:
+            extra += ["--cudabacktrace=all", "--python-backtrace=cuda"]
+        if "gpu-metrics" in profiles:
+            if metrics_device is None:
+                raise ValueError("gpu-metrics needs the assigned device index")
+            extra.append(f"--gpu-metrics-devices={metrics_device}")
+        if "graphs" in profiles:
+            extra.append("--cuda-graph-trace=node")
+        # profiles=("trace",) reproduces the 2026-11-08 command byte for byte.
+        return [binary, "profile", f"--trace={trace}", "--sample=none", "--cpuctxsw=none",
                 "--discard-environment=true", "--capture-range=nvtx",
-                f"--nvtx-capture={RANGE}", "--capture-range-end=stop",
-                "--export=sqlite", "--output", str(out / "capture"), *worker]
+                f"--nvtx-capture={nsys_capture_range(profiles)}", "--capture-range-end=stop",
+                *extra, "--export=sqlite", "--output", str(out / "capture"), *worker]
+    if preset not in NCU_PRESETS:
+        raise ValueError(f"Unknown Nsight Compute preset {preset!r}")
     return [binary, "--clock-control", "none", "--nvtx", "--nvtx-include", RANGE + "/", "--kernel-name-base", "demangled",
-            "--kernel-name", "regex:" + kernel, "--launch-count", "1", "--set", "basic",
+            "--kernel-name", "regex:" + kernel, "--launch-count", "1", *NCU_PRESETS[preset],
             "--export", str(out / "capture"), *worker]
 
 
 def run_diagnostic(tool, workdir, out, *, backend="auto", check="memcheck", kernel=None,
-                   timeout_s=600, seed=0, negative_control=False):
+                   timeout_s=600, seed=0, negative_control=False, profile="trace", preset="basic"):
     if tool not in TOOLS or check not in CHECKS or not math.isfinite(timeout_s) or timeout_s <= 0:
         raise ValueError("Known tool/check and positive timeout required")
+    profiles = parse_profiles(profile)
+    if profiles != ("trace",) and tool != "nsys":
+        raise ValueError("--profile applies only to Nsight Systems")
+    if preset not in NCU_PRESETS or (preset != "basic" and tool != "ncu"):
+        raise ValueError("--preset applies only to Nsight Compute and must be a known preset")
     if negative_control and (tool != "sanitizer" or check != "memcheck" or backend != "triton"):
         raise ValueError("Invalid-access control is restricted to Triton sanitizer memcheck")
     if kernel is not None and tool != "ncu":
@@ -140,12 +236,17 @@ def run_diagnostic(tool, workdir, out, *, backend="auto", check="memcheck", kern
     env = diagnostic_environment(workdir, tool)
     report = {"schema": "gpu-diagnostics-v1", "diagnostic_only": True, "stages": [],
               "sources": source_hashes(workdir), "worker": None, "gpu_probe": None}
+    if tool in ("nsys", "ncu"):
+        # Lets the reviewer split kernel time into authored/library/torch by name.
+        report["agent_kernel_names"] = sorted(agent_kernel_names(workdir, backend))
     result = {"diag/tool": tool, "diag/check": check if tool == "sanitizer" else None,
               "diag/backend": backend, "diag/status": "failed", "diag/reason": None,
               "diag/diagnostic_only": True, "diag/evidence_reviewed": False,
               "diag/negative_control": negative_control, "diag/seed": seed,
               "diag/clock_control": "none" if tool == "ncu" else None,
               "diag/kernel_selector": None, "diag/gpu_uuid": None, "diag/gpu_name": None,
+              "diag/nsys_profiles": ",".join(profiles) if tool == "nsys" else None,
+              "diag/ncu_preset": preset if tool == "ncu" else None,
               "diag/reported_errors": None, "diag/kernel_count": None,
               "diag/wall_s": None, "diag/report_json": str(out / "report.json")}
     for name in ("diagnose.py", "diagnostic_worker.py", "diagnostic_fault.py"):
@@ -201,10 +302,19 @@ def run_diagnostic(tool, workdir, out, *, backend="auto", check="memcheck", kern
     if tool == "ncu":
         result["diag/kernel_selector"] = kernel
     mode = "invalid-access" if negative_control else "verify" if tool == "sanitizer" else "capture"
-    worker = [sys.executable, "-c", bootstrap_script(
-        "utils.diagnostic_worker", ["--mode", mode, "--backend", backend, "--seed", str(seed),
-                                    "--evidence", str(out / "worker.json")], workdir)]
-    stage = execute(tool_command(tool, binary, worker, out, check, result["diag/kernel_selector"]), "tool")
+    worker_args = ["--mode", mode, "--backend", backend, "--seed", str(seed),
+                   "--evidence", str(out / "worker.json")]
+    if tool == "nsys" and "stages" in profiles:
+        worker_args.append("--with-compile")
+    worker = [sys.executable, "-c", bootstrap_script("utils.diagnostic_worker", worker_args, workdir)]
+    metrics_device = None
+    if tool == "nsys" and "gpu-metrics" in profiles:
+        metrics_device = gpu_metrics_device(env)
+        if metrics_device is None:
+            return finish("unavailable", "gpu_metrics_device_unresolved")
+        result["diag/nsys_gpu_metrics_device"] = metrics_device
+    stage = execute(tool_command(tool, binary, worker, out, check, result["diag/kernel_selector"],
+                                 profiles=profiles, preset=preset, metrics_device=metrics_device), "tool")
     report["worker"] = worker_record = load_record(out / "worker.json")
     if stage["timed_out"]:
         return finish("timeout", "tool_timeout")
@@ -240,6 +350,10 @@ def main():
     parser.add_argument("--timeout-s", type=float, default=600)
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--negative-control", action="store_true")
+    parser.add_argument("--profile", default="trace",
+                        help="nsys only: comma-separated profiles: " + ",".join(NSYS_PROFILES))
+    parser.add_argument("--preset", choices=tuple(NCU_PRESETS), default="basic",
+                        help="ncu only: basic (validated), roofline or launch")
     args = parser.parse_args()
     if args.tool == "review":
         if args.report is None:
@@ -254,12 +368,21 @@ def main():
         parser.error("--timeout-s must be positive")
     if args.kernel is not None and args.tool != "ncu":
         parser.error("--kernel requires ncu")
+    try:
+        profiles = parse_profiles(args.profile)
+    except ValueError as exc:
+        parser.error(str(exc))
+    if profiles != ("trace",) and args.tool != "nsys":
+        parser.error("--profile requires nsys")
+    if args.preset != "basic" and args.tool != "ncu":
+        parser.error("--preset requires ncu")
     if args.negative_control and (args.tool != "sanitizer" or args.check != "memcheck"
                                  or args.backend != "triton"):
         parser.error("--negative-control requires sanitizer memcheck and --backend triton")
     result = run_diagnostic(args.tool, args.workdir, args.out, backend=args.backend, check=args.check,
                             kernel=args.kernel, timeout_s=args.timeout_s, seed=args.seed,
-                            negative_control=args.negative_control)
+                            negative_control=args.negative_control, profile=args.profile,
+                            preset=args.preset)
     print(json.dumps(result, allow_nan=False))
     return 1 if result["diag/status"] in ("failed", "timeout") else 0
 

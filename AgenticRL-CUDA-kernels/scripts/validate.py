@@ -32,7 +32,13 @@ def main():
     parser.add_argument("--benchmark", action="store_true", help="Opt-in diagnostic benchmark for the suite")
     parser.add_argument("--cuda-graphs", action="store_true", help="Diagnostic graph capture and replay; requires --benchmark")
     parser.add_argument("--cold-start", action="store_true", help="Separate first-forward diagnostic sample")
+    parser.add_argument("--ncu", choices=("basic", "roofline", "launch"),
+                        help="Suite only: Nsight Compute preset run on honest rows after evaluation (diagnostic)")
+    parser.add_argument("--sanitizer", help="Suite only: comma-separated Compute Sanitizer checks on honest rows "
+                        "(memcheck, racecheck, synccheck, initcheck; diagnostic)")
     args = parser.parse_args()
+    if (args.ncu or args.sanitizer) and not args.suite:
+        parser.error("--ncu and --sanitizer apply only to --suite runs")
     if args.cuda_graphs and not args.benchmark:
         parser.error("--cuda-graphs requires --benchmark")
     if args.cuda_graphs and not args.suite:
@@ -48,7 +54,8 @@ def main():
                                case_set=args.case_set, purpose=args.purpose,
                                backends=args.backends.split(",") if args.backends else None,
                                variants=args.fixtures.split(","), timeout_s=args.timeout_s,
-                               benchmark=args.benchmark, cold_start=args.cold_start, cuda_graphs=args.cuda_graphs)
+                               benchmark=args.benchmark, cold_start=args.cold_start, cuda_graphs=args.cuda_graphs,
+                               ncu=args.ncu, sanitizer=tuple(args.sanitizer.split(",")) if args.sanitizer else ())
         except (ValueError, FileExistsError) as exc:
             parser.error(str(exc))
         print(json.dumps({"suite/status": report["status"], "suite/output": output,

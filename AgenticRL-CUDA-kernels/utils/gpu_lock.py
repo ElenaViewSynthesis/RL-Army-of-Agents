@@ -22,6 +22,24 @@ def _has_cuda_driver():
     return any(Path(name).exists() for name in ('/dev/nvidiactl', '/dev/nvidia0', '/dev/dxg'))
 
 
+def selected_device_token(env):
+    """The CUDA_VISIBLE_DEVICES token (index or UUID) of the child's logical
+    CUDA ordinal, as device_identity resolves it; None for CPU, hidden devices
+    or an ordinal outside CUDA_VISIBLE_DEVICES."""
+    device = env.get("CUDA_AGENT_DEVICE", "cuda")
+    visible = env.get("CUDA_VISIBLE_DEVICES")
+    if device.startswith("cpu") or visible is not None and visible.strip() in ("", "-1"):
+        return None
+    try:
+        ordinal = int(device.split(":", 1)[1]) if ":" in device else 0
+    except ValueError:
+        return None
+    tokens = [token.strip() for token in visible.split(",")] if visible is not None else None
+    if tokens is not None and not 0 <= ordinal < len(tokens):
+        return None
+    return tokens[ordinal] if tokens is not None else str(ordinal)
+
+
 def device_identity(env):
     """Resolve the child's logical CUDA ordinal through CUDA_VISIBLE_DEVICES."""
     device = env.get("CUDA_AGENT_DEVICE", "cuda")

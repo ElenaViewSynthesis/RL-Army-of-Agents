@@ -104,6 +104,73 @@ def candidate_sources(path):
 
 
 NOT_APPLICABLE_PREFIX = "control_not_applicable_"
+DIAGNOSTIC_PREFIXES = ("ncu/", "sanitizer/")
+
+
+def attach_diagnostics(result, workdir, *, device="cuda", ncu=None, sanitizer=(), config=None,
+                       run=None, lock=None):
+    """Opt-in Nsight Compute / Compute Sanitizer fields for one evaluated suite row.
+
+    Runs utils.diagnose.run_diagnostic in the row's own workdir, after the row's
+    normal evaluation, under the per-GPU measurement lock, on honest rows only.
+    Adds only ``ncu/*`` and ``sanitizer/*`` keys; never touches reward, env or
+    suite fields. Skips with a reason on CPU, for non-honest fixtures and for rows
+    that were never scaffolded. Diagnostic only; never a reward input.
+    """
+    if not ncu and not sanitizer:
+        return result
+    config = config or RolloutConfig()
+    if run is None:
+        from utils.diagnose import run_diagnostic as run
+    if lock is None:
+        lock = MeasurementLock
+    jobs = ([("ncu", None)] if ncu else []) + [("sanitizer", check) for check in sanitizer]
+
+    def prefix(tool, check):
+        return "ncu/" if tool == "ncu" else f"sanitizer/{check}/"
+
+    def skip(reason):
+        for tool, check in jobs:
+            result.update({prefix(tool, check) + "status": "skipped", prefix(tool, check) + "reason": reason})
+        if ncu:
+            result["ncu/preset"] = ncu
+        return result
+
+    workdir = Path(workdir)
+    if device != "cuda":
+        return skip("cpu_device")
+    if result.get("suite/fixture") != "honest":
+        return skip("not_honest_fixture")
+    if not (workdir / "model_new.py").is_file():
+        return skip("row_not_evaluated")
+    with case_environment(result["suite/task"], result["suite/case"], device):
+        env = os.environ.copy()
+        with lock(env, config.gpu_lock, config.gpu_lock_timeout_s) as held:
+            if held.busy:
+                return skip("gpu_busy")
+            for tool, check in jobs:
+                out = workdir / (f"diag-ncu-{ncu}" if tool == "ncu" else f"diag-sanitizer-{check}")
+                kwargs = {"backend": result["suite/backend"], "timeout_s": config.timeout_s}
+                if tool == "ncu":
+                    kwargs["preset"] = ncu
+                else:
+                    kwargs["check"] = check
+                try:
+                    diag = run(tool, workdir, out, **kwargs)
+                except (OSError, ValueError) as exc:
+                    diag = {"diag/status": "failed", "diag/reason": f"{type(exc).__name__}: {exc}"[:256]}
+                key = prefix(tool, check)
+                result.update({key + "status": diag.get("diag/status"), key + "reason": diag.get("diag/reason"),
+                               key + "report_json": diag.get("diag/review_json") or diag.get("diag/report_json")})
+                if tool == "ncu":
+                    label = diag.get("diag/ncu_kernel")
+                    result.update({"ncu/preset": ncu, "ncu/kernel": label})
+                    for field, value in diag.items():
+                        if label and field.startswith(f"diag/ncu/{label}/"):
+                            result["ncu/" + field[len("diag/ncu/"):]] = value
+                else:
+                    result[key + "errors"] = diag.get("diag/reported_errors")
+    return result
 
 
 def evaluate_case(task_name, case_id, backend, variant, destination, *, device="cuda",
@@ -310,7 +377,8 @@ def select_tasks(names):
 
 
 def run_suite(names, output, *, case_set="smoke", backends=None, variants=VARIANTS,
-              device="cuda", purpose="eval", timeout_s=600, benchmark=False, cold_start=False, cuda_graphs=False):
+              device="cuda", purpose="eval", timeout_s=600, benchmark=False, cold_start=False, cuda_graphs=False,
+              ncu=None, sanitizer=()):
     names = select_tasks(names)
     if not names or not variants or set(variants) - set((*VARIANTS, *EXTRA_VARIANTS, "all")):
         raise ValueError("Task and fixture selections must be nonempty and valid")
@@ -320,6 +388,10 @@ def run_suite(names, output, *, case_set="smoke", backends=None, variants=VARIAN
         raise ValueError("cuda_graphs requires the diagnostic benchmark")
     if cold_start and not benchmark:
         raise ValueError("cold_start requires the diagnostic benchmark")
+    from utils.diagnose import CHECKS, NCU_PRESETS
+    sanitizer = tuple(sanitizer or ())
+    if ncu is not None and ncu not in NCU_PRESETS or set(sanitizer) - set(CHECKS):
+        raise ValueError("Unknown Nsight Compute preset or sanitizer check")
     for name in names:
         get_task(name)
         validate_usage(name, purpose)
@@ -343,6 +415,8 @@ def run_suite(names, output, *, case_set="smoke", backends=None, variants=VARIAN
                     destination = root / name / item.id / backend / variant
                     result = evaluate_case(name, item.id, backend, variant, destination,
                                            device=device, purpose=purpose, cfg=config, cold_start=cold_start)
+                    attach_diagnostics(result, destination, device=device, ncu=ncu,
+                                       sanitizer=sanitizer, config=config)
                     records.append(result)
                     with (root / "progress.jsonl").open("a") as stream:
                         stream.write(json.dumps(result, allow_nan=False) + "\n")
