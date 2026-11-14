@@ -221,6 +221,60 @@ Filled circles are eager PyTorch, hollow circles `torch.compile`, squares the CU
 The gap between a solution and the two baselines shows the headroom: `torch.compile` beats every reference solution on the 32k attention tasks and top-k.
 All 71 suite rows passed in run `task-stage5-gpu-acceptance-20261110T002043Z`; data, LaTeX table and captions are in [`assets/stage5/`](assets/stage5/). An interactive dashboard of the same timings (per task and backend, against eager and `torch.compile`) is published as a Claude artifact, [Stage 5 kernel timings](https://claude.ai/artifact/Efm4o8YvrYm29LMbtM9sy2) (viewing requires being signed in to claude.ai). It reads the CSV in `assets/stage5/` as a fixed dataset.
 
+#### Stage 5: tuned Triton solutions (H200, 2026-11-14)
+
+The figures above describe the untuned reference solutions in run `task-stage5-gpu-acceptance-20261110T002043Z`.
+The Triton solutions of the three slowest tasks have since been rewritten with the usual GPU tuning techniques; the CUDA C++
+solutions are unchanged.
+
+- **Tree attention** (`eagle_tree_verify_attention`, `eagle_tree_row_attention`; one shared kernel). One program now takes
+  a tile of up to 128 query rows that share a KV head (the GQA group's heads times the tree nodes are contiguous in Q),
+  so each committed key/value tile is loaded once per tile instead of once per query row: 512 times fewer loads per head
+  group on the largest case. Scores and P·V run as `tl.dot` on bf16 operands with fp32 accumulation (tensor cores); the
+  softmax is fp32 and online. The committed window is split across programs, the tree tokens get their own split with the
+  ancestor mask, and the existing merge kernel combines the splits. The ancestor table is computed exactly as before.
+  Tile sizes are fixed per shape, not autotuned.
+- **Candidate top-k** (`eagle_candidate_topk`). Vocabulary scoring is one tiled kernel that reads the 151,936 × 4,096
+  weight matrix once for all batch rows, instead of once per batch row, using `tl.dot` on bf16 with fp32 accumulation.
+
+**H200 run `stage5-tuned-triton-acceptance-20261114T181907Z`** (largest case of each task, Triton, all fixtures; frozen
+source `artifacts/sources/stage5/tuned-triton-20261114T181907Z/`, no source mismatches; evidence in
+`artifacts/runs/stage5-tuned-triton-acceptance-20261114T181907Z/`): 10 of 11 rows passed, 797 s. Reward-profiler device
+time per call:
+
+| Task (largest case) | Untuned Triton | Tuned Triton | Eager | `torch.compile` | Reward reason |
+|---|---|---|---|---|---|
+| `eagle_tree_verify_attention` (s = window = 32,768) | 1,035,069 µs | **6,073 µs** | 266,253 µs | 96,080 µs | `faster_than_both` |
+| `eagle_tree_row_attention` (s = 32,768, window 4,096) | 134,464 µs | **1,106 µs** | 30,755 µs | 11,014 µs | `faster_than_both` |
+| `eagle_candidate_topk` (b32, v151,936, k16) | 9,008 µs | failed verification | — | — | `verification` |
+
+Untuned times are from `task-stage5-gpu-acceptance-20261110T002043Z`. Verify attention is now 170× faster than its untuned
+version, 44× faster than eager and 16× faster than `torch.compile`; row attention is 122×, 28× and 10× faster. Both have
+provenance 1.0 (authored kernels only), and their hack, wrong and wrong-ancestor controls failed as required.
+
+**Top-k failed on 2 of 512 IDs**, both in batch row 12 (greatest difference at rank 11), the near-tie risk noted before the
+run: tensor cores add the products in a different order from the reference, so two near-equal vocabulary scores swapped.
+Its hack and wrong controls behaved as required. **Fix (written, not yet run on the H200):** the tensor-core scores now only
+pick a shortlist of 4 × k candidates per row; the final order comes from the exact fp32 rescores of that shortlist, the
+same computation the untuned scorer used, and exact ties still break by the lower token ID. It passes the CPU probes; it
+needs one more H200 row.
+
+**CPU checks.** Both kernels match the reference in the Triton interpreter on new probes (several committed splits, windows
+that are not a multiple of 64, a window larger than the context, n = 1, two row tiles; top-k ties and random scores). The
+ancestor tables are bit-identical, the largest attention error is 0.0039 against the 0.01 tolerance, and the Stage 5 unit
+tests pass. Triton 3.8's interpreter computes `tl.dot` on bf16 inputs from their raw bits, so under `TRITON_INTERPRET=1`
+only, the kernels convert the dot inputs to fp32 first (exact); the GPU path keeps bf16. The CPU probes passed the
+pre-fix top-k too, so they cannot catch a near-tie swap; only the GPU run can.
+
+The run was launched with:
+
+```bash
+.venv/bin/python -m scripts.freeze_task_suite --tasks eagle_candidate_topk,eagle_tree_row_attention,eagle_tree_verify_attention --output <frozen dir>
+cd <frozen dir> && PYTHONPATH=$PWD MODAL_GPU=H200 <repo>/.venv/bin/modal run --detach cloud/modal_tasks.py   --tasks eagle_candidate_topk,eagle_tree_row_attention,eagle_tree_verify_attention   --case-set acceptance --backends triton --fixtures all --timeout-s 1200
+```
+
+The Stage 5 figures above and `assets/stage5/` still show the untuned solutions; they are regenerated once top-k passes.
+
 | Stage | Focus | H200 status |
 |---|---|---|
 | 0 | Bootstrap: GEMM with a fused divide-sum-scale epilogue | pass |
