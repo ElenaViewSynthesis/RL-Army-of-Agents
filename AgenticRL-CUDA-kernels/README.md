@@ -237,6 +237,23 @@ solutions are unchanged.
 - **Candidate top-k** (`eagle_candidate_topk`). Vocabulary scoring is one tiled kernel that reads the 151,936 × 4,096
   weight matrix once for all batch rows, instead of once per batch row, using `tl.dot` on bf16 with fp32 accumulation.
 
+![Animation: the same key/value tile is read once per query row by the untuned attention kernel (512 reads) and once per tile of 128 rows by the tuned one (4 reads)](assets/stage5/fig_stage5_kv_reuse.svg)
+
+**Figure 3.** Load once, reuse many times. Each moving dot is one read of the same key/value tile from device memory.
+Left, untuned: one program per query row, so the 512 query rows of a GQA group (8 heads × 64 nodes) each read the tile;
+each drawn lane stands for 32 rows. Right, tuned: one program per tile of 128 rows (rows 0–127, 128–255, 256–383, 384–511),
+so the tile is read 4 times and each tile is reused by its 128 rows from shared memory. The counters show the reads of this
+tile so far in one pass over the window. The animation is CSS inside the SVG; with reduced motion turned on it shows a still
+frame with the totals.
+
+![Repeated reads of the same data, untuned against tuned, log scale: tree verify attention 512 to 4, tree row attention 512 to 4, candidate top-k 32 to 1](assets/stage5/fig_stage5_repeat_reads.svg)
+
+**Figure 4.** Reads of the same data, before and after, at each task's largest case (log scale). Design arithmetic from each
+kernel's launch grid, not a measurement: it counts how many programs request the same data. The L2 cache can absorb some of
+the untuned repeats, so the real traffic saving is smaller than this ratio. Both figures are written by
+`python -m scripts.make_stage5_tuning_figures`, which takes the shapes from `utils/task_catalog.py`. The interactive version
+is the "Tuning GPU kernels" tab of the [Stage 5 dashboard](https://claude.ai/artifact/Efm4o8YvrYm29LMbtM9sy2).
+
 **H200 run `stage5-tuned-triton-acceptance-20261114T181907Z`** (largest case of each task, Triton, all fixtures; frozen
 source `artifacts/sources/stage5/tuned-triton-20261114T181907Z/`, no source mismatches; evidence in
 `artifacts/runs/stage5-tuned-triton-acceptance-20261114T181907Z/`): 10 of 11 rows passed, 797 s. Reward-profiler device
