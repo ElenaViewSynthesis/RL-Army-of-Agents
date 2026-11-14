@@ -256,25 +256,28 @@ is the "Tuning GPU kernels" tab of the [Stage 5 dashboard](https://claude.ai/art
 
 **H200 run `stage5-tuned-triton-acceptance-20261114T181907Z`** (largest case of each task, Triton, all fixtures; frozen
 source `artifacts/sources/stage5/tuned-triton-20261114T181907Z/`, no source mismatches; evidence in
-`artifacts/runs/stage5-tuned-triton-acceptance-20261114T181907Z/`): 10 of 11 rows passed, 797 s. Reward-profiler device
-time per call:
+`artifacts/runs/stage5-tuned-triton-acceptance-20261114T181907Z/`): 10 of 11 rows passed, 797 s. The top-k fix then passed
+3 of 3 rows in `stage5-topk-shortlist-acceptance-20261114T190449Z` (118 s; frozen source
+`artifacts/sources/stage5/topk-shortlist-20261114T190449Z/`, commit `00caa67`). Reward-profiler device time per call:
 
 | Task (largest case) | Untuned Triton | Tuned Triton | Eager | `torch.compile` | Reward reason |
 |---|---|---|---|---|---|
 | `eagle_tree_verify_attention` (s = window = 32,768) | 1,035,069 µs | **6,073 µs** | 266,253 µs | 96,080 µs | `faster_than_both` |
 | `eagle_tree_row_attention` (s = 32,768, window 4,096) | 134,464 µs | **1,106 µs** | 30,755 µs | 11,014 µs | `faster_than_both` |
-| `eagle_candidate_topk` (b32, v151,936, k16) | 9,008 µs | failed verification | — | — | `verification` |
+| `eagle_candidate_topk` (b32, v151,936, k16) | 9,008 µs | **528 µs** | 4,252 µs | 3,341 µs | `faster_than_both` |
 
 Untuned times are from `task-stage5-gpu-acceptance-20261110T002043Z`. Verify attention is now 170× faster than its untuned
-version, 44× faster than eager and 16× faster than `torch.compile`; row attention is 122×, 28× and 10× faster. Both have
-provenance 1.0 (authored kernels only), and their hack, wrong and wrong-ancestor controls failed as required.
+version, 44× faster than eager and 16× faster than `torch.compile`; row attention is 122×, 28× and 10× faster; candidate
+top-k is 17×, 8× and 6× faster. All three have provenance 1.0 (authored kernels only), and every hack, wrong and
+wrong-ancestor control failed as required. The top-k row comes from the second run.
 
 **Top-k failed on 2 of 512 IDs**, both in batch row 12 (greatest difference at rank 11), the near-tie risk noted before the
 run: tensor cores add the products in a different order from the reference, so two near-equal vocabulary scores swapped.
-Its hack and wrong controls behaved as required. **Fix (written, not yet run on the H200):** the tensor-core scores now only
-pick a shortlist of 4 × k candidates per row; the final order comes from the exact fp32 rescores of that shortlist, the
-same computation the untuned scorer used, and exact ties still break by the lower token ID. It passes the CPU probes; it
-needs one more H200 row.
+Its hack and wrong controls behaved as required. **Fix:** the tensor-core scores now only pick a shortlist of 4 × k
+candidates per row; the final order comes from the exact fp32 rescores of that shortlist, the same computation the untuned
+scorer used, and exact ties still break by the lower token ID. It passed on the H200 at the same case
+(`stage5-topk-shortlist-acceptance-20261114T190449Z`). That run covers only the largest catalog case; other shapes have
+not been run with the fix.
 
 **CPU checks.** Both kernels match the reference in the Triton interpreter on new probes (several committed splits, windows
 that are not a multiple of 64, a window larger than the context, n = 1, two row tiles; top-k ties and random scores). The
@@ -287,10 +290,15 @@ The run was launched with:
 
 ```bash
 .venv/bin/python -m scripts.freeze_task_suite --tasks eagle_candidate_topk,eagle_tree_row_attention,eagle_tree_verify_attention --output <frozen dir>
-cd <frozen dir> && PYTHONPATH=$PWD MODAL_GPU=H200 <repo>/.venv/bin/modal run --detach cloud/modal_tasks.py   --tasks eagle_candidate_topk,eagle_tree_row_attention,eagle_tree_verify_attention   --case-set acceptance --backends triton --fixtures all --timeout-s 1200
+cd <frozen dir> && PYTHONPATH=$PWD MODAL_GPU=H200 <repo>/.venv/bin/modal run --detach cloud/modal_tasks.py \
+  --tasks eagle_candidate_topk,eagle_tree_row_attention,eagle_tree_verify_attention \
+  --case-set acceptance --backends triton --fixtures all --timeout-s 1200
 ```
 
-The Stage 5 figures above and `assets/stage5/` still show the untuned solutions; they are regenerated once top-k passes.
+The top-k rerun used the same command with `--tasks eagle_candidate_topk` only.
+
+Figures 1 and 2, the dashboard's timing tab and `assets/stage5/stage5-largest-honest.csv` still show the untuned solutions
+from `task-stage5-gpu-acceptance-20261110T002043Z`.
 
 | Stage | Focus | H200 status |
 |---|---|---|
