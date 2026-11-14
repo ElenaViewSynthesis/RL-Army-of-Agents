@@ -1,4 +1,4 @@
-"""Write the two README figures for the tuned Stage 5 Triton kernels. Torch-free.
+"""Write the README figures for the tuned Stage 5 Triton kernels. Torch-free.
 
     python -m scripts.make_stage5_tuning_figures [--out assets/stage5]
 
@@ -6,10 +6,13 @@ fig_stage5_kv_reuse.svg     animated: dots are reads of one key/value tile; untu
                             query row, tuned one per tile of 128 rows. CSS animation, so GitHub plays it
                             in a README <img>; prefers-reduced-motion shows a still frame with the totals.
 fig_stage5_repeat_reads.svg dumbbell, log scale: repeated reads of the same data, untuned vs tuned.
+fig_stage5_attention_pipeline.svg  animated: the five kernels of one tree-attention forward with their
+                            launch grids at the largest verify-attention case, and what one program of
+                            eagle_attention_committed does.
 
 The counts are design arithmetic from each kernel's launch grid at the catalog's acceptance case
-(utils.task_catalog), not measurements. MAX_BLOCK_M mirrors the constant in
-tasks/eagle_tree_*_attention/kernels/triton/*.py and BLOCK_V the one in candidate_topk.py.
+(utils.task_catalog), not measurements. MAX_BLOCK_M, BLOCK_N, MIN_PROGRAMS, MAX_SPLIT and MIN_SPLIT mirror
+the constants in tasks/eagle_tree_*_attention/kernels/triton/*.py, and attention_plan() mirrors plan() there.
 """
 
 import argparse
@@ -19,6 +22,8 @@ from pathlib import Path
 from utils.task_catalog import select_cases
 
 MAX_BLOCK_M = 128   # query rows per tuned attention program
+BLOCK_N = 64        # committed keys per inner step
+MIN_PROGRAMS, MAX_SPLIT, MIN_SPLIT = 1024, 4096, 512
 UNTUNED, TUNED = "#eb6834", "#2a78d6"   # categorical slots 2 and 1 of the light palette
 INK, MUTED, LINE, PANEL, BG = "#1f1e1c", "#55544f", "#c3c2b7", "#f3f2ee", "#ffffff"
 FONT = "Helvetica, Arial, sans-serif"
@@ -38,6 +43,85 @@ def counts():
     case = select_cases("eagle_candidate_topk", "acceptance")[0]
     rows.append(("Candidate top-k", "reads of the vocabulary weight matrix", case.params["b"], 1, case.id))
     return rows
+
+
+def attention_plan(task):
+    """Launch grids of the five attention kernels at the task's acceptance case; mirrors the kernel's plan()."""
+    case = select_cases(task, "acceptance")[0]
+    p = case.params
+    b, hk, n, hq = p["b"], p["hkv"], p["n"], p["hkv"] * p["ratio"]
+    rows = (hq // hk) * n
+    block_m = min(MAX_BLOCK_M, max(16, 1 << (rows - 1).bit_length()))
+    tiles = math.ceil(rows / block_m)
+    width = min(p["window"], p["s"])
+    split = MAX_SPLIT
+    while split > MIN_SPLIT and b * hk * tiles * math.ceil(width / split) < MIN_PROGRAMS:
+        split //= 2
+    committed = math.ceil(width / split)
+    return {"case": case.id, "block_m": block_m, "split": split, "blocks": split // BLOCK_N, "splits": committed + 1,
+            "ancestor": f"{b} × {n}", "visible": f"{b} × {n}", "committed": f"{b * hk} × {tiles} × {committed}",
+            "tree": f"{b * hk} × {tiles}", "merge": f"{b * hq * n:,}"}
+
+
+def attention_pipeline(plan):
+    """Animated flow of one tree-attention forward; CSS only, so GitHub plays it in a README <img>."""
+    width, height = 760, 392
+    css = [".dot{offset-rotate:0deg;animation:flow linear infinite}",
+           "@keyframes flow{from{offset-distance:0%}to{offset-distance:100%}}",
+           "@media (prefers-reduced-motion: reduce){.dot{animation:none;offset-distance:50%}}"]
+    body = [f'<rect width="{width}" height="{height}" fill="{BG}"/>',
+            '<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">'
+            f'<path d="M0 0 L10 5 L0 10 z" fill="{MUTED}"/></marker></defs>']
+
+    def node(x, y, w, title, sub=None):
+        kernel = sub is not None
+        out = [f'<rect x="{x}" y="{y}" width="{w}" height="46" rx="{6 if kernel else 14}" fill="{BG if kernel else PANEL}" '
+               f'stroke="{MUTED if kernel else LINE}" stroke-width="1.5"/>',
+               text(x + w / 2, y + (19 if kernel else 27), title, 12 if kernel else 11, INK if kernel else MUTED, "middle",
+                    "bold" if kernel else "normal")]
+        if kernel:
+            out.append(text(x + w / 2, y + 35, sub + " programs", 11, MUTED, "middle"))
+        return out
+
+    for item in (node(10, 14, 80, "parents"), node(118, 14, 160, "eagle_ancestor_table", plan["ancestor"]),
+                 node(306, 14, 70, "paths"), node(404, 14, 160, "eagle_visible_table", plan["visible"]),
+                 node(592, 14, 80, "visible"),
+                 node(10, 118, 80, "Q, K, V"), node(128, 118, 200, "eagle_attention_committed", plan["committed"]),
+                 node(356, 118, 170, "split slots 0 … c−1"),
+                 node(10, 212, 80, "Q, TK, TV"), node(128, 212, 200, "eagle_attention_tree", plan["tree"]),
+                 node(356, 212, 170, "last split slot"),
+                 node(560, 150, 180, "eagle_attention_merge", plan["merge"]), node(605, 236, 90, "Out")):
+        body += item
+    edges = [[(90, 37), (118, 37)], [(278, 37), (306, 37)], [(376, 37), (404, 37)], [(564, 37), (592, 37)],
+             [(90, 141), (128, 141)], [(328, 141), (356, 141)], [(90, 235), (128, 235)], [(328, 235), (356, 235)],
+             [(672, 37), (752, 37), (752, 290), (228, 290), (228, 258)],
+             [(526, 141), (542, 141), (542, 164), (560, 164)], [(526, 235), (542, 235), (542, 184), (560, 184)],
+             [(650, 196), (650, 236)]]
+    dots = []
+    for pts in edges:
+        length = sum(math.dist(pts[i], pts[i + 1]) for i in range(len(pts) - 1))
+        points = " ".join(f"{x},{y}" for x, y in pts)
+        body.append(f'<polyline points="{points}" fill="none" stroke="{MUTED}" stroke-width="1.5" marker-end="url(#a)"/>')
+        path = "M" + " L".join(f"{x} {y}" for x, y in pts)
+        count, duration = max(1, round(length / 70)), length / 45
+        for j in range(count):
+            dots.append(f'<circle class="dot" r="3.5" fill="{TUNED}" stroke="{BG}" stroke-width="1.5" '
+                        f"style=\"offset-path:path('{path}');animation-duration:{duration:.2f}s;"
+                        f'animation-delay:-{duration * j / count:.2f}s"/>')
+    body += dots
+    body.append(f'<line x1="10" x2="{width - 10}" y1="310" y2="310" stroke="#e1e0d9" stroke-width="1"/>')
+    body.append(text(10, 330, "eagle_attention_committed", 12, INK, weight="bold"))
+    body.append(text(10, 347, f"The heavy kernel. One program takes a tile of {plan['block_m']} query rows of a GQA group and "
+                              f"one split of {plan['split']:,} committed keys."))
+    body.append(text(10, 362, f"It walks the split in {plan['blocks']} blocks of {BLOCK_N} keys: load the key and value block once, "
+                              "score Q·Kᵀ on the tensor cores, update the"))
+    body.append(text(10, 377, "running maximum and normaliser (online softmax), add P·V on the tensor cores, "
+                              "then store its partial result in its split slot."))
+    head = (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {width} {height}" width="{width}" height="{height}" '
+            'role="img" aria-label="Animated flow of one tree-attention forward: the ancestor table and visible mask, '
+            'the committed and tree attention kernels writing split slots, and the merge kernel producing the output; '
+            'with a description of eagle_attention_committed.">')
+    return "\n".join([head, "<style>" + "".join(css) + "</style>", *body, "</svg>"]) + "\n"
 
 
 def text(x, y, value, size=11, fill=MUTED, anchor="start", weight="normal", extra=""):
@@ -148,6 +232,9 @@ def main(argv=None):
     verify = rows[0]
     (args.out / "fig_stage5_kv_reuse.svg").write_text(kv_reuse(verify[2], verify[3]), encoding="utf-8")
     (args.out / "fig_stage5_repeat_reads.svg").write_text(repeat_reads(rows), encoding="utf-8")
+    plan = attention_plan("eagle_tree_verify_attention")
+    (args.out / "fig_stage5_attention_pipeline.svg").write_text(attention_pipeline(plan), encoding="utf-8")
+    print("Attention pipeline: " + plan["committed"] + " committed programs, " + plan["case"])
     for name, what, before, after, case in rows:
         print(f"{name}: {before} -> {after} {what} ({case})")
 

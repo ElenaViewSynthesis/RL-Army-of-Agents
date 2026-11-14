@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 392" width="760" height="392" role="img" aria-label="Animated flow of one tree-attention forward: the ancestor table and visible mask, the committed and tree attention kernels writing split slots, and the merge kernel producing the output; with a description of eagle_attention_committed.">
+<style>.dot{offset-rotate:0deg;animation:flow linear infinite}@keyframes flow{from{offset-distance:0%}to{offset-distance:100%}}@media (prefers-reduced-motion: reduce){.dot{animation:none;offset-distance:50%}}</style>
+<rect width="760" height="392" fill="#ffffff"/>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#55544f"/></marker></defs>
+<rect x="10" y="14" width="80" height="46" rx="14" fill="#f3f2ee" stroke="#c3c2b7" stroke-width="1.5"/>
+<text x="50.0" y="41" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#55544f" text-anchor="middle" font-weight="normal">parents</text>
+<rect x="118" y="14" width="160" height="46" rx="6" fill="#ffffff" stroke="#55544f" stroke-width="1.5"/>
+<text x="198.0" y="33" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1f1e1c" text-anchor="middle" font-weight="bold">eagle_ancestor_table</text>
+<text x="198.0" y="49" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#55544f" text-anchor="middle" font-weight="normal">32 × 64 programs</text>
+<rect x="306" y="14" width="70" height="46" rx="14" fill="#f3f2ee" stroke="#c3c2b7" stroke-width="1.5"/>
+<text x="341.0" y="41" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#55544f" text-anchor="middle" font-weight="normal">paths</text>
+<rect x="404" y="14" width="160" height="46" rx="6" fill="#ffffff" stroke="#55544f" stroke-width="1.5"/>
+<text x="484.0" y="33" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1f1e1c" text-anchor="middle" font-weight="bold">eagle_visible_table</text>
+<text x="484.0" y="49" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#55544f" text-anchor="middle" font-weight="normal">32 × 64 programs</text>
+<rect x="592" y="14" width="80" height="46" rx="14" fill="#f3f2ee" stroke="#c3c2b7" stroke-width="1.5"/>
+<text x="632.0" y="41" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#55544f" text-anchor="middle" font-weight="normal">visible</text>
+<rect x="10" y="118" width="80" height="46" rx="14" fill="#f3f2ee" stroke="#c3c2b7" stroke-width="1.5"/>
+<text x="50.0" y="145" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#55544f" text-anchor="middle" font-weight="normal">Q, K, V</text>
+<rect x="128" y="118" width="200" height="46" rx="6" fill="#ffffff" stroke="#55544f" stroke-width="1.5"/>
+<text x="228.0" y="137" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1f1e1c" text-anchor="middle" font-weight="bold">eagle_attention_committed</text>
+<text x="228.0" y="153" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#55544f" text-anchor="middle" font-weight="normal">256 × 4 × 8 programs</text>
+<rect x="356" y="118" width="170" height="46" rx="14" fill="#f3f2ee" stroke="#c3c2b7" stroke-width="1.5"/>
+<text x="441.0" y="145" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#55544f" text-anchor="middle" font-weight="normal">split slots 0 … c−1</text>
+<rect x="10" y="212" width="80" height="46" rx="14" fill="#f3f2ee" stroke="#c3c2b7" stroke-width="1.5"/>
+<text x="50.0" y="239" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#55544f" text-anchor="middle" font-weight="normal">Q, TK, TV</text>
+<rect x="128" y="212" width="200" height="46" rx="6" fill="#ffffff" stroke="#55544f" stroke-width="1.5"/>
+<text x="228.0" y="231" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1f1e1c" text-anchor="middle" font-weight="bold">eagle_attention_tree</text>
+<text x="228.0" y="247" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#55544f" text-anchor="middle" font-weight="normal">256 × 4 programs</text>
+<rect x="356" y="212" width="170" height="46" rx="14" fill="#f3f2ee" stroke="#c3c2b7" stroke-width="1.5"/>
+<text x="441.0" y="239" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#55544f" text-anchor="middle" font-weight="normal">last split slot</text>
+<rect x="560" y="150" width="180" height="46" rx="6" fill="#ffffff" stroke="#55544f" stroke-width="1.5"/>
+<text x="650.0" y="169" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1f1e1c" text-anchor="middle" font-weight="bold">eagle_attention_merge</text>
+<text x="650.0" y="185" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#55544f" text-anchor="middle" font-weight="normal">131,072 programs</text>
+<rect x="605" y="236" width="90" height="46" rx="14" fill="#f3f2ee" stroke="#c3c2b7" stroke-width="1.5"/>
+<text x="650.0" y="263" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#55544f" text-anchor="middle" font-weight="normal">Out</text>
+<polyline points="90,37 118,37" fill="none" stroke="#55544f" stroke-width="1.5" marker-end="url(#a)"/>
+<polyline points="278,37 306,37" fill="none" stroke="#55544f" stroke-width="1.5" marker-end="url(#a)"/>
+<polyline points="376,37 404,37" fill="none" stroke="#55544f" stroke-width="1.5" marker-end="url(#a)"/>
+<polyline points="564,37 592,37" fill="none" stroke="#55544f" stroke-width="1.5" marker-end="url(#a)"/>
+<polyline points="90,141 128,141" fill="none" stroke="#55544f" stroke-width="1.5" marker-end="url(#a)"/>
+<polyline points="328,141 356,141" fill="none" stroke="#55544f" stroke-width="1.5" marker-end="url(#a)"/>
+<polyline points="90,235 128,235" fill="none" stroke="#55544f" stroke-width="1.5" marker-end="url(#a)"/>
+<polyline points="328,235 356,235" fill="none" stroke="#55544f" stroke-width="1.5" marker-end="url(#a)"/>
+<polyline points="672,37 752,37 752,290 228,290 228,258" fill="none" stroke="#55544f" stroke-width="1.5" marker-end="url(#a)"/>
+<polyline points="526,141 542,141 542,164 560,164" fill="none" stroke="#55544f" stroke-width="1.5" marker-end="url(#a)"/>
+<polyline points="526,235 542,235 542,184 560,184" fill="none" stroke="#55544f" stroke-width="1.5" marker-end="url(#a)"/>
+<polyline points="650,196 650,236" fill="none" stroke="#55544f" stroke-width="1.5" marker-end="url(#a)"/>
+<circle class="dot" r="3.5" fill="#2a78d6" stroke="#ffffff" stroke-width="1.5" style="offset-path:path('M90 37 L118 37');animation-duration:0.62s;animation-delay:-0.00s"/>
+<circle class="dot" r="3.5" fill="#2a78d6" stroke="#ffffff" stroke-width="1.5" style="offset-path:path('M278 37 L306 37');animation-duration:0.62s;animation-delay:-0.00s"/>
+<circle class="dot" r="3.5" fill="#2a78d6" stroke="#ffffff" stroke-width="1.5" style="offset-path:path('M376 37 L404 37');animation-duration:0.62s;animation-delay:-0.00s"/>
+<circle class="dot" r="3.5" fill="#2a78d6" stroke="#ffffff" stroke-width="1.5" style="offset-path:path('M564 37 L592 37');animation-duration:0.62s;animation-delay:-0.00s"/>
+<circle class="dot" r="3.5" fill="#2a78d6" stroke="#ffffff" stroke-width="1.5" style="offset-path:path('M90 141 L128 141');animation-duration:0.84s;animation-delay:-0.00s"/>
+<circle class="dot" r="3.5" fill="#2a78d6" stroke="#ffffff" stroke-width="1.5" style="offset-path:path('M328 141 L356 141');animation-duration:0.62s;animation-delay:-0.00s"/>
+<circle class="dot" r="3.5" fill="#2a78d6" stroke="#ffffff" stroke-width="1.5" style="offset-path:path('M90 235 L128 235');animation-duration:0.84s;animation-delay:-0.00s"/>
+<circle class="dot" r="3.5" fill="#2a78d6" stroke="#ffffff" stroke-width="1.5" style="offset-path:path('M328 235 L356 235');animation-duration:0.62s;animation-delay:-0.00s"/>
+<circle class="dot" r="3.5" fill="#2a78d6" stroke="#ffffff" stroke-width="1.5" style="offset-path:path('M672 37 L752 37 L752 290 L228 290 L228 258');animation-duration:19.76s;animation-delay:-0.00s"/>
+<circle class="dot" r="3.5" fill="#2a78d6" stroke="#ffffff" stroke-width="1.5" style="offset-path:path('M672 37 L752 37 L752 290 L228 290 L228 258');animation-duration:19.76s;animation-delay:-1.52s"/>
+<circle class="dot" r="3.5" fill="#2a78d6" stroke="#ffffff" stroke-width="1.5" style="offset-path:path('M672 37 L752 37 L752 290 L228 290 L228 258');animation-duration:19.76s;animation-delay:-3.04s"/>
+<circle class="dot" r="3.5" fill="#2a78d6" stroke="#ffffff" stroke-width="1.5" style="offset-path:path('M672 37 L752 37 L752 290 L228 290 L228 258');animation-duration:19.76s;animation-delay:-4.56s"/>
+<circle class="dot" r="3.5" fill="#2a78d6" stroke="#ffffff" stroke-width="1.5" style="offset-path:path('M672 37 L752 37 L752 290 L228 290 L228 258');animation-duration:19.76s;animation-delay:-6.08s"/>
+<circle class="dot" r="3.5" fill="#2a78d6" stroke="#ffffff" stroke-width="1.5" style="offset-path:path('M672 37 L752 37 L752 290 L228 290 L228 258');animation-duration:19.76s;animation-delay:-7.60s"/>
+<circle class="dot" r="3.5" fill="#2a78d6" stroke="#ffffff" stroke-width="1.5" style="offset-path:path('M672 37 L752 37 L752 290 L228 290 L228 258');animation-duration:19.76s;animation-delay:-9.12s"/>
+<circle class="dot" r="3.5" fill="#2a78d6" stroke="#ffffff" stroke-width="1.5" style="offset-path:path('M672 37 L752 37 L752 290 L228 290 L228 258');animation-duration:19.76s;animation-delay:-10.64s"/>
+<circle class="dot" r="3.5" fill="#2a78d6" stroke="#ffffff" stroke-width="1.5" style="offset-path:path('M672 37 L752 37 L752 290 L228 290 L228 258');animation-duration:19.76s;animation-delay:-12.16s"/>
+<circle class="dot" r="3.5" fill="#2a78d6" stroke="#ffffff" stroke-width="1.5" style="offset-path:path('M672 37 L752 37 L752 290 L228 290 L228 258');animation-duration:19.76s;animation-delay:-13.68s"/>
+<circle class="dot" r="3.5" fill="#2a78d6" stroke="#ffffff" stroke-width="1.5" style="offset-path:path('M672 37 L752 37 L752 290 L228 290 L228 258');animation-duration:19.76s;animation-delay:-15.20s"/>
+<circle class="dot" r="3.5" fill="#2a78d6" stroke="#ffffff" stroke-width="1.5" style="offset-path:path('M672 37 L752 37 L752 290 L228 290 L228 258');animation-duration:19.76s;animation-delay:-16.72s"/>
+<circle class="dot" r="3.5" fill="#2a78d6" stroke="#ffffff" stroke-width="1.5" style="offset-path:path('M672 37 L752 37 L752 290 L228 290 L228 258');animation-duration:19.76s;animation-delay:-18.24s"/>
+<circle class="dot" r="3.5" fill="#2a78d6" stroke="#ffffff" stroke-width="1.5" style="offset-path:path('M526 141 L542 141 L542 164 L560 164');animation-duration:1.27s;animation-delay:-0.00s"/>
+<circle class="dot" r="3.5" fill="#2a78d6" stroke="#ffffff" stroke-width="1.5" style="offset-path:path('M526 235 L542 235 L542 184 L560 184');animation-duration:1.89s;animation-delay:-0.00s"/>
+<circle class="dot" r="3.5" fill="#2a78d6" stroke="#ffffff" stroke-width="1.5" style="offset-path:path('M650 196 L650 236');animation-duration:0.89s;animation-delay:-0.00s"/>
+<line x1="10" x2="750" y1="310" y2="310" stroke="#e1e0d9" stroke-width="1"/>
+<text x="10" y="330" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1f1e1c" text-anchor="start" font-weight="bold">eagle_attention_committed</text>
+<text x="10" y="347" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#55544f" text-anchor="start" font-weight="normal">The heavy kernel. One program takes a tile of 128 query rows of a GQA group and one split of 4,096 committed keys.</text>
+<text x="10" y="362" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#55544f" text-anchor="start" font-weight="normal">It walks the split in 64 blocks of 64 keys: load the key and value block once, score Q·Kᵀ on the tensor cores, update the</text>
+<text x="10" y="377" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#55544f" text-anchor="start" font-weight="normal">running maximum and normaliser (online softmax), add P·V on the tensor cores, then store its partial result in its split slot.</text>
+</svg>
