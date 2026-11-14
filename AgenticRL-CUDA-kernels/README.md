@@ -697,7 +697,7 @@ profile, preset, range or metric enters a reward.
 | `trace` (default) | nothing; byte-identical to the command validated in run `20261108T200118Z` | one generated forward | baseline |
 | `stages` | `--trace=cuda,nvtx,cublas,cudnn,osrt`, capture widened to `agenticrl_rollout`; the worker also runs `torch.compile` once | where eager, compile, warm-up and the generated forward spend GPU time; which library kernels the baselines launch | one `torch.compile`, larger report |
 | `pytorch` | `--pytorch=functions-trace,autograd-shapes-nvtx` | module-level attribution of the eager baseline without editing model code | host overhead per op |
-| `backtrace` | `--cudabacktrace=all --python-backtrace=cuda` | which Python line launched each kernel | high; never on a timed row |
+| `backtrace` | `--cudabacktrace=all --python-backtrace=cuda`, and `--sample=process-tree` because backtraces need CPU sampling | which Python line launched each kernel | high; never on a timed row |
 | `gpu-metrics` | `--gpu-metrics-devices=<assigned GPU index>` (resolved from `CUDA_VISIBLE_DEVICES` as the GPU lock does; never a guessed 0) | SM and DRAM activity over time next to the kernels | a sampling stream; may need counter permission |
 | `graphs` | `--cuda-graph-trace=node` | per-node kernels inside `cudaGraphLaunch` | small |
 
@@ -748,6 +748,61 @@ workdir, under the per-GPU lock, on honest rows only. They add `ncu/*` and
 CPU runs and lock contention get `status: skipped` with a reason. The AXPBY
 matrix on Modal (`cloud/modal_runtime.py --diagnose-kernels`) still runs the
 default profile and preset.
+
+#### NVTX ranges and the commands that use them
+
+For raw `nsys` commands beyond the harness (`nsys stats --report cuda_gpu_kern_sum`, `nsys analyze`, `export`, `import`, `query`, `survey`, CUDA-graph node tracing and GPU metrics), see [NSIGHT_PROFILING.md](NSIGHT_PROFILING.md). For the PyTorch profiler (how the reward measures, per-kernel totals to compare with `nsys stats`, phase labels both profilers see), see [TORCH_PROFILER_PROFILING.md](TORCH_PROFILER_PROFILING.md).
+
+The diagnostic worker (`utils/diagnostic_worker.py`) marks each phase with
+`torch.cuda.nvtx.range_push(...)` / `range_pop()`, a host-side marker with no
+GPU synchronisation:
+
+```
+agenticrl_rollout          whole diagnostic run
+├── agenticrl_eager        eager PyTorch reference
+├── agenticrl_compile      torch.compile (stages profile only)
+├── agenticrl_warmup       warm-up calls of the generated kernel
+└── agenticrl_generated    exactly one generated forward (the default capture)
+```
+
+Nsight Systems captures only between the push and pop of one range (default
+profile shown; `--profile stages` changes the range to `agenticrl_rollout` and
+the trace to `cuda,nvtx,cublas,cudnn,osrt`):
+
+```bash
+nsys profile --trace=cuda,nvtx --sample=none --cpuctxsw=none --discard-environment=true \
+    --capture-range=nvtx --nvtx-capture=agenticrl_generated --capture-range-end=stop \
+    --export=sqlite --output <out>/capture <worker>
+```
+
+Nsight Compute filters kernels by range rather than by time window
+(`--nvtx-include agenticrl_generated/`: the trailing `/` means a push/pop
+range), then by the task's authored kernel names:
+
+```bash
+ncu --clock-control none --nvtx --nvtx-include agenticrl_generated/ \
+    --kernel-name-base demangled --kernel-name regex:<authored kernel names> \
+    --launch-count 1 --set basic --export <out>/capture <worker>
+```
+
+`utils.diagnose` builds and runs both commands; the harness also sets
+`NSYS_NVTX_PROFILER_REGISTER_ONLY=0`. Review a capture with:
+
+```bash
+python -m utils.diagnose review --report <dir>/report.json
+python -m scripts.review_diagnostics <diagnostics-dir>
+```
+
+The reviewer reads range names and times from the SQLite export's
+`NVTX_EVENTS` (names joined from `StringIds`) and kernels from
+`CUPTI_ACTIVITY_KIND_KERNEL`; a kernel belongs to a range when it starts and
+ends inside it. CUDA-graph traces (`scripts/graph_trace.py`) use the same
+mechanism with one range per phase (forward, warm-up, capture, replay 1–5)
+under `nsys profile --trace=cuda,nvtx --cuda-graph-trace=node`.
+
+Only the default `trace` profile and the `basic` ncu preset have H200 evidence
+(run `20261108T200118Z`); the other profiles, presets and the new eager,
+compile and warm-up ranges are tested with fake tools only.
 
 ## Experiment tracking (W&B + Weave, opt-in)
 
