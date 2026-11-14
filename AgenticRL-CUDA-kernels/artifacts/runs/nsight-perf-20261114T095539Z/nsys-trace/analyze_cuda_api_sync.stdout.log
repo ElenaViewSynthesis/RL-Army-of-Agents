@@ -1,0 +1,4 @@
+Processing [/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/nsight-perf-20261114T095539Z/nsys-trace/capture.sqlite] with [/opt/nvidia/nsight-compute/2026.4.0/host/target-linux-x64/rules/cuda_api_sync.py]... 
+Duration (ns),Start (ns),PID,TID,API Name
+33160,168941727,92,92,cudaDeviceSynchronize_v3020
+

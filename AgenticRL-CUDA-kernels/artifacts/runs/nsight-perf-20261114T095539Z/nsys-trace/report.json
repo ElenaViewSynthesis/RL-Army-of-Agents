@@ -1,0 +1,287 @@
+{
+  "schema": "gpu-diagnostics-v1",
+  "diagnostic_only": true,
+  "stages": [
+    {
+      "argv": [
+        "/usr/local/bin/nsys",
+        "--version"
+      ],
+      "command": "/usr/local/bin/nsys --version",
+      "stdout": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/nsight-perf-20261114T095539Z/nsys-trace/version.stdout.log",
+      "stderr": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/nsight-perf-20261114T095539Z/nsys-trace/version.stderr.log",
+      "returncode": 0,
+      "timed_out": false,
+      "wall_s": 0.6284731549999947,
+      "label": "version"
+    },
+    {
+      "argv": [
+        "/usr/local/bin/python",
+        "-c",
+        "import sys, runpy; sys.path.insert(0, '/root/AgenticRL-CUDA-kernels'); import utils; sys.path = [p for p in sys.path if p != '/root/AgenticRL-CUDA-kernels']; sys.path.insert(0, '/tmp/relu_squared-triton'); sys.argv = ['utils.diagnostic_worker', '--mode', 'probe', '--backend', 'triton', '--evidence', '/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/nsight-perf-20261114T095539Z/nsys-trace/gpu.json']; runpy.run_module('utils.diagnostic_worker', run_name='__main__')"
+      ],
+      "command": "/usr/local/bin/python -c 'import sys, runpy; sys.path.insert(0, '\"'\"'/root/AgenticRL-CUDA-kernels'\"'\"'); import utils; sys.path = [p for p in sys.path if p != '\"'\"'/root/AgenticRL-CUDA-kernels'\"'\"']; sys.path.insert(0, '\"'\"'/tmp/relu_squared-triton'\"'\"'); sys.argv = ['\"'\"'utils.diagnostic_worker'\"'\"', '\"'\"'--mode'\"'\"', '\"'\"'probe'\"'\"', '\"'\"'--backend'\"'\"', '\"'\"'triton'\"'\"', '\"'\"'--evidence'\"'\"', '\"'\"'/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/nsight-perf-20261114T095539Z/nsys-trace/gpu.json'\"'\"']; runpy.run_module('\"'\"'utils.diagnostic_worker'\"'\"', run_name='\"'\"'__main__'\"'\"')'",
+      "stdout": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/nsight-perf-20261114T095539Z/nsys-trace/gpu.stdout.log",
+      "stderr": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/nsight-perf-20261114T095539Z/nsys-trace/gpu.stderr.log",
+      "returncode": 0,
+      "timed_out": false,
+      "wall_s": 6.021040158999995,
+      "label": "gpu"
+    },
+    {
+      "argv": [
+        "/usr/local/bin/nsys",
+        "profile",
+        "--trace=cuda,nvtx",
+        "--sample=none",
+        "--cpuctxsw=none",
+        "--discard-environment=true",
+        "--capture-range=nvtx",
+        "--nvtx-capture=agenticrl_generated",
+        "--capture-range-end=stop",
+        "--export=sqlite",
+        "--output",
+        "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/nsight-perf-20261114T095539Z/nsys-trace/capture",
+        "/usr/local/bin/python",
+        "-c",
+        "import sys, runpy; sys.path.insert(0, '/root/AgenticRL-CUDA-kernels'); import utils; sys.path = [p for p in sys.path if p != '/root/AgenticRL-CUDA-kernels']; sys.path.insert(0, '/tmp/relu_squared-triton'); sys.argv = ['utils.diagnostic_worker', '--mode', 'capture', '--backend', 'triton', '--seed', '0', '--evidence', '/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/nsight-perf-20261114T095539Z/nsys-trace/worker.json']; runpy.run_module('utils.diagnostic_worker', run_name='__main__')"
+      ],
+      "command": "/usr/local/bin/nsys profile --trace=cuda,nvtx --sample=none --cpuctxsw=none --discard-environment=true --capture-range=nvtx --nvtx-capture=agenticrl_generated --capture-range-end=stop --export=sqlite --output /__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/nsight-perf-20261114T095539Z/nsys-trace/capture /usr/local/bin/python -c 'import sys, runpy; sys.path.insert(0, '\"'\"'/root/AgenticRL-CUDA-kernels'\"'\"'); import utils; sys.path = [p for p in sys.path if p != '\"'\"'/root/AgenticRL-CUDA-kernels'\"'\"']; sys.path.insert(0, '\"'\"'/tmp/relu_squared-triton'\"'\"'); sys.argv = ['\"'\"'utils.diagnostic_worker'\"'\"', '\"'\"'--mode'\"'\"', '\"'\"'capture'\"'\"', '\"'\"'--backend'\"'\"', '\"'\"'triton'\"'\"', '\"'\"'--seed'\"'\"', '\"'\"'0'\"'\"', '\"'\"'--evidence'\"'\"', '\"'\"'/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/nsight-perf-20261114T095539Z/nsys-trace/worker.json'\"'\"']; runpy.run_module('\"'\"'utils.diagnostic_worker'\"'\"', run_name='\"'\"'__main__'\"'\"')'",
+      "stdout": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/nsight-perf-20261114T095539Z/nsys-trace/tool.stdout.log",
+      "stderr": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/nsight-perf-20261114T095539Z/nsys-trace/tool.stderr.log",
+      "returncode": 0,
+      "timed_out": false,
+      "wall_s": 18.696858144999993,
+      "label": "tool"
+    }
+  ],
+  "sources": {
+    "binding.cpp": "43da662b9aedb537a4cb2f04c57d92aeddbe018a9b5f7374ae28ec9bba0b3b62",
+    "binding_registry.h": "a829ca7d5de03049c439f30aa01f7f631c06418c31855cf19a67f23d69349e0f",
+    "kernels/__init__.py": "fa8709e0f841861e590a1400e7bf811752982f12aa6de0b19102d917d614c1a4",
+    "kernels/cuda/__init__.py": "9092a9f59274bcf6bac4d5fba7108a13ddd240ab77545f6cff7feaa924bf6aea",
+    "kernels/cuda/relu_squared.py": "cdedfd2032a4bea3d7251afab8bf63f03de8ae93faf2abf082fab66fae9c8a8c",
+    "kernels/cutile/__init__.py": "bcebd68c7d79a466520850968536e701785330493dbc5fb6674802ebb2548d0d",
+    "kernels/cutile/relu_squared.py": "05a17c8d31e85748da057edd9f6ff985b0d01e7c714aca972a5c5adc665aa2fa",
+    "kernels/relu_squared.cu": "3ddfec6886fef5dd4bf606a7d0063048805ab78ef2b07e08191ce8d24cd69ab3",
+    "kernels/relu_squared_binding.cpp": "dbb250afcb4e127b025effb0a83d7cd950232bbbf6fa8a8231d1e5043453c62f",
+    "kernels/triton/__init__.py": "9092a9f59274bcf6bac4d5fba7108a13ddd240ab77545f6cff7feaa924bf6aea",
+    "kernels/triton/relu_squared.py": "204456d72cf69f2a1d2ae68e4d4daab9f8f5d2254671d167993df3aa93fafba8",
+    "model.py": "279191a4d8f2b0d108f1d195f6ba64557b41d56f811ac7ac45e40929ddd9a751",
+    "model_new.py": "71fccec6cbf9528a04d838ab6dc284981aceaff592e99aedf192dcc65fe8ce92"
+  },
+  "worker": {
+    "diagnostic_only": true,
+    "available": true,
+    "completed": true,
+    "mode": "capture",
+    "backend": "triton",
+    "reason": null,
+    "gpu_name": "NVIDIA B200",
+    "gpu_index": 0,
+    "gpu_uuid": "3b992699-e5c6-47d3-921f-7cf7cff8aa6a",
+    "compute_capability": "10.0",
+    "negative_control": false,
+    "warmup_iters": 20,
+    "capture_range": "agenticrl_generated",
+    "captured_forwards": 1,
+    "verification_checks": 2,
+    "compile_phase": false,
+    "nvtx_ranges": [
+      "agenticrl_rollout",
+      "agenticrl_eager",
+      "agenticrl_warmup",
+      "agenticrl_generated"
+    ]
+  },
+  "gpu_probe": {
+    "diagnostic_only": true,
+    "available": true,
+    "completed": true,
+    "mode": "probe",
+    "backend": "triton",
+    "reason": null,
+    "gpu_name": "NVIDIA B200",
+    "gpu_index": 0,
+    "gpu_uuid": "3b992699-e5c6-47d3-921f-7cf7cff8aa6a",
+    "compute_capability": "10.0",
+    "negative_control": false
+  },
+  "agent_kernel_names": [
+    "relu_squared_triton_chunks"
+  ],
+  "harness_sha256": {
+    "diagnose.py": "6a5489e2270c346ab6e1a85fb9d8ac74c29ce314f57fc65a2deb981629b2e6b8",
+    "diagnostic_worker.py": "f4d59f63b319fbf80584a6fa903d07bb09c760babadca9c1c9e5f94107d8f78d",
+    "diagnostic_fault.py": "f3e51fcab71093c7e91ab13ad35c2a45fe1e3374f62651d4df3c00419e95d073"
+  },
+  "tool_version": "NVIDIA Nsight Systems version 2026.4.0.0",
+  "nsys_reports": [
+    {
+      "argv": [
+        "/usr/local/bin/nsys",
+        "stats",
+        "--report",
+        "cuda_gpu_kern_sum",
+        "--format",
+        "csv",
+        "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/nsight-perf-20261114T095539Z/nsys-trace/capture.sqlite"
+      ],
+      "command": "/usr/local/bin/nsys stats --report cuda_gpu_kern_sum --format csv /__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/nsight-perf-20261114T095539Z/nsys-trace/capture.sqlite",
+      "stdout": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/nsight-perf-20261114T095539Z/nsys-trace/stats_cuda_gpu_kern_sum.stdout.log",
+      "stderr": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/nsight-perf-20261114T095539Z/nsys-trace/stats_cuda_gpu_kern_sum.stderr.log",
+      "returncode": 0,
+      "timed_out": false,
+      "wall_s": 0.4262001029999851,
+      "label": "stats_cuda_gpu_kern_sum"
+    },
+    {
+      "argv": [
+        "/usr/local/bin/nsys",
+        "stats",
+        "--report",
+        "cuda_api_sum",
+        "--format",
+        "csv",
+        "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/nsight-perf-20261114T095539Z/nsys-trace/capture.sqlite"
+      ],
+      "command": "/usr/local/bin/nsys stats --report cuda_api_sum --format csv /__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/nsight-perf-20261114T095539Z/nsys-trace/capture.sqlite",
+      "stdout": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/nsight-perf-20261114T095539Z/nsys-trace/stats_cuda_api_sum.stdout.log",
+      "stderr": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/nsight-perf-20261114T095539Z/nsys-trace/stats_cuda_api_sum.stderr.log",
+      "returncode": 0,
+      "timed_out": false,
+      "wall_s": 0.4268058060000044,
+      "label": "stats_cuda_api_sum"
+    },
+    {
+      "argv": [
+        "/usr/local/bin/nsys",
+        "stats",
+        "--report",
+        "nvtx_sum",
+        "--format",
+        "csv",
+        "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/nsight-perf-20261114T095539Z/nsys-trace/capture.sqlite"
+      ],
+      "command": "/usr/local/bin/nsys stats --report nvtx_sum --format csv /__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/nsight-perf-20261114T095539Z/nsys-trace/capture.sqlite",
+      "stdout": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/nsight-perf-20261114T095539Z/nsys-trace/stats_nvtx_sum.stdout.log",
+      "stderr": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/nsight-perf-20261114T095539Z/nsys-trace/stats_nvtx_sum.stderr.log",
+      "returncode": 0,
+      "timed_out": false,
+      "wall_s": 0.37417880199998876,
+      "label": "stats_nvtx_sum"
+    },
+    {
+      "argv": [
+        "/usr/local/bin/nsys",
+        "stats",
+        "--report",
+        "cuda_gpu_mem_time_sum",
+        "--format",
+        "csv",
+        "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/nsight-perf-20261114T095539Z/nsys-trace/capture.sqlite"
+      ],
+      "command": "/usr/local/bin/nsys stats --report cuda_gpu_mem_time_sum --format csv /__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/nsight-perf-20261114T095539Z/nsys-trace/capture.sqlite",
+      "stdout": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/nsight-perf-20261114T095539Z/nsys-trace/stats_cuda_gpu_mem_time_sum.stdout.log",
+      "stderr": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/nsight-perf-20261114T095539Z/nsys-trace/stats_cuda_gpu_mem_time_sum.stderr.log",
+      "returncode": 0,
+      "timed_out": false,
+      "wall_s": 0.1723373229999936,
+      "label": "stats_cuda_gpu_mem_time_sum"
+    },
+    {
+      "argv": [
+        "/usr/local/bin/nsys",
+        "analyze",
+        "--rule",
+        "gpu_gaps",
+        "--format",
+        "csv",
+        "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/nsight-perf-20261114T095539Z/nsys-trace/capture.sqlite"
+      ],
+      "command": "/usr/local/bin/nsys analyze --rule gpu_gaps --format csv /__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/nsight-perf-20261114T095539Z/nsys-trace/capture.sqlite",
+      "stdout": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/nsight-perf-20261114T095539Z/nsys-trace/analyze_gpu_gaps.stdout.log",
+      "stderr": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/nsight-perf-20261114T095539Z/nsys-trace/analyze_gpu_gaps.stderr.log",
+      "returncode": 0,
+      "timed_out": false,
+      "wall_s": 0.37537421600001153,
+      "label": "analyze_gpu_gaps"
+    },
+    {
+      "argv": [
+        "/usr/local/bin/nsys",
+        "analyze",
+        "--rule",
+        "gpu_time_util",
+        "--format",
+        "csv",
+        "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/nsight-perf-20261114T095539Z/nsys-trace/capture.sqlite"
+      ],
+      "command": "/usr/local/bin/nsys analyze --rule gpu_time_util --format csv /__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/nsight-perf-20261114T095539Z/nsys-trace/capture.sqlite",
+      "stdout": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/nsight-perf-20261114T095539Z/nsys-trace/analyze_gpu_time_util.stdout.log",
+      "stderr": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/nsight-perf-20261114T095539Z/nsys-trace/analyze_gpu_time_util.stderr.log",
+      "returncode": 0,
+      "timed_out": false,
+      "wall_s": 0.4325894490000053,
+      "label": "analyze_gpu_time_util"
+    },
+    {
+      "argv": [
+        "/usr/local/bin/nsys",
+        "analyze",
+        "--rule",
+        "cuda_api_sync",
+        "--format",
+        "csv",
+        "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/nsight-perf-20261114T095539Z/nsys-trace/capture.sqlite"
+      ],
+      "command": "/usr/local/bin/nsys analyze --rule cuda_api_sync --format csv /__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/nsight-perf-20261114T095539Z/nsys-trace/capture.sqlite",
+      "stdout": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/nsight-perf-20261114T095539Z/nsys-trace/analyze_cuda_api_sync.stdout.log",
+      "stderr": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/nsight-perf-20261114T095539Z/nsys-trace/analyze_cuda_api_sync.stderr.log",
+      "returncode": 0,
+      "timed_out": false,
+      "wall_s": 0.22553217999998765,
+      "label": "analyze_cuda_api_sync"
+    },
+    {
+      "argv": [
+        "/usr/local/bin/nsys",
+        "analyze",
+        "--rule",
+        "cuda_memcpy_sync",
+        "--format",
+        "csv",
+        "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/nsight-perf-20261114T095539Z/nsys-trace/capture.sqlite"
+      ],
+      "command": "/usr/local/bin/nsys analyze --rule cuda_memcpy_sync --format csv /__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/nsight-perf-20261114T095539Z/nsys-trace/capture.sqlite",
+      "stdout": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/nsight-perf-20261114T095539Z/nsys-trace/analyze_cuda_memcpy_sync.stdout.log",
+      "stderr": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/nsight-perf-20261114T095539Z/nsys-trace/analyze_cuda_memcpy_sync.stderr.log",
+      "returncode": 0,
+      "timed_out": false,
+      "wall_s": 0.17627702200002204,
+      "label": "analyze_cuda_memcpy_sync"
+    }
+  ],
+  "result": {
+    "diag/tool": "nsys",
+    "diag/check": null,
+    "diag/backend": "triton",
+    "diag/status": "captured",
+    "diag/reason": "raw_evidence_requires_review",
+    "diag/diagnostic_only": true,
+    "diag/evidence_reviewed": false,
+    "diag/negative_control": false,
+    "diag/seed": 0,
+    "diag/clock_control": null,
+    "diag/kernel_selector": null,
+    "diag/gpu_uuid": "3b992699-e5c6-47d3-921f-7cf7cff8aa6a",
+    "diag/gpu_name": "NVIDIA B200",
+    "diag/nsys_profiles": "trace",
+    "diag/ncu_preset": null,
+    "diag/reported_errors": null,
+    "diag/kernel_count": null,
+    "diag/wall_s": 27.967732240000004,
+    "diag/report_json": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/nsight-perf-20261114T095539Z/nsys-trace/report.json"
+  }
+}

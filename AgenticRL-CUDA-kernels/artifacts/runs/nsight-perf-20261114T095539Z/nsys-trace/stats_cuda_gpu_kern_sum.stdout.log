@@ -1,0 +1,4 @@
+Processing [/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/nsight-perf-20261114T095539Z/nsys-trace/capture.sqlite] with [/opt/nvidia/nsight-compute/2026.4.0/host/target-linux-x64/reports/cuda_gpu_kern_sum.py]... 
+Time (%),Total Time (ns),Instances,Avg (ns),Med (ns),Min (ns),Max (ns),StdDev (ns),Name
+100.0,37920,1,37920.0,37920.0,37920,37920,0.0,relu_squared_triton_chunks
+

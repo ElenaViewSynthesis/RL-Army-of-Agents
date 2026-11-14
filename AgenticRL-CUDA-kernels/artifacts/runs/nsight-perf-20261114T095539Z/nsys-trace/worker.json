@@ -1,0 +1,24 @@
+{
+  "diagnostic_only": true,
+  "available": true,
+  "completed": true,
+  "mode": "capture",
+  "backend": "triton",
+  "reason": null,
+  "gpu_name": "NVIDIA B200",
+  "gpu_index": 0,
+  "gpu_uuid": "3b992699-e5c6-47d3-921f-7cf7cff8aa6a",
+  "compute_capability": "10.0",
+  "negative_control": false,
+  "warmup_iters": 20,
+  "capture_range": "agenticrl_generated",
+  "captured_forwards": 1,
+  "verification_checks": 2,
+  "compile_phase": false,
+  "nvtx_ranges": [
+    "agenticrl_rollout",
+    "agenticrl_eager",
+    "agenticrl_warmup",
+    "agenticrl_generated"
+  ]
+}

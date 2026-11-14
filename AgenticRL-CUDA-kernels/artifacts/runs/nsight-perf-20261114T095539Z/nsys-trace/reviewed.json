@@ -1,0 +1,158 @@
+{
+  "schema": "gpu-diagnostic-review-v1",
+  "capture_report": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/nsight-perf-20261114T095539Z/nsys-trace/report.json",
+  "diagnostic_only": true,
+  "reviewer_sha256": "ed074cc7260bff8c622204531eff60942e171f28bf9ec1b46f0685347dc83a61",
+  "capture_sha256": "cbe68d5ae501de82bef86b76618578372a8786d8c75e1aa7c91a53c43f1abb06",
+  "result": {
+    "diag/tool": "nsys",
+    "diag/check": null,
+    "diag/backend": "triton",
+    "diag/status": "passed",
+    "diag/reason": "generated_forward_timeline_captured",
+    "diag/diagnostic_only": true,
+    "diag/evidence_reviewed": true,
+    "diag/negative_control": false,
+    "diag/seed": 0,
+    "diag/clock_control": null,
+    "diag/kernel_selector": null,
+    "diag/gpu_uuid": "3b992699-e5c6-47d3-921f-7cf7cff8aa6a",
+    "diag/gpu_name": "NVIDIA B200",
+    "diag/nsys_profiles": "trace",
+    "diag/ncu_preset": null,
+    "diag/reported_errors": null,
+    "diag/kernel_count": 1,
+    "diag/wall_s": 27.967732240000004,
+    "diag/report_json": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/nsight-perf-20261114T095539Z/nsys-trace/report.json",
+    "diag/review_json": "/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/nsight-perf-20261114T095539Z/nsys-trace/reviewed.json",
+    "diag/nsys/generated/kernel_count": 1,
+    "diag/nsys/generated/busy_ns": 37920,
+    "diag/nsys/generated/agent_ns": 37920,
+    "diag/nsys/generated/library_ns": 0,
+    "diag/nsys/generated/torch_ns": 0,
+    "diag/nsys/generated/memory_ns": 0,
+    "diag/nsys_kernel_sum_total_ns": 37920,
+    "diag/nsys_stats_kernel_total_ns": 37920,
+    "diag/nsys_stats_matches_sqlite": true,
+    "diag/nsys_stats_reason": null,
+    "diag/nsys_kernel_busy_ns": 37920,
+    "diag/nsys_kernel_span_ns": 37920,
+    "diag/nsys_kernel_gap_ns": 0,
+    "diag/nsys_range_ns": 1114596
+  },
+  "observations": {
+    "nvtx_ranges": {
+      "agenticrl_generated": {
+        "start_ns": 167872631,
+        "end_ns": 168987227
+      }
+    },
+    "range_summary": {
+      "agenticrl_generated": {
+        "kernel_count": 1,
+        "busy_ns": 37920,
+        "agent_ns": 37920,
+        "library_ns": 0,
+        "torch_ns": 0,
+        "memory_ns": 0
+      }
+    },
+    "kernel_sum": [
+      {
+        "name": "relu_squared_triton_chunks",
+        "total_ns": 37920,
+        "instances": 1,
+        "avg_ns": 37920.0,
+        "min_ns": 37920,
+        "max_ns": 37920
+      }
+    ],
+    "nsys_reports": {
+      "stats_cuda_gpu_kern_sum": {
+        "returncode": 0,
+        "timed_out": false,
+        "stdout": "stats_cuda_gpu_kern_sum.stdout.log"
+      },
+      "stats_cuda_api_sum": {
+        "returncode": 0,
+        "timed_out": false,
+        "stdout": "stats_cuda_api_sum.stdout.log"
+      },
+      "stats_nvtx_sum": {
+        "returncode": 0,
+        "timed_out": false,
+        "stdout": "stats_nvtx_sum.stdout.log"
+      },
+      "stats_cuda_gpu_mem_time_sum": {
+        "returncode": 0,
+        "timed_out": false,
+        "stdout": "stats_cuda_gpu_mem_time_sum.stdout.log"
+      },
+      "analyze_gpu_gaps": {
+        "returncode": 0,
+        "timed_out": false,
+        "stdout": "analyze_gpu_gaps.stdout.log"
+      },
+      "analyze_gpu_time_util": {
+        "returncode": 0,
+        "timed_out": false,
+        "stdout": "analyze_gpu_time_util.stdout.log"
+      },
+      "analyze_cuda_api_sync": {
+        "returncode": 0,
+        "timed_out": false,
+        "stdout": "analyze_cuda_api_sync.stdout.log"
+      },
+      "analyze_cuda_memcpy_sync": {
+        "returncode": 0,
+        "timed_out": false,
+        "stdout": "analyze_cuda_memcpy_sync.stdout.log"
+      }
+    },
+    "range_start_ns": 167872631,
+    "range_end_ns": 168987227,
+    "kernels": [
+      {
+        "start_ns": 168757243,
+        "end_ns": 168795163,
+        "device_index": 0,
+        "name": "relu_squared_triton_chunks"
+      }
+    ],
+    "runtime_api": [
+      {
+        "name": "cuLaunchKernelEx",
+        "start_ns": 168679791,
+        "end_ns": 168796309,
+        "return_value": 0
+      },
+      {
+        "name": "cudaDeviceSynchronize_v3020",
+        "start_ns": 168941727,
+        "end_ns": 168974887,
+        "return_value": 0
+      }
+    ],
+    "transfer_duration_ns": null,
+    "transfer_reason": "No memcpy activity table was present in these captured fixtures."
+  },
+  "raw_sha256": {
+    "tool.stdout.log": "8181cac2a2f00c649ae790c22813af616f17ee69c2973ffbf1cf2f3671871aeb",
+    "tool.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stats_cuda_gpu_kern_sum.stdout.log": "998e6a3d95574c066c9e55918e563103e45385faad5d059c97125887dc3d14dd",
+    "stats_cuda_api_sum.stdout.log": "7065b069e98b95cba2db039a8ebb38f293f76dc92a93b338a8f800f7b2adc07f",
+    "stats_nvtx_sum.stdout.log": "99b510aafe29ecd1a64be56ffa348ac896a8180f7e89af3aa922855e13799b43",
+    "stats_cuda_gpu_mem_time_sum.stdout.log": "147ae27d5e6b0942e960a3af6914db9497dbd1413df776ad0f0be9a6c30039e6",
+    "analyze_gpu_gaps.stdout.log": "bffc273b81c7e5e3ba197c452b7eb3a603945723a7858f052b512183452863f1",
+    "analyze_gpu_time_util.stdout.log": "4a0ccdf7e608b148d97ed1bc98a5db5943cd06ec4997b2213a402ceb94208e83",
+    "analyze_cuda_api_sync.stdout.log": "e07553fa1c1f349b793e84a0e9a45543d79b41f814d6fdb1793f41637658ac65",
+    "analyze_cuda_memcpy_sync.stdout.log": "df953cdd92195e2c8373769b585cfd30577abd1fd52df1d25a5a0946dd851cf6",
+    "capture.sqlite": "a6bd187ac0ee19c1871e6c25ed547c5cd521894de781a8abe147042faba77867"
+  },
+  "limitations": [
+    "Coverage is limited to the recorded fixtures and runtime.",
+    "Name-based selectors are not proof of authorship.",
+    "Instrumented and replayed durations never feed rewards.",
+    "Kernel gaps cover only the captured process/range, not whole-device idle time or utilization."
+  ]
+}

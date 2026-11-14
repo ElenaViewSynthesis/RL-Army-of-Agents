@@ -1,0 +1,11 @@
+{
+  "run_id": "nsight-perf-20261114T095539Z",
+  "diagnostic_only": true,
+  "gpu_requested": "B200",
+  "task": "relu_squared",
+  "case": "b4096_h14336_bfloat16",
+  "backend": "triton",
+  "sdk_commit": "bd5d5901c6c9b72704245dd0f6e8e1a822bda527",
+  "iters": 20000,
+  "duration_ms": 30000
+}

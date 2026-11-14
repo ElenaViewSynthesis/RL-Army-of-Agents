@@ -1,0 +1,13 @@
+{
+  "diagnostic_only": true,
+  "available": true,
+  "completed": true,
+  "mode": "probe",
+  "backend": "triton",
+  "reason": null,
+  "gpu_name": "NVIDIA B200",
+  "gpu_index": 0,
+  "gpu_uuid": "3b992699-e5c6-47d3-921f-7cf7cff8aa6a",
+  "compute_capability": "10.0",
+  "negative_control": false
+}

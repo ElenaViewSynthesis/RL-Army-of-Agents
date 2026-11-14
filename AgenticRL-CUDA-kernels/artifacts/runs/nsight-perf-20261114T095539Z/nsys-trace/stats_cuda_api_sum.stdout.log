@@ -1,0 +1,5 @@
+Processing [/__modal/volumes/vo-Mak0msHeT0LaqwHpsUr4yX/nsight-perf-20261114T095539Z/nsys-trace/capture.sqlite] with [/opt/nvidia/nsight-compute/2026.4.0/host/target-linux-x64/reports/cuda_api_sum.py]... 
+Time (%),Total Time (ns),Num Calls,Avg (ns),Med (ns),Min (ns),Max (ns),StdDev (ns),Name
+77.8,116518,1,116518.0,116518.0,116518,116518,0.0,cuLaunchKernelEx
+22.2,33160,1,33160.0,33160.0,33160,33160,0.0,cudaDeviceSynchronize
+

@@ -1,0 +1,1 @@
+{"diagnostic_only": true, "task": "relu_squared", "case": "b4096_h14336_bfloat16", "verified": true, "device": "NVIDIA B200", "capability": [10, 0], "iters": 20000, "warmup": 20, "nvtx_range": "agenticrl_generated", "loop_ms": 766.6096801757812, "per_forward_us": 38.330484008789064}
