@@ -1,0 +1,137 @@
+{
+  "purpose": "Stage 7 Tier 1 full grid: all 12 catalog cases per task, on triton, cuda and cutile, with honest, hack and wrong fixtures. Same frozen source as the smoke and acceptance runs; no code changed.",
+  "tasks": [
+    "relu_squared",
+    "silu_and_mul",
+    "geglu_tanh",
+    "rotary_embedding"
+  ],
+  "case_set": "all",
+  "case_ids": {
+    "relu_squared": [
+      "b64_h1024_float32",
+      "b64_h4096_float32",
+      "b64_h14336_float32",
+      "b4096_h1024_float32",
+      "b4096_h4096_float32",
+      "b4096_h14336_float32",
+      "b64_h1024_bfloat16",
+      "b64_h4096_bfloat16",
+      "b64_h14336_bfloat16",
+      "b4096_h1024_bfloat16",
+      "b4096_h4096_bfloat16",
+      "b4096_h14336_bfloat16"
+    ],
+    "silu_and_mul": [
+      "b64_h1024_float32",
+      "b64_h4096_float32",
+      "b64_h14336_float32",
+      "b4096_h1024_float32",
+      "b4096_h4096_float32",
+      "b4096_h14336_float32",
+      "b64_h1024_bfloat16",
+      "b64_h4096_bfloat16",
+      "b64_h14336_bfloat16",
+      "b4096_h1024_bfloat16",
+      "b4096_h4096_bfloat16",
+      "b4096_h14336_bfloat16"
+    ],
+    "geglu_tanh": [
+      "b64_h1024_float32",
+      "b64_h4096_float32",
+      "b64_h16384_float32",
+      "b4096_h1024_float32",
+      "b4096_h4096_float32",
+      "b4096_h16384_float32",
+      "b64_h1024_bfloat16",
+      "b64_h4096_bfloat16",
+      "b64_h16384_bfloat16",
+      "b4096_h1024_bfloat16",
+      "b4096_h4096_bfloat16",
+      "b4096_h16384_bfloat16"
+    ],
+    "rotary_embedding": [
+      "b1_hq32_hkv8_s512_d64_float32",
+      "b1_hq32_hkv8_s512_d128_float32",
+      "b4_hq32_hkv8_s2048_d64_float32",
+      "b4_hq32_hkv8_s2048_d128_float32",
+      "b8_hq32_hkv8_s8192_d64_float32",
+      "b8_hq32_hkv8_s8192_d128_float32",
+      "b1_hq32_hkv8_s512_d64_bfloat16",
+      "b1_hq32_hkv8_s512_d128_bfloat16",
+      "b4_hq32_hkv8_s2048_d64_bfloat16",
+      "b4_hq32_hkv8_s2048_d128_bfloat16",
+      "b8_hq32_hkv8_s8192_d64_bfloat16",
+      "b8_hq32_hkv8_s8192_d128_bfloat16"
+    ]
+  },
+  "backends": [
+    "triton",
+    "cuda",
+    "cutile"
+  ],
+  "fixtures": [
+    "honest",
+    "hack",
+    "wrong"
+  ],
+  "expected_rows": 432,
+  "expected_counts": {
+    "passed": 432,
+    "failed": 0,
+    "unavailable": 0
+  },
+  "estimated_wall_s": 10661,
+  "estimate_definition": "432 rows x 24.4 s, the mean per-row wall of the acceptance run (878 s / 36), plus 120 s startup.",
+  "estimate_limitations": "Planning allowance, not a measurement. Queue and container start are excluded. The Modal function timeout is 21,600 s; per-row deadline 1200 s.",
+  "source_target": "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/artifacts/sources/stage7/tier1-20261113T175914Z",
+  "launch_copy": "/tmp/stage7-tier1-fullgrid-20261113T213520Z-source",
+  "git_revision": "a4a7e9cfcc0db0ddaf897199e79944517c0a698f",
+  "source_manifest_sha256": "abecc24e54c70d971e567d5705039117b65fc37d76b36a9f8029bd2b5f502742",
+  "source_file_count": 245,
+  "run_id": "stage7-tier1-fullgrid-20261113T213520Z",
+  "approval": "User approved on 2026-11-13: 'run the full-suite real paid on GPU for stage 7'",
+  "approval_required": true,
+  "launched": true,
+  "stop_after_run_and_report": true,
+  "automatic_rerun": false,
+  "live_tracking": "tracking.suite_live with --finalize, from the local machine",
+  "cwd": "/tmp/stage7-tier1-fullgrid-20261113T213520Z-source",
+  "env": {
+    "PYTHONPATH": "/tmp/stage7-tier1-fullgrid-20261113T213520Z-source",
+    "MODAL_GPU": "H200"
+  },
+  "argv": [
+    "/mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/.venv/bin/modal",
+    "run",
+    "--detach",
+    "cloud/modal_tasks.py",
+    "--tasks",
+    "stage7",
+    "--case-set",
+    "all",
+    "--backends",
+    "triton,cuda,cutile",
+    "--fixtures",
+    "all",
+    "--timeout-s",
+    "1200",
+    "--run-id",
+    "stage7-tier1-fullgrid-20261113T213520Z"
+  ],
+  "command": "cd /tmp/stage7-tier1-fullgrid-20261113T213520Z-source && PYTHONPATH=\"$PWD\" MODAL_GPU=H200 /mnt/c/Users/proxi/Documents/codex-9/CUDA-RL/AgenticRL-CUDA-kernels/.venv/bin/modal run --detach cloud/modal_tasks.py --tasks stage7 --case-set all --backends triton,cuda,cutile --fixtures all --timeout-s 1200 --run-id stage7-tier1-fullgrid-20261113T213520Z",
+  "benchmark": true,
+  "cold_start": true,
+  "cuda_graphs": false,
+  "expected_fixture_outcomes": {
+    "honest": "verification passes; authored share >= 0.9, zero library time",
+    "hack": "verification passes, provenance fails, reward -1",
+    "wrong": "verification fails, reward -1"
+  },
+  "output": {
+    "volume": "agenticrl-cuda-artifacts",
+    "remote": "/stage7-tier1-fullgrid-20261113T213520Z/",
+    "local": "artifacts/runs/stage7-tier1-fullgrid-20261113T213520Z/"
+  },
+  "next_step": "Stop and report; failures are quoted, not retried or fixed."
+}

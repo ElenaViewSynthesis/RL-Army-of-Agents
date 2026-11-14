@@ -1,0 +1,17 @@
+{
+  "run_id": "stage7-tier1-fullgrid-20261113T213520Z",
+  "tasks": [
+    "relu_squared",
+    "silu_and_mul",
+    "geglu_tanh",
+    "rotary_embedding"
+  ],
+  "case_set": "all",
+  "backends": "triton,cuda,cutile",
+  "fixtures": "all",
+  "timeout_s": 1200,
+  "benchmark": true,
+  "cold_start": true,
+  "cuda_graphs": false,
+  "gpu_requested": "H200"
+}

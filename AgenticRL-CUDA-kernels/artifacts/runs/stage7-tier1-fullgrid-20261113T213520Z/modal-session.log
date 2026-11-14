@@ -1,0 +1,166 @@
+Note that running a local entrypoint in detached mode only keeps the last triggered Modal function alive after the parent process has been killed or disconnected.
+✓ Initialized. View run at 
+https://modal.com/apps/elenamylocuda/main/ap-XUGEwjvFs6qXUmOz3YTqmL
+✓ Created objects.
+├── ✓ Uploaded 
+│   /tmp/stage7-tier1-fullgrid-20261113T213520Z-source/cloud/modal_tasks.py
+├── ✓ Uploaded 
+│   /tmp/stage7-tier1-fullgrid-20261113T213520Z-source/artifacts/upstream.json
+├── ✓ Uploaded /tmp/stage7-tier1-fullgrid-20261113T213520Z-source
+└── ✓ Created Function evaluate.
+{"run_id": "stage7-tier1-fullgrid-20261113T213520Z", "function_call_id": "fc-01M7BDD59ZS11G2ABR70HEK7VC", "volume": "agenticrl-cuda-artifacts", "remote": "/artifacts/stage7-tier1-fullgrid-20261113T213520Z"}
+{"function_call_id": "fc-01M7BDD59ZS11G2ABR70HEK7VC"}
+{"completed": 2, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 3, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 4, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 5, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 6, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 8, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 9, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 12, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 12, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 13, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 15, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 16, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 18, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 19, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 21, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 22, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 23, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 24, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 25, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 27, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 27, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 30, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 30, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 31, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 33, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 33, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 36, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 37, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 39, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 39, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 40, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 42, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 43, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 45, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 46, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 48, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 49, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 50, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 51, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 52, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 54, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 55, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 57, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 58, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 59, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 60, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 62, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 63, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 66, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 66, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 67, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 69, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 70, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 72, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 73, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 75, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 76, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 77, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 78, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 80, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 81, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 83, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 84, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 85, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 86, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 87, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 90, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 91, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 93, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 93, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 95, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 96, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 97, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 99, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 100, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 102, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 103, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 104, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 105, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 106, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 108, "last_task": "relu_squared", "last_status": "passed"}
+{"completed": 110, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 111, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 112, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 114, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 115, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 117, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 118, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 120, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 121, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 122, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 123, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 125, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 126, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 129, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 129, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 130, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 132, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 133, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 135, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 136, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 138, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 139, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 140, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 141, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 143, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 144, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 147, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 147, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 148, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 150, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 151, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 153, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 154, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 156, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 156, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 157, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 158, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 159, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 160, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 162, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 163, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 165, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 165, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 166, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 168, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 169, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 171, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 172, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 174, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 175, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 175, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 177, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 178, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 180, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 180, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 182, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 183, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 183, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 184, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 185, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 185, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 186, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 187, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 188, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 189, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 190, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 191, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 192, "last_task": "silu_and_mul", "last_status": "passed"}
+{"completed": 192, "last_task": "silu_and_mul", "last_status": "passed"}
+{"function_call_id": "fc-01M7BDD59ZS11G2ABR70HEK7VC", "error_type": "ConnectionError", "recovery": "python -m cloud.modal_job --call-id fc-01M7BDD59ZS11G2ABR70HEK7VC"}
+╭─ Error ──────────────────────────────────────────────────────────────────────╮
+│ [Errno -3] Temporary failure in name resolution                              │
+╰──────────────────────────────────────────────────────────────────────────────╯
