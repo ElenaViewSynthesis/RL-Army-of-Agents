@@ -1,0 +1,41 @@
+[
+  {
+    "origin": "punica",
+    "repo": "https://github.com/punica-ai/punica",
+    "revision": "591b59899f0a20760821785d06b331c8a2e5cb86",
+    "license": "Apache-2.0",
+    "license_url": "https://raw.githubusercontent.com/punica-ai/punica/591b59899f0a20760821785d06b331c8a2e5cb86/LICENSE",
+    "license_sha256": "407eb5060f6c696317258792964cbaee1558795ececb04c3d94089355cca1b26",
+    "retrieved_at": "2026-11-10T10:39:16.103064+00:00",
+    "method": "License and public behavior only; no kernel source copied",
+    "behavior_urls": [
+      "https://arxiv.org/abs/2310.18547"
+    ]
+  },
+  {
+    "origin": "slora",
+    "repo": "https://github.com/S-LoRA/S-LoRA",
+    "revision": "c1ddf488781ea7f551cd0bb07bfd097124c93411",
+    "license": "Apache-2.0",
+    "license_url": "https://raw.githubusercontent.com/S-LoRA/S-LoRA/c1ddf488781ea7f551cd0bb07bfd097124c93411/LICENSE",
+    "license_sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+    "retrieved_at": "2026-11-10T10:39:16.739464+00:00",
+    "method": "License and public behavior only; no kernel source copied",
+    "behavior_urls": [
+      "https://arxiv.org/abs/2311.03285"
+    ]
+  },
+  {
+    "origin": "vllm",
+    "repo": "https://github.com/vllm-project/vllm",
+    "revision": "4e3463c87493ebd2c5d5fbe4be6469911e23e2bf",
+    "license": "Apache-2.0",
+    "license_url": "https://raw.githubusercontent.com/vllm-project/vllm/4e3463c87493ebd2c5d5fbe4be6469911e23e2bf/LICENSE",
+    "license_sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+    "retrieved_at": "2026-11-10T10:39:17.259641+00:00",
+    "method": "License and public behavior only; no kernel source copied",
+    "behavior_urls": [
+      "https://docs.vllm.ai/en/latest/features/lora/"
+    ]
+  }
+]

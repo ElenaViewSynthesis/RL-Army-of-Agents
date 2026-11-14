@@ -1,0 +1,16 @@
+{
+  "run_id": "stage5-tuned-triton-acceptance-20261114T181907Z",
+  "tasks": [
+    "eagle_candidate_topk",
+    "eagle_tree_row_attention",
+    "eagle_tree_verify_attention"
+  ],
+  "case_set": "acceptance",
+  "backends": "triton",
+  "fixtures": "all",
+  "timeout_s": 1200,
+  "benchmark": true,
+  "cold_start": true,
+  "cuda_graphs": false,
+  "gpu_requested": "H200"
+}
