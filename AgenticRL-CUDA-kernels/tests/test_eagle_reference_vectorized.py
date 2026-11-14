@@ -107,9 +107,12 @@ class TritonGridLimitTests(unittest.TestCase):
     def test_vocabulary_is_on_grid_axis_zero(self):
         # Grid axes 1 and 2 are capped at 65535; V reaches 151936 (H200 run
         # task-stage5-gpu-acceptance-20261109T190928Z failed with "invalid argument").
+        # The tiled scorer (2026-11-14) launches a one-axis grid of vocabulary
+        # tiles and covers every batch row inside each program.
         source = (ROOT / "tasks/eagle_candidate_topk/kernels/triton/candidate_topk.py").read_text()
-        self.assertIn("eagle_vocab_score[(v,b)](", source)
-        self.assertIn("token, batch = tl.program_id(0), tl.program_id(1)", source)
+        self.assertIn("eagle_vocab_score[(triton.cdiv(v,BLOCK_V),)](", source)
+        self.assertIn("tile = tl.program_id(0).to(tl.int64)", source)
+        self.assertNotIn("tl.program_id(1)", source.split("def eagle_vocab_score", 1)[1].split("@triton.jit", 1)[0])
 
 
 if __name__ == "__main__":
