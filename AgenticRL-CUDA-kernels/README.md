@@ -711,6 +711,19 @@ memory time by the same name rules as the reward's provenance. With
 the generated range, read from the SQLite `GPU_METRICS` and
 `TARGET_INFO_GPU_METRICS` tables (null when absent).
 
+After a successful capture the harness also runs `nsys stats` (`cuda_gpu_kern_sum`,
+`cuda_api_sum`, `nvtx_sum`, `cuda_gpu_mem_time_sum`) and `nsys analyze` (`gpu_gaps`,
+`gpu_time_util`, `cuda_api_sync`, `cuda_memcpy_sync`) on `capture.sqlite`, each as a
+bounded stage whose CSV lands in `<label>.stdout.log`; `--no-nsys-reports` skips
+them. They never change the capture's status. The review computes per-kernel
+totals for the whole capture straight from SQLite (`kernel_sum`,
+`diag/nsys_kernel_sum_total_ns`) and checks them against `cuda_gpu_kern_sum`
+(`diag/nsys_stats_matches_sqlite`, with `diag/nsys_stats_reason` when the report
+failed, timed out, did not parse or disagrees). With `gpu-metrics` the harness
+also records `nsys profile --gpu-metrics-devices=help` verbatim, to settle whether
+nsys's device IDs match the `nvidia-smi` index it passes. None of this has run on
+a GPU yet.
+
 | ncu preset | Sections | Use |
 |---|---|---|
 | `basic` (default) | `--set basic`; byte-identical to the validated command | duration, SM and DRAM throughput, occupancy, launch shape |
@@ -803,6 +816,22 @@ under `nsys profile --trace=cuda,nvtx --cuda-graph-trace=node`.
 Only the default `trace` profile and the `basic` ncu preset have H200 evidence
 (run `20261108T200118Z`); the other profiles, presets and the new eager,
 compile and warm-up ranges are tested with fake tools only.
+
+#### Nsight Perf SDK for AI (Blackwell only)
+
+> **Note.** The [Nsight Perf SDK for AI](https://github.com/NVIDIA/nsight-perf-sdk-for-ai) supports
+> only Blackwell and Rubin GPUs, not the H200 (Hopper). It runs here on a Modal B200, in its own
+> CUDA 13.5 image; the H200 task image is unchanged. Commands are in
+> [NSIGHT_PERF_SDK.md](NSIGHT_PERF_SDK.md).
+>
+> - `scripts/nsight_perf_workload.py` runs one task's generated model in a loop, each forward inside
+>   an NVTX range, without `torch.profiler`, so it does not compete with the tracer.
+> - `cloud/modal_nsight_perf.py`:
+>   1. Starts the SDK service; if that fails, retries without GPU counters and hardware trace.
+>   2. Records the task with the streaming recorder, takes a snapshot, and exports both to Perfetto.
+>
+> First run (`nsight-perf-20261114T095539Z`, driver 610.57.04): the service did not become ready in
+> either mode, so no SDK trace was recorded; the `utils.diagnose nsys` capture of the same case passed.
 
 ## Experiment tracking (W&B + Weave, opt-in)
 

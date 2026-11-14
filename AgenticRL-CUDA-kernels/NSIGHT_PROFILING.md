@@ -11,6 +11,8 @@ have H200 evidence (run `20261108T200118Z`). The other commands below come from 
 guide (v2026.6). The Modal image pins **nsys 2026.2.1**, so some commands may be missing or differ there:
 `survey`, `query`, `docs` and `finalize` look newer than the pin. Before relying on one, run
 `nsys --help` and `nsys <command> --help` on the image. None of these commands has run in this repo yet.
+The harness now runs the `stats` and `analyze` commands after each capture (section 5); that wiring has
+only been tested with fake tools.
 
 ## Per-kernel totals: three tools, one number
 
@@ -144,12 +146,23 @@ nsys survey <out>/capture.nsys-rep
 | Eager, compile, warm-up and generated phases | `--profile stages` (NVTX ranges in the worker) | section 1, second command, plus the ranges |
 | Kernels inside CUDA graphs | `--profile graphs`; `scripts/graph_trace.py` | `--cuda-graph-trace=node` |
 | GPU hardware metrics | `--profile gpu-metrics` (device index from `CUDA_VISIBLE_DEVICES`) | `--gpu-metrics-devices=<id>` |
-| Per-kernel totals | reviewer's per-range busy time and provenance split | `nsys stats --report cuda_gpu_kern_sum` |
+| Per-kernel totals | reviewer's `kernel_sum` from SQLite, cross-checked against `stats_cuda_gpu_kern_sum` | `nsys stats --report cuda_gpu_kern_sum` |
+| Summary reports | `stats_cuda_api_sum`, `stats_nvtx_sum`, `stats_cuda_gpu_mem_time_sum` stages | section 2 |
+| Expert-system rules | `analyze_<rule>` stages for `gpu_gaps`, `gpu_time_util`, `cuda_api_sync`, `cuda_memcpy_sync` | section 3 |
+| GPU-metric device IDs | `gpu_metrics_devices_help` stage (with `--profile gpu-metrics`), recorded verbatim | `--gpu-metrics-devices=help` |
 | Per-kernel counters | `utils.diagnose ncu --preset ...` | (Nsight Compute, not nsys) |
 
-The `stats`, `analyze`, `query` and `survey` commands are not wired into the harness yet; run them by
-hand on a capture's `.nsys-rep`. Wiring `nsys stats --report cuda_gpu_kern_sum` into the reviewer is a
-natural follow-up.
+**Wired into the harness (not yet run on a GPU).** After a successful capture, `utils.diagnose nsys` runs
+each `nsys stats` report and `nsys analyze` rule above on `capture.sqlite` as its own bounded stage
+(120 s each), recorded under `report.json`'s `nsys_reports`, with the CSV in `<label>.stdout.log`. These
+stages never change the capture's status; `--no-nsys-reports` skips them. The reviewer computes the
+per-kernel totals for the whole capture directly from SQLite (the `nsys query` example in section 4,
+in Python, so it works with any nsys version) and compares the total time and launch count with
+`cuda_gpu_kern_sum`: `diag/nsys_stats_matches_sqlite`, and `diag/nsys_stats_reason` (`not_run`,
+`stats_failed`, `stats_timeout`, `stats_unparsed` or `stats_differ_from_sqlite`). Kernel names are not
+compared, because the two can format them differently.
+
+`query` and `survey` stay manual: they look newer than the image's nsys 2026.2.1.
 
 ## 6. Caveats
 
@@ -158,7 +171,8 @@ natural follow-up.
 - **GPU metric device IDs** are the IDs that `--gpu-metrics-devices=help` reports. The harness passes the
   `nvidia-smi` index of the assigned GPU; whether the two always agree on the image is unverified. The
   alternative is `--gpu-metrics-devices=cuda-visible`, correct when `CUDA_VISIBLE_DEVICES` holds only the
-  assigned GPU, as on a one-GPU Modal container.
+  assigned GPU, as on a one-GPU Modal container. A `--profile gpu-metrics` run now records nsys's own
+  listing (`gpu_metrics_devices_help` in the review), so the next H200 run answers this.
 - **Only the first capture range** starts a collection unless `--capture-range-end=repeat[:N]` is set.
   With `--capture-range-end=stop` (the harness default) the application keeps running after the range;
   the nsys default `stop-shutdown` ends the session.
