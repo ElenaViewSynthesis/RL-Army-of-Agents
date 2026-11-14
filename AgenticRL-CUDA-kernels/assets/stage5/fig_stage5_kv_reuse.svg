@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 250" width="760" height="250" role="img" aria-label="Animation: untuned, one program per query row, so the same key/value tile is read 512 times; tuned, one program per tile of 128 rows, so it is read 4 times.">
+<style>.dot{offset-rotate:0deg;animation:move 4.0s linear infinite}@keyframes move{from{offset-distance:0%}to{offset-distance:100%}}.cnt{opacity:0}.final{opacity:0}@media (prefers-reduced-motion: reduce){.dot{animation:none;offset-distance:50%}.cnt{animation:none!important;opacity:0}.final{opacity:1}}@keyframes l0{0.0%{opacity:1}3.125%{opacity:1}3.126%{opacity:0}100%{opacity:0}}.l0{animation:l0 4.0s steps(1,end) infinite}@keyframes l1{0%{opacity:0}3.125%{opacity:1}9.375%{opacity:1}9.376%{opacity:0}100%{opacity:0}}.l1{animation:l1 4.0s steps(1,end) infinite}@keyframes l2{0%{opacity:0}9.375%{opacity:1}15.625%{opacity:1}15.626%{opacity:0}100%{opacity:0}}.l2{animation:l2 4.0s steps(1,end) infinite}@keyframes l3{0%{opacity:0}15.625%{opacity:1}21.875%{opacity:1}21.876%{opacity:0}100%{opacity:0}}.l3{animation:l3 4.0s steps(1,end) infinite}@keyframes l4{0%{opacity:0}21.875%{opacity:1}28.125%{opacity:1}28.126%{opacity:0}100%{opacity:0}}.l4{animation:l4 4.0s steps(1,end) infinite}@keyframes l5{0%{opacity:0}28.125%{opacity:1}34.375%{opacity:1}34.376%{opacity:0}100%{opacity:0}}.l5{animation:l5 4.0s steps(1,end) infinite}@keyframes l6{0%{opacity:0}34.375%{opacity:1}40.625%{opacity:1}40.626%{opacity:0}100%{opacity:0}}.l6{animation:l6 4.0s steps(1,end) infinite}@keyframes l7{0%{opacity:0}40.625%{opacity:1}46.875%{opacity:1}46.876%{opacity:0}100%{opacity:0}}.l7{animation:l7 4.0s steps(1,end) infinite}@keyframes l8{0%{opacity:0}46.875%{opacity:1}53.125%{opacity:1}53.126%{opacity:0}100%{opacity:0}}.l8{animation:l8 4.0s steps(1,end) infinite}@keyframes l9{0%{opacity:0}53.125%{opacity:1}59.375%{opacity:1}59.376%{opacity:0}100%{opacity:0}}.l9{animation:l9 4.0s steps(1,end) infinite}@keyframes l10{0%{opacity:0}59.375%{opacity:1}65.625%{opacity:1}65.626%{opacity:0}100%{opacity:0}}.l10{animation:l10 4.0s steps(1,end) infinite}@keyframes l11{0%{opacity:0}65.625%{opacity:1}71.875%{opacity:1}71.876%{opacity:0}100%{opacity:0}}.l11{animation:l11 4.0s steps(1,end) infinite}@keyframes l12{0%{opacity:0}71.875%{opacity:1}78.125%{opacity:1}78.126%{opacity:0}100%{opacity:0}}.l12{animation:l12 4.0s steps(1,end) infinite}@keyframes l13{0%{opacity:0}78.125%{opacity:1}84.375%{opacity:1}84.376%{opacity:0}100%{opacity:0}}.l13{animation:l13 4.0s steps(1,end) infinite}@keyframes l14{0%{opacity:0}84.375%{opacity:1}90.625%{opacity:1}90.626%{opacity:0}100%{opacity:0}}.l14{animation:l14 4.0s steps(1,end) infinite}@keyframes l15{0%{opacity:0}90.625%{opacity:1}96.875%{opacity:1}96.876%{opacity:0}100%{opacity:0}}.l15{animation:l15 4.0s steps(1,end) infinite}@keyframes l16{0%{opacity:0}96.875%{opacity:1}100.0%{opacity:1}}.l16{animation:l16 4.0s steps(1,end) infinite}@keyframes r0{0.0%{opacity:1}12.5%{opacity:1}12.501%{opacity:0}100%{opacity:0}}.r0{animation:r0 4.0s steps(1,end) infinite}@keyframes r1{0%{opacity:0}12.5%{opacity:1}37.5%{opacity:1}37.501%{opacity:0}100%{opacity:0}}.r1{animation:r1 4.0s steps(1,end) infinite}@keyframes r2{0%{opacity:0}37.5%{opacity:1}62.5%{opacity:1}62.501%{opacity:0}100%{opacity:0}}.r2{animation:r2 4.0s steps(1,end) infinite}@keyframes r3{0%{opacity:0}62.5%{opacity:1}87.5%{opacity:1}87.501%{opacity:0}100%{opacity:0}}.r3{animation:r3 4.0s steps(1,end) infinite}@keyframes r4{0%{opacity:0}87.5%{opacity:1}100.0%{opacity:1}}.r4{animation:r4 4.0s steps(1,end) infinite}</style>
+<rect width="760" height="250" fill="#ffffff"/>
+<defs><marker id="h" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#c3c2b7"/></marker></defs>
+<text x="10" y="18" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1f1e1c" text-anchor="start" font-weight="bold">Untuned: one program per query row</text>
+<text x="400" y="18" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1f1e1c" text-anchor="start" font-weight="bold">Tuned: one program per tile of 128 rows</text>
+<rect x="10" y="32" width="110" height="7" rx="2" fill="#ffffff" stroke="#c3c2b7"/>
+<line x1="238" y1="86" x2="124" y2="35.5" stroke="#c3c2b7" stroke-width="1" marker-end="url(#h)"/>
+<circle class="dot" r="3.5" fill="#eb6834" stroke="#ffffff" stroke-width="1" style="offset-path:path('M238 86 L124 35.5');animation-delay:-0.125s"/>
+<rect x="10" y="41" width="110" height="7" rx="2" fill="#ffffff" stroke="#c3c2b7"/>
+<line x1="238" y1="86" x2="124" y2="44.5" stroke="#c3c2b7" stroke-width="1" marker-end="url(#h)"/>
+<circle class="dot" r="3.5" fill="#eb6834" stroke="#ffffff" stroke-width="1" style="offset-path:path('M238 86 L124 44.5');animation-delay:-0.375s"/>
+<rect x="10" y="50" width="110" height="7" rx="2" fill="#ffffff" stroke="#c3c2b7"/>
+<line x1="238" y1="86" x2="124" y2="53.5" stroke="#c3c2b7" stroke-width="1" marker-end="url(#h)"/>
+<circle class="dot" r="3.5" fill="#eb6834" stroke="#ffffff" stroke-width="1" style="offset-path:path('M238 86 L124 53.5');animation-delay:-0.625s"/>
+<rect x="10" y="59" width="110" height="7" rx="2" fill="#ffffff" stroke="#c3c2b7"/>
+<line x1="238" y1="86" x2="124" y2="62.5" stroke="#c3c2b7" stroke-width="1" marker-end="url(#h)"/>
+<circle class="dot" r="3.5" fill="#eb6834" stroke="#ffffff" stroke-width="1" style="offset-path:path('M238 86 L124 62.5');animation-delay:-0.875s"/>
+<rect x="10" y="68" width="110" height="7" rx="2" fill="#ffffff" stroke="#c3c2b7"/>
+<line x1="238" y1="86" x2="124" y2="71.5" stroke="#c3c2b7" stroke-width="1" marker-end="url(#h)"/>
+<circle class="dot" r="3.5" fill="#eb6834" stroke="#ffffff" stroke-width="1" style="offset-path:path('M238 86 L124 71.5');animation-delay:-1.125s"/>
+<rect x="10" y="77" width="110" height="7" rx="2" fill="#ffffff" stroke="#c3c2b7"/>
+<line x1="238" y1="86" x2="124" y2="80.5" stroke="#c3c2b7" stroke-width="1" marker-end="url(#h)"/>
+<circle class="dot" r="3.5" fill="#eb6834" stroke="#ffffff" stroke-width="1" style="offset-path:path('M238 86 L124 80.5');animation-delay:-1.375s"/>
+<rect x="10" y="86" width="110" height="7" rx="2" fill="#ffffff" stroke="#c3c2b7"/>
+<line x1="238" y1="86" x2="124" y2="89.5" stroke="#c3c2b7" stroke-width="1" marker-end="url(#h)"/>
+<circle class="dot" r="3.5" fill="#eb6834" stroke="#ffffff" stroke-width="1" style="offset-path:path('M238 86 L124 89.5');animation-delay:-1.625s"/>
+<rect x="10" y="95" width="110" height="7" rx="2" fill="#ffffff" stroke="#c3c2b7"/>
+<line x1="238" y1="86" x2="124" y2="98.5" stroke="#c3c2b7" stroke-width="1" marker-end="url(#h)"/>
+<circle class="dot" r="3.5" fill="#eb6834" stroke="#ffffff" stroke-width="1" style="offset-path:path('M238 86 L124 98.5');animation-delay:-1.875s"/>
+<rect x="10" y="104" width="110" height="7" rx="2" fill="#ffffff" stroke="#c3c2b7"/>
+<line x1="238" y1="86" x2="124" y2="107.5" stroke="#c3c2b7" stroke-width="1" marker-end="url(#h)"/>
+<circle class="dot" r="3.5" fill="#eb6834" stroke="#ffffff" stroke-width="1" style="offset-path:path('M238 86 L124 107.5');animation-delay:-2.125s"/>
+<rect x="10" y="113" width="110" height="7" rx="2" fill="#ffffff" stroke="#c3c2b7"/>
+<line x1="238" y1="86" x2="124" y2="116.5" stroke="#c3c2b7" stroke-width="1" marker-end="url(#h)"/>
+<circle class="dot" r="3.5" fill="#eb6834" stroke="#ffffff" stroke-width="1" style="offset-path:path('M238 86 L124 116.5');animation-delay:-2.375s"/>
+<rect x="10" y="122" width="110" height="7" rx="2" fill="#ffffff" stroke="#c3c2b7"/>
+<line x1="238" y1="86" x2="124" y2="125.5" stroke="#c3c2b7" stroke-width="1" marker-end="url(#h)"/>
+<circle class="dot" r="3.5" fill="#eb6834" stroke="#ffffff" stroke-width="1" style="offset-path:path('M238 86 L124 125.5');animation-delay:-2.625s"/>
+<rect x="10" y="131" width="110" height="7" rx="2" fill="#ffffff" stroke="#c3c2b7"/>
+<line x1="238" y1="86" x2="124" y2="134.5" stroke="#c3c2b7" stroke-width="1" marker-end="url(#h)"/>
+<circle class="dot" r="3.5" fill="#eb6834" stroke="#ffffff" stroke-width="1" style="offset-path:path('M238 86 L124 134.5');animation-delay:-2.875s"/>
+<rect x="10" y="140" width="110" height="7" rx="2" fill="#ffffff" stroke="#c3c2b7"/>
+<line x1="238" y1="86" x2="124" y2="143.5" stroke="#c3c2b7" stroke-width="1" marker-end="url(#h)"/>
+<circle class="dot" r="3.5" fill="#eb6834" stroke="#ffffff" stroke-width="1" style="offset-path:path('M238 86 L124 143.5');animation-delay:-3.125s"/>
+<rect x="10" y="149" width="110" height="7" rx="2" fill="#ffffff" stroke="#c3c2b7"/>
+<line x1="238" y1="86" x2="124" y2="152.5" stroke="#c3c2b7" stroke-width="1" marker-end="url(#h)"/>
+<circle class="dot" r="3.5" fill="#eb6834" stroke="#ffffff" stroke-width="1" style="offset-path:path('M238 86 L124 152.5');animation-delay:-3.375s"/>
+<rect x="10" y="158" width="110" height="7" rx="2" fill="#ffffff" stroke="#c3c2b7"/>
+<line x1="238" y1="86" x2="124" y2="161.5" stroke="#c3c2b7" stroke-width="1" marker-end="url(#h)"/>
+<circle class="dot" r="3.5" fill="#eb6834" stroke="#ffffff" stroke-width="1" style="offset-path:path('M238 86 L124 161.5');animation-delay:-3.625s"/>
+<rect x="10" y="167" width="110" height="7" rx="2" fill="#ffffff" stroke="#c3c2b7"/>
+<line x1="238" y1="86" x2="124" y2="170.5" stroke="#c3c2b7" stroke-width="1" marker-end="url(#h)"/>
+<circle class="dot" r="3.5" fill="#eb6834" stroke="#ffffff" stroke-width="1" style="offset-path:path('M238 86 L124 170.5');animation-delay:-3.875s"/>
+<text x="10" y="190" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#55544f" text-anchor="start" font-weight="normal">… 512 query rows (8 heads × 64 nodes)</text>
+<rect x="240" y="60" width="118" height="52" rx="4" fill="#f3f2ee" stroke="#c3c2b7"/>
+<text x="250" y="80" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1f1e1c" text-anchor="start" font-weight="bold">K/V tile</text>
+<text x="250" y="99" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#1f1e1c" text-anchor="start" font-weight="bold" class="cnt l0">0 / 512 reads</text>
+<text x="250" y="99" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#1f1e1c" text-anchor="start" font-weight="bold" class="cnt l1">32 / 512 reads</text>
+<text x="250" y="99" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#1f1e1c" text-anchor="start" font-weight="bold" class="cnt l2">64 / 512 reads</text>
+<text x="250" y="99" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#1f1e1c" text-anchor="start" font-weight="bold" class="cnt l3">96 / 512 reads</text>
+<text x="250" y="99" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#1f1e1c" text-anchor="start" font-weight="bold" class="cnt l4">128 / 512 reads</text>
+<text x="250" y="99" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#1f1e1c" text-anchor="start" font-weight="bold" class="cnt l5">160 / 512 reads</text>
+<text x="250" y="99" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#1f1e1c" text-anchor="start" font-weight="bold" class="cnt l6">192 / 512 reads</text>
+<text x="250" y="99" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#1f1e1c" text-anchor="start" font-weight="bold" class="cnt l7">224 / 512 reads</text>
+<text x="250" y="99" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#1f1e1c" text-anchor="start" font-weight="bold" class="cnt l8">256 / 512 reads</text>
+<text x="250" y="99" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#1f1e1c" text-anchor="start" font-weight="bold" class="cnt l9">288 / 512 reads</text>
+<text x="250" y="99" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#1f1e1c" text-anchor="start" font-weight="bold" class="cnt l10">320 / 512 reads</text>
+<text x="250" y="99" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#1f1e1c" text-anchor="start" font-weight="bold" class="cnt l11">352 / 512 reads</text>
+<text x="250" y="99" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#1f1e1c" text-anchor="start" font-weight="bold" class="cnt l12">384 / 512 reads</text>
+<text x="250" y="99" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#1f1e1c" text-anchor="start" font-weight="bold" class="cnt l13">416 / 512 reads</text>
+<text x="250" y="99" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#1f1e1c" text-anchor="start" font-weight="bold" class="cnt l14">448 / 512 reads</text>
+<text x="250" y="99" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#1f1e1c" text-anchor="start" font-weight="bold" class="cnt l15">480 / 512 reads</text>
+<text x="250" y="99" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#1f1e1c" text-anchor="start" font-weight="bold" class="cnt l16">512 / 512 reads</text>
+<text x="250" y="99" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#1f1e1c" text-anchor="start" font-weight="bold" class="final">512 / 512 reads</text>
+<rect x="400" y="32" width="110" height="32" rx="3" fill="#ffffff" stroke="#c3c2b7"/>
+<text x="408" y="52" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#55544f" text-anchor="start" font-weight="normal">rows 0–127</text>
+<line x1="628" y1="86" x2="514" y2="48" stroke="#c3c2b7" stroke-width="1.5" marker-end="url(#h)"/>
+<circle class="dot" r="4.5" fill="#2a78d6" stroke="#ffffff" stroke-width="1" style="offset-path:path('M628 86 L514 48');animation-delay:-0.500s"/>
+<rect x="400" y="70" width="110" height="32" rx="3" fill="#ffffff" stroke="#c3c2b7"/>
+<text x="408" y="90" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#55544f" text-anchor="start" font-weight="normal">rows 128–255</text>
+<line x1="628" y1="86" x2="514" y2="86" stroke="#c3c2b7" stroke-width="1.5" marker-end="url(#h)"/>
+<circle class="dot" r="4.5" fill="#2a78d6" stroke="#ffffff" stroke-width="1" style="offset-path:path('M628 86 L514 86');animation-delay:-1.500s"/>
+<rect x="400" y="108" width="110" height="32" rx="3" fill="#ffffff" stroke="#c3c2b7"/>
+<text x="408" y="128" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#55544f" text-anchor="start" font-weight="normal">rows 256–383</text>
+<line x1="628" y1="86" x2="514" y2="124" stroke="#c3c2b7" stroke-width="1.5" marker-end="url(#h)"/>
+<circle class="dot" r="4.5" fill="#2a78d6" stroke="#ffffff" stroke-width="1" style="offset-path:path('M628 86 L514 124');animation-delay:-2.500s"/>
+<rect x="400" y="146" width="110" height="32" rx="3" fill="#ffffff" stroke="#c3c2b7"/>
+<text x="408" y="166" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#55544f" text-anchor="start" font-weight="normal">rows 384–511</text>
+<line x1="628" y1="86" x2="514" y2="162" stroke="#c3c2b7" stroke-width="1.5" marker-end="url(#h)"/>
+<circle class="dot" r="4.5" fill="#2a78d6" stroke="#ffffff" stroke-width="1" style="offset-path:path('M628 86 L514 162');animation-delay:-3.500s"/>
+<text x="400" y="190" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#55544f" text-anchor="start" font-weight="normal">each tile reused by its 128 rows from shared memory</text>
+<rect x="630" y="60" width="120" height="52" rx="4" fill="#f3f2ee" stroke="#c3c2b7"/>
+<text x="640" y="80" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1f1e1c" text-anchor="start" font-weight="bold">K/V tile</text>
+<text x="640" y="99" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#1f1e1c" text-anchor="start" font-weight="bold" class="cnt r0">0 / 4 reads</text>
+<text x="640" y="99" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#1f1e1c" text-anchor="start" font-weight="bold" class="cnt r1">1 / 4 reads</text>
+<text x="640" y="99" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#1f1e1c" text-anchor="start" font-weight="bold" class="cnt r2">2 / 4 reads</text>
+<text x="640" y="99" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#1f1e1c" text-anchor="start" font-weight="bold" class="cnt r3">3 / 4 reads</text>
+<text x="640" y="99" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#1f1e1c" text-anchor="start" font-weight="bold" class="cnt r4">4 / 4 reads</text>
+<text x="640" y="99" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#1f1e1c" text-anchor="start" font-weight="bold" class="final">4 / 4 reads</text>
+<text x="10" y="210" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#55544f" text-anchor="start" font-weight="normal">Each moving dot is one read of the same key/value tile from device memory.</text>
+<text x="10" y="225" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#55544f" text-anchor="start" font-weight="normal">Counters: reads of this tile so far in one pass over the window; each untuned lane stands for 32 rows.</text>
+<text x="10" y="240" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#55544f" text-anchor="start" font-weight="normal">Design arithmetic from the launch grid at the largest verify-attention case, not a measurement.</text>
+</svg>

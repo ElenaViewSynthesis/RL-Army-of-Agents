@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 190" width="640" height="190" role="img" aria-label="Dumbbell chart, log scale: repeated reads of the same data, untuned against tuned, for tree verify attention, tree row attention and candidate top-k.">
+<rect width="640" height="190" fill="#ffffff"/>
+<circle cx="170" cy="12" r="4.5" fill="#eb6834"/><text x="179" y="16" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#55544f" text-anchor="start" font-weight="normal">Untuned</text>
+<circle cx="240" cy="12" r="4.5" fill="#2a78d6"/><text x="249" y="16" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#55544f" text-anchor="start" font-weight="normal">Tuned</text>
+<line x1="206.4" x2="206.4" y1="26" y2="150" stroke="#e1e0d9" stroke-width="1"/>
+<text x="206.4" y="166" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#55544f" text-anchor="middle" font-weight="normal">1×</text>
+<line x1="327.6" x2="327.6" y1="26" y2="150" stroke="#e1e0d9" stroke-width="1"/>
+<text x="327.6" y="166" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#55544f" text-anchor="middle" font-weight="normal">10×</text>
+<line x1="448.8" x2="448.8" y1="26" y2="150" stroke="#e1e0d9" stroke-width="1"/>
+<text x="448.8" y="166" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#55544f" text-anchor="middle" font-weight="normal">100×</text>
+<line x1="570.0" x2="570.0" y1="26" y2="150" stroke="#e1e0d9" stroke-width="1"/>
+<text x="570.0" y="166" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#55544f" text-anchor="middle" font-weight="normal">1,000×</text>
+<text x="158" y="54.0" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1f1e1c" text-anchor="end" font-weight="normal">Tree verify attention</text>
+<line x1="279.3" x2="534.8" y1="50.0" y2="50.0" stroke="#c3c2b7" stroke-width="2"/>
+<circle cx="534.8" cy="50.0" r="5.5" fill="#eb6834" stroke="#ffffff" stroke-width="2"/>
+<circle cx="279.3" cy="50.0" r="5.5" fill="#2a78d6" stroke="#ffffff" stroke-width="2"/>
+<text x="544.8" y="54.0" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#55544f" text-anchor="start" font-weight="normal">512</text>
+<text x="269.3" y="54.0" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#55544f" text-anchor="end" font-weight="normal">4</text>
+<text x="158" y="94.0" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1f1e1c" text-anchor="end" font-weight="normal">Tree row attention</text>
+<line x1="279.3" x2="534.8" y1="90.0" y2="90.0" stroke="#c3c2b7" stroke-width="2"/>
+<circle cx="534.8" cy="90.0" r="5.5" fill="#eb6834" stroke="#ffffff" stroke-width="2"/>
+<circle cx="279.3" cy="90.0" r="5.5" fill="#2a78d6" stroke="#ffffff" stroke-width="2"/>
+<text x="544.8" y="94.0" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#55544f" text-anchor="start" font-weight="normal">512</text>
+<text x="269.3" y="94.0" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#55544f" text-anchor="end" font-weight="normal">4</text>
+<text x="158" y="134.0" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1f1e1c" text-anchor="end" font-weight="normal">Candidate top-k</text>
+<line x1="206.4" x2="388.8" y1="130.0" y2="130.0" stroke="#c3c2b7" stroke-width="2"/>
+<circle cx="388.8" cy="130.0" r="5.5" fill="#eb6834" stroke="#ffffff" stroke-width="2"/>
+<circle cx="206.4" cy="130.0" r="5.5" fill="#2a78d6" stroke="#ffffff" stroke-width="2"/>
+<text x="398.8" y="134.0" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#55544f" text-anchor="start" font-weight="normal">32</text>
+<text x="196.4" y="134.0" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#55544f" text-anchor="end" font-weight="normal">1</text>
+<text x="10" y="182" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#55544f" text-anchor="start" font-weight="normal">Programs requesting the same data at the largest case; design arithmetic, not a measurement.</text>
+</svg>
