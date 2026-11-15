@@ -1,0 +1,25 @@
+NVIDIA Nsight Perf
+Usage:
+  nvidia-nsight-perf [OPTION...]
+
+      --config arg              NVIDIA Nsight Perf config YAML path 
+                                (default: "")
+      --export-default-config-only arg
+                                Export the default NVIDIA Nsight Perf 
+                                config YAML to the specified path and exit; 
+                                no service is started (default: "")
+      --timeout-ms arg          Initialization timeout in milliseconds 
+                                (default: 4294967295)
+      --validate-config         Validate the config and exit; reports what 
+                                each GpuPmCounters entry resolves to. No 
+                                GPU required, no service started
+      --chip arg                With --validate-config, also report whether 
+                                the entry covering this chip schedules in 
+                                one pass, e.g. --chip GB202. Needs the 
+                                PerfWorks host library but no GPU (default: 
+                                "")
+      --global                  Run the service in global scope (Linux: 
+                                always on for root; Windows: requires 
+                                Administrator)
+  -h, --help                    Print help
+

@@ -1,0 +1,5 @@
+ls: cannot access '/dev/nvidia-caps': No such file or directory
+crw-rw-rw- 1 root root 254,   0 Nov 15 04:58 /dev/nvidia-uvm
+crw-rw-rw- 1 root root 254,   1 Nov 15 04:58 /dev/nvidia-uvm-tools
+crw-rw-rw- 1 root root 195,   6 Nov 15 04:58 /dev/nvidia6
+crw-rw-rw- 1 root root 195, 255 Nov 15 04:58 /dev/nvidiactl

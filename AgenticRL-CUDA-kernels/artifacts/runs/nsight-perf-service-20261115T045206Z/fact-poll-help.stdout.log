@@ -1,0 +1,12 @@
+
+Usage:
+  Options [OPTION...]
+
+  -h, --help                  Show help message
+      --timeout-sec arg       The timeout to wait for the 
+                              nvidia-nsight-perf service to be ready 
+                              (seconds) (default: 60)
+      --ignore provider_type  Ignore a provider when checking service 
+                              readiness. Ignorable provider types: gpu_pm, 
+                              gpu_hwt. Ex: --ignore gpu_pm,gpu_hwt
+

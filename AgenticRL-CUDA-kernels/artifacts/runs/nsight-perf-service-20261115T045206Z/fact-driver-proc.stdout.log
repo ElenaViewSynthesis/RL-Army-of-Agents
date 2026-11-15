@@ -1,0 +1,5 @@
+cat: /proc/driver/nvidia/version: No such file or directory
+total 0
+dr-xr-xr-x 2 root root 0 Nov 15 04:58 .
+dr-xr-xr-x 3 root root 0 Nov 15 04:58 ..
+-r--r--r-- 1 root root 0 Nov 15 04:58 params

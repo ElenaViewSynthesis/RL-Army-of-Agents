@@ -1,0 +1,47 @@
+/run/nvidia:
+total 0
+drwxr-xr-x 1 root root  80 Nov 15 04:58 .
+drwxr-xr-x 1 root root  60 Nov 15 04:58 ..
+drwxr-xr-x 1 root root 120 Nov 15 04:58 nsight-perf
+drwxr-xr-x 1 root root  60 Nov 15 05:01 nvtx
+
+/run/nvidia/nsight-perf:
+total 0
+drwxr-xr-x 1 root root 120 Nov 15 04:58 .
+drwxr-xr-x 1 root root  80 Nov 15 04:58 ..
+drwxr-xr-x 1 root root  60 Nov 15 05:01 router.controller
+-rw-r--r-- 1 root root   0 Nov 15 04:58 router.lock
+drwxr-xr-x 1 root root  60 Nov 15 05:01 router.observer
+drwxr-xr-x 1 root root  60 Nov 15 05:01 router.provider
+
+/run/nvidia/nsight-perf/router.controller:
+total 0
+drwxr-xr-x 1 root root  60 Nov 15 05:01 .
+drwxr-xr-x 1 root root 120 Nov 15 04:58 ..
+srwxrwxrwx 1 root root   0 Nov 15 05:01 .sock
+
+/run/nvidia/nsight-perf/router.observer:
+total 0
+drwxr-xr-x 1 root root  60 Nov 15 05:01 .
+drwxr-xr-x 1 root root 120 Nov 15 04:58 ..
+srwxrwxrwx 1 root root   0 Nov 15 05:01 .sock
+
+/run/nvidia/nsight-perf/router.provider:
+total 0
+drwxr-xr-x 1 root root  60 Nov 15 05:01 .
+drwxr-xr-x 1 root root 120 Nov 15 04:58 ..
+srwxrwxrwx 1 root root   0 Nov 15 05:01 .sock
+
+/run/nvidia/nvtx:
+total 0
+drwxr-xr-x 1 root root 60 Nov 15 05:01 .
+drwxr-xr-x 1 root root 80 Nov 15 04:58 ..
+-rw-r--r-- 1 root root  0 Nov 15 05:01 nvtx-cuda.yaml
+ls: cannot access '/nonexistent/nvidia': No such file or directory
+  PID  PPID STAT COMMAND         COMMAND
+    1     0 Ss   dumb-init       /bin/dumb-init -- python -u -R --check-hash-based-pycs never -m modal._container_entrypoint
+    2     1 Ssl  python          python -u -R --check-hash-based-pycs never -m modal._container_entrypoint
+   85     2 Ssl  nvidia-nsight-p /opt/nsight-perf-sdk-for-ai/build/bin/nvidia-nsight-perf --global
+   92     2 S    sh              sh -c ls -laR /run/nvidia 2>&1; ls -laR "${XDG_RUNTIME_DIR:-/nonexistent}/nvidia" 2>&1; ps -eo pid,ppid,stat,comm,args 2>&1 | head -40
+   95    92 R    ps              ps -eo pid,ppid,stat,comm,args
+   96    92 S    head            head -40

@@ -1,0 +1,298 @@
+{
+  "run_id": "nsight-perf-service-20261115T045206Z",
+  "diagnostic_only": true,
+  "mode": "diagnose_service",
+  "gpu_requested": "B200",
+  "task": "relu_squared",
+  "case": "b4096_h14336_bfloat16",
+  "backend": "triton",
+  "sdk_commit": "bd5d5901c6c9b72704245dd0f6e8e1a822bda527",
+  "gpu_query": "NVIDIA B200, 610.57.04, 10.0, GPU-889ba1a5-ddfd-f8ca-386c-e7ffc4ca7752",
+  "first_ready": null,
+  "capture": null,
+  "attempts": [
+    {
+      "attempt": "baseline",
+      "args": [],
+      "environment": {},
+      "provisioned": false,
+      "strace": false,
+      "ready": false,
+      "service_alive_after_poll": true,
+      "service": {
+        "step": "baseline-service",
+        "command": "/opt/nsight-perf-sdk-for-ai/build/bin/nvidia-nsight-perf",
+        "returncode": -15,
+        "timed_out": false,
+        "stopped": true,
+        "wall_s": 63.302
+      }
+    },
+    {
+      "attempt": "provisioned",
+      "args": [
+        "--global"
+      ],
+      "environment": {
+        "NSIGHT_PERF_GPU_PM_ENABLE": "0",
+        "NSIGHT_PERF_GPU_HW_TRACE_ENABLE": "0"
+      },
+      "provisioned": true,
+      "strace": false,
+      "ready": false,
+      "service_alive_after_poll": true,
+      "service": {
+        "step": "provisioned-service",
+        "command": "/opt/nsight-perf-sdk-for-ai/build/bin/nvidia-nsight-perf --global",
+        "returncode": -15,
+        "timed_out": false,
+        "stopped": true,
+        "wall_s": 63.336
+      }
+    },
+    {
+      "attempt": "strace",
+      "args": [
+        "--global"
+      ],
+      "environment": {
+        "NSIGHT_PERF_GPU_PM_ENABLE": "0",
+        "NSIGHT_PERF_GPU_HW_TRACE_ENABLE": "0"
+      },
+      "provisioned": true,
+      "strace": true,
+      "ready": null,
+      "service": {
+        "step": "strace-service",
+        "command": "timeout 25 strace -f -o /artifacts/nsight-perf-service-20261115T045206Z/service-strace.txt /opt/nsight-perf-sdk-for-ai/build/bin/nvidia-nsight-perf --global",
+        "returncode": 124,
+        "timed_out": false,
+        "wall_s": 25.08
+      }
+    },
+    {
+      "attempt": "compat",
+      "args": [
+        "--global"
+      ],
+      "environment": {
+        "NSIGHT_PERF_GPU_PM_ENABLE": "0",
+        "NSIGHT_PERF_GPU_HW_TRACE_ENABLE": "0",
+        "LD_LIBRARY_PATH": "/usr/local/cuda/compat"
+      },
+      "provisioned": true,
+      "strace": false,
+      "ready": false,
+      "service_alive_after_poll": true,
+      "service": {
+        "step": "compat-service",
+        "command": "/opt/nsight-perf-sdk-for-ai/build/bin/nvidia-nsight-perf --global",
+        "returncode": -15,
+        "timed_out": false,
+        "stopped": true,
+        "wall_s": 63.028
+      }
+    }
+  ],
+  "steps": [
+    {
+      "step": "nvidia-smi",
+      "command": "nvidia-smi",
+      "returncode": 0,
+      "timed_out": false,
+      "wall_s": 0.294
+    },
+    {
+      "step": "gpu-query",
+      "command": "nvidia-smi --query-gpu=name,driver_version,compute_cap,uuid --format=csv,noheader",
+      "returncode": 0,
+      "timed_out": false,
+      "wall_s": 0.12
+    },
+    {
+      "step": "uname",
+      "command": "uname -a",
+      "returncode": 0,
+      "timed_out": false,
+      "wall_s": 0.017
+    },
+    {
+      "step": "fact-id",
+      "command": "id",
+      "returncode": 0,
+      "timed_out": false,
+      "wall_s": 0.027
+    },
+    {
+      "step": "fact-xdg-runtime-dir",
+      "command": "sh -c 'echo XDG_RUNTIME_DIR=${XDG_RUNTIME_DIR-<unset>}; ls -la /run /run/user 2>&1'",
+      "returncode": 2,
+      "timed_out": false,
+      "wall_s": 0.019
+    },
+    {
+      "step": "fact-pid-namespace",
+      "command": "sh -c 'readlink /proc/self/ns/pid; readlink /proc/1/ns/pid; cat /proc/1/cmdline | tr '\"'\"'\\0'\"'\"' '\"'\"' '\"'\"''",
+      "returncode": 0,
+      "timed_out": false,
+      "wall_s": 0.052
+    },
+    {
+      "step": "fact-driver-proc",
+      "command": "sh -c 'cat /proc/driver/nvidia/version 2>&1; ls -la /proc/driver/nvidia 2>&1'",
+      "returncode": 0,
+      "timed_out": false,
+      "wall_s": 0.012
+    },
+    {
+      "step": "fact-device-nodes",
+      "command": "sh -c 'ls -la /dev/nvidia* /dev/nvidia-caps 2>&1'",
+      "returncode": 2,
+      "timed_out": false,
+      "wall_s": 0.016
+    },
+    {
+      "step": "fact-libcuda-found",
+      "command": "sh -c 'ldconfig -p | grep -i -E '\"'\"'libcuda|libnvidia-ml'\"'\"' 2>&1'",
+      "returncode": 0,
+      "timed_out": false,
+      "wall_s": 0.018
+    },
+    {
+      "step": "fact-service-ldd",
+      "command": "ldd /opt/nsight-perf-sdk-for-ai/build/bin/nvidia-nsight-perf",
+      "returncode": 0,
+      "timed_out": false,
+      "wall_s": 0.031
+    },
+    {
+      "step": "fact-service-help",
+      "command": "/opt/nsight-perf-sdk-for-ai/build/bin/nvidia-nsight-perf --help",
+      "returncode": 0,
+      "timed_out": false,
+      "wall_s": 0.014
+    },
+    {
+      "step": "fact-service-default-config",
+      "command": "/opt/nsight-perf-sdk-for-ai/build/bin/nvidia-nsight-perf --export-default-config-only /tmp/nvidia-nsight-perf.yaml",
+      "returncode": 0,
+      "timed_out": false,
+      "wall_s": 0.013
+    },
+    {
+      "step": "fact-service-validate-config",
+      "command": "/opt/nsight-perf-sdk-for-ai/build/bin/nvidia-nsight-perf --config /tmp/nvidia-nsight-perf.yaml --validate-config",
+      "returncode": 0,
+      "timed_out": false,
+      "wall_s": 0.09
+    },
+    {
+      "step": "fact-poll-help",
+      "command": "/opt/nsight-perf-sdk-for-ai/build/bin/nvtrace_poll_until_service_ready --help",
+      "returncode": 0,
+      "timed_out": false,
+      "wall_s": 0.016
+    },
+    {
+      "step": "baseline-ready",
+      "command": "timeout 120 /opt/nsight-perf-sdk-for-ai/build/bin/nvtrace_poll_until_service_ready",
+      "returncode": 1,
+      "timed_out": false,
+      "wall_s": 60.108
+    },
+    {
+      "step": "baseline-endpoint",
+      "command": "sh -c 'ls -laR /run/nvidia 2>&1; ls -laR \"${XDG_RUNTIME_DIR:-/nonexistent}/nvidia\" 2>&1; ps -eo pid,ppid,stat,comm,args 2>&1 | head -40'",
+      "returncode": 0,
+      "timed_out": false,
+      "wall_s": 0.048
+    },
+    {
+      "step": "baseline-service",
+      "command": "/opt/nsight-perf-sdk-for-ai/build/bin/nvidia-nsight-perf",
+      "returncode": -15,
+      "timed_out": false,
+      "stopped": true,
+      "wall_s": 63.302
+    },
+    {
+      "step": "provisioned-provision",
+      "command": "sh -c 'mkdir -p /run/nvidia/nsight-perf && chmod 755 /run/nvidia /run/nvidia/nsight-perf && ls -la /run/nvidia/nsight-perf'",
+      "returncode": 0,
+      "timed_out": false,
+      "wall_s": 0.018
+    },
+    {
+      "step": "provisioned-ready",
+      "command": "timeout 120 /opt/nsight-perf-sdk-for-ai/build/bin/nvtrace_poll_until_service_ready --ignore gpu_pm,gpu_hwt",
+      "returncode": 1,
+      "timed_out": false,
+      "wall_s": 60.11
+    },
+    {
+      "step": "provisioned-endpoint",
+      "command": "sh -c 'ls -laR /run/nvidia 2>&1; ls -laR \"${XDG_RUNTIME_DIR:-/nonexistent}/nvidia\" 2>&1; ps -eo pid,ppid,stat,comm,args 2>&1 | head -40'",
+      "returncode": 0,
+      "timed_out": false,
+      "wall_s": 0.056
+    },
+    {
+      "step": "provisioned-service",
+      "command": "/opt/nsight-perf-sdk-for-ai/build/bin/nvidia-nsight-perf --global",
+      "returncode": -15,
+      "timed_out": false,
+      "stopped": true,
+      "wall_s": 63.336
+    },
+    {
+      "step": "strace-provision",
+      "command": "sh -c 'mkdir -p /run/nvidia/nsight-perf && chmod 755 /run/nvidia /run/nvidia/nsight-perf && ls -la /run/nvidia/nsight-perf'",
+      "returncode": 0,
+      "timed_out": false,
+      "wall_s": 0.026
+    },
+    {
+      "step": "strace-service",
+      "command": "timeout 25 strace -f -o /artifacts/nsight-perf-service-20261115T045206Z/service-strace.txt /opt/nsight-perf-sdk-for-ai/build/bin/nvidia-nsight-perf --global",
+      "returncode": 124,
+      "timed_out": false,
+      "wall_s": 25.08
+    },
+    {
+      "step": "strace-strace-tail",
+      "command": "sh -c 'wc -l /artifacts/nsight-perf-service-20261115T045206Z/service-strace.txt; grep -n -E '\"'\"'E[A-Z]+ \\('\"'\"' /artifacts/nsight-perf-service-20261115T045206Z/service-strace.txt | tail -60'",
+      "returncode": 0,
+      "timed_out": false,
+      "wall_s": 0.034
+    },
+    {
+      "step": "compat-provision",
+      "command": "sh -c 'mkdir -p /run/nvidia/nsight-perf && chmod 755 /run/nvidia /run/nvidia/nsight-perf && ls -la /run/nvidia/nsight-perf'",
+      "returncode": 0,
+      "timed_out": false,
+      "wall_s": 0.014
+    },
+    {
+      "step": "compat-ready",
+      "command": "timeout 120 /opt/nsight-perf-sdk-for-ai/build/bin/nvtrace_poll_until_service_ready --ignore gpu_pm,gpu_hwt",
+      "returncode": 1,
+      "timed_out": false,
+      "wall_s": 60.189
+    },
+    {
+      "step": "compat-endpoint",
+      "command": "sh -c 'ls -laR /run/nvidia 2>&1; ls -laR \"${XDG_RUNTIME_DIR:-/nonexistent}/nvidia\" 2>&1; ps -eo pid,ppid,stat,comm,args 2>&1 | head -40'",
+      "returncode": 0,
+      "timed_out": false,
+      "wall_s": 0.034
+    },
+    {
+      "step": "compat-service",
+      "command": "/opt/nsight-perf-sdk-for-ai/build/bin/nvidia-nsight-perf --global",
+      "returncode": -15,
+      "timed_out": false,
+      "stopped": true,
+      "wall_s": 63.028
+    }
+  ]
+}

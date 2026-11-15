@@ -1,0 +1,3 @@
+pid:[5]
+pid:[5]
+/bin/dumb-init -- python -u -R --check-hash-based-pycs never -m modal._container_entrypoint 

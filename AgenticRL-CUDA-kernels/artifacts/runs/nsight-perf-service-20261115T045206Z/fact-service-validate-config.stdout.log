@@ -1,0 +1,13 @@
+Validating config from /tmp/nvidia-nsight-perf.yaml
+  GpuPmCounters: chips matching (GB100|GB102|GB110|GB112) -> 11 metrics
+  GpuPmCounters: chips matching (GB202|GB203|GB205|GB206|GB207) -> 11 metrics
+  GpuPmCounters: chips matching (GB20B)                  -> 3 metrics
+  GpuPmCounters: chips matching (GR100)                  -> 11 metrics
+  GpuPmCounters: chips matching GB1[0-1][0-9]            -> 11 metrics
+  GpuPmCounters: chips matching GB20[0-9]                -> 11 metrics
+  GpuPmCounters: chips matching GB20B                    -> 3 metrics
+  GpuPmCounters: chips matching .*                       -> 6 metrics
+/tmp/nvidia-nsight-perf.yaml(60): info: GpuPmCounters: 4 legacy architectures[] entries are kept as a fallback for chips no metricConfig entry covers. A chip that lands on one is named at startup, so a stale block cannot provide coverage unnoticed
+/tmp/nvidia-nsight-perf.yaml(24): info: GpuPmCounters: chip GB10C is supported by the counter library and by this build, but no family shorthand expands to it. A config that writes the family leaves it out; name it with a literal pattern until the shorthand table covers it
+/tmp/nvidia-nsight-perf.yaml(24): info: GpuPmCounters: chip GB20C is supported by the counter library and by this build, but no family shorthand expands to it. A config that writes the family leaves it out; name it with a literal pattern until the shorthand table covers it
+Config OK.
