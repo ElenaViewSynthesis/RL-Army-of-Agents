@@ -9,6 +9,9 @@ fig_stage5_repeat_reads.svg dumbbell, log scale: repeated reads of the same data
 fig_stage5_attention_pipeline.svg  animated: the five kernels of one tree-attention forward with their
                             launch grids at the largest verify-attention case, and what one program of
                             eagle_attention_committed does.
+fig_stage5_tree_mask.svg    animated: a sample 7-node draft tree and its ancestor mask; each node in turn
+                            lights its path to the root and its mask row. The tree is made up for the
+                            figure (SAMPLE_PARENTS), not a catalog case.
 
 The counts are design arithmetic from each kernel's launch grid at the catalog's acceptance case
 (utils.task_catalog), not measurements. MAX_BLOCK_M, BLOCK_N, MIN_PROGRAMS, MAX_SPLIT and MIN_SPLIT mirror
@@ -24,6 +27,7 @@ from utils.task_catalog import select_cases
 MAX_BLOCK_M = 128   # query rows per tuned attention program
 BLOCK_N = 64        # committed keys per inner step
 MIN_PROGRAMS, MAX_SPLIT, MIN_SPLIT = 1024, 4096, 512
+SAMPLE_PARENTS = (-1, 0, 0, 1, 1, 2, 4)   # made-up tree for fig_stage5_tree_mask.svg; -1 is the root
 UNTUNED, TUNED = "#eb6834", "#2a78d6"   # categorical slots 2 and 1 of the light palette
 INK, MUTED, LINE, PANEL, BG = "#1f1e1c", "#55544f", "#c3c2b7", "#f3f2ee", "#ffffff"
 FONT = "Helvetica, Arial, sans-serif"
@@ -121,6 +125,82 @@ def attention_pipeline(plan):
             'role="img" aria-label="Animated flow of one tree-attention forward: the ancestor table and visible mask, '
             'the committed and tree attention kernels writing split slots, and the merge kernel producing the output; '
             'with a description of eagle_attention_committed.">')
+    return "\n".join([head, "<style>" + "".join(css) + "</style>", *body, "</svg>"]) + "\n"
+
+
+def ancestors(parents, node):
+    """The node itself and its ancestors: the tree keys eagle_visible_table marks visible for it."""
+    seen = []
+    while node >= 0:
+        seen.append(node)
+        node = parents[node]
+    return seen
+
+
+def tree_mask(parents=SAMPLE_PARENTS, hold_s=1.8):
+    """Animated sample tree beside its ancestor mask; CSS only. Reduced motion shows the deepest node."""
+    n = len(parents)
+    width, height = 760, 292
+    depth = [len(ancestors(parents, i)) - 1 for i in range(n)]
+    pos = {}
+    for d in sorted(set(depth)):
+        level = [i for i in range(n) if depth[i] == d]
+        for j, i in enumerate(level):
+            pos[i] = (40 + (j + 0.5) * 280 / len(level), 44 + d * 56)
+    cell, gx, gy = 26, 430, 66
+    cycle = n * hold_s
+    deepest = max(range(n), key=lambda i: depth[i])
+    css = [".g{opacity:0}"]
+    for i in range(n):
+        a, b = round(i / n * 100, 3), round((i + 1) / n * 100, 3)
+        frames = (f"0%{{opacity:0}}" if a > 0 else "") + f"{a}%{{opacity:1}}{b}%{{opacity:1}}" + \
+                 (f"{round(b + 0.001, 3)}%{{opacity:0}}100%{{opacity:0}}" if b < 100 else "")
+        css.append(f"@keyframes g{i}{{{frames}}}.g{i}{{animation:g{i} {cycle:.1f}s steps(1,end) infinite}}")
+    css.append(f"@media (prefers-reduced-motion: reduce){{.g{{animation:none!important;opacity:0}}.g{deepest}{{opacity:1}}}}")
+    body = [f'<rect width="{width}" height="{height}" fill="{BG}"/>',
+            text(10, 18, "Draft tree", 12, INK, weight="bold"), text(400, 18, "visible[node, key]", 12, INK, weight="bold"),
+            text(gx + n * cell / 2, gy - 26, "tree key", 11, MUTED, "middle"),
+            text(gx - 30, gy + n * cell / 2 + 4, "query node", 11, MUTED, "end")]
+    # Base layer: the neutral tree and the whole mask, dimmed.
+    for i in range(n):
+        if parents[i] >= 0:
+            (x1, y1), (x2, y2) = pos[i], pos[parents[i]]
+            body.append(f'<line x1="{x1:.1f}" y1="{y1}" x2="{x2:.1f}" y2="{y2}" stroke="{LINE}" stroke-width="2"/>')
+    for i in range(n):
+        x, y = pos[i]
+        body.append(f'<circle cx="{x:.1f}" cy="{y}" r="14" fill="{BG}" stroke="{LINE}" stroke-width="2"/>')
+        body.append(text(f"{x:.1f}", y + 4, str(i), 12, INK, "middle", "bold"))
+        body.append(text(gx + i * cell + cell / 2, gy - 8, str(i), 11, MUTED, "middle"))
+        body.append(text(gx - 10, gy + i * cell + cell / 2 + 4, str(i), 11, MUTED, "end"))
+        seen = set(ancestors(parents, i))
+        for j in range(n):
+            fill = "#b9b8b0" if j in seen else "#ecebe6"
+            body.append(f'<rect x="{gx + j * cell + 1}" y="{gy + i * cell + 1}" width="{cell - 2}" height="{cell - 2}" rx="3" fill="{fill}"/>')
+    # One overlay per query node, shown in turn.
+    for i in range(n):
+        seen = ancestors(parents, i)
+        group = [f'<g class="g g{i}">']
+        for k in seen:
+            if parents[k] >= 0:
+                (x1, y1), (x2, y2) = pos[k], pos[parents[k]]
+                group.append(f'<line x1="{x1:.1f}" y1="{y1}" x2="{x2:.1f}" y2="{y2}" stroke="{TUNED}" stroke-width="2.5"/>')
+        for k in seen:
+            x, y = pos[k]
+            active = k == i
+            group.append(f'<circle cx="{x:.1f}" cy="{y}" r="14" fill="{TUNED if active else PANEL}" stroke="{TUNED}" stroke-width="2"/>')
+            group.append(text(f"{x:.1f}", y + 4, str(k), 12, BG if active else INK, "middle", "bold"))
+        for j in seen:
+            group.append(f'<rect x="{gx + j * cell + 1}" y="{gy + i * cell + 1}" width="{cell - 2}" height="{cell - 2}" rx="3" fill="{TUNED}"/>')
+        group.append(f'<rect x="{gx - 2}" y="{gy + i * cell - 1}" width="{n * cell + 4}" height="{cell + 2}" rx="4" fill="none" stroke="{TUNED}" stroke-width="1.5"/>')
+        keys = ", ".join(str(k) for k in sorted(seen))
+        noun = "tree keys" if len(seen) > 1 else "tree key"
+        group.append(text(10, 268, f"A query at node {i} attends to {noun} {keys}; every other tree key is masked to −∞.", 12, INK, weight="bold"))
+        group.append("</g>")
+        body.append("".join(group))
+    body.append(text(10, 285, "A sample 7-node tree made up for this figure, not a catalog case. The largest cases use 64-node ragged trees.", 10))
+    head = (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {width} {height}" width="{width}" height="{height}" role="img" '
+            'aria-label="Animation: a sample 7-node draft tree and its ancestor mask. Each node in turn is highlighted with its '
+            'path to the root and its row of the mask: a query attends only to its own node and its ancestors.">')
     return "\n".join([head, "<style>" + "".join(css) + "</style>", *body, "</svg>"]) + "\n"
 
 
@@ -235,6 +315,7 @@ def main(argv=None):
     plan = attention_plan("eagle_tree_verify_attention")
     (args.out / "fig_stage5_attention_pipeline.svg").write_text(attention_pipeline(plan), encoding="utf-8")
     print("Attention pipeline: " + plan["committed"] + " committed programs, " + plan["case"])
+    (args.out / "fig_stage5_tree_mask.svg").write_text(tree_mask(), encoding="utf-8")
     for name, what, before, after, case in rows:
         print(f"{name}: {before} -> {after} {what} ({case})")
 

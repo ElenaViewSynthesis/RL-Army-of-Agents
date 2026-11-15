@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 292" width="760" height="292" role="img" aria-label="Animation: a sample 7-node draft tree and its ancestor mask. Each node in turn is highlighted with its path to the root and its row of the mask: a query attends only to its own node and its ancestors.">
+<style>.g{opacity:0}@keyframes g0{0.0%{opacity:1}14.286%{opacity:1}14.287%{opacity:0}100%{opacity:0}}.g0{animation:g0 12.6s steps(1,end) infinite}@keyframes g1{0%{opacity:0}14.286%{opacity:1}28.571%{opacity:1}28.572%{opacity:0}100%{opacity:0}}.g1{animation:g1 12.6s steps(1,end) infinite}@keyframes g2{0%{opacity:0}28.571%{opacity:1}42.857%{opacity:1}42.858%{opacity:0}100%{opacity:0}}.g2{animation:g2 12.6s steps(1,end) infinite}@keyframes g3{0%{opacity:0}42.857%{opacity:1}57.143%{opacity:1}57.144%{opacity:0}100%{opacity:0}}.g3{animation:g3 12.6s steps(1,end) infinite}@keyframes g4{0%{opacity:0}57.143%{opacity:1}71.429%{opacity:1}71.43%{opacity:0}100%{opacity:0}}.g4{animation:g4 12.6s steps(1,end) infinite}@keyframes g5{0%{opacity:0}71.429%{opacity:1}85.714%{opacity:1}85.715%{opacity:0}100%{opacity:0}}.g5{animation:g5 12.6s steps(1,end) infinite}@keyframes g6{0%{opacity:0}85.714%{opacity:1}100.0%{opacity:1}}.g6{animation:g6 12.6s steps(1,end) infinite}@media (prefers-reduced-motion: reduce){.g{animation:none!important;opacity:0}.g6{opacity:1}}</style>
+<rect width="760" height="292" fill="#ffffff"/>
+<text x="10" y="18" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1f1e1c" text-anchor="start" font-weight="bold">Draft tree</text>
+<text x="400" y="18" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1f1e1c" text-anchor="start" font-weight="bold">visible[node, key]</text>
+<text x="521.0" y="40" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#55544f" text-anchor="middle" font-weight="normal">tree key</text>
+<text x="400" y="161.0" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#55544f" text-anchor="end" font-weight="normal">query node</text>
+<line x1="110.0" y1="100" x2="180.0" y2="44" stroke="#c3c2b7" stroke-width="2"/>
+<line x1="250.0" y1="100" x2="180.0" y2="44" stroke="#c3c2b7" stroke-width="2"/>
+<line x1="86.7" y1="156" x2="110.0" y2="100" stroke="#c3c2b7" stroke-width="2"/>
+<line x1="180.0" y1="156" x2="110.0" y2="100" stroke="#c3c2b7" stroke-width="2"/>
+<line x1="273.3" y1="156" x2="250.0" y2="100" stroke="#c3c2b7" stroke-width="2"/>
+<line x1="180.0" y1="212" x2="180.0" y2="156" stroke="#c3c2b7" stroke-width="2"/>
+<circle cx="180.0" cy="44" r="14" fill="#ffffff" stroke="#c3c2b7" stroke-width="2"/>
+<text x="180.0" y="48" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1f1e1c" text-anchor="middle" font-weight="bold">0</text>
+<text x="443.0" y="58" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#55544f" text-anchor="middle" font-weight="normal">0</text>
+<text x="420" y="83.0" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#55544f" text-anchor="end" font-weight="normal">0</text>
+<rect x="431" y="67" width="24" height="24" rx="3" fill="#b9b8b0"/>
+<rect x="457" y="67" width="24" height="24" rx="3" fill="#ecebe6"/>
+<rect x="483" y="67" width="24" height="24" rx="3" fill="#ecebe6"/>
+<rect x="509" y="67" width="24" height="24" rx="3" fill="#ecebe6"/>
+<rect x="535" y="67" width="24" height="24" rx="3" fill="#ecebe6"/>
+<rect x="561" y="67" width="24" height="24" rx="3" fill="#ecebe6"/>
+<rect x="587" y="67" width="24" height="24" rx="3" fill="#ecebe6"/>
+<circle cx="110.0" cy="100" r="14" fill="#ffffff" stroke="#c3c2b7" stroke-width="2"/>
+<text x="110.0" y="104" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1f1e1c" text-anchor="middle" font-weight="bold">1</text>
+<text x="469.0" y="58" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#55544f" text-anchor="middle" font-weight="normal">1</text>
+<text x="420" y="109.0" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#55544f" text-anchor="end" font-weight="normal">1</text>
+<rect x="431" y="93" width="24" height="24" rx="3" fill="#b9b8b0"/>
+<rect x="457" y="93" width="24" height="24" rx="3" fill="#b9b8b0"/>
+<rect x="483" y="93" width="24" height="24" rx="3" fill="#ecebe6"/>
+<rect x="509" y="93" width="24" height="24" rx="3" fill="#ecebe6"/>
+<rect x="535" y="93" width="24" height="24" rx="3" fill="#ecebe6"/>
+<rect x="561" y="93" width="24" height="24" rx="3" fill="#ecebe6"/>
+<rect x="587" y="93" width="24" height="24" rx="3" fill="#ecebe6"/>
+<circle cx="250.0" cy="100" r="14" fill="#ffffff" stroke="#c3c2b7" stroke-width="2"/>
+<text x="250.0" y="104" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1f1e1c" text-anchor="middle" font-weight="bold">2</text>
+<text x="495.0" y="58" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#55544f" text-anchor="middle" font-weight="normal">2</text>
+<text x="420" y="135.0" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#55544f" text-anchor="end" font-weight="normal">2</text>
+<rect x="431" y="119" width="24" height="24" rx="3" fill="#b9b8b0"/>
+<rect x="457" y="119" width="24" height="24" rx="3" fill="#ecebe6"/>
+<rect x="483" y="119" width="24" height="24" rx="3" fill="#b9b8b0"/>
+<rect x="509" y="119" width="24" height="24" rx="3" fill="#ecebe6"/>
+<rect x="535" y="119" width="24" height="24" rx="3" fill="#ecebe6"/>
+<rect x="561" y="119" width="24" height="24" rx="3" fill="#ecebe6"/>
+<rect x="587" y="119" width="24" height="24" rx="3" fill="#ecebe6"/>
+<circle cx="86.7" cy="156" r="14" fill="#ffffff" stroke="#c3c2b7" stroke-width="2"/>
+<text x="86.7" y="160" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1f1e1c" text-anchor="middle" font-weight="bold">3</text>
+<text x="521.0" y="58" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#55544f" text-anchor="middle" font-weight="normal">3</text>
+<text x="420" y="161.0" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#55544f" text-anchor="end" font-weight="normal">3</text>
+<rect x="431" y="145" width="24" height="24" rx="3" fill="#b9b8b0"/>
+<rect x="457" y="145" width="24" height="24" rx="3" fill="#b9b8b0"/>
+<rect x="483" y="145" width="24" height="24" rx="3" fill="#ecebe6"/>
+<rect x="509" y="145" width="24" height="24" rx="3" fill="#b9b8b0"/>
+<rect x="535" y="145" width="24" height="24" rx="3" fill="#ecebe6"/>
+<rect x="561" y="145" width="24" height="24" rx="3" fill="#ecebe6"/>
+<rect x="587" y="145" width="24" height="24" rx="3" fill="#ecebe6"/>
+<circle cx="180.0" cy="156" r="14" fill="#ffffff" stroke="#c3c2b7" stroke-width="2"/>
+<text x="180.0" y="160" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1f1e1c" text-anchor="middle" font-weight="bold">4</text>
+<text x="547.0" y="58" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#55544f" text-anchor="middle" font-weight="normal">4</text>
+<text x="420" y="187.0" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#55544f" text-anchor="end" font-weight="normal">4</text>
+<rect x="431" y="171" width="24" height="24" rx="3" fill="#b9b8b0"/>
+<rect x="457" y="171" width="24" height="24" rx="3" fill="#b9b8b0"/>
+<rect x="483" y="171" width="24" height="24" rx="3" fill="#ecebe6"/>
+<rect x="509" y="171" width="24" height="24" rx="3" fill="#ecebe6"/>
+<rect x="535" y="171" width="24" height="24" rx="3" fill="#b9b8b0"/>
+<rect x="561" y="171" width="24" height="24" rx="3" fill="#ecebe6"/>
+<rect x="587" y="171" width="24" height="24" rx="3" fill="#ecebe6"/>
+<circle cx="273.3" cy="156" r="14" fill="#ffffff" stroke="#c3c2b7" stroke-width="2"/>
+<text x="273.3" y="160" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1f1e1c" text-anchor="middle" font-weight="bold">5</text>
+<text x="573.0" y="58" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#55544f" text-anchor="middle" font-weight="normal">5</text>
+<text x="420" y="213.0" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#55544f" text-anchor="end" font-weight="normal">5</text>
+<rect x="431" y="197" width="24" height="24" rx="3" fill="#b9b8b0"/>
+<rect x="457" y="197" width="24" height="24" rx="3" fill="#ecebe6"/>
+<rect x="483" y="197" width="24" height="24" rx="3" fill="#b9b8b0"/>
+<rect x="509" y="197" width="24" height="24" rx="3" fill="#ecebe6"/>
+<rect x="535" y="197" width="24" height="24" rx="3" fill="#ecebe6"/>
+<rect x="561" y="197" width="24" height="24" rx="3" fill="#b9b8b0"/>
+<rect x="587" y="197" width="24" height="24" rx="3" fill="#ecebe6"/>
+<circle cx="180.0" cy="212" r="14" fill="#ffffff" stroke="#c3c2b7" stroke-width="2"/>
+<text x="180.0" y="216" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1f1e1c" text-anchor="middle" font-weight="bold">6</text>
+<text x="599.0" y="58" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#55544f" text-anchor="middle" font-weight="normal">6</text>
+<text x="420" y="239.0" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#55544f" text-anchor="end" font-weight="normal">6</text>
+<rect x="431" y="223" width="24" height="24" rx="3" fill="#b9b8b0"/>
+<rect x="457" y="223" width="24" height="24" rx="3" fill="#b9b8b0"/>
+<rect x="483" y="223" width="24" height="24" rx="3" fill="#ecebe6"/>
+<rect x="509" y="223" width="24" height="24" rx="3" fill="#ecebe6"/>
+<rect x="535" y="223" width="24" height="24" rx="3" fill="#b9b8b0"/>
+<rect x="561" y="223" width="24" height="24" rx="3" fill="#ecebe6"/>
+<rect x="587" y="223" width="24" height="24" rx="3" fill="#b9b8b0"/>
+<g class="g g0"><circle cx="180.0" cy="44" r="14" fill="#2a78d6" stroke="#2a78d6" stroke-width="2"/><text x="180.0" y="48" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#ffffff" text-anchor="middle" font-weight="bold">0</text><rect x="431" y="67" width="24" height="24" rx="3" fill="#2a78d6"/><rect x="428" y="65" width="186" height="28" rx="4" fill="none" stroke="#2a78d6" stroke-width="1.5"/><text x="10" y="268" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1f1e1c" text-anchor="start" font-weight="bold">A query at node 0 attends to tree key 0; every other tree key is masked to −∞.</text></g>
+<g class="g g1"><line x1="110.0" y1="100" x2="180.0" y2="44" stroke="#2a78d6" stroke-width="2.5"/><circle cx="110.0" cy="100" r="14" fill="#2a78d6" stroke="#2a78d6" stroke-width="2"/><text x="110.0" y="104" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#ffffff" text-anchor="middle" font-weight="bold">1</text><circle cx="180.0" cy="44" r="14" fill="#f3f2ee" stroke="#2a78d6" stroke-width="2"/><text x="180.0" y="48" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1f1e1c" text-anchor="middle" font-weight="bold">0</text><rect x="457" y="93" width="24" height="24" rx="3" fill="#2a78d6"/><rect x="431" y="93" width="24" height="24" rx="3" fill="#2a78d6"/><rect x="428" y="91" width="186" height="28" rx="4" fill="none" stroke="#2a78d6" stroke-width="1.5"/><text x="10" y="268" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1f1e1c" text-anchor="start" font-weight="bold">A query at node 1 attends to tree keys 0, 1; every other tree key is masked to −∞.</text></g>
+<g class="g g2"><line x1="250.0" y1="100" x2="180.0" y2="44" stroke="#2a78d6" stroke-width="2.5"/><circle cx="250.0" cy="100" r="14" fill="#2a78d6" stroke="#2a78d6" stroke-width="2"/><text x="250.0" y="104" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#ffffff" text-anchor="middle" font-weight="bold">2</text><circle cx="180.0" cy="44" r="14" fill="#f3f2ee" stroke="#2a78d6" stroke-width="2"/><text x="180.0" y="48" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1f1e1c" text-anchor="middle" font-weight="bold">0</text><rect x="483" y="119" width="24" height="24" rx="3" fill="#2a78d6"/><rect x="431" y="119" width="24" height="24" rx="3" fill="#2a78d6"/><rect x="428" y="117" width="186" height="28" rx="4" fill="none" stroke="#2a78d6" stroke-width="1.5"/><text x="10" y="268" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1f1e1c" text-anchor="start" font-weight="bold">A query at node 2 attends to tree keys 0, 2; every other tree key is masked to −∞.</text></g>
+<g class="g g3"><line x1="86.7" y1="156" x2="110.0" y2="100" stroke="#2a78d6" stroke-width="2.5"/><line x1="110.0" y1="100" x2="180.0" y2="44" stroke="#2a78d6" stroke-width="2.5"/><circle cx="86.7" cy="156" r="14" fill="#2a78d6" stroke="#2a78d6" stroke-width="2"/><text x="86.7" y="160" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#ffffff" text-anchor="middle" font-weight="bold">3</text><circle cx="110.0" cy="100" r="14" fill="#f3f2ee" stroke="#2a78d6" stroke-width="2"/><text x="110.0" y="104" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1f1e1c" text-anchor="middle" font-weight="bold">1</text><circle cx="180.0" cy="44" r="14" fill="#f3f2ee" stroke="#2a78d6" stroke-width="2"/><text x="180.0" y="48" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1f1e1c" text-anchor="middle" font-weight="bold">0</text><rect x="509" y="145" width="24" height="24" rx="3" fill="#2a78d6"/><rect x="457" y="145" width="24" height="24" rx="3" fill="#2a78d6"/><rect x="431" y="145" width="24" height="24" rx="3" fill="#2a78d6"/><rect x="428" y="143" width="186" height="28" rx="4" fill="none" stroke="#2a78d6" stroke-width="1.5"/><text x="10" y="268" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1f1e1c" text-anchor="start" font-weight="bold">A query at node 3 attends to tree keys 0, 1, 3; every other tree key is masked to −∞.</text></g>
+<g class="g g4"><line x1="180.0" y1="156" x2="110.0" y2="100" stroke="#2a78d6" stroke-width="2.5"/><line x1="110.0" y1="100" x2="180.0" y2="44" stroke="#2a78d6" stroke-width="2.5"/><circle cx="180.0" cy="156" r="14" fill="#2a78d6" stroke="#2a78d6" stroke-width="2"/><text x="180.0" y="160" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#ffffff" text-anchor="middle" font-weight="bold">4</text><circle cx="110.0" cy="100" r="14" fill="#f3f2ee" stroke="#2a78d6" stroke-width="2"/><text x="110.0" y="104" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1f1e1c" text-anchor="middle" font-weight="bold">1</text><circle cx="180.0" cy="44" r="14" fill="#f3f2ee" stroke="#2a78d6" stroke-width="2"/><text x="180.0" y="48" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1f1e1c" text-anchor="middle" font-weight="bold">0</text><rect x="535" y="171" width="24" height="24" rx="3" fill="#2a78d6"/><rect x="457" y="171" width="24" height="24" rx="3" fill="#2a78d6"/><rect x="431" y="171" width="24" height="24" rx="3" fill="#2a78d6"/><rect x="428" y="169" width="186" height="28" rx="4" fill="none" stroke="#2a78d6" stroke-width="1.5"/><text x="10" y="268" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1f1e1c" text-anchor="start" font-weight="bold">A query at node 4 attends to tree keys 0, 1, 4; every other tree key is masked to −∞.</text></g>
+<g class="g g5"><line x1="273.3" y1="156" x2="250.0" y2="100" stroke="#2a78d6" stroke-width="2.5"/><line x1="250.0" y1="100" x2="180.0" y2="44" stroke="#2a78d6" stroke-width="2.5"/><circle cx="273.3" cy="156" r="14" fill="#2a78d6" stroke="#2a78d6" stroke-width="2"/><text x="273.3" y="160" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#ffffff" text-anchor="middle" font-weight="bold">5</text><circle cx="250.0" cy="100" r="14" fill="#f3f2ee" stroke="#2a78d6" stroke-width="2"/><text x="250.0" y="104" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1f1e1c" text-anchor="middle" font-weight="bold">2</text><circle cx="180.0" cy="44" r="14" fill="#f3f2ee" stroke="#2a78d6" stroke-width="2"/><text x="180.0" y="48" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1f1e1c" text-anchor="middle" font-weight="bold">0</text><rect x="561" y="197" width="24" height="24" rx="3" fill="#2a78d6"/><rect x="483" y="197" width="24" height="24" rx="3" fill="#2a78d6"/><rect x="431" y="197" width="24" height="24" rx="3" fill="#2a78d6"/><rect x="428" y="195" width="186" height="28" rx="4" fill="none" stroke="#2a78d6" stroke-width="1.5"/><text x="10" y="268" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1f1e1c" text-anchor="start" font-weight="bold">A query at node 5 attends to tree keys 0, 2, 5; every other tree key is masked to −∞.</text></g>
+<g class="g g6"><line x1="180.0" y1="212" x2="180.0" y2="156" stroke="#2a78d6" stroke-width="2.5"/><line x1="180.0" y1="156" x2="110.0" y2="100" stroke="#2a78d6" stroke-width="2.5"/><line x1="110.0" y1="100" x2="180.0" y2="44" stroke="#2a78d6" stroke-width="2.5"/><circle cx="180.0" cy="212" r="14" fill="#2a78d6" stroke="#2a78d6" stroke-width="2"/><text x="180.0" y="216" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#ffffff" text-anchor="middle" font-weight="bold">6</text><circle cx="180.0" cy="156" r="14" fill="#f3f2ee" stroke="#2a78d6" stroke-width="2"/><text x="180.0" y="160" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1f1e1c" text-anchor="middle" font-weight="bold">4</text><circle cx="110.0" cy="100" r="14" fill="#f3f2ee" stroke="#2a78d6" stroke-width="2"/><text x="110.0" y="104" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1f1e1c" text-anchor="middle" font-weight="bold">1</text><circle cx="180.0" cy="44" r="14" fill="#f3f2ee" stroke="#2a78d6" stroke-width="2"/><text x="180.0" y="48" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1f1e1c" text-anchor="middle" font-weight="bold">0</text><rect x="587" y="223" width="24" height="24" rx="3" fill="#2a78d6"/><rect x="535" y="223" width="24" height="24" rx="3" fill="#2a78d6"/><rect x="457" y="223" width="24" height="24" rx="3" fill="#2a78d6"/><rect x="431" y="223" width="24" height="24" rx="3" fill="#2a78d6"/><rect x="428" y="221" width="186" height="28" rx="4" fill="none" stroke="#2a78d6" stroke-width="1.5"/><text x="10" y="268" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#1f1e1c" text-anchor="start" font-weight="bold">A query at node 6 attends to tree keys 0, 1, 4, 6; every other tree key is masked to −∞.</text></g>
+<text x="10" y="285" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#55544f" text-anchor="start" font-weight="normal">A sample 7-node tree made up for this figure, not a catalog case. The largest cases use 64-node ragged trees.</text>
+</svg>
