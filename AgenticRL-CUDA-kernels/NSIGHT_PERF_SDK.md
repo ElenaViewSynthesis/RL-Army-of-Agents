@@ -147,6 +147,44 @@ distinguish between the candidate causes:
 A next attempt would capture `nvidia-nsight-perf --help`, `--validate-config`, and the service under
 `strace`. It is also a paid GPU run.
 
+### Second run: the service starts, but never reports ready
+
+Run `nsight-perf-service-20261115T045206Z` (`--diagnose-service-only`; same B200 host type, driver
+610.57.04, gVisor). Evidence is in `artifacts/runs/nsight-perf-service-20261115T045206Z/` (logs, JSON
+and the 4,224-line `service-strace.txt`). It tried the service four ways; none became ready within the
+poll tool's 60 s, so no capture ran.
+
+| Attempt | Service process | `nvtrace_poll_until_service_ready` |
+|---|---|---|
+| baseline (as in the first run) | started, stayed alive | timed out |
+| `/run/nvidia/nsight-perf` created first, `--global`, no GPU PM / HW trace | started, stayed alive | timed out |
+| the same under `strace -f` for 25 s | started; trace recorded | not polled |
+| the same with the CUDA 13.5 compatibility `libcuda` first on `LD_LIBRARY_PATH` | started, stayed alive | timed out |
+
+What this run established:
+
+- **The service does start.** In every attempt it printed `NVIDIA Nsight Perf Service created!` and
+  `Found 1 CUDA device(s): [0] NVIDIA B200 (GB100)`, and it created and listened on its three sockets
+  under `/run/nvidia/nsight-perf/` (`router.provider`, `router.observer`, `router.controller`). So the
+  first run's "printed nothing" was not a failure to start; why that run's logs were empty is not known.
+- **The runtime directory was not the problem.** The container runs as root, root always gets global
+  scope, and the service created `/run/nvidia/nsight-perf` itself in the baseline attempt.
+- **The container sees a reduced NVIDIA driver interface.** `/proc/driver/nvidia/` holds only `params`:
+  no `version` and no `capabilities/` directory, and `/dev/nvidia-caps` does not exist. Under `strace`
+  the service looked for `/proc/driver/nvidia/capabilities/profiler-device` 16 times,
+  `capabilities/trace-device` 8 times and `capabilities/profiler-context` 8 times; every lookup failed
+  with `ENOENT`. One driver ioctl (`0x46`, request `0xd7`) also returned `EINVAL` three times.
+- **The service loaded a 620 user-mode driver against the 610 kernel driver.** `libcuda.so.1` in the
+  image resolves to `libcuda.so.620.70.06`. The SDK's notes say GR-context tracing needs the service's
+  `libcuda` to match the host kernel driver.
+- **The config is valid.** `--validate-config` on the exported default config reported 0 errors.
+
+What it did not establish: which of these stops readiness. The missing capability files are the
+clearest lead, but the run cannot say whether they are missing because the host driver (610) does not
+have them, because the sandbox does not pass them through, or both. The poll tool only reports
+"Failed to connect ... within 60 seconds", and it was not traced. A host-PID-namespace requirement
+(SDK known limitation) was not reached, since no workload was traced.
+
 ## 7. Known limitations (SDK README)
 
 - NVTX start/end ranges are not supported; push/pop ranges are (`torch.cuda.nvtx.range_push/pop`).
