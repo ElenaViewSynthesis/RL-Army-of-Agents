@@ -27,6 +27,11 @@ Read and analyse this article completely:
 
 https://nvidia.github.io/TensorRT-LLM/1.3.0rc15/blogs/tech_blog/blog24_MoE_as_Dense_GEMM.html
 
+This brief was written against the `1.3.0rc15` documentation. As of 2026-11-15 the newest TensorRT-LLM
+release is the pre-release `v1.4.0rc3` (2026-11-06), and the same article is also served at
+https://nvidia.github.io/TensorRT-LLM/latest/blogs/tech_blog/blog24_MoE_as_Dense_GEMM.html. Pin one tag
+for the reference implementation and record it; do not mix code from different releases.
+
 Also inspect the TensorRT-LLM repository:
 
 https://github.com/NVIDIA/TensorRT-LLM
@@ -65,7 +70,7 @@ Secondary questions:
 3. Can router computation overlap with expert computation?
 4. Can a hardware-aware hybrid dispatcher outperform both pure dense and pure grouped approaches?
 5. Can numerical discrepancies introduced by fused alpha scaling be eliminated or controlled?
-6. How does the optimal algorithm change between A100, H100, and B200?
+6. How does the optimal algorithm change between Hopper (H200, sm_90) and Blackwell (B200, sm_100)? Add A100 or H100 only if such a GPU becomes available.
 7. Which optimisations remain beneficial in realistic LLM serving and RL rollout inference workloads?
 
 ---
@@ -387,7 +392,9 @@ Match the kernel's quantisation semantics, scale-factor representation, memory l
 
 Validate NVFP4 pack/unpack behaviour against an independent reference.
 
-Do not claim hardware-native NVFP4 acceleration on A100 or H100.
+Do not claim hardware-native NVFP4 acceleration on Ampere or Hopper (A100, H100, H200).
+
+`tcgen05` instructions need an `sm_100a` build target. This repository builds CUDA C++ extensions for `sm_90` in the H200 task image (CUDA 13.3.1) and for `sm_100` in the B200 images (CUDA 13.5.0); its CUDA C++ fixtures are validated only on `sm_90`, so every Blackwell kernel needs its own B200 validation run.
 
 ---
 
@@ -545,7 +552,7 @@ Cover representative per-rank MoE shapes, including the NVIDIA DeepSeek-V3-style
 - `k = 8`
 - `I` derived from the selected tensor-parallel configuration
 
-Also include smaller configurations that fit A100/H100 memory budgets.
+Also include smaller configurations that fit a single H200 or B200, and the existing catalog cases of `tasks/moe_dense_gemm` (T up to 128, H 256–512, I 512, E 4–8, top-2, with and without a shared expert).
 
 Do not exhaustively execute the Cartesian product when combinations are infeasible. Define a justified representative matrix.
 
@@ -566,6 +573,10 @@ Compare:
 Ensure the baselines use the same mathematical operation, precision contract, routing distribution, and workload shape.
 
 Record when a backend cannot support a configuration.
+
+TensorRT-LLM and a standalone CUTLASS build are not dependencies of this repository (`requirements-gpu.txt` pins
+`torch==2.14.1+cu130`, `nvidia-cutlass-dsl[cu13]==4.8.1`, `cuda-tile==1.8.0` and `tilelang==0.1.15`). Adding them is a
+new dependency and needs the user's approval; until then, baselines 6–8 are "not available" rather than skipped silently.
 
 ---
 
@@ -644,7 +655,13 @@ Quantify modelling error from:
 
 # 8. PROFILING AND OPTIMISATION
 
-Use NVIDIA Nsight Compute and Nsight Systems.
+Use NVIDIA Nsight Compute and Nsight Systems through the existing harness rather than new wrappers:
+`python -m utils.diagnose nsys|ncu` on a task workdir, `scripts/profile_b200.sh` for Blackwell runs on Modal,
+and `scripts/query_nsys.py` to read saved `capture.sqlite` files without nsys (see `NSIGHT_PROFILING.md`).
+
+NVIDIA's Nsight Perf SDK for AI does not work on Modal's B200 hosts as of 2026-11-15: its service starts but
+never reports ready (host driver 610.57.04, below the SDK's 620; gVisor sandbox; see `NSIGHT_PERF_SDK.md` and
+modal-labs/modal-client#4153). Do not plan on it for this project.
 
 Record:
 
@@ -759,6 +776,12 @@ For significant improvements, repeat the experiment across multiple runs and rep
 
 Do not use NVIDIA's published latency numbers as though they were measured on the local hardware.
 
+GPU runs in this repository go through `scripts/freeze_task_suite.py` and `cloud/modal_tasks.py`, which record a
+per-file SHA-256 manifest of the source that ran (`source/task-source-manifest.json`) and report source mismatches;
+evidence lives in `artifacts/runs/<run-id>/`, and every quoted number cites its run ID. Known host facts as of
+2026-11-15: Modal H200 (task image CUDA 13.3.1, nsys 2026.2.1) and Modal B200 (driver 610.57.04, image CUDA 13.5.0,
+nsys 2026.4.0). Paid GPU runs need the user's approval.
+
 ---
 
 # 11. AGENTIC RL AND SGLANG INTEGRATION
@@ -770,7 +793,7 @@ Investigate whether the optimised MoE kernels can be integrated into inference b
 - SGLang
 - TensorRT-LLM
 - GRPO policy rollout generation
-- DAPO/CISPO-related inference workloads
+- DAPO/CISPO-related inference workloads (this repository's GRPO, DAPO and CISPO presets live in `utils/config.py`; there is no trainer yet, so rollout throughput can be measured only once one exists)
 
 Treat integration with SGLang as a separate implementation milestone.
 
@@ -802,7 +825,13 @@ Distinguish MoE inference kernels from trainable MoE kernels with valid backward
 
 # 12. REQUIRED IMPLEMENTATION DELIVERABLES
 
-Develop or propose the following project structure:
+This repository already has a Stage 4 task, `tasks/moe_dense_gemm/`: a trusted `model.py` reference (dense
+all-expert FC1, fp32 SwiGLU and alpha mask, bf16 intermediate, dense FC2, fp32 output), honest CUDA and Triton
+solutions, `hack` and `wrong` controls, and its cases in `utils/task_catalog.py`. New work extends that task and the
+existing harness (provenance gate, `scripts.validate --suite`, frozen-source Modal runs) rather than starting a
+separate tree. New kernels that the reward should score belong in `tasks/<name>/` with the same fixture set;
+research-only code (dispatcher, roofline, ablations) can use a layout like the one below, placed so it does not
+duplicate the task harness:
 
 ```text
 AgenticRL-CUDA-kernels/
@@ -850,7 +879,7 @@ AgenticRL-CUDA-kernels/
     └── results/
 ```
 
-Reuse existing repository utilities and conventions where appropriate. Do not duplicate functional modules unnecessarily.
+Reuse existing repository utilities and conventions (`utils/task_catalog.py`, `utils/task_suite.py`, `utils/diagnose.py`, `scripts/validate.py`, `cloud/modal_tasks.py`). Do not duplicate functional modules unnecessarily.
 
 For every task, provide:
 
