@@ -284,6 +284,14 @@ The queries, the maximum, the normaliser and the accumulator stay in registers f
 stores its weighted sum, maximum and normaliser into its own split slot, which the merge kernel later rescales to a common
 maximum and combines.
 
+![Animation: a sample 7-node draft tree and its ancestor mask; each node in turn lights its path to the root and its mask row](assets/stage5/fig_stage5_tree_mask.svg)
+
+**Figure 6.** The tree split: each query sees only its ancestors. Left, a sample draft tree; right, the `visible[node, key]`
+mask that `eagle_visible_table` builds from it. The animation steps through the query nodes: the highlighted node, its path
+to the root and its mask row light up together, and the line underneath names the tree keys that query attends to. The
+7-node tree is made up for this figure, not a catalog case; the largest cases use 64-node ragged trees. With reduced motion
+turned on, the figure shows node 6 as a still frame.
+
 **`eagle_attention_tree`** handles the draft-tree tokens, which are not all visible to every query: a query at a node may
 attend to that node and its ancestors, never to siblings or descendants. The kernel scores all N tree keys at once on the
 tensor cores, then applies one row of the `visible` mask per query row:
@@ -294,8 +302,7 @@ seen = tl.load(Visible + (batch*N + node[:, None])*N + keys[None, :], valid[:, N
 logits = tl.where(seen, logits, -float('inf'))
 ```
 
-The dashboard's "Kernel walkthrough" tab animates this mask on a sample 7-node tree made up for that figure, not a catalog
-case. The largest cases use 64-node ragged trees.
+The dashboard's "Kernel walkthrough" tab has the interactive version of Figure 6: pointing at a node or a mask row holds it.
 
 **H200 run `stage5-tuned-triton-acceptance-20261114T181907Z`** (largest case of each task, Triton, all fixtures; frozen
 source `artifacts/sources/stage5/tuned-triton-20261114T181907Z/`, no source mismatches; evidence in
